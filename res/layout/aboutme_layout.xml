@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:gravity="center_horizontal">
+	<TextView 
+	android:layout_width="wrap_content"
+	android:id="@+id/appname"
+	android:text="@string/app_name" android:gravity="center_horizontal" android:layout_height="wrap_content" android:textSize="35sp"/>
+	<TextView 
+	android:layout_width="wrap_content"
+	android:id="@+id/version"
+	android:text="@string/version" android:layout_height="wrap_content" android:gravity="center_horizontal" android:textSize="30sp"/>
+	</LinearLayout>
+<TextView 
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:id="@+id/developer"
+	android:text="@string/developer" android:gravity="center_horizontal" android:paddingTop="20dp"/>
+<TextView
+	
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:id="@+id/classinfo"
+	android:text="@string/classinfo"
+	android:gravity="center_horizontal"/>
+<TextView android:gravity="center_horizontal" android:layout_height="wrap_content" android:id="@+id/contact" android:layout_width="fill_parent" android:text="@string/contact" android:paddingTop="50dp"></TextView>
+<TextView android:gravity="center_horizontal" android:layout_height="wrap_content" android:id="@+id/email" android:layout_width="fill_parent" android:autoLink="email" android:text="@string/email" android:paddingTop="5dp"></TextView>
+<TextView android:id="@+id/thankskevin" android:layout_width="fill_parent" android:text="Also, a huge thanks to fellow UT student, Kevin Lin, for providing all of the graphical assets for this application.  It would be an ugly jumble of gray buttons if not for him." android:layout_gravity="bottom" android:layout_height="wrap_content" android:gravity="center_horizontal" android:paddingTop="100dp"/>
+	</LinearLayout>
+	

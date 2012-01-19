@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+    		android:title="Login Style"
+    		android:key = "loginstyle">
+    	<CheckBoxPreference
+    		android:id="@+id/login_pref"
+    		android:key = "loginpref"
+    		android:title = "Persistent login"
+    		android:defaultValue="false"
+    		android:summaryOn = "Use persistent login; stores credentials on device." 
+    		android:summaryOff= "Log in using UTDirect each session."
+    		/>
+    </PreferenceCategory>
+    <PreferenceCategory
+            android:title="@string/login_category"
+			android:key="loginfields"
+			android:dependency="loginpref">
+       <EditTextPreference
+       android:dependency="loginpref"
+       			android:id="@+id/eidfield"
+                android:key="eid"
+                android:title="Edit UT EID"
+                android:dialogTitle="Enter your EID" />
+       <EditTextPreference
+       android:dependency="loginpref"
+       			android:id="@+id/passwordfield"
+                android:key="password"
+                android:title="Edit Password"
+                android:dialogTitle="Enter your password" 
+                android:inputType="textPassword"/>
+       <Preference
+       android:dependency="loginpref"
+       		android:id="@+id/loginbutton"
+       		
+       		android:key="loggedin"/>   
+
+    </PreferenceCategory>
+    
+    
+    
+    <PreferenceCategory
+    	android:title="Data">
+    	
+    	<PreferenceScreen
+    	android:title="Oh god it's broken">
+    	<Preference
+                android:id="@+id/resetclassesbutton"
+                android:title="Reset class database."
+                android:key="resetclassesbutton" />
+
+                </PreferenceScreen>
+    </PreferenceCategory>
+    	
+
+  
+</PreferenceScreen>

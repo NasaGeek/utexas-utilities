@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent">
+
+<LinearLayout 
+	android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:orientation="vertical" >
+
+	<LinearLayout 
+		android:id="@+id/daylist"
+		android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+	    android:gravity="center_horizontal"
+	    android:orientation="horizontal"
+	    android:weightSum="5">
+    	
+    	<TextView  
+    		android:layout_width="wrap_content" 
+	    	android:layout_height="fill_parent"
+	    	android:text="Mon  "
+	    	android:layout_weight="1"
+	    	android:layout_gravity="center_horizontal"
+	    	android:gravity="center_horizontal"/>
+    	<TextView 
+	    	android:text="Tues " 
+	    	android:layout_weight="1" 
+	    	android:layout_width="wrap_content" 
+	    	android:layout_height="fill_parent" 
+	    	android:layout_gravity="center_horizontal"
+	    	android:gravity="center_horizontal"/>
+	    <TextView  
+    		android:layout_width="wrap_content" 
+	    	android:layout_height="fill_parent"
+	    	android:text="Wed  "
+	    	android:layout_weight="1"
+	    	android:layout_gravity="center_horizontal"
+	    	android:gravity="center_horizontal"/>
+	    <TextView  
+    		android:layout_width="wrap_content" 
+	    	android:layout_height="fill_parent"
+	    	android:text="Thurs"
+	    	android:layout_weight="1"
+	    	android:layout_gravity="center_horizontal"
+	    	android:gravity="center_horizontal"/>
+	    <TextView  
+    		android:layout_width="wrap_content" 
+	    	android:layout_height="fill_parent"
+	    	android:text="Fri  "
+	    	android:layout_weight="1"
+	    	android:layout_gravity="center_horizontal"
+	    	android:gravity="center_horizontal"/>
+    </LinearLayout>
+    
+	
+<!--	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+ 		<ScrollView
+			android:layout_height="fill_parent"
+			android:layout_width="wrap_content">
+		<LinearLayout
+			android:id="@+id/timelist"
+			android:orientation="vertical"
+			android:layout_height="fill_parent"
+			android:layout_width="wrap_content">
+			
+			<TextView
+				
+				android:layout_width="fill_parent"
+				android:layout_height="33dp"
+				android:text="8:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="9:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="10:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="11:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="12:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="1:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="2:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="3:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="4:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="5:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="6:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="7:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="8:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="9:00"/>
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="39dp"
+				android:text="10:00"/> 
+		</LinearLayout> 
+	 </ScrollView> -->
+	
+			<GridView 
+			    android:id="@+id/scheduleview"
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent"
+			    android:numColumns="5"
+			    android:verticalSpacing="0dp"
+			    android:horizontalSpacing="1dp"
+			    android:stretchMode="columnWidth"
+			    android:gravity="center"
+			   
+			    />
+		
+	
+
+	
+	
+</LinearLayout>
+
+	
+	<com.nasageek.UTilities.WrappingSlidingDrawer
+     android:id="@+id/drawer"
+     android:layout_width="fill_parent"
+     android:layout_height="wrap_content"
+     android:orientation="vertical"
+     android:layout_gravity="bottom"
+
+     android:handle="@+id/handle"
+     android:content="@+id/content">
+
+     <ImageView
+         android:id="@id/handle"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:src="@drawable/ic_expand_half" />
+
+    <ScrollView 
+    	android:id="@id/content"
+    	android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+    
+	    <LinearLayout
+	         android:id="@+id/llsd"
+	        
+	         android:layout_width="fill_parent"
+	         android:layout_height="fill_parent"
+	         android:orientation="vertical"
+	        />
+	</ScrollView>
+ </com.nasageek.UTilities.WrappingSlidingDrawer>
+</FrameLayout>

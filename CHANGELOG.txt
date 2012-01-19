@@ -1,0 +1,15 @@
+CHANGELOG (started this a bit late, oh well)
+
+Versioncode 6, Version 1.05
+
+Most likely added the ability to view Data Usage
+Fixed an issue causing certain transactions to show inconsistent dates
+Transaction view always reloads upon viewing as opposed to showing a cached version until being manually reloaded
+Changed how bus schedules are displayed to prevent "stacking" of toasts
+Bus schedule requests are threaded now, should prevent hanging while waiting to query for the times
+Ability to view exam schedule  (removed for now as it serves no real purpose)
+	long press item to see where it is on the map
+	
+Fixed a bug where you can only see a blank schedule when logged in through UTDirect
+Fixed a bug causing a force close after logging in through UTDirect
+Reworked the login system to produce less lag when loading parts of the app
