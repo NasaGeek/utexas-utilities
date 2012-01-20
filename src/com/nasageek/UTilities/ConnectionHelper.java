@@ -42,6 +42,7 @@ public class ConnectionHelper {
 	{
 		mContext = c;
 		
+		
 	}
 	public static DefaultHttpClient getThreadSafeClient() {
 
@@ -58,8 +59,8 @@ public class ConnectionHelper {
 	public boolean Login(Context con, DefaultHttpClient client)
 	{
 		settings = PreferenceManager.getDefaultSharedPreferences(con);
-		client.getCookieStore().clear();
-		httppost = new HttpPost("https://utdirect.utexas.edu/security-443/logon_check.logonform");
+//		client.getCookieStore().clear();
+		HttpPost httppost = new HttpPost("https://utdirect.utexas.edu/security-443/logon_check.logonform");
 		try {
 		       
 			 // Add your data
@@ -96,8 +97,8 @@ public class ConnectionHelper {
 	public boolean PNALogin(Context con, DefaultHttpClient client)
 	{
 		settings = PreferenceManager.getDefaultSharedPreferences(con);
-		client.getCookieStore().clear();
-		httppost = new HttpPost("https://management.pna.utexas.edu/server/graph.cgi");
+	//	client.getCookieStore().clear();
+		HttpPost httppost = new HttpPost("https://management.pna.utexas.edu/server/graph.cgi");
 		try {
 		       
 			 // Add your data
@@ -143,6 +144,7 @@ public class ConnectionHelper {
 		    	
 	//	    	Log.e("CREDS", "Error authenticating credentials");
 				Toast.makeText(con, "Something went wrong during login, try checking your UT EID and Password and try again.", Toast.LENGTH_LONG).show();
+				Log.d("PNACOOKIE", "Login failed");
 				return "";
 		}
 		else
@@ -177,6 +179,7 @@ public class ConnectionHelper {
 		    	
 	//	    	Log.e("CREDS", "Error authenticating credentials");
 				Toast.makeText(con, "Something went wrong during login, try checking your UT EID and Password and try again.", Toast.LENGTH_LONG).show();
+				Log.d("COOKIE", "Login failed");
 				return "";
 		}
 		else
