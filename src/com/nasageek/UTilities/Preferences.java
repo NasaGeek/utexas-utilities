@@ -135,11 +135,9 @@ public class Preferences extends PreferenceActivity {
     			 ConnectionHelper ch = new ConnectionHelper(Preferences.this);
     			 DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
     			 DefaultHttpClient pnahttpclient = ConnectionHelper.getThreadSafeClient();
-    			 
-    			 if(ConnectionHelper.PNACookieHasBeenSet())
-    			 {
-    				 ConnectionHelper.resetPNACookie();
-    			 }
+
+    			 ConnectionHelper.resetPNACookie();
+    			
     			 
     			
     			 
@@ -152,8 +150,8 @@ public class Preferences extends PreferenceActivity {
     				 return true;
   				 }
     			 
-    			 new loginTask(httpclient,pnahttpclient,preference).execute(ch, httpclient);
-				 new PNALoginTask(httpclient,pnahttpclient,preference).execute(ch, pnahttpclient);
+    			 new loginTask(httpclient,pnahttpclient,preference).execute(ch);
+				 new PNALoginTask(httpclient,pnahttpclient,preference).execute(ch);
     	
     			 
     			 
@@ -231,7 +229,7 @@ public class Preferences extends PreferenceActivity {
     	
     	protected Boolean doInBackground(Object... params)
 		{
-			return ((ConnectionHelper)params[0]).Login(Preferences.this, (DefaultHttpClient)params[1]);	
+			return ((ConnectionHelper)params[0]).Login(Preferences.this, (DefaultHttpClient)httpclient);	
 		}
 		
 		@Override
@@ -272,7 +270,7 @@ public class Preferences extends PreferenceActivity {
     	
 		protected Boolean doInBackground(Object... params)
 		{
-			return ((ConnectionHelper)params[0]).PNALogin(Preferences.this, (DefaultHttpClient)params[1]);	
+			return ((ConnectionHelper)params[0]).PNALogin(Preferences.this, (DefaultHttpClient)pnahttpclient);	
 		}
 		
 		@Override

@@ -39,9 +39,9 @@ public class UTilitiesActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-  //      Window win = getWindow();
+  //    Window win = getWindow();
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
-   //     win.setFormat(PixelFormat.RGBA_8888);
+   //   win.setFormat(PixelFormat.RGBA_8888);
        
         
         final Intent exams = new Intent(getBaseContext(), ExamScheduleActivity.class);
@@ -54,7 +54,7 @@ public class UTilitiesActivity extends Activity {
    // 	BitmapDrawable bmd = (BitmapDrawable) getResources().getDrawable(R.drawable.main_background);
    // 	bmd.setDither(true);
         setContentView(R.layout.main);
-  /*      TableLayout tl = (TableLayout) findViewById(R.id.button_table);
+  /*    TableLayout tl = (TableLayout) findViewById(R.id.button_table);
         tl.setBackgroundDrawable(bmd);
         */
         if(!ConnectionHelper.cookieHasBeenSet() && (!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
@@ -81,7 +81,7 @@ public class UTilitiesActivity extends Activity {
         final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
         schedulebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-            	if(!ConnectionHelper.cookieHasBeenSet())// && (!settings.getBoolean("loginpref", true)||!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
+            	if(!ConnectionHelper.cookieHasBeenSet() && new ClassDatabase(UTilitiesActivity.this).size()==0)// && (!settings.getBoolean("loginpref", true)||!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
             	{
             		Toast.makeText(UTilitiesActivity.this, "Please log in before using this feature",Toast.LENGTH_SHORT).show();
             	}
