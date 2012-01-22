@@ -164,7 +164,7 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		}
 		else
 		{	
-			iv = (TextView) convertView;
+			iv =(TextView) convertView;
 		}
 		
 	//	iv = new TextView(currentContext);
@@ -182,7 +182,7 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
            // 		Log.d("TIME", "Time Match: "+position);
             	}
             	else
-            		iv.setBackgroundColor(Color.LTGRAY);
+            		iv.setBackgroundColor(position%2==0?Color.LTGRAY:Color.parseColor("#bdbdbd"));
             	iv.setText("");
          //   	iv.setPadding(0, 0, 0, 0);
             }
@@ -204,12 +204,13 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
             	if(firstlist.get(position))
             	{	iv.setText(cllist.get(position).getStartTime());
             		iv.setGravity(0x01);
-            	//	iv.setPadding(0,5,0,0);
+            		
+            		iv.setPadding(2,0,2,0);
             	}
             	else
             	{
             		iv.setText("");
-            	//	iv.setPadding(0, 0, 0, 0);
+            		iv.setPadding(0, 0, 0, 0);
             	}
             }
             
@@ -231,6 +232,7 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	{
 		// TODO Auto-generated method stub
+		
 		sd.close();
 		sdll.removeAllViews();
 		classtime clt = (classtime) parent.getItemAtPosition(position);
