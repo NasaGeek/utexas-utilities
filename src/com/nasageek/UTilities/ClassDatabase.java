@@ -1,5 +1,7 @@
 package com.nasageek.UTilities;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,7 +14,10 @@ import android.util.Log;
 public class ClassDatabase extends SQLiteOpenHelper
 {
 	private Context context;
-	private double oldH=0;
+//	private String[] colors = {"00b060","ff4500","ff9200","793a8c","06799f","ff5d40","a6b900"};
+	private String[] colors = {"b56eb3","488ab0","00b060","d46231","81b941","ff775c","ffe45e"};
+	private double oldH=0; 
+	private int count;
 	private SQLiteDatabase sqldb;
 	private static final String KEY_EID = "eid";
 	private static final String KEY_UNIQUEID = "uniqueid";
@@ -45,7 +50,7 @@ public class ClassDatabase extends SQLiteOpenHelper
 	{
 		super(con, TABLE_NAME, null, 1);
 		context = con;
-		Log.d("ClassDatabase", "Constructor called");
+		count=0;
 	}
 	@Override
 	public void onCreate(SQLiteDatabase db)
@@ -83,8 +88,9 @@ public class ClassDatabase extends SQLiteOpenHelper
 			R = (int)(255 * Hue_2_RGB( var_1, var_2, H + ( 1.0 / 3 ) )) ;
 			G = (int)(255 * Hue_2_RGB( var_1, var_2, H ));
 			B = (int)(255 * Hue_2_RGB( var_1, var_2, H - ( 1.0 / 3 ) ));
-			
-		String colorhex = String.format("%02X",R)+String.format("%02X",G)+String.format("%02X",B);
+		Log.d("count",count+"");	
+		String colorhex = colors[count++];
+			//String.format("%02X",R)+String.format("%02X",G)+String.format("%02X",B);
 			
 			
 		for(int k = 0; k<cl.getClassTimes().size(); k++)

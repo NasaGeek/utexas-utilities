@@ -182,17 +182,43 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
            // 		Log.d("TIME", "Time Match: "+position);
             	}
             	else
-            		iv.setBackgroundColor(position%2==0?Color.LTGRAY:Color.parseColor("#bdbdbd"));
+            	{	
+            		
+            		if(sp.getString("schedule_background_style", "checkhour").equals("checkhour"))
+            		{
+	            		if((position/10)%2==0)
+	            		{
+	            			if((position/5)%2==0)
+	            				iv.setBackgroundColor(position%2==0?Color.LTGRAY:0xFFbdbdbd);
+	            			else
+	            				iv.setBackgroundColor(position%2==0?0xFFbdbdbd:Color.LTGRAY);
+	            		}
+	            		else	
+	            		{
+	            			if((position/5)%2==0)
+	            				iv.setBackgroundColor(position%2==0?0xFFbdbdbd:Color.LTGRAY);
+	            			else
+	            				iv.setBackgroundColor(position%2==0?Color.LTGRAY:0xFFbdbdbd);
+	            		}
+            		}	
+            		else if(sp.getString("schedule_background_style", "checkhour").equals("checkhalf"))
+            			iv.setBackgroundColor(position%2==0 && (position%10)%2==0?Color.LTGRAY:0xFFbdbdbd);
+            		else if(sp.getString("schedule_background_style", "checkhour").equals("stripehour"))
+            			iv.setBackgroundColor(position/10%2==0?Color.LTGRAY:0xFFbdbdbd);
+            		else if(sp.getString("schedule_background_style", "checkhour").equals("stripehalf"))
+            			iv.setBackgroundColor(position/5%2==0?Color.LTGRAY:0xFFbdbdbd);
             	iv.setText("");
          //   	iv.setPadding(0, 0, 0, 0);
+            	}
             }
             else
             {	
             	classtime cl = cllist.get(position);
             	String color = "#"+cdb.getColor(cl.getUnique(),cl.getStartTime(), cl.getDay()+"");
-            	
+
             	if(position == currentTimePos)
-            	{	GradientDrawable back = (GradientDrawable) res.getDrawable(R.drawable.classbackground);
+            	{	
+            		GradientDrawable back = (GradientDrawable) res.getDrawable(R.drawable.classbackground);
 	            	back.setColor(Color.parseColor(color));
             		iv.setBackgroundDrawable(back);
             //		Log.d("TIME", "Time Match: "+position);
@@ -205,7 +231,7 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
             	{	iv.setText(cllist.get(position).getStartTime());
             		iv.setGravity(0x01);
             		
-            		iv.setPadding(2,0,2,0);
+            	//	iv.setPadding(2,0,2,0);
             	}
             	else
             	{

@@ -42,16 +42,26 @@
     
     
     <PreferenceCategory
-    	android:title="Data">
+    	android:title="Schedule">
     	
-    	<PreferenceScreen
-    	android:title="Oh god it's broken">
+    <!-- 	<PreferenceScreen
+    	android:title="Schedule Preferences"> -->
+    	<ListPreference
+    		android:id="@+id/schedule_background_style"
+    		android:key = "schedule_background_style"
+    		android:title = "Background Style"
+    		android:entries="@array/schedule_background_array"
+    		android:entryValues="@array/schedule_background_value_array"
+    		android:defaultValue="checkhour"
+    		
+    		/>
     	<Preference
-                android:id="@+id/resetclassesbutton"
-                android:title="Reset class database."
-                android:key="resetclassesbutton" />
+            android:id="@+id/resetclassesbutton"
+            android:title="Reset class database."
+            android:key="resetclassesbutton" />
+    	
+   <!--  	</PreferenceScreen> -->
 
-                </PreferenceScreen>
     </PreferenceCategory>
     	
 

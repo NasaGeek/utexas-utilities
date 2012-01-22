@@ -34,4 +34,16 @@
 			<item>Wickersham Lane</item>
 			<item>Wickersham/Crossing Pl</item>
     </string-array>
+    <string-array name="schedule_background_array">
+    	<item>Checkerboard (every hour)</item>
+    	<item>Checkerboard (every half hour)</item>
+    	<item>Striped (every hour)</item>
+    	<item>Striped (every half hour)</item>
+    </string-array>
+     <string-array name="schedule_background_value_array">
+    	<item>checkhour</item>
+    	<item>checkhalf</item>
+    	<item>stripehour</item>
+    	<item>stripehalf</item>
+    </string-array>
 </resources>

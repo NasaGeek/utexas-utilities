@@ -13,3 +13,5 @@ Ability to view exam schedule  (removed for now as it serves no real purpose)
 Fixed a bug where you can only see a blank schedule when logged in through UTDirect
 Fixed a bug causing a force close after logging in through UTDirect
 Reworked the login system to produce less lag when loading parts of the app
+Course schedule now has a slightly configurable background
+Preferences moved around a bit to reflect new features
