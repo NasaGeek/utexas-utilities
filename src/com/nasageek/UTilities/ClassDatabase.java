@@ -15,7 +15,7 @@ public class ClassDatabase extends SQLiteOpenHelper
 {
 	private Context context;
 //	private String[] colors = {"00b060","ff4500","ff9200","793a8c","06799f","ff5d40","a6b900"};
-	private String[] colors = {"b56eb3","488ab0","00b060","d46231","81b941","ff775c","ffe45e"};
+	private String[] colors = {"b56eb3","488ab0","00b060","78ffed","81b941","ff866e","ffe45e"};
 	private double oldH=0; 
 	private int count;
 	private SQLiteDatabase sqldb;

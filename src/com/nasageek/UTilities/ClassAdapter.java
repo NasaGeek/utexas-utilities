@@ -21,8 +21,11 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.widget.AdapterView;
+import android.widget.AbsListView.LayoutParams;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -208,7 +211,6 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
             		else if(sp.getString("schedule_background_style", "checkhour").equals("stripehalf"))
             			iv.setBackgroundColor(position/5%2==0?Color.LTGRAY:0xFFbdbdbd);
             	iv.setText("");
-         //   	iv.setPadding(0, 0, 0, 0);
             	}
             }
             else
@@ -224,19 +226,24 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
             //		Log.d("TIME", "Time Match: "+position);
             		}
             	else
-       
             		iv.setBackgroundColor(Color.parseColor(color));
             	
             	if(firstlist.get(position))
-            	{	iv.setText(cllist.get(position).getStartTime());
+            	{	
+            		iv.setText(cllist.get(position).getStartTime());
             		iv.setGravity(0x01);
+            //		LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+            //		llp.setMargins(0, 1, 0, 0);
+           // 		iv.setLayoutParams(llp);
+           // 		LinearLayout ll = new LinearLayout(currentContext);
+            //		ll.addView(iv);
+            //		ll.setPadding(0, 1, 0, 1);
             		
-            	//	iv.setPadding(2,0,2,0);
+           // 		return ll;
             	}
             	else
             	{
-            		iv.setText("");
-            		iv.setPadding(0, 0, 0, 0);
+            		iv.setText("");	
             	}
             }
             

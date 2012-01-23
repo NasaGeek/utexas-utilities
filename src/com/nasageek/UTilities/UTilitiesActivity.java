@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.TabActivity;
 import android.preference.PreferenceManager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -26,15 +28,17 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.TabHost;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class UTilitiesActivity extends Activity {
+public class UTilitiesActivity extends TabActivity {
     
 	ProgressDialog pd; 
 	SharedPreferences settings;
+	Intent about_intent;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,17 +47,52 @@ public class UTilitiesActivity extends Activity {
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
    //   win.setFormat(PixelFormat.RGBA_8888);
        
-        
+        setContentView(R.layout.main);
         final Intent exams = new Intent(getBaseContext(), ExamScheduleActivity.class);
         final Intent schedule = new Intent(getBaseContext(), ScheduleActivity.class);
     	final Intent balance = new Intent(getBaseContext(), BalanceActivity.class);
     	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
     	final Intent data = new Intent(getBaseContext(), DataUsageActivity.class);
+    	about_intent = new Intent(this, AboutMeActivity.class);
+    	
+    	 Resources res = getResources(); // Resource object to get Drawables
+    	    TabHost tabHost = getTabHost();  // The activity TabHost
+    	    TabHost.TabSpec spec;  // Resusable TabSpec for each tab
+    	   
+
+    	    spec = tabHost.newTabSpec("about").setIndicator("About",
+                    res.getDrawable(R.drawable.icon))
+                .setContent(about_intent);
+    	    tabHost.addTab(spec);
+
+
+    	    
+    	    
+    	    // Initialize a TabSpec for each tab and add it to the TabHost
+    	    spec = tabHost.newTabSpec("schedule").setIndicator("Schedule",
+    	                      res.getDrawable(R.drawable.schedule_image_button))
+    	                  .setContent(schedule);
+    	    tabHost.addTab(spec);
+
+    	    // Do the same for the other tabs
+    	   
+    	    spec = tabHost.newTabSpec("balance").setIndicator("Balances",
+    	                      res.getDrawable(R.drawable.balance_image_button))
+    	                  .setContent(balance);
+    	    tabHost.addTab(spec);
+
+    	   
+    	    spec = tabHost.newTabSpec("data").setIndicator("Data Usage",
+    	                      res.getDrawable(R.drawable.data_image_button))
+    	                  .setContent(data);
+    	    tabHost.addTab(spec);
+
+    	    tabHost.setCurrentTab(0);
     
     	
    // 	BitmapDrawable bmd = (BitmapDrawable) getResources().getDrawable(R.drawable.main_background);
    // 	bmd.setDither(true);
-        setContentView(R.layout.main);
+       
   /*    TableLayout tl = (TableLayout) findViewById(R.id.button_table);
         tl.setBackgroundDrawable(bmd);
         */
@@ -78,7 +117,7 @@ public class UTilitiesActivity extends Activity {
         
         
         
-        final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
+  /*      final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
         schedulebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	if(!ConnectionHelper.cookieHasBeenSet() && new ClassDatabase(UTilitiesActivity.this).size()==0)// && (!settings.getBoolean("loginpref", true)||!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
@@ -102,7 +141,7 @@ public class UTilitiesActivity extends Activity {
             					!settings.contains("eid") || 
             					!settings.contains("password")||
             					settings.getString("eid", "error").equals("")||
-            					settings.getString("password", "error").equals("")))*/
+            					settings.getString("password", "error").equals("")))
             	{
             		Toast.makeText(UTilitiesActivity.this, "Please log in before using this feature",Toast.LENGTH_SHORT).show();
             	}
@@ -139,7 +178,7 @@ public class UTilitiesActivity extends Activity {
             		
             }
             
-    });
+    });*/
  /*       final ImageButton examsbutton = (ImageButton) findViewById(R.id.exams_button);
         examsbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -201,7 +240,7 @@ public class UTilitiesActivity extends Activity {
     }
     public void aboutMe()
     {
-    	Intent about_intent = new Intent(this, AboutMeActivity.class);
+    	
     	startActivity(about_intent);
     }
     public void loadSettings()
