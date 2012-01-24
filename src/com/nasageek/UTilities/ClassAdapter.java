@@ -57,14 +57,7 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		cdb  = new ClassDatabase(c);
 		currentContext = c;
 		
-		cal = Calendar.getInstance();
-		day = cal.get(Calendar.DAY_OF_WEEK)-2;
-		time = cal.get(Calendar.HOUR)+(cal.get(Calendar.MINUTE)>30?":30":":00")+ (cal.get(Calendar.AM_PM)==Calendar.PM?"P":"");
-//		Log.d("CURRENTIME",time);
-		if(day<5 && day>=0 && cal.get(Calendar.HOUR_OF_DAY)<=22 && cal.get(Calendar.HOUR_OF_DAY)>=8)
-		{
-			currentTimePos = day+5*timeToPos(time);	
-		}
+		updateTime();
 		
 		SQLiteDatabase sqldb = cdb.getWritableDatabase();
 		Cursor cur = null;
@@ -125,7 +118,13 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		cal = Calendar.getInstance();
 		day = cal.get(Calendar.DAY_OF_WEEK)-2;
 		time = cal.get(Calendar.HOUR)+(cal.get(Calendar.MINUTE)>30?":30":":00")+ (cal.get(Calendar.AM_PM)==Calendar.PM?"P":"");
-		Log.d("CURRENTIME",time);
+		
+		if(day<5 && day>=0 && cal.get(Calendar.HOUR_OF_DAY)<=22 && cal.get(Calendar.HOUR_OF_DAY)>=8)
+		{
+			currentTimePos = day+5*timeToPos(time);	
+		}
+		//currentTimePos = day+5*timeToPos(time);	
+//		Log.d("CURRENTIME",time);
 	}
 	private int timeToPos(String time)
 	{
