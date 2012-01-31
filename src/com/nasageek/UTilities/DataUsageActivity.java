@@ -86,16 +86,14 @@ public class DataUsageActivity extends Activity implements OnTouchListener
 		pd = ProgressDialog.show(DataUsageActivity.this, "", "Loading...");
 		
 		setContentView(R.layout.data_layout);
-		
-		
-		
+
 		dataUsedText = (TextView) findViewById(R.id.dataUsedText);
 		mProgress = (ProgressBar) findViewById(R.id.percentDataUsed);
 		
 		graph = (XYPlot) findViewById(R.id.mySimpleXYPlot);
 		graph.setOnTouchListener(this);
 		graph.disableAllMarkup();
-//		graph.redraw();
+
 		
 		ch = new ConnectionHelper(this);
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -177,7 +175,7 @@ public class DataUsageActivity extends Activity implements OnTouchListener
 							// the thread lives until the scrolling and zooming are imperceptible
 						}
 					}
-				}, 0);
+				}, 0);break;
  
 			case MotionEvent.ACTION_POINTER_DOWN: // second finger
 				distBetweenFingers = spacing(event);
@@ -200,14 +198,16 @@ public class DataUsageActivity extends Activity implements OnTouchListener
 					
 					graph.redraw();
  
-				}/* else if (mode == TWO_FINGERS_DRAG) {
+				}else if (mode == TWO_FINGERS_DRAG) {
 					final float oldDist = distBetweenFingers;
 					distBetweenFingers = spacing(event);
-					lastZooming = oldDist / distBetweenFingers;
-					zoom(lastZooming);
-					checkBoundaries();
-					graph.redraw();
-				}*/
+					if(distBetweenFingers > 0)
+					{	lastZooming = oldDist / distBetweenFingers;
+						zoom(lastZooming);
+						checkBoundaries();
+						graph.redraw();}
+					else break;
+				}
 				break;
 		}
 		return true;
@@ -251,18 +251,22 @@ public class DataUsageActivity extends Activity implements OnTouchListener
 	}
  
 	private float spacing(MotionEvent event) {
-		final float x = event.getX(0) - event.getX(1);
-		final float y = event.getY(0) - event.getY(1);
-		return FloatMath.sqrt(x * x + y * y);
+		if(event.getPointerCount()>=2)
+		{	final float x = event.getX(0) - event.getX(1);
+			final float y = event.getY(0) - event.getY(1);
+			return FloatMath.sqrt(x * x + y * y);
+		}
+		
+		else return 1f;
 	}
  
 	private void checkBoundaries() {
 		//Make sure the proposed domain boundaries will not cause plotting issues
-		if (minXY.x < absMinX)
+		if (minXY.x < absMinX  || ((Double)minXY.x).equals(Double.NaN))
 			minXY.x = absMinX;
 		else if (minXY.x > maxNoError)
 			minXY.x = maxNoError;
-		if (maxXY.x > absMaxX)
+		if (maxXY.x > absMaxX ||  ((Double)maxXY.x).equals(Double.NaN))
 			maxXY.x = absMaxX;
 		else if (maxXY.x < minNoError)
 			maxXY.x = minNoError;

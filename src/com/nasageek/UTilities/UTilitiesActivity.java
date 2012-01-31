@@ -48,7 +48,7 @@ public class UTilitiesActivity extends Activity {
    //   win.setFormat(PixelFormat.RGBA_8888);
        
         setContentView(R.layout.main);
-        final Intent exams = new Intent(getBaseContext(), ExamScheduleActivity.class);
+  //      final Intent exams = new Intent(getBaseContext(), ExamScheduleActivity.class);
         final Intent schedule = new Intent(getBaseContext(), ScheduleActivity.class);
     	final Intent balance = new Intent(getBaseContext(), BalanceActivity.class);
     	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);

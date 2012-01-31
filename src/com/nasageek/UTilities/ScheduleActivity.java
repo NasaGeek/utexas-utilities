@@ -57,6 +57,7 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 		sd = (WrappingSlidingDrawer) findViewById(R.id.drawer);
 	    sdll = (LinearLayout) findViewById(R.id.llsd);
 	    ca = new ClassAdapter(this,sd,sdll);
+	    gv = (GridView) findViewById(R.id.scheduleview);
 			
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 		public void uncaughtException(Thread thread, Throwable ex)
@@ -66,15 +67,14 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 			finish();
 			return;
 		}});
-		
-		//aw :( temp login makes this not work as I can no longer rely on the EID being stored in settings, oh well				
-	//	Cursor sizecheck = cdb.getReadableDatabase().query("classes", null, "eid = \""+sp.getString("eid", "eid not found").toLowerCase()+"\"", null, null, null, null);
+	
 		Cursor sizecheck = cdb.getReadableDatabase().query("classes", null, null, null, null, null, null);
 		
 		
 	//		TimingLogger timings = new TimingLogger("Timing", "talk to website, parse, add classes");
 		if (sizecheck.getCount()<1)
 		{	
+			sizecheck.close();
 			pd = ProgressDialog.show(this, "", "Loading. Please wait...");
 			//	Log.d("SCHEDULE", "parsing");
 			//	timings.addSplit("split");
@@ -83,97 +83,25 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 		}
 		else
 		{
-			
+			sizecheck.close();
 			ca.updateTime();
-			gv = (GridView) findViewById(R.id.scheduleview);
 			gv.setOnItemLongClickListener(ca);
 			gv.setOnItemClickListener(ca);
 		    gv.setAdapter(ca);
 		    if(!this.isFinishing())
 		    	Toast.makeText(this, "Tap a class to see its information.\nTap and hold to see the class on a map.", Toast.LENGTH_LONG).show();
 		}
-				    
-						
-					
-				    
-				   
-				    
-				    
-				    
-				    
+		    
 	   sd.setOnDrawerCloseListener(this);
 	   sd.setOnDrawerOpenListener(this);
        sd.setVisibility(View.INVISIBLE);
 	}
-			/*	    Cursor cur = cdb.getReadableDatabase().query("classes", null, "eid = \"" + sp.getString("eid", "eid not found")+"\"", null,null,null,null);
-				    cur.moveToFirst();
-				    while(!cur.isAfterLast())
-				    {
-				    	String text = " ";
-				    	text+=cur.getString(3)+" - "+cur.getString(4)+" ";
-				    	String unique = cur.getString(2);
-				    	while(!cur.isAfterLast() && unique.equals(cur.getString(2)))
-				    	{
-				    		String daytext = "\n\t";
-				    		String building = cur.getString(5)+" "+cur.getString(6);
-				    		String checktext = cur.getString(8)+building;
-				    		String time = cur.getString(8);
-				    		String end = cur.getString(9);
-				    		while(!cur.isAfterLast() && checktext.equals(cur.getString(8)+cur.getString(5)+" "+cur.getString(6)) )
-				    		{
-				    			if(cur.getString(7).equals("H"))
-				    				daytext+="TH";
-				    			else
-				    				daytext+=cur.getString(7);
-				    			cur.moveToNext();
-				    		}
-				    		
-				    		text+=(daytext+" from " + time + "-"+end + " in "+building);
-				
-				    	}
-				    	text+="\n";
-				    	ImageView iv = new ImageView(this);
-				    	iv.setBackgroundColor(Color.parseColor("#"+cdb.getColor(unique)));
-				    	iv.setMinimumHeight(10);
-				    	iv.setMinimumWidth(10);
-				    	TextView tv = new TextView(this);
-			    		tv.setTextColor(Color.BLACK);
-			    		tv.setTextSize((float) 12);
-			    		tv.setBackgroundColor(Color.LTGRAY);
-			    		tv.setText(text);
-			    		sdll.addView(iv);
-			    		sdll.addView(tv);
-			    		
-				    	Log.d("SCHEDULE", text);
-				    }*/
-				    
-				    
-				    
-				    
-			//	    timings.addSplit("All drawn");
-			//	    timings.dumpToLog();
+	
 
 		public void parser()
 	    {
 
 			client = ConnectionHelper.getThreadSafeClient();
-			
-			
-	/*		if(sp.getBoolean("loginpref", true))
-			{	
-				if(!ch.Login(ScheduleActivity.this,client))
-				{
-					finish();
-					return;
-				}
-			}
-			
-			if(ConnectionHelper.getAuthCookie(client,this).equals(""))
-			{	
-				finish();
-				return;
-			}*/
-			
 			new parseTask(client).execute();
 			
 	    }
@@ -202,12 +130,7 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 			    		finish();
 			    		return null;
 			    	}
-			/*	Document sched_doc = Jsoup.parse(res.body());
-		    	Elements centerels = sched_doc.select("div[align]");
-		    	Element center  = centerels.get(0);
-		    	Elements classels = center.select("tr[valign]"); */
-		    //Isn't it fun compressing statements for no reason?
-				
+			
 		    	Elements classels  = doc.select("div[align]").get(0).select("tr[valign]");
 		    	
 		    	
@@ -241,7 +164,8 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 			{
 				ca = new ClassAdapter(ScheduleActivity.this,sd,sdll);
 				ca.updateTime();
-				gv = (GridView) findViewById(R.id.scheduleview);
+				
+				
 				gv.setOnItemLongClickListener(ca);
 				gv.setOnItemClickListener(ca);
 			    gv.setAdapter(ca);

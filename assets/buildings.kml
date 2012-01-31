@@ -2500,7 +2500,22 @@ Rehabilitative Services</a></li>
       <coordinates>-97.738471,30.282902</coordinates>
     </Point>
   </Placemark>
-
+  <Placemark id="WAG">
+   <name>Waggener Hall</name>
+	    <visibility>0</visibility>
+	    <address>...</address>
+    <description>
+	    <![CDATA[
+	    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/wag.gif" border="0" alt="" />
+	    ]]>
+	    </description>
+	    <styleUrl>#building</styleUrl>
+	    <ExtendedData>
+	    </ExtendedData>
+	    <Point>
+	      <coordinates>-97.737601,30.285107</coordinates>
+	    </Point>
+  </Placemark>
   <Placemark id="WEL">
     <name>Welch Hall</name>
     <visibility>0</visibility> 

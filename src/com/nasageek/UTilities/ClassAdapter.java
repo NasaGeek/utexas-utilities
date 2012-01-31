@@ -86,9 +86,9 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		classlist = new ArrayList<Class>();
 		
 		cllist = new ArrayList<classtime>();
-		cllist.ensureCapacity(140);
-		firstlist.ensureCapacity(140);
-		for(int x = 0; x<140; x++){	cllist.add(null);firstlist.add(false);}
+		cllist.ensureCapacity(145);
+		firstlist.ensureCapacity(145);
+		for(int x = 0; x<145; x++){	cllist.add(null);firstlist.add(false);}
 		
 		for(int i =0; i<cl.size(); i++)
 		{
@@ -121,7 +121,7 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		
 		if(day<5 && day>=0 && cal.get(Calendar.HOUR_OF_DAY)<=22 && cal.get(Calendar.HOUR_OF_DAY)>=8)
 		{
-			currentTimePos = day+5*timeToPos(time);	
+			currentTimePos = day+5*timeToPos(time);
 		}
 		//currentTimePos = day+5*timeToPos(time);	
 //		Log.d("CURRENTIME",time);
@@ -129,7 +129,6 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
 	private int timeToPos(String time)
 	{
 		String[] temp = time.split(":");
-		
 		int pos = Integer.parseInt(temp[0])*2 - 16;
 		if(temp[1].contains("P") && pos!=8)
 			pos+=24;
