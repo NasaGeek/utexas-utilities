@@ -29,10 +29,11 @@ public class LoginWebViewClient extends WebViewClient {
 	{
 		super.onPageFinished(view, url);
 		String authCookie = "";
+		
 		String cookies = CookieManager.getInstance().getCookie("https://utexas.edu");
-		if(cookies!=null)
-			authCookie = cookies.substring(cookies.indexOf("SC=")+3,cookies.lastIndexOf(";"));
-		if(authCookie!=null && !authCookie.equals("NONE") && url.equals("https://utdirect.utexas.edu/security-443/logon_check.logonform"))
+		if(cookies!=null && !cookies.contains("SC=NONE"))
+			authCookie = cookies.substring(cookies.indexOf("SC=")+3,cookies.indexOf(";",cookies.indexOf("SC=")+3));
+		if(!authCookie.equals("") && !authCookie.equals("NONE") && url.equals("https://utdirect.utexas.edu/security-443/logon_check.logonform"))
 		{
 			ConnectionHelper.setAuthCookie(authCookie);
 			Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();

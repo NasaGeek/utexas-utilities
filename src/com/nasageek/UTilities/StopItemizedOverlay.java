@@ -58,7 +58,9 @@ public class StopItemizedOverlay extends ItemizedOverlay{
     protected boolean onTap(int i)
     {
     	
-		new checkStopTask().execute(i);
+		stoptimes.setText("Loading times...");
+		stoptimes.show();
+    	new checkStopTask().execute(i);
 
     	return true;
 

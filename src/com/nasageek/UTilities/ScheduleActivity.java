@@ -180,7 +180,7 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 		{
 			super.onResume();
 			ca.updateTime();
-			gv.invalidateViews();
+			gv.invalidateViews(); 		
 		}
 
 		public void onDrawerClosed()
