@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -33,6 +34,7 @@ public class Preferences extends PreferenceActivity {
 
 	boolean set;
 	boolean pnalogindone, logindone;
+	Toast toast;
 	SharedPreferences settings;
 	Preference loginfield, loginButton;
     Preference passwordfield;
@@ -44,7 +46,7 @@ public class Preferences extends PreferenceActivity {
         super.onCreate(savedInstanceState);
 
         settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        
+        toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
         addPreferencesFromResource(R.xml.preferences);
         ba = (BaseAdapter)getPreferenceScreen().getRootAdapter();
    //     PreferenceGroup loginfields = (PreferenceGroup) findPreference("loginfields");
@@ -119,7 +121,9 @@ public class Preferences extends PreferenceActivity {
     		 
     		 if(preference.getTitle().equals("Login"))
     		 {
-    			 Toast.makeText(Preferences.this, "Logging in...", Toast.LENGTH_SHORT).show();
+    			 toast.setText("Logging in...");
+    			 toast.setDuration(Toast.LENGTH_LONG);
+    			 toast.show();
  
     			 ConnectionHelper ch = new ConnectionHelper(Preferences.this);
     			 DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
@@ -135,7 +139,10 @@ public class Preferences extends PreferenceActivity {
     				 settings.getString("eid", "error").equals("") ||
     				 settings.getString("password", "error").equals("") )
   				 {	
-    				 Toast.makeText(Preferences.this, "Please enter your credentials to log in", Toast.LENGTH_LONG).show();
+    				 toast.setText("Please enter your credentials to log in");
+        			 toast.setDuration(Toast.LENGTH_LONG);
+        			 toast.show();
+    				 
     				 return true;
   				 }
     			 
@@ -204,7 +211,7 @@ public class Preferences extends PreferenceActivity {
       	  ba.notifyDataSetChanged();
       }
     }
-    private class loginTask extends AsyncTask<Object,Void,Boolean>
+    private class loginTask extends AsyncTask<Object,Integer,Boolean>
 	{
 		
 		DefaultHttpClient pnahttpclient;
@@ -218,16 +225,33 @@ public class Preferences extends PreferenceActivity {
 			this.preference = pref;
 			
 		}
-    	
+    	@Override
     	protected Boolean doInBackground(Object... params)
 		{
-			return ((ConnectionHelper)params[0]).Login(Preferences.this, (DefaultHttpClient)httpclient);	
+			boolean loginStatus = ((ConnectionHelper)params[0]).Login(Preferences.this, (DefaultHttpClient)httpclient);
+			publishProgress(loginStatus?0:1);
+			return loginStatus;
+			
+				
 		}
-		
+    	@Override
+		protected void onProgressUpdate(Integer... progress)
+		{
+			
+    		switch(progress[0])
+			{
+    		case 1:
+    		Toast.makeText(Preferences.this, "There was an error while connecting to UTDirect, please check your internet connection and try again", Toast.LENGTH_LONG).show();
+				
+				break;
+    		case 0:break;
+			}
+		}
 		@Override
 		protected void onPostExecute(Boolean b)
 		{
 			logindone = b;
+			
 			if(logindone && pnalogindone)
 			{
 				logindone = false;pnalogindone = false;
@@ -235,6 +259,7 @@ public class Preferences extends PreferenceActivity {
 				if(!ConnectionHelper.getAuthCookie(Preferences.this, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(Preferences.this, pnahttpclient).equals(""))
 				 {
 					Toast.makeText(Preferences.this, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
+					
 					preference.setTitle("Logout");
 					loginfield.setEnabled(false);
 			    	passwordfield.setEnabled(false);
@@ -244,7 +269,7 @@ public class Preferences extends PreferenceActivity {
 		}
 		
 	}
-    private class PNALoginTask extends AsyncTask<Object,Void,Boolean>
+    private class PNALoginTask extends AsyncTask<Object,Integer,Boolean>
 	{
     	
 		DefaultHttpClient pnahttpclient;
@@ -259,10 +284,25 @@ public class Preferences extends PreferenceActivity {
 			
 		}
     	
+    	@Override
+		protected void onProgressUpdate(Integer... progress)
+		{
+			
+    		switch(progress[0])
+			{
+    		case 1:
+    		Toast.makeText(Preferences.this, "There was an error while connecting to UT PNA, please check your internet connection and try again", Toast.LENGTH_LONG).show();
+				
+				break;
+    		case 0:break;
+			}
+		}
     	
 		protected Boolean doInBackground(Object... params)
 		{
-			return ((ConnectionHelper)params[0]).PNALogin(Preferences.this, (DefaultHttpClient)pnahttpclient);	
+			boolean pnaLoginStatus = ((ConnectionHelper)params[0]).PNALogin(Preferences.this, (DefaultHttpClient)pnahttpclient);
+			publishProgress(pnaLoginStatus?0:1);
+			return pnaLoginStatus;
 		}
 		
 		@Override
@@ -275,7 +315,9 @@ public class Preferences extends PreferenceActivity {
 				
 				if(!ConnectionHelper.getAuthCookie(Preferences.this, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(Preferences.this, pnahttpclient).equals(""))
 				 {
-					Toast.makeText(Preferences.this, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
+					toast.setText("You're now logged in; feel free to access any of the app's features");
+       			    toast.setDuration(Toast.LENGTH_LONG);
+       			    toast.show();
 					preference.setTitle("Logout");
 					loginfield.setEnabled(false);
 			    	passwordfield.setEnabled(false);

@@ -75,10 +75,11 @@ public class ConnectionHelper {
 		        HttpResponse response = client.execute(httppost);
 
 		   
-		    } catch (IOException ex) {
+		    } catch (Exception ex) {
 		    	
 		    	loggedIn = false;
-		    	Toast.makeText(mContext, "There was an error while connecting to UTDirect, please check your internet connection and try again", Toast.LENGTH_LONG).show();
+		    	
+		//    	Toast.makeText(con, "There was an error while connecting to UTDirect, please check your internet connection and try again", Toast.LENGTH_LONG).show();
 		//        Log.e("Error connecting to utexas.edu", ex.toString());// TODO Auto-generated catch block	
 		        return false;
 		    }
@@ -115,7 +116,7 @@ public class ConnectionHelper {
 		    } catch (Exception ex) {
 		    	
 		    	PNALoggedIn = false;
-		    	Toast.makeText(mContext, "There was an error while connecting to UT PNA, please check your internet connection and try again", Toast.LENGTH_LONG).show();
+		//    	Toast.makeText(con, "There was an error while connecting to UT PNA, please check your internet connection and try again", Toast.LENGTH_LONG).show();
 		//        Log.e("Error connecting to utexas.edu", ex.toString());// TODO Auto-generated catch block	
 		        return false;
 		    }
