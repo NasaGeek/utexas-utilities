@@ -12,10 +12,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+
 import android.view.View;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,6 +27,7 @@ import android.util.TimingLogger;
 import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ProgressBar;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.FrameLayout;
 import android.widget.GridView;
@@ -45,6 +48,9 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 	private ClassAdapter ca;
 	private DefaultHttpClient client;
 	private ProgressDialog pd;
+	private ProgressBar pb;
+	private LinearLayout pb_ll;
+	private LinearLayout ll;
 	
 		
 	public void onCreate(Bundle savedInstanceState)
@@ -57,8 +63,14 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 		sd = (WrappingSlidingDrawer) findViewById(R.id.drawer);
 	    sdll = (LinearLayout) findViewById(R.id.llsd);
 	    ca = new ClassAdapter(this,sd,sdll);
+	    pb_ll = (LinearLayout) findViewById(R.id.progressbar_ll);
 	    gv = (GridView) findViewById(R.id.scheduleview);
-			
+		ll = (LinearLayout) findViewById(R.id.schedule_ll);
+	//	ll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT));
+		
+		
+	    
+		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 		public void uncaughtException(Thread thread, Throwable ex)
 		{
@@ -75,7 +87,7 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 		if (sizecheck.getCount()<1)
 		{	
 			sizecheck.close();
-			pd = ProgressDialog.show(this, "", "Loading. Please wait...");
+		//	pd = ProgressDialog.show(this, "", "Loading. Please wait...");
 			//	Log.d("SCHEDULE", "parsing");
 			//	timings.addSplit("split");
 			    parser();
@@ -88,6 +100,8 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 			gv.setOnItemLongClickListener(ca);
 			gv.setOnItemClickListener(ca);
 		    gv.setAdapter(ca);
+		    pb_ll.setVisibility(GridView.GONE);
+			gv.setVisibility(GridView.VISIBLE);
 		    if(!this.isFinishing())
 		    	Toast.makeText(this, "Tap a class to see its information.\nTap and hold to see the class on a map.", Toast.LENGTH_LONG).show();
 		}
@@ -169,10 +183,15 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 				gv.setOnItemLongClickListener(ca);
 				gv.setOnItemClickListener(ca);
 			    gv.setAdapter(ca);
-				if(pd.isShowing())
-					pd.dismiss();
+			
+				
+				pb_ll.setVisibility(GridView.GONE);
+				gv.setVisibility(GridView.VISIBLE);
+				
+				
 				if(!ScheduleActivity.this.isFinishing())
 			    	Toast.makeText(ScheduleActivity.this, "Tap a class to see its information.\nTap and hold to see the class on a map.", Toast.LENGTH_LONG).show();
+				
 			}
 		}
 		@Override

@@ -554,6 +554,22 @@
     </Point>
   </Placemark>
 
+   <Placemark id="CRH">
+    <name>Creekside Residence Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/crh.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.733408,30.288586</coordinates>
+    </Point>
+  </Placemark>
 
   <Placemark id="CS5">
     <name>Chilling Station No. 5</name>

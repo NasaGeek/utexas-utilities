@@ -45,6 +45,7 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.TwoLineListItem;
@@ -55,6 +56,8 @@ public class BalanceActivity extends Activity {
 		
 	private  DefaultHttpClient httpclient;
 	private ProgressDialog pd;
+	private ProgressBar pb;
+	private LinearLayout b_pb_ll, d_pb_ll;
 	private ConnectionHelper ch;
 	private LinearLayout bevolinlay,dineinlinlay;
 	private ListView blv,dlv;
@@ -86,11 +89,16 @@ public class BalanceActivity extends Activity {
 		ch = new ConnectionHelper(this);
 		blv = (ListView) findViewById(R.id.btransactions_listview);
 		dlv = (ListView) findViewById(R.id.dtransactions_listview);
+		
 		bevolinlay = (LinearLayout) findViewById(R.id.bevolinlay);
 		dineinlinlay = (LinearLayout) findViewById(R.id.dineinlinlay);
+		
 		dtransactionlist = new ArrayList<String>();
 		btransactionlist = new ArrayList<String>();
-	//	balancelist = new ArrayList<String>();
+		
+		b_pb_ll = (LinearLayout) findViewById(R.id.bevo_progressbar_ll);
+		d_pb_ll = (LinearLayout) findViewById(R.id.dinein_progressbar_ll);
+		
 		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 			public void uncaughtException(Thread thread, Throwable ex)
@@ -115,7 +123,7 @@ public class BalanceActivity extends Activity {
 		
 		if(true)//!transfile.exists() )
 		{
-			pd = ProgressDialog.show(BalanceActivity.this, "", "Loading...");
+		//	pd = ProgressDialog.show(BalanceActivity.this, "", "Loading...");
 			try
 			{
 				
@@ -308,16 +316,28 @@ public class BalanceActivity extends Activity {
 	    	{
 	    		bfilled = true;
 	    		blv.setAdapter(new TransactionAdapter(BalanceActivity.this, btransactionlist));	
+	    		
+	    		tv3.setText("Bevo Bucks ");
+				tv4.setText(bevobalance);
+				
+	    		b_pb_ll.setVisibility(View.GONE);
+	    		blv.setVisibility(View.VISIBLE);
 	    	}
 	    	else if ((result).equals('d'))
 	    	{
 	    		dfilled = true;
-	    		
 	    		dlv.setAdapter(new TransactionAdapter(BalanceActivity.this, dtransactionlist));
+	    		
+	    		tv1.setText("Dine In Dollars ");
+				tv2.setText(dineinbalance);
+	    		
+	    		d_pb_ll.setVisibility(View.GONE);
+				dlv.setVisibility(View.VISIBLE);
+	    		
 	    	}
-	    	if(bfilled && dfilled)
-	    	{
-	    		bfilled = dfilled = false;
+	//    	if(bfilled && dfilled)
+	//    	{
+	//    		bfilled = dfilled = false;
 	    /*		try
 				{
 					writeData(btransactionlist, dtransactionlist, bevobalance, dineinbalance);
@@ -327,14 +347,15 @@ public class BalanceActivity extends Activity {
 					e.printStackTrace();
 				}*/
 				
-		    	tv1.setText("Dine In Dollars ");
-				tv3.setText("Bevo Bucks ");
-				tv4.setText(bevobalance);
-				tv2.setText(dineinbalance);
+		    	
 				
-				if(pd.isShowing())
-	    			pd.dismiss();
-	    	}
+			//	if(pd.isShowing())
+	    	//		pd.dismiss();
+				
+				
+				
+				
+	//    	}
 	    	
 	    	
 		}	
@@ -543,10 +564,17 @@ public class BalanceActivity extends Activity {
 	    	int id = item.getItemId();
 	    	switch(id)
 	    	{
-	    		case R.id.balance_refresh:pd = ProgressDialog.show(BalanceActivity.this, "", "Refreshing...");
+	    		case R.id.balance_refresh:
+	    			
+	    			blv.setVisibility(View.GONE);
+					dlv.setVisibility(View.GONE);
+					b_pb_ll.setVisibility(View.VISIBLE);
+					d_pb_ll.setVisibility(View.VISIBLE);
 	    		try
 				{
-					dtransactionlist.clear();
+					
+	    			
+	    			dtransactionlist.clear();
 					btransactionlist.clear();
 					bevobalance = "";
 					dineinbalance = "No Dine In Dollars? What kind of animal are you?";
@@ -568,7 +596,12 @@ public class BalanceActivity extends Activity {
 	{
 		protected void onPreExecute()
 		{
-			pd = ProgressDialog.show(BalanceActivity.this, "", "Refreshing...");
+			blv.setVisibility(View.GONE);
+			dlv.setVisibility(View.GONE);
+			b_pb_ll.setVisibility(View.VISIBLE);
+			d_pb_ll.setVisibility(View.VISIBLE);
+			
+			//	pd = ProgressDialog.show(BalanceActivity.this, "", "Refreshing...");
 		}
 		
 		
@@ -585,6 +618,7 @@ public class BalanceActivity extends Activity {
 			
 			try
 			{
+				
 				dtransactionlist.clear();
 				btransactionlist.clear();
 				bevobalance = "";

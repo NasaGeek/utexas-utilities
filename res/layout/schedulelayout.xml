@@ -4,9 +4,10 @@ android:layout_width="fill_parent"
 android:layout_height="fill_parent">
 
 <LinearLayout 
+    android:id="@+id/schedule_ll"
 	android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:orientation="vertical" >
+    android:layout_height="fill_parent" 
+    android:orientation="vertical">"
 
 	<LinearLayout 
 		android:id="@+id/daylist"
@@ -53,7 +54,22 @@ android:layout_height="fill_parent">
 	    	android:gravity="center_horizontal"/>
     </LinearLayout>
     
-	
+    <LinearLayout
+        	android:id="@+id/progressbar_ll"
+        	android:layout_width="fill_parent"
+        	android:layout_height="fill_parent"
+        	android:gravity="center"
+        	android:orientation="horizontal">
+	   
+	    <ProgressBar
+	        	android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:indeterminate="true"/>
+	     <TextView
+	       		android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:text="Loading content..."/>
+	</LinearLayout>
 <!--	<LinearLayout
 		android:orientation="horizontal"
 		android:layout_width="fill_parent"
@@ -136,12 +152,13 @@ android:layout_height="fill_parent">
 			    android:layout_width="fill_parent"
 			    android:layout_height="fill_parent"
 			    android:numColumns="5"
-			   
+				
+				android:visibility="gone"	   
 			    android:verticalSpacing="0dp"
 			    android:horizontalSpacing="1dp"
 			    android:stretchMode="columnWidth"
 			    android:gravity="center"
-			   
+				   
 			    />
 		
 	

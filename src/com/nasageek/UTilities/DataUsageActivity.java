@@ -44,6 +44,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -64,6 +65,7 @@ public class DataUsageActivity extends Activity implements OnTouchListener
 	private TextView dataUsedText;
 	private String usedText;
 	private ProgressDialog pd;
+	private LinearLayout d_pb_ll;
 	
 	private PointD minXY;
 	private PointD maxXY;
@@ -83,10 +85,11 @@ public class DataUsageActivity extends Activity implements OnTouchListener
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		pd = ProgressDialog.show(DataUsageActivity.this, "", "Loading...");
+	//	pd = ProgressDialog.show(DataUsageActivity.this, "", "Loading...");
 		
 		setContentView(R.layout.data_layout);
 
+		d_pb_ll = (LinearLayout) findViewById(R.id.data_progressbar_ll);
 		dataUsedText = (TextView) findViewById(R.id.dataUsedText);
 		mProgress = (ProgressBar) findViewById(R.id.percentDataUsed);
 		
@@ -465,8 +468,11 @@ public class DataUsageActivity extends Activity implements OnTouchListener
 			
 	    	graph.redraw();
 	    	
-	    	if(pd.isShowing())
-    			pd.dismiss();
+	    	graph.setVisibility(View.VISIBLE);
+	    	d_pb_ll.setVisibility(View.GONE);
+	    	
+	  //  	if(pd.isShowing())
+    //			pd.dismiss();
 		}	
 	}
 	

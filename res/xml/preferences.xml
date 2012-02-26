@@ -36,7 +36,12 @@
        		android:id="@+id/loginbutton"
        		
        		android:key="loggedin"/>   
-
+		<CheckBoxPreference
+		    android:dependency="loginpref"
+		    android:key="autologin"
+		    android:title="Auto Login"
+		    android:defaultValue="false"/>
+		    
     </PreferenceCategory>
     
     

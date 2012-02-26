@@ -25,12 +25,30 @@
 				    android:layout_height="fill_parent" 
 				    android:orientation="vertical">
 					 
-					 
+					 <LinearLayout
+        				android:id="@+id/dinein_progressbar_ll"
+			        	android:layout_width="fill_parent"
+			        	android:layout_height="fill_parent"
+			        	android:gravity="center"
+			        	android:orientation="horizontal">
+	    			
+				    <ProgressBar
+				        	android:layout_width="wrap_content"
+				        	android:layout_height="wrap_content"
+				        	android:indeterminate="true"/>
+				    <TextView
+			       		android:layout_width="wrap_content"
+			        	android:layout_height="wrap_content"
+			        	android:text="Loading content..."/>
+					</LinearLayout>
+	               
+	               
 					 <ListView
+					     android:visibility="gone"
 					 	android:paddingTop="10dp"
 						android:id="@+id/dtransactions_listview"
 						android:layout_width="fill_parent" 
-					    android:layout_height="fill_parent" 
+					    android:layout_height="fill_parent"
 					    android:orientation="vertical" 
 					    android:scrollbars="none"
 					    />
@@ -42,15 +60,36 @@
 					android:layout_width="fill_parent" 
 				    android:layout_height="fill_parent" 
 				    android:orientation="vertical">
-				   <ListView
+				   	
+				    <LinearLayout
+        				android:id="@+id/bevo_progressbar_ll"
+			        	android:layout_width="fill_parent"
+			        	android:layout_height="fill_parent"
+			        	android:gravity="center"
+			        	android:orientation="horizontal">
+	   
+				    <ProgressBar
+				        	android:layout_width="wrap_content"
+				        	android:layout_height="wrap_content"
+				        	android:indeterminate="true"/>
+				     <TextView
+	       				android:layout_width="wrap_content"
+	        			android:layout_height="wrap_content"
+	        			android:text="Loading content..."/>
+				     
+					</LinearLayout>
+				    
+				    
+				   	<ListView
+					 	android:visibility="gone"
 					 	android:paddingTop="10dp"
 						android:id="@+id/btransactions_listview"
 						android:layout_width="fill_parent" 
 					    android:layout_height="fill_parent" 
 					    android:orientation="vertical" 
-					    android:scrollbars="none"
-					    />
-					    </LinearLayout>
+					    android:scrollbars="none"/>
+				   	
+				</LinearLayout>
 			
 			 </FrameLayout>	 
 		</LinearLayout>

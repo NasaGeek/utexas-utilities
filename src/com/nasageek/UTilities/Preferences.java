@@ -11,12 +11,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.EditText;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -35,18 +36,22 @@ public class Preferences extends PreferenceActivity {
 	boolean set;
 	boolean pnalogindone, logindone;
 	Toast toast;
+	ProgressDialog pd;
 	SharedPreferences settings;
 	Preference loginfield, loginButton;
     Preference passwordfield;
+ Editor edit;
     BaseAdapter ba;
     
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        
+        
         settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
+       edit = settings.edit();
+       toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
         addPreferencesFromResource(R.xml.preferences);
         ba = (BaseAdapter)getPreferenceScreen().getRootAdapter();
    //     PreferenceGroup loginfields = (PreferenceGroup) findPreference("loginfields");
@@ -56,7 +61,7 @@ public class Preferences extends PreferenceActivity {
         else loginfields.setEnabled(true);*/
         loginfield = (Preference) findPreference("eid");
         passwordfield = (Preference) findPreference("password");
-        loginButton = (Preference) findPreference("loggedin");
+       loginButton = (Preference) findPreference("loggedin");
         final Preference logincheckbox = (Preference) findPreference("loginpref");
         
         
@@ -111,6 +116,24 @@ public class Preferences extends PreferenceActivity {
 
     });
       
+      if(ConnectionHelper.cookieHasBeenSet() && loginButton.isEnabled())
+      {
+    	  loginButton.setTitle("Logout");
+    	  loginfield.setEnabled(false);
+    	  passwordfield.setEnabled(false);
+      }
+      else
+      {
+    	  loginButton.setTitle("Login");
+    	  loginfield.setEnabled(true);
+    	  passwordfield.setEnabled(true);      
+    }
+      loginButton.setOnPreferenceChangeListener(new OnPreferenceChangeListener(){
+		public boolean onPreferenceChange(Preference preference, Object newValue) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+      });
       
       
       loginButton.setOnPreferenceClickListener(new OnPreferenceClickListener(){
@@ -121,9 +144,11 @@ public class Preferences extends PreferenceActivity {
     		 
     		 if(preference.getTitle().equals("Login"))
     		 {
-    			 toast.setText("Logging in...");
+    			 
+    			 pd = ProgressDialog.show(Preferences.this, "", "Logging in...");
+    		/*	 toast.setText("Logging in...");
     			 toast.setDuration(Toast.LENGTH_LONG);
-    			 toast.show();
+    			 toast.show();*/
  
     			 ConnectionHelper ch = new ConnectionHelper(Preferences.this);
     			 DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
@@ -139,7 +164,7 @@ public class Preferences extends PreferenceActivity {
     				 settings.getString("eid", "error").equals("") ||
     				 settings.getString("password", "error").equals("") )
   				 {	
-    				 toast.setText("Please enter your credentials to log in");
+    				toast.setText("Please enter your credentials to log in");
         			 toast.setDuration(Toast.LENGTH_LONG);
         			 toast.show();
     				 
@@ -175,8 +200,8 @@ public class Preferences extends PreferenceActivity {
                     return true;
             }
 
-    });
-
+    });     
+        
 /*        Preference eidfield = (Preference) findPreference("eid");
         eidfield.setOnPreferenceChangeListener(new OnPreferenceChangeListener(){
         	
@@ -192,7 +217,7 @@ public class Preferences extends PreferenceActivity {
         
                 
     }
-    @Override
+ @Override
     public void onResume()
     {
     	super.onResume();
@@ -241,6 +266,8 @@ public class Preferences extends PreferenceActivity {
     		switch(progress[0])
 			{
     		case 1:
+    			if(pd.isShowing())
+	    			pd.dismiss();
     		Toast.makeText(Preferences.this, "There was an error while connecting to UTDirect, please check your internet connection and try again", Toast.LENGTH_LONG).show();
 				
 				break;
@@ -251,7 +278,6 @@ public class Preferences extends PreferenceActivity {
 		protected void onPostExecute(Boolean b)
 		{
 			logindone = b;
-			
 			if(logindone && pnalogindone)
 			{
 				logindone = false;pnalogindone = false;
@@ -259,11 +285,15 @@ public class Preferences extends PreferenceActivity {
 				if(!ConnectionHelper.getAuthCookie(Preferences.this, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(Preferences.this, pnahttpclient).equals(""))
 				 {
 					Toast.makeText(Preferences.this, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
-					
 					preference.setTitle("Logout");
 					loginfield.setEnabled(false);
 			    	passwordfield.setEnabled(false);
 					ba.notifyDataSetChanged();
+					
+					edit.putBoolean("loggedin", true);
+					edit.commit();
+					if(pd.isShowing())
+		    			pd.dismiss();
 				 }
 			}
 		}
@@ -284,13 +314,16 @@ public class Preferences extends PreferenceActivity {
 			
 		}
     	
-    	@Override
+    	
+		@Override
 		protected void onProgressUpdate(Integer... progress)
 		{
 			
     		switch(progress[0])
 			{
     		case 1:
+    			if(pd.isShowing())
+	    			pd.dismiss();
     		Toast.makeText(Preferences.this, "There was an error while connecting to UT PNA, please check your internet connection and try again", Toast.LENGTH_LONG).show();
 				
 				break;
@@ -304,7 +337,6 @@ public class Preferences extends PreferenceActivity {
 			publishProgress(pnaLoginStatus?0:1);
 			return pnaLoginStatus;
 		}
-		
 		@Override
 		protected void onPostExecute(Boolean b)
 		{
@@ -315,13 +347,17 @@ public class Preferences extends PreferenceActivity {
 				
 				if(!ConnectionHelper.getAuthCookie(Preferences.this, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(Preferences.this, pnahttpclient).equals(""))
 				 {
-					toast.setText("You're now logged in; feel free to access any of the app's features");
-       			    toast.setDuration(Toast.LENGTH_LONG);
-       			    toast.show();
+					Toast.makeText(Preferences.this, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
 					preference.setTitle("Logout");
 					loginfield.setEnabled(false);
 			    	passwordfield.setEnabled(false);
 					ba.notifyDataSetChanged();
+					
+					edit.putBoolean("loggedin", true);
+					edit.commit();
+					if(pd.isShowing())
+		    			pd.dismiss();
+					
 				 }
 			}
 		}

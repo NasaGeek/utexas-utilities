@@ -20,13 +20,31 @@
  	android:max = "1000"
  	android:indeterminate="false"/>
  	
+ 	<LinearLayout
+        	android:id="@+id/data_progressbar_ll"
+        	android:layout_width="fill_parent"
+        	android:layout_height="fill_parent"
+        	android:gravity="center"
+        	android:orientation="horizontal">
+	   
+	    <ProgressBar
+	        	android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:indeterminate="true"/>
+	     <TextView
+	       		android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:text="Loading content..."/>
+	</LinearLayout>
+ 	
     <com.androidplot.xy.XYPlot
+     
     android:id="@+id/mySimpleXYPlot"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="10px"
     android:layout_marginLeft="10px"
     android:layout_marginRight="10px"
-    
+    android:visibility="gone"
     title="Data Usage"/>
 </LinearLayout>
