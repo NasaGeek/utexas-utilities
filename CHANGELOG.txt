@@ -15,3 +15,6 @@ Fixed a bug causing a force close after logging in through UTDirect
 Reworked the login system to produce less lag when loading parts of the app
 Course schedule now has a slightly configurable background
 Preferences moved around a bit to reflect new features
+
+Okay, at this point it might as well be a 1.5/2.0 release.
+ActionBar added along with all accompanying shiny features.

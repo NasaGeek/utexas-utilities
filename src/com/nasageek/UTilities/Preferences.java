@@ -144,9 +144,22 @@ public class Preferences extends PreferenceActivity {
     		 
     		 if(preference.getTitle().equals("Login"))
     		 {
+    			 if( !settings.contains("eid") || 
+        				 !settings.contains("password") || 
+        				 settings.getString("eid", "error").equals("") ||
+        				 settings.getString("password", "error").equals("") )
+      				 {	
+        				toast.setText("Please enter your credentials to log in");
+            			 toast.setDuration(Toast.LENGTH_LONG);
+            			 toast.show();
+        				 
+        				 return true;
+      				 }
+    			 
     			 
     			 pd = ProgressDialog.show(Preferences.this, "", "Logging in...");
-    		
+    		//     pd.setCancelable(true);
+    		    
     			 ConnectionHelper ch = new ConnectionHelper(Preferences.this);
     			 DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
     			 DefaultHttpClient pnahttpclient = ConnectionHelper.getThreadSafeClient();
@@ -156,17 +169,7 @@ public class Preferences extends PreferenceActivity {
     			 
     			
     			 
-    			 if( !settings.contains("eid") || 
-    				 !settings.contains("password") || 
-    				 settings.getString("eid", "error").equals("") ||
-    				 settings.getString("password", "error").equals("") )
-  				 {	
-    				toast.setText("Please enter your credentials to log in");
-        			 toast.setDuration(Toast.LENGTH_LONG);
-        			 toast.show();
-    				 
-    				 return true;
-  				 }
+    			 
     			 
     			 new loginTask(httpclient,pnahttpclient,preference).execute(ch);
 				 new PNALoginTask(httpclient,pnahttpclient,preference).execute(ch);

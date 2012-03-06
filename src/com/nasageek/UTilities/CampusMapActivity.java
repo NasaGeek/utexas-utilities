@@ -151,6 +151,7 @@ public class CampusMapActivity extends FragmentMapActivity  {
         spinner.setPromptId(R.string.prompt);
         TextView emptytv = new TextView(this);
         emptytv.setText("No route selected");
+        
  //       spinner.setEmptyView(emptytv);
         final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, Route.values());
         
