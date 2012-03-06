@@ -146,10 +146,7 @@ public class Preferences extends PreferenceActivity {
     		 {
     			 
     			 pd = ProgressDialog.show(Preferences.this, "", "Logging in...");
-    		/*	 toast.setText("Logging in...");
-    			 toast.setDuration(Toast.LENGTH_LONG);
-    			 toast.show();*/
- 
+    		
     			 ConnectionHelper ch = new ConnectionHelper(Preferences.this);
     			 DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
     			 DefaultHttpClient pnahttpclient = ConnectionHelper.getThreadSafeClient();
@@ -173,9 +170,7 @@ public class Preferences extends PreferenceActivity {
     			 
     			 new loginTask(httpclient,pnahttpclient,preference).execute(ch);
 				 new PNALoginTask(httpclient,pnahttpclient,preference).execute(ch);
-    	
-    			 
-    			 
+	 
     		 }
     		 else if(preference.getTitle().equals("Logout"))
     		 {
@@ -199,22 +194,7 @@ public class Preferences extends PreferenceActivity {
                     Toast.makeText(getBaseContext(), "Classes deleted!", Toast.LENGTH_SHORT).show();
                     return true;
             }
-
     });     
-        
-/*        Preference eidfield = (Preference) findPreference("eid");
-        eidfield.setOnPreferenceChangeListener(new OnPreferenceChangeListener(){
-        	
-			public boolean onPreferenceChange(Preference preference,
-					Object newValue) {
-				// TODO Auto-generated method stub
-				if(getFileStreamPath("transactions.tmp").exists())getFileStreamPath("transactions.tmp").delete();
-				SharedPreferences.Editor edit = settings.edit();
-				ConnectionHelper.logout();
-				return true;
-			}
-        });*/
-        
                 
     }
  @Override

@@ -32,12 +32,16 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBar;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.Menu;
+import android.support.v4.view.MenuItem;
 import android.util.Log;
 import android.util.TimingLogger;
 import android.view.LayoutInflater;
-import android.view.Menu;
+
 import android.view.MenuInflater;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -52,7 +56,7 @@ import android.widget.TwoLineListItem;
 import android.widget.TabHost.TabContentFactory;
 
 
-public class BalanceActivity extends Activity {
+public class BalanceActivity extends FragmentActivity {
 		
 	private  DefaultHttpClient httpclient;
 	private ProgressDialog pd;
@@ -68,6 +72,7 @@ public class BalanceActivity extends Activity {
 	int count;
 	private boolean bfilled, dfilled;
 	TextView tv1, tv2,tv3,tv4;
+	ActionBar actionbar;
 	String bevobalance="", dineinbalance="No Dine In Dollars? What kind of animal are you?";
 	private SharedPreferences settings;
 	
@@ -99,6 +104,9 @@ public class BalanceActivity extends Activity {
 		b_pb_ll = (LinearLayout) findViewById(R.id.bevo_progressbar_ll);
 		d_pb_ll = (LinearLayout) findViewById(R.id.dinein_progressbar_ll);
 		
+		actionbar = getSupportActionBar();
+		actionbar.setTitle("Transactions");
+		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 			public void uncaughtException(Thread thread, Throwable ex)

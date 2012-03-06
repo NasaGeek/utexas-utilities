@@ -18,8 +18,10 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBar;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import android.widget.AdapterView;
@@ -27,13 +29,14 @@ import android.widget.AbsListView.LayoutParams;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener{
+public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClickListener{
 
 	static ClassDatabase cdb;
 	private int height;
@@ -48,14 +51,23 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
 	private String time;
 	private int day;
 	private Calendar cal;
+	private ActionBar actionbar;
+	private ImageView ci_iv;
+	private TextView ci_tv;
+	private Button ci_button;
 	
-	public ClassAdapter(Context c, WrappingSlidingDrawer wsd, LinearLayout llsd)
+	public ClassAdapter(Context c, WrappingSlidingDrawer wsd, LinearLayout llsd, ImageView ci_iv, TextView ci_tv, Button ci_button, ActionBar ab)
 	{
 		sdll = llsd;
 		sd = wsd;
 		sp = PreferenceManager.getDefaultSharedPreferences(c);
 		cdb  = new ClassDatabase(c);
 		currentContext = c;
+		actionbar = ab;
+		this.ci_iv = ci_iv;
+		this.ci_tv = ci_tv;
+		this.ci_button = ci_button;
+		
 		
 		updateTime();
 		
@@ -248,7 +260,7 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
       //  Log.d("ClassAdapter", "view drawn");
 		return iv;
 	}
-	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
+/*	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
 	{
 		onItemClick(parent,view,position,id);
 		Intent map = new Intent(currentContext.getString(R.string.building_intent), null, currentContext, CampusMapActivity.class);
@@ -259,16 +271,34 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
 			currentContext.startActivity(map);
 		}
 		return true;
-	}
+	}*/
+	
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	{
 		// TODO Auto-generated method stub
 		
+		
 		sd.close();
-		sdll.removeAllViews();
-		classtime clt = (classtime) parent.getItemAtPosition(position);
+	//	sdll.removeAllViews();
+		final classtime clt = (classtime) parent.getItemAtPosition(position);
 		if(clt!=null)
 		{
+			
+			
+		//	ci_button.setText("Locate");
+		/*	ci_button.setOnClickListener(new OnClickListener(){
+
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					Intent map = new Intent(currentContext.getString(R.string.building_intent), null, currentContext, CampusMapActivity.class);
+					
+						map.setData(Uri.parse(clt.getBuilding().getId()));
+						currentContext.startActivity(map);
+	
+				}
+				
+			});*/
+		
 			//Make it info for whole class or just that session?
 			sd.setVisibility(View.VISIBLE);
 			//Cursor cur = cdb.getReadableDatabase().query("classes", null, "eid = \"" + sp.getString("eid", "eid not found")+"\" AND day = \""+ clt.getDay()+"\" AND start = \""+ clt.getStartTime()+"\"", null,null,null,null);
@@ -299,21 +329,24 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		
 		    	}
 		    	text+="\n";
-		    	ImageView iv = new ImageView(currentContext);
-		    	iv.setBackgroundColor(Color.parseColor("#"+cdb.getColor(clt.getUnique(),clt.getStartTime(), clt.getDay()+"")));
-		    	iv.setMinimumHeight(10);
-		    	iv.setMinimumWidth(10);
+		  //  	ImageView iv = new ImageView(currentContext);
+		    	ci_iv.setBackgroundColor(Color.parseColor("#"+cdb.getColor(clt.getUnique(),clt.getStartTime(), clt.getDay()+"")));
+		    	ci_iv.setMinimumHeight(10);
+		    	ci_iv.setMinimumWidth(10);
 		    	TextView tv = new TextView(currentContext);
-	    		tv.setTextColor(Color.BLACK);
-	    		tv.setTextSize((float) 15);
-	    		tv.setBackgroundColor(Color.LTGRAY);
-	    		tv.setText(text);
-	    		sdll.addView(iv);
-	    		sdll.addView(tv);
+	    		ci_tv.setTextColor(Color.BLACK);
+	    		ci_tv.setTextSize((float) 15);
+	    		ci_tv.setBackgroundColor(Color.LTGRAY);
+	    		ci_tv.setText(text);
+	 //   		sdll.addView(iv);
+	 //  		sdll.addView(tv);
 
 	    	}
+		//    sdll.addView(button);
 		    
 		    sd.open();
+		    
+		    
 		}
 		else
 			sd.setVisibility(View.INVISIBLE);

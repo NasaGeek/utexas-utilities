@@ -13,20 +13,29 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 
+import android.view.MenuInflater;
 import android.view.View;
 import android.app.Activity;
-import android.app.ProgressDialog;
+
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBar;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.Menu;
+import android.support.v4.view.MenuItem;
 import android.util.Log;
 import android.util.TimingLogger;
+import android.view.View.OnClickListener;
 import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.FrameLayout;
@@ -37,7 +46,7 @@ import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener{
+public class ScheduleActivity extends FragmentActivity implements SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, AdapterView.OnItemClickListener{
 	
 	private GridView gv;
 	private ConnectionHelper ch;
@@ -47,10 +56,16 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 	private SharedPreferences sp;
 	private ClassAdapter ca;
 	private DefaultHttpClient client;
-	private ProgressDialog pd;
+	
 	private ProgressBar pb;
 	private LinearLayout pb_ll;
 	private LinearLayout ll;
+	private ImageView ci_iv;
+	private TextView ci_tv;
+	private Button ci_button;
+	private ActionBar actionbar;
+	private Menu menu;
+	private classtime current_clt;
 	
 		
 	public void onCreate(Bundle savedInstanceState)
@@ -62,13 +77,21 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 		cdb = new ClassDatabase(this);
 		sd = (WrappingSlidingDrawer) findViewById(R.id.drawer);
 	    sdll = (LinearLayout) findViewById(R.id.llsd);
-	    ca = new ClassAdapter(this,sd,sdll);
-	    pb_ll = (LinearLayout) findViewById(R.id.progressbar_ll);
+	    
+	    ci_iv = (ImageView) findViewById(R.id.class_info_color);
+	    ci_tv = (TextView) findViewById(R.id.class_info_text);
+  //    ci_button = (Button) findViewById(R.id.class_locate_button);
+	    
+	    pb_ll = (LinearLayout) findViewById(R.id.schedule_progressbar_ll);
 	    gv = (GridView) findViewById(R.id.scheduleview);
 		ll = (LinearLayout) findViewById(R.id.schedule_ll);
-	//	ll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT));
+		actionbar = getSupportActionBar();
+		
+		ca = new ClassAdapter(this,sd,sdll,ci_iv,ci_tv,ci_button,actionbar);
 		
 		
+		actionbar.setTitle("Schedule");
+		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 	    
 		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
@@ -87,7 +110,7 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 		if (sizecheck.getCount()<1)
 		{	
 			sizecheck.close();
-		//	pd = ProgressDialog.show(this, "", "Loading. Please wait...");
+		
 			//	Log.d("SCHEDULE", "parsing");
 			//	timings.addSplit("split");
 			    parser();
@@ -97,8 +120,8 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 		{
 			sizecheck.close();
 			ca.updateTime();
-			gv.setOnItemLongClickListener(ca);
-			gv.setOnItemClickListener(ca);
+	//		gv.setOnItemLongClickListener(ca);
+			gv.setOnItemClickListener(this);
 		    gv.setAdapter(ca);
 		    pb_ll.setVisibility(GridView.GONE);
 			gv.setVisibility(GridView.VISIBLE);
@@ -176,12 +199,12 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 			}
 			protected void onPostExecute(Object result)
 			{
-				ca = new ClassAdapter(ScheduleActivity.this,sd,sdll);
+				ca = new ClassAdapter(ScheduleActivity.this,sd,sdll,ci_iv,ci_tv,ci_button,actionbar);
 				ca.updateTime();
 				
 				
-				gv.setOnItemLongClickListener(ca);
-				gv.setOnItemClickListener(ca);
+		//		gv.setOnItemLongClickListener(ca);
+				gv.setOnItemClickListener(ScheduleActivity.this);
 			    gv.setAdapter(ca);
 			
 				
@@ -194,6 +217,27 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 				
 			}
 		}
+		@Override
+		public boolean onCreateOptionsMenu(Menu menu) {
+			
+			MenuInflater inflater = getMenuInflater();
+	        inflater.inflate(R.layout.schedule_menu, menu);
+			this.menu = menu;
+			if(current_clt == null)
+				menu.removeItem(R.id.locate_class);
+			return true;
+		}
+		public boolean onOptionsItemSelected(MenuItem item)
+	    {
+	    	int id = item.getItemId();
+	    	switch(id)
+	    	{
+	    		case R.id.locate_class:Intent map = new Intent(getString(R.string.building_intent), null, this, CampusMapActivity.class);
+				map.setData(Uri.parse(current_clt.getBuilding().getId()));
+				startActivity(map);
+	    	}
+	    	return true;
+	    }
 		@Override
 		public void onResume()
 		{
@@ -212,6 +256,89 @@ public class ScheduleActivity extends Activity implements SlidingDrawer.OnDrawer
 		{
 			// TODO Auto-generated method stub
 			((ImageView)(sd.getHandle())).setImageResource(R.drawable.ic_collapse_half);
-		}	
+		}
+
+
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+		{
+			// TODO Auto-generated method stub
+			
+			
+			sd.close();
+		//	sdll.removeAllViews();
+			current_clt = (classtime) parent.getItemAtPosition(position);
+			if(current_clt!=null)
+			{
+		//		menu.add(R.id.locate_class);
+				this.invalidateOptionsMenu();
+			//	ci_button.setText("Locate");
+		/*		ci_button.setOnClickListener(new OnClickListener(){
+
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						Intent map = new Intent(currentContext.getString(R.string.building_intent), null, currentContext, CampusMapActivity.class);
+						
+							map.setData(Uri.parse(clt.getBuilding().getId()));
+							currentContext.startActivity(map);
+		
+					}
+					
+				});*/
+			
+				//Make it info for whole class or just that session?
+				sd.setVisibility(View.VISIBLE);
+				//Cursor cur = cdb.getReadableDatabase().query("classes", null, "eid = \"" + sp.getString("eid", "eid not found")+"\" AND day = \""+ clt.getDay()+"\" AND start = \""+ clt.getStartTime()+"\"", null,null,null,null);
+				Cursor cur = cdb.getReadableDatabase().query("classes", null, "day = \""+ current_clt.getDay()+"\" AND start = \""+ current_clt.getStartTime()+"\"", null,null,null,null);
+			    cur.moveToFirst();
+			    while(!cur.isAfterLast())
+			    {
+			    	String text = " ";
+			    	text+=cur.getString(3)+" - "+cur.getString(4)+" ";
+			    	String unique = cur.getString(2);
+			    	while(!cur.isAfterLast() && unique.equals(cur.getString(2)))
+			    	{
+			    		String daytext = "\n\t";
+			    		String building = cur.getString(5)+" "+cur.getString(6);
+			    		String checktext = cur.getString(8)+building;
+			    		String time = cur.getString(8);
+			    		String end = cur.getString(9);
+			    		while(!cur.isAfterLast() && checktext.equals(cur.getString(8)+cur.getString(5)+" "+cur.getString(6)) )
+			    		{
+			    			if(cur.getString(7).equals("H"))
+			    				daytext+="TH";
+			    			else
+			    				daytext+=cur.getString(7);
+			    			cur.moveToNext();
+			    		}
+			    		
+			    		text+=(daytext+" from " + time + "-"+end + " in "+building);
+			
+			    	}
+			    	text+="\n";
+			  //  	ImageView iv = new ImageView(currentContext);
+			    	ci_iv.setBackgroundColor(Color.parseColor("#"+cdb.getColor(current_clt.getUnique(),current_clt.getStartTime(), current_clt.getDay()+"")));
+			    	ci_iv.setMinimumHeight(10);
+			    	ci_iv.setMinimumWidth(10);
+			    	TextView tv = new TextView(this);
+		    		ci_tv.setTextColor(Color.BLACK);
+		    		ci_tv.setTextSize((float) 15);
+		    		ci_tv.setBackgroundColor(Color.LTGRAY);
+		    		ci_tv.setText(text);
+		 //   		sdll.addView(iv);
+		 //  		sdll.addView(tv);
+
+		    	}
+			//    sdll.addView(button);
+			    
+			    sd.open();
+			    
+			    
+			}
+			else
+			{	menu.removeItem(R.id.locate_class);
+				sd.setVisibility(View.INVISIBLE);
+				this.invalidateOptionsMenu();}
+		//	Log.d("CLICKY", position+"");
+		}
 		
 }

@@ -38,6 +38,8 @@ import android.graphics.PointF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBar;
+import android.support.v4.app.FragmentActivity;
 import android.text.format.DateFormat;
 import android.util.FloatMath;
 import android.util.Log;
@@ -52,7 +54,7 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.series.XYSeries;
 import com.androidplot.xy.*;
 
-public class DataUsageActivity extends Activity implements OnTouchListener
+public class DataUsageActivity extends FragmentActivity implements OnTouchListener
 {
 	
 	private DefaultHttpClient httpclient;
@@ -66,6 +68,7 @@ public class DataUsageActivity extends Activity implements OnTouchListener
 	private String usedText;
 	private ProgressDialog pd;
 	private LinearLayout d_pb_ll;
+	private ActionBar actionbar;
 	
 	private PointD minXY;
 	private PointD maxXY;
@@ -92,6 +95,10 @@ public class DataUsageActivity extends Activity implements OnTouchListener
 		d_pb_ll = (LinearLayout) findViewById(R.id.data_progressbar_ll);
 		dataUsedText = (TextView) findViewById(R.id.dataUsedText);
 		mProgress = (ProgressBar) findViewById(R.id.percentDataUsed);
+		
+		actionbar = getSupportActionBar();
+		actionbar.setTitle("Data Usage");
+		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		
 		graph = (XYPlot) findViewById(R.id.mySimpleXYPlot);
 		graph.setOnTouchListener(this);

@@ -9,6 +9,7 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/UTilities/libs/Androidplot-core-0.4.4-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="libs/actionbarsherlock-plugin-maps-3.5.1.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

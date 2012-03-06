@@ -12,7 +12,7 @@
     <string name="classinfo">Electrical Engineering Class of 2015</string>
     <string name="contact">Love the app?  Hate it?  Suggestions? Snide remarks?</string>
     <string name="email">Chris_Roberts@utexas.edu</string>
-   
+    <string name="loading_content">Loading content...</string>
     
     
       <string-array name="routes_array">

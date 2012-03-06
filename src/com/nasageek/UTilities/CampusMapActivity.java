@@ -33,11 +33,17 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActionBar;
+import android.support.v4.app.ActionBar.OnNavigationListener;
+import android.support.v4.app.FragmentMapActivity;
+import android.support.v4.view.Menu;
+import android.support.v4.view.MenuItem;
+
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
+
 import android.view.MenuInflater;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -56,7 +62,7 @@ import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.OverlayItem;
 
 
-public class CampusMapActivity  extends MapActivity {
+public class CampusMapActivity extends FragmentMapActivity  {
 
 	LocationManager locationManager;
 	Location lastKnownLocation;
@@ -75,6 +81,7 @@ public class CampusMapActivity  extends MapActivity {
 	NavigationDataSet buildingDataSet;
 	ContentResolver buildingresolver;
 	Bundle savedInstanceState;
+	private ActionBar actionbar;
 
 	public enum Route {
 		No_Overlay(0,"No Bus Route Overlay"),
@@ -135,9 +142,29 @@ public class CampusMapActivity  extends MapActivity {
         
         am = getAssets();
         
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, Route.values());
+        actionbar = getSupportActionBar();
+		actionbar.setTitle("Map and Bus Routes");
+		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         
+		
+        final Spinner spinner = new Spinner(this);
+        spinner.setPromptId(R.string.prompt);
+        TextView emptytv = new TextView(this);
+        emptytv.setText("No route selected");
+ //       spinner.setEmptyView(emptytv);
+        final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, Route.values());
+        
+        
+        actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() 
+        {
+        	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+        		// TODO Auto-generated method stub
+        		if(!"0".equals(((Route) spinner.getAdapter().getItem(itemPosition)).getCode()))
+            		loadOverlay(((Route) spinner.getAdapter().getItem(itemPosition)).getCode());
+        		
+        		return false;
+        	}
+        });
      // Acquire a reference to the system Location Manager
         
         myLoc.enableCompass();
@@ -175,7 +202,7 @@ public class CampusMapActivity  extends MapActivity {
         
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
+     //   spinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
         
         
         try{
@@ -592,4 +619,5 @@ public class CampusMapActivity  extends MapActivity {
     	}
     	return true;
     }
+	
 }

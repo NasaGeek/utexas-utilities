@@ -7,6 +7,9 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.Menu;
+import android.support.v4.view.MenuItem;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,9 +19,9 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.Menu;
+
 import android.view.MenuInflater;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -34,11 +37,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class UTilitiesActivity extends Activity {
+public class UTilitiesActivity extends FragmentActivity {
     
 	ProgressDialog pd; 
 	SharedPreferences settings;
 	Intent about_intent;
+	private Menu menu;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,7 +52,7 @@ public class UTilitiesActivity extends Activity {
    //   win.setFormat(PixelFormat.RGBA_8888);
        
         setContentView(R.layout.main);
-  //      final Intent exams = new Intent(getBaseContext(), ExamScheduleActivity.class);
+  //    final Intent exams = new Intent(getBaseContext(), ExamScheduleActivity.class);
         final Intent schedule = new Intent(getBaseContext(), ScheduleActivity.class);
     	final Intent balance = new Intent(getBaseContext(), BalanceActivity.class);
     	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
@@ -80,7 +84,11 @@ public class UTilitiesActivity extends Activity {
         	nologin.show();
         }
         
-        
+        boolean autologin = settings.getBoolean("autologin", false);
+        if(autologin)
+        {
+        	
+        }
         
         final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
         schedulebutton.setOnClickListener(new OnClickListener() {
@@ -165,13 +173,9 @@ public class UTilitiesActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.layout.menu, menu);
-        return true;
-    }
-    public boolean onPrepareOptionsMenu(Menu menu)
-    {
-    	
-    	if(settings.getBoolean("loginpref", true))
+        inflater.inflate(R.layout.main_menu, menu);
+        
+        if(settings.getBoolean("loginpref", false))
     	{
     		menu.removeItem(R.id.login);
     		menu.removeItem(11);
@@ -181,25 +185,38 @@ public class UTilitiesActivity extends Activity {
     		menu.removeItem(R.id.login);
     		menu.removeItem(11);
     		menu.add(Menu.NONE, 11, Menu.NONE, "Log out");
+    		MenuItem item = menu.findItem(11);
+    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	}
     	else if(!ConnectionHelper.cookieHasBeenSet())
     	{
     		menu.removeItem(R.id.login);
     		menu.removeItem(11);
     		menu.add(Menu.NONE, R.id.login, Menu.NONE, "Log in");
+    		MenuItem item = menu.findItem(R.id.login);
+    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     	}
-    	 return super.onPrepareOptionsMenu(menu);
+    	
+        
+        
+        return true;
     }
+/*    public boolean onPrepareOptionsMenu(Menu menu)
+    {
+    	
+    	
+    	 return super.onPrepareOptionsMenu(menu);
+    }*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
     	int id = item.getItemId();
     	switch(id)
     	{
-    		case R.id.login:login();break;
+    		case R.id.login:login();invalidateOptionsMenu();break;
     		case R.id.settings:loadSettings();break;
     		case R.id.about:aboutMe();break;
-    		case 11:logout();break;
+    		case 11:logout();invalidateOptionsMenu();break;
     	}
     	return true;
     }
@@ -227,6 +244,7 @@ public class UTilitiesActivity extends Activity {
     public void onResume()
     {
     	super.onResume();
+    	invalidateOptionsMenu();
     	if(pd!=null)
     		pd.dismiss();
     }

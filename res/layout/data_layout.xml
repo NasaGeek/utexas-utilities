@@ -20,22 +20,7 @@
  	android:max = "1000"
  	android:indeterminate="false"/>
  	
- 	<LinearLayout
-        	android:id="@+id/data_progressbar_ll"
-        	android:layout_width="fill_parent"
-        	android:layout_height="fill_parent"
-        	android:gravity="center"
-        	android:orientation="horizontal">
-	   
-	    <ProgressBar
-	        	android:layout_width="wrap_content"
-	        	android:layout_height="wrap_content"
-	        	android:indeterminate="true"/>
-	     <TextView
-	       		android:layout_width="wrap_content"
-	        	android:layout_height="wrap_content"
-	        	android:text="Loading content..."/>
-	</LinearLayout>
+ 	<include android:id="@+id/data_progressbar_ll" layout="@layout/loading_content_layout"/>
  	
     <com.androidplot.xy.XYPlot
      

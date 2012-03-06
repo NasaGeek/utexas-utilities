@@ -25,22 +25,7 @@
 				    android:layout_height="fill_parent" 
 				    android:orientation="vertical">
 					 
-					 <LinearLayout
-        				android:id="@+id/dinein_progressbar_ll"
-			        	android:layout_width="fill_parent"
-			        	android:layout_height="fill_parent"
-			        	android:gravity="center"
-			        	android:orientation="horizontal">
-	    			
-				    <ProgressBar
-				        	android:layout_width="wrap_content"
-				        	android:layout_height="wrap_content"
-				        	android:indeterminate="true"/>
-				    <TextView
-			       		android:layout_width="wrap_content"
-			        	android:layout_height="wrap_content"
-			        	android:text="Loading content..."/>
-					</LinearLayout>
+					<include android:id="@+id/dinein_progressbar_ll" layout="@layout/loading_content_layout"/>
 	               
 	               
 					 <ListView
@@ -61,23 +46,7 @@
 				    android:layout_height="fill_parent" 
 				    android:orientation="vertical">
 				   	
-				    <LinearLayout
-        				android:id="@+id/bevo_progressbar_ll"
-			        	android:layout_width="fill_parent"
-			        	android:layout_height="fill_parent"
-			        	android:gravity="center"
-			        	android:orientation="horizontal">
-	   
-				    <ProgressBar
-				        	android:layout_width="wrap_content"
-				        	android:layout_height="wrap_content"
-				        	android:indeterminate="true"/>
-				     <TextView
-	       				android:layout_width="wrap_content"
-	        			android:layout_height="wrap_content"
-	        			android:text="Loading content..."/>
-				     
-					</LinearLayout>
+				    <include android:id="@+id/bevo_progressbar_ll" layout="@layout/loading_content_layout"/>
 				    
 				    
 				   	<ListView

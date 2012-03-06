@@ -5,13 +5,6 @@
 	android:layout_height="fill_parent"
 	android:orientation="vertical">
 	
-	<Spinner 
-		android:layout_width="fill_parent" 
-		android:id="@+id/spinner" 
-		android:layout_height="wrap_content"
-		android:prompt="@string/prompt"/>
-	
-	
 	<com.google.android.maps.MapView  
 		android:id="@+id/campusmapview"
 		android:layout_width="wrap_content"
