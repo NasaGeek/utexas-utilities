@@ -32,14 +32,15 @@ import org.apache.http.util.EntityUtils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBar;
-import android.support.v4.app.FragmentActivity;
+
 import android.text.format.DateFormat;
 import android.util.FloatMath;
 import android.util.Log;
@@ -50,11 +51,14 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.series.XYSeries;
 import com.androidplot.xy.*;
 
-public class DataUsageActivity extends FragmentActivity implements OnTouchListener
+public class DataUsageActivity extends SherlockActivity implements OnTouchListener
 {
 	
 	private DefaultHttpClient httpclient;
@@ -99,6 +103,10 @@ public class DataUsageActivity extends FragmentActivity implements OnTouchListen
 		actionbar = getSupportActionBar();
 		actionbar.setTitle("Data Usage");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+		actionbar.setHomeButtonEnabled(true);
+		actionbar.setDisplayHomeAsUpEnabled(true);
+		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
+    		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
 		
 		graph = (XYPlot) findViewById(R.id.mySimpleXYPlot);
 		graph.setOnTouchListener(this);
@@ -482,7 +490,19 @@ public class DataUsageActivity extends FragmentActivity implements OnTouchListen
     //			pd.dismiss();
 		}	
 	}
-	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch(item.getItemId())
+		{
+			case android.R.id.home:
+	            // app icon in action bar clicked; go home
+	            Intent home = new Intent(this, UTilitiesActivity.class);
+	            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            startActivity(home);break;
+		}
+		return true;
+	}
 	 private class TimeFormat extends Format 
 	 {
 

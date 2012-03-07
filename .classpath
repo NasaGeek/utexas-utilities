@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="lib" path="libs/jsoup-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libs/Androidplot-core-0.4.4-release.jar" sourcepath="libs/Androidplot-core-0.4.4-sources.jar">
@@ -9,7 +9,8 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/UTilities/libs/Androidplot-core-0.4.4-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="libs/actionbarsherlock-plugin-maps-3.5.1.jar"/>
+	<classpathentry kind="lib" path="libs/actionbarsherlock-plugin-maps-4.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libs/actionbarsherlock-plugin-support-lib-4.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

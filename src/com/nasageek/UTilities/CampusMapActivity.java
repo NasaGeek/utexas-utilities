@@ -32,17 +32,14 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActionBar;
-import android.support.v4.app.ActionBar.OnNavigationListener;
-import android.support.v4.app.FragmentMapActivity;
-import android.support.v4.view.Menu;
-import android.support.v4.view.MenuItem;
+
 
 import android.util.Log;
 import android.view.Gravity;
 
-import android.view.MenuInflater;
+import com.actionbarsherlock.view.MenuInflater;
 
 import android.view.View;
 import android.widget.AdapterView;
@@ -54,6 +51,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
+import com.actionbarsherlock.app.SherlockMapActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -62,7 +64,7 @@ import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.OverlayItem;
 
 
-public class CampusMapActivity extends FragmentMapActivity  {
+public class CampusMapActivity extends SherlockMapActivity  {
 
 	LocationManager locationManager;
 	Location lastKnownLocation;
@@ -145,7 +147,10 @@ public class CampusMapActivity extends FragmentMapActivity  {
         actionbar = getSupportActionBar();
 		actionbar.setTitle("Map and Bus Routes");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        
+		actionbar.setHomeButtonEnabled(true);
+		actionbar.setDisplayHomeAsUpEnabled(true);
+		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
+    		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
 		
         final Spinner spinner = new Spinner(this);
         spinner.setPromptId(R.string.prompt);
@@ -153,8 +158,9 @@ public class CampusMapActivity extends FragmentMapActivity  {
         emptytv.setText("No route selected");
         
  //       spinner.setEmptyView(emptytv);
-        final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, Route.values());
         
+		final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(actionbar.getThemedContext(), android.R.layout.simple_spinner_item, Route.values());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         
         actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() 
         {
@@ -604,7 +610,7 @@ public class CampusMapActivity extends FragmentMapActivity  {
 	    }
 	
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+    	MenuInflater inflater = this.getSupportMenuInflater();
         inflater.inflate(R.layout.map_menu, menu);
         return true;
     }
@@ -614,9 +620,17 @@ public class CampusMapActivity extends FragmentMapActivity  {
     	int id = item.getItemId();
     	switch(id)
     	{
+    	
+	    	case android.R.id.home:
+	            // app icon in action bar clicked; go home
+	            Intent home = new Intent(this, UTilitiesActivity.class);
+	            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            startActivity(home);break;
+	            
     		case R.id.search:
     			
-    			onSearchRequested();
+    			onSearchRequested();break;
+    			
     	}
     	return true;
     }

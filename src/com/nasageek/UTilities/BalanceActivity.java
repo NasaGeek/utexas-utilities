@@ -26,24 +26,30 @@ import org.apache.http.util.EntityUtils;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.app.TabActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBar;
+
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.Menu;
-import android.support.v4.view.MenuItem;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.util.TimingLogger;
 import android.view.LayoutInflater;
 
-import android.view.MenuInflater;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.Tab;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
 import android.view.View;
-import android.view.ViewGroup;
+
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
@@ -56,7 +62,7 @@ import android.widget.TwoLineListItem;
 import android.widget.TabHost.TabContentFactory;
 
 
-public class BalanceActivity extends FragmentActivity {
+public class BalanceActivity extends SherlockActivity implements ActionBar.TabListener{
 		
 	private  DefaultHttpClient httpclient;
 	private ProgressDialog pd;
@@ -106,7 +112,21 @@ public class BalanceActivity extends FragmentActivity {
 		
 		actionbar = getSupportActionBar();
 		actionbar.setTitle("Transactions");
-		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+//		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionbar.setHomeButtonEnabled(true);
+		actionbar.setDisplayHomeAsUpEnabled(true);
+		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
+    		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
+		
+	//	 actionbar.addTab(actionbar.newTab()
+	//	            .setText("Home"));
+		   //         .setTabListener(new TabListener<DineinFragment>(
+		   //                 this, "home", DineinFragment.class, null)));
+
+		//    actionbar.addTab(actionbar.newTab()
+		  //          .setText("Inventory"));
+		 //           .setTabListener(new TabListener<InventoryFragment>(
+		 //                   this, "inventory", InventoryFragment.class, null)));
 		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 			public void uncaughtException(Thread thread, Throwable ex)
@@ -116,23 +136,8 @@ public class BalanceActivity extends FragmentActivity {
 				finish();
 				return;
 			}});
-		
-
-/*		try {
-			transfile = this.getFileStreamPath("transactions.tmp");
-			
-	//		Log.d("Create", "BalanceActivity created");
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-	//		Log.e("TEMPFILE", "Couldn't make the temp file");
-		}
-		timings.addSplit("pre-parser");*/
-		
-		if(true)//!transfile.exists() )
-		{
-		//	pd = ProgressDialog.show(BalanceActivity.this, "", "Loading...");
-			try
+	
+		try
 			{
 				
 				parser();
@@ -146,22 +151,6 @@ public class BalanceActivity extends FragmentActivity {
 				finish();
 				return;
 			}
-		}
-	/*	else
-		{	readData();
-
-				tv1.setText("Dine In Dollars ");
-				tv2.setText(dineinbalance);
-				tv3.setText("Bevo Bucks ");
-				tv4.setText(bevobalance);
-			
-			dlv.setAdapter(new TransactionAdapter(BalanceActivity.this, dtransactionlist));
-			blv.setAdapter(new TransactionAdapter(BalanceActivity.this, btransactionlist));
-		}*/
-		
-			
-			
-			
 			tv1.setGravity(0x01);
 			tv3.setGravity(0x01);
 			
@@ -172,7 +161,11 @@ public class BalanceActivity extends FragmentActivity {
 			
 		 	tv1.setTextSize(20);
 		 	tv3.setTextSize(20);
-		    
+		 	
+		    tv1.setTextColor(Color.DKGRAY);
+		    tv2.setTextColor(Color.DKGRAY);
+		    tv3.setTextColor(Color.DKGRAY);
+		    tv4.setTextColor(Color.DKGRAY);
 		    		
 		 
 		    dineinlinlay.addView(tv1,0);
@@ -288,18 +281,17 @@ public class BalanceActivity extends FragmentActivity {
 	    	if(balancematcher.find())
 	    	{
 	    		if(((Character)params[1]).equals('b'))
-	    		{	bevobalance = balancematcher.group();
-	    			}
+	    		{	
+	    			bevobalance = balancematcher.group();
+	    		}
 	    		else if (((Character)params[1]).equals('d'))
-	    		{	dineinbalance = balancematcher.group();
-	    			}
+	    		{	
+	    			dineinbalance = balancematcher.group();
+	    		}
 	    			
 	    	}
-	    	
 	    	while(matcher3.find() && matcher4.find() && datematcher.find())
 	    	{
-	    		
-	    		
 	    		String transaction=datematcher.group()+" ";
 	    		transaction+=matcher3.group()+" ";
 	    		transaction+=matcher4.group().replaceAll("\\s","");
@@ -342,227 +334,13 @@ public class BalanceActivity extends FragmentActivity {
 	    		d_pb_ll.setVisibility(View.GONE);
 				dlv.setVisibility(View.VISIBLE);
 	    		
-	    	}
-	//    	if(bfilled && dfilled)
-	//    	{
-	//    		bfilled = dfilled = false;
-	    /*		try
-				{
-					writeData(btransactionlist, dtransactionlist, bevobalance, dineinbalance);
-				} catch (IOException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}*/
-				
-		    	
-				
-			//	if(pd.isShowing())
-	    	//		pd.dismiss();
-				
-				
-				
-				
-	//    	}
-	    	
-	    	
+	    	} 	
 		}	
 	}
-	
-/*	private class fetchBalanceDataTask extends AsyncTask
-	{
-
-		private DefaultHttpClient client;
-		
-		public fetchBalanceDataTask(DefaultHttpClient client)
-		{
-			this.client = client;
-		}
-		
-		@Override
-		protected Object doInBackground(Object... arg0)
-		{
-	//		DefaultHttpClient httpclient = ch.getThreadSafeClient();
-			HttpGet hget = new HttpGet("https://utdirect.utexas.edu/hfis/diningDollars.WBX");
-	    	
-			HttpResponse response;
-			String pagedata="";
-			try
-			{
-				response = client.execute(hget);
-				pagedata = EntityUtils.toString(response.getEntity());
-			} catch (Exception e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    	timings.addSplit("got page");
-	    	
-	    		
-	    	Pattern balancepattern = Pattern.compile("</tr>\\s*<tr.*>\\s*<td(?:\\s)?>(.*)</td>");
-	//    	Pattern balancepattern = Pattern.compile("(?<=\"datarow\">\\s{0,10}<td >).*(?=<)");
-	    	Matcher balancecategorymatcher = balancepattern.matcher(pagedata);
-	    	ArrayList<String> datarows = new ArrayList<String>();
-	    	ArrayList<String> balancerows = new ArrayList<String>();
-	    	while(balancecategorymatcher.find())
-	    	{
-	    		datarows.add(balancecategorymatcher.group(1));
-	    	}
-	    	balancepattern = Pattern.compile("(?<=<td(?:\\s)?>)\\$.*(?=<)");
-	    	Matcher balancematcher = balancepattern.matcher(pagedata);
-	    	while(balancematcher.find())
-	    	{
-	    		balancerows.add(balancematcher.group());
-	    	}
-	    	timings.addSplit("parsed page");
-	    	for(int x = 0; x<datarows.size();x++)
-	    	{
-	    		balancelist.add(datarows.get(x));
-	    		balancelist.add(balancerows.get(x));
-	    	}
-	    	
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		protected void onPostExecute(Object result)
-		{
-	//		Log.d("onPostExecute", "oh lawdz it's  postexecuting");
-			balfilled = true;
-	    	if(bfilled && dfilled && balfilled)
-	    	{
-	    		bfilled = dfilled = balfilled = false;
-	    		try
-				{
-					writeData(btransactionlist, dtransactionlist,  bevobalance, dineinbalance);
-				} catch (IOException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if(pd.isShowing())
-	    			pd.dismiss();
-	    		
-	    	}
-	    	if(balancelist.size()==4)
-	    	{	tv1.setText(balancelist.get(0));
-				tv2.setText(balancelist.get(1));
-				tv3.setText(balancelist.get(2));
-				tv4.setText(balancelist.get(3));}
-	    	else if(balancelist.size()==2)
-	    	{
-	    		tv3.setText(balancelist.get(0));
-				tv4.setText(balancelist.get(1));
-	    	}
-		}
-		
-	}*/
-	
-	public void readData()
-	{
-		try {
-			BufferedInputStream  stin = new BufferedInputStream(new FileInputStream(transfile));
-			int b;
-			count=0;
-			do
-			{
-				StringBuilder data=new StringBuilder();
-				do
-				{
-					b = stin.read();
-					data.append((char)b);
-				}
-				while(b!=0xD && b!=0xFF);
-				
-				dtransactionlist.add(data.substring(0,data.length()-1));
-			}
-			while(b!=0xFF);
-			do
-			{
-				StringBuilder data=new StringBuilder();
-				do
-				{
-					b = stin.read();
-					data.append((char)b);
-				}
-				while(b!=0xD && b!=0xFF );
-				
-				btransactionlist.add(data.substring(0,data.length()-1));
-				
-			}
-			while(b!=0xFF);
-			do
-			{
-				StringBuilder data=new StringBuilder();
-				do
-				{
-					b = stin.read();
-					data.append((char)b);
-				}
-				while(b!=0xD && b!=0xFF );
-				
-				if(b!=0xFF)bevobalance=(data.substring(0,data.length()-1));
-				
-			}
-			while(b!=0xFF);
-			do
-			{
-				StringBuilder data=new StringBuilder();
-				do
-				{
-					b = stin.read();
-					data.append((char)b);
-				}
-				while(b!=0xD && b!=-1);
-				
-				if(b!=-1)dineinbalance = (data.substring(0,data.length()-1));
-				
-			}
-			while(b!=-1);
-			timings.addSplit("file read");
-			
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();	
-		}
-		
-		dtransactionlist.remove(dtransactionlist.size()-1);
-		dtransactionlist.trimToSize();
-		btransactionlist.remove(btransactionlist.size()-1);
-		btransactionlist.trimToSize();
-
-	}
-	
-	public void writeData(ArrayList<String> btransactionwritelist, ArrayList<String> dtransactionwritelist, String bevobalancewrite, String dineinbalancewrite) throws IOException
-	{
-		BufferedOutputStream stout = new BufferedOutputStream(openFileOutput("transactions.tmp",0),1024);
-    	
-    	for(int k =0; k<dtransactionwritelist.size(); k++)
-    	{
-    		stout.write((dtransactionwritelist.get(k)+"\r").getBytes());
-    	}
-    	stout.write(0xFF);
-    	
-    	for(int k =0; k<btransactionwritelist.size(); k++)
-    	{
-    		stout.write((btransactionwritelist.get(k)+"\r").getBytes());
-    	}
-    	stout.write(0xFF);
-
-    		stout.write((bevobalancewrite+"\r").getBytes());
-    		stout.write(0xFF);
-    		stout.write((dineinbalancewrite+"\r").getBytes());
-    	stout.flush();
-    	stout.close();
-    	
-  //  	Log.d("FILES", "transactions.tmp written, size: "+transfile.length());
-	}
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) 
 	{
-	        MenuInflater inflater = getMenuInflater();
+			MenuInflater inflater = this.getSupportMenuInflater();
 	        inflater.inflate(R.layout.balance_menu, menu);
 	        return true;
 	}
@@ -572,6 +350,13 @@ public class BalanceActivity extends FragmentActivity {
 	    	int id = item.getItemId();
 	    	switch(id)
 	    	{
+		    	case android.R.id.home:
+		            // app icon in action bar clicked; go home
+		            Intent home = new Intent(this, UTilitiesActivity.class);
+		            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		            startActivity(home);break;
+	    	
+	    	
 	    		case R.id.balance_refresh:
 	    			
 	    			blv.setVisibility(View.GONE);
@@ -580,8 +365,6 @@ public class BalanceActivity extends FragmentActivity {
 					d_pb_ll.setVisibility(View.VISIBLE);
 	    		try
 				{
-					
-	    			
 	    			dtransactionlist.clear();
 					btransactionlist.clear();
 					bevobalance = "";
@@ -599,47 +382,272 @@ public class BalanceActivity extends FragmentActivity {
 	    	}
 	    	return true;
 	}
+	public void onTabSelected(Tab tab) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void onTabUnselected(Tab tab) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void onTabReselected(Tab tab) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+class DineinFragment extends FragmentActivity
+{
+	private  DefaultHttpClient httpclient;
+	private ProgressBar pb;
+	private LinearLayout d_pb_ll;
+	private ConnectionHelper ch;
+	private LinearLayout dineinlinlay;
+	private ListView blv,dlv;
+	ArrayList<String> dtransactionlist, balancelist;
+	String[] dtransactionarray;
+	private File transfile;
+	TimingLogger timings;
+	int count;
+	private boolean dfilled;
+	TextView tv1, tv2,tv3,tv4;
 	
-	private class deleteFileTask extends AsyncTask
+	String  dineinbalance="No Dine In Dollars? What kind of animal are you?";
+	private SharedPreferences settings;
+	
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState)
 	{
-		protected void onPreExecute()
-		{
-			blv.setVisibility(View.GONE);
-			dlv.setVisibility(View.GONE);
-			b_pb_ll.setVisibility(View.VISIBLE);
-			d_pb_ll.setVisibility(View.VISIBLE);
-			
-			//	pd = ProgressDialog.show(BalanceActivity.this, "", "Refreshing...");
-		}
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.balance_layout);
+		settings = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		tv1 = new TextView(getBaseContext());
+		tv3 = new TextView(getBaseContext());
+		tv2 = new TextView(getBaseContext());
+		tv4 = new TextView(getBaseContext());
 		
 		
-		@Override
-		protected Object doInBackground(Object... params) {
-			// TODO Auto-generated method stub
-			transfile.delete();
-			return null;
-		}
+		timings = new TimingLogger("Timing", "Balance OnCreate");
 		
-		protected void onPostExecute(Object result)
-		{
-			
-			
-			try
+		ch = new ConnectionHelper(this);
+
+		dlv = (ListView) findViewById(R.id.dtransactions_listview);
+		
+		
+		dineinlinlay = (LinearLayout) findViewById(R.id.dineinlinlay);
+		
+		dtransactionlist = new ArrayList<String>();
+
+		d_pb_ll = (LinearLayout) findViewById(R.id.dinein_progressbar_ll);
+		
+		
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
+			public void uncaughtException(Thread thread, Throwable ex)
+			{
+				// TODO Auto-generated method stub
+				Log.e("UNCAUGHT",ex.getMessage(),ex);
+				finish();
+				return;
+			}});
+	
+		try
 			{
 				
-				dtransactionlist.clear();
-				btransactionlist.clear();
-				bevobalance = "";
-				dineinbalance = "No Dine In Dollars? What kind of animal are you?";
-				parser();	
+				parser();
+				
+				timings.addSplit("parsed");
 				
 			}
 			catch(Exception e)
 			{
 				e.printStackTrace();
+				finish();
+				return;
 			}
+			tv1.setGravity(0x01);
+			tv3.setGravity(0x01);
 			
+		  	tv2.setGravity(0x01);
+		  	tv4.setGravity(0x01);
+		  	
+			
+			
+		 	tv1.setTextSize(20);
+		 	tv3.setTextSize(20);
+		 	
+		    tv1.setTextColor(Color.DKGRAY);
+		    tv2.setTextColor(Color.DKGRAY);
+		    tv3.setTextColor(Color.DKGRAY);
+		    tv4.setTextColor(Color.DKGRAY);
+		    		
+		 
+		    dineinlinlay.addView(tv1,0);
+			dineinlinlay.addView(tv2,1);
+
+
+	}
+	public void parser() throws Exception
+    {
+		
+		httpclient = ConnectionHelper.getThreadSafeClient();
+		httpclient.getCookieStore().clear();
+				
+		BasicClientCookie screen = new BasicClientCookie("webBrowserSize", "B");
+    	screen.setDomain(".utexas.edu");
+    	httpclient.getCookieStore().addCookie(screen);
+    	BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(this,httpclient));
+    	cookie.setDomain(".utexas.edu");
+    	httpclient.getCookieStore().addCookie(cookie);
+		timings.addSplit("logged in");
+		
+		
+	//	new fetchBalanceDataTask(httpclient).execute();
+    	
+    	new fetchTransactionDataTask(httpclient).execute("sRequestSw",'b');
+    	
+    	new fetchTransactionDataTask(httpclient).execute("rRequestSw",'d');
+    	
+    	timings.addSplit("parsed page");
+    }
+	private class fetchTransactionDataTask extends AsyncTask<Object,Void,Character>
+	{
+		private DefaultHttpClient client;
+		
+		public fetchTransactionDataTask(DefaultHttpClient client)
+		{
+			this.client = client;
 		}
 		
+		@Override
+		protected Character doInBackground(Object... params)
+		{
+	//		DefaultHttpClient httpclient = ch.getThreadSafeClient();
+
+			HttpPost hpost = new HttpPost("https://utdirect.utexas.edu/hfis/transactions.WBX");
+	    	String pagedata="";
+	    	
+	    	
+	    	List<BasicNameValuePair> postdata = new ArrayList<BasicNameValuePair>();
+	    	postdata.add(new BasicNameValuePair((String) params[0], "B"));
+	    	
+	    	try
+			{
+				hpost.setEntity(new UrlEncodedFormEntity(postdata));
+				HttpResponse response = client.execute(hpost);
+		    	pagedata = EntityUtils.toString(response.getEntity());
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    	
+	    	timings.addSplit("got page");
+	    	
+	    	Pattern pattern3 = Pattern.compile("(?<=\"center\">\\s{1,10})\\S.*(?=\\s*<)");
+	    	Matcher matcher3 = pattern3.matcher(pagedata);
+	    	Pattern pattern4 = Pattern.compile("(?<=\"right\">\\s).*(?=</td>\\s*<td)");
+	    	Matcher matcher4 = pattern4.matcher(pagedata);
+	    	Pattern datepattern = Pattern.compile("(?<=\"left\">\\s{1,10})\\S+");
+	    	Matcher datematcher = datepattern.matcher(pagedata);
+	    	Pattern balancepattern = Pattern.compile("(?<=\"right\">\\s).*(?=</td>\\s*</tr)");
+	    	Matcher balancematcher = balancepattern.matcher(pagedata);
+	    	if(balancematcher.find())
+	    	{
+	    		if (((Character)params[1]).equals('d'))
+	    		{	
+	    			dineinbalance = balancematcher.group();
+	    		}
+	    			
+	    	}
+	    	while(matcher3.find() && matcher4.find() && datematcher.find())
+	    	{
+	    		String transaction=datematcher.group()+" ";
+	    		transaction+=matcher3.group()+" ";
+	    		transaction+=matcher4.group().replaceAll("\\s","");
+	    		if (((Character)params[1]).equals('d'))
+	    			dtransactionlist.add(transaction);
+	    		else
+	    			Log.d("WTF MAN", "HOW DID YOU SCREW THIS UP");
+	    	}
+	    	timings.addSplit("parsed page");
+			// TODO Auto-generated method stub
+	    	
+			return (Character) params[1];
+		}
+		@Override
+		protected void onPostExecute(Character result)
+		{
+	
+	//		Log.d("onPostExecute", "oh lawdz it's  postexecuting");
+			
+			if ((result).equals('d'))
+	    	{
+	    		dfilled = true;
+	    		dlv.setAdapter(new TransactionAdapter(DineinFragment.this, dtransactionlist));
+	    		
+	    		tv1.setText("Dine In Dollars ");
+				tv2.setText(dineinbalance);
+	    		
+	    		d_pb_ll.setVisibility(View.GONE);
+				dlv.setVisibility(View.VISIBLE);
+	    		
+	    	} 	
+		}	
 	}
+}
+
+class TabListener<T extends Fragment> implements ActionBar.TabListener {
+    private final FragmentActivity mActivity;
+    private final String mTag;
+    private final Class mClass;
+    private final Bundle mArgs;
+    private Fragment mFragment;
+
+
+
+
+    public TabListener(FragmentActivity activity, String tag, Class clz, Bundle args) {
+        mActivity = activity;
+        mTag = tag;
+        mClass = clz;
+        mArgs = args;
+        FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
+
+
+        // Check to see if we already have a fragment for this tab, probably
+        // from a previously saved state.  If so, deactivate it, because our
+        // initial state is that a tab isn't shown.
+        mFragment = mActivity.getSupportFragmentManager().findFragmentByTag(mTag);
+        if (mFragment != null && !mFragment.isDetached()) {
+            ft.detach(mFragment);
+        }
+    }
+
+    public void onTabSelected(Tab tab) {
+        FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
+
+        if (mFragment == null) {
+            mFragment = Fragment.instantiate(mActivity, mClass.getName(), mArgs);
+            ft.add(android.R.id.content, mFragment, mTag);
+            ft.commit();
+        } else {
+            ft.attach(mFragment);
+            ft.commit();
+        }
+    }
+
+    public void onTabUnselected(Tab tab) {
+        FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
+
+        if (mFragment != null) {
+            ft.detach(mFragment);
+            ft.commitAllowingStateLoss();
+        }           
+    }
+
+    public void onTabReselected(Tab tab) {
+
+    }
+
 }

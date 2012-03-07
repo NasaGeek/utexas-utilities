@@ -12,8 +12,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
-import android.view.MenuInflater;
+
 import android.view.View;
 import android.app.Activity;
 
@@ -25,10 +30,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBar;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.Menu;
-import android.support.v4.view.MenuItem;
+
 import android.util.Log;
 import android.util.TimingLogger;
 import android.view.View.OnClickListener;
@@ -46,7 +48,7 @@ import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ScheduleActivity extends FragmentActivity implements SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, AdapterView.OnItemClickListener{
+public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, AdapterView.OnItemClickListener{
 	
 	private GridView gv;
 	private ConnectionHelper ch;
@@ -87,12 +89,13 @@ public class ScheduleActivity extends FragmentActivity implements SlidingDrawer.
 		ll = (LinearLayout) findViewById(R.id.schedule_ll);
 		actionbar = getSupportActionBar();
 		
-		ca = new ClassAdapter(this,sd,sdll,ci_iv,ci_tv,ci_button,actionbar);
+		ca = new ClassAdapter(this,sd,sdll,ci_iv,ci_tv,ci_button);
 		
 		
 		actionbar.setTitle("Schedule");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-	    
+	    actionbar.setHomeButtonEnabled(true);
+	    actionbar.setDisplayHomeAsUpEnabled(true);
 		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 		public void uncaughtException(Thread thread, Throwable ex)
@@ -126,7 +129,7 @@ public class ScheduleActivity extends FragmentActivity implements SlidingDrawer.
 		    pb_ll.setVisibility(GridView.GONE);
 			gv.setVisibility(GridView.VISIBLE);
 		    if(!this.isFinishing())
-		    	Toast.makeText(this, "Tap a class to see its information.\nTap and hold to see the class on a map.", Toast.LENGTH_LONG).show();
+		    	Toast.makeText(this, "Tap a class to see its information.", Toast.LENGTH_LONG).show();
 		}
 		    
 	   sd.setOnDrawerCloseListener(this);
@@ -199,7 +202,7 @@ public class ScheduleActivity extends FragmentActivity implements SlidingDrawer.
 			}
 			protected void onPostExecute(Object result)
 			{
-				ca = new ClassAdapter(ScheduleActivity.this,sd,sdll,ci_iv,ci_tv,ci_button,actionbar);
+				ca = new ClassAdapter(ScheduleActivity.this,sd,sdll,ci_iv,ci_tv,ci_button);
 				ca.updateTime();
 				
 				
@@ -220,7 +223,7 @@ public class ScheduleActivity extends FragmentActivity implements SlidingDrawer.
 		@Override
 		public boolean onCreateOptionsMenu(Menu menu) {
 			
-			MenuInflater inflater = getMenuInflater();
+			MenuInflater inflater = this.getSupportMenuInflater();
 	        inflater.inflate(R.layout.schedule_menu, menu);
 			this.menu = menu;
 			if(current_clt == null)
@@ -232,9 +235,17 @@ public class ScheduleActivity extends FragmentActivity implements SlidingDrawer.
 	    	int id = item.getItemId();
 	    	switch(id)
 	    	{
-	    		case R.id.locate_class:Intent map = new Intent(getString(R.string.building_intent), null, this, CampusMapActivity.class);
+	    	case android.R.id.home:
+	            // app icon in action bar clicked; go home
+	            Intent home = new Intent(this, UTilitiesActivity.class);
+	            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            startActivity(home);break;
+	    	
+	    	case R.id.locate_class:
+	    		Intent map = new Intent(getString(R.string.building_intent), null, this, CampusMapActivity.class);
 				map.setData(Uri.parse(current_clt.getBuilding().getId()));
-				startActivity(map);
+				startActivity(map);break;
+	    	default: return super.onOptionsItemSelected(item);
 	    	}
 	    	return true;
 	    }

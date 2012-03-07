@@ -16,6 +16,8 @@
  	android:id = "@+id/percentDataUsed"
  	android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:layout_marginRight="10px"
+    android:layout_marginLeft="10px"
  	style="@android:style/Widget.ProgressBar.Horizontal"
  	android:max = "1000"
  	android:indeterminate="false"/>

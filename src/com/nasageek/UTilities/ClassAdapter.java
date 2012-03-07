@@ -18,7 +18,7 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBar;
+
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,19 +51,19 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
 	private String time;
 	private int day;
 	private Calendar cal;
-	private ActionBar actionbar;
+	
 	private ImageView ci_iv;
 	private TextView ci_tv;
 	private Button ci_button;
 	
-	public ClassAdapter(Context c, WrappingSlidingDrawer wsd, LinearLayout llsd, ImageView ci_iv, TextView ci_tv, Button ci_button, ActionBar ab)
+	public ClassAdapter(Context c, WrappingSlidingDrawer wsd, LinearLayout llsd, ImageView ci_iv, TextView ci_tv, Button ci_buttonb)
 	{
 		sdll = llsd;
 		sd = wsd;
 		sp = PreferenceManager.getDefaultSharedPreferences(c);
 		cdb  = new ClassDatabase(c);
 		currentContext = c;
-		actionbar = ab;
+		
 		this.ci_iv = ci_iv;
 		this.ci_tv = ci_tv;
 		this.ci_button = ci_button;

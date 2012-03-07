@@ -2,25 +2,30 @@ package com.nasageek.UTilities;
 
 import java.util.ArrayList;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.Menu;
-import android.support.v4.view.MenuItem;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
-
-import android.view.MenuInflater;
 
 import android.view.View;
 import android.view.Window;
@@ -37,12 +42,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class UTilitiesActivity extends FragmentActivity {
+public class UTilitiesActivity extends SherlockActivity {
     
 	ProgressDialog pd; 
 	SharedPreferences settings;
 	Intent about_intent;
 	private Menu menu;
+	ActionBar actionbar;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,7 +64,10 @@ public class UTilitiesActivity extends FragmentActivity {
     	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
     	final Intent data = new Intent(getBaseContext(), DataUsageActivity.class);
     	about_intent = new Intent(this, AboutMeActivity.class);
-  	
+    	
+    	actionbar = getSupportActionBar();
+    	if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
+    		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
    // 	BitmapDrawable bmd = (BitmapDrawable) getResources().getDrawable(R.drawable.main_background);
    // 	bmd.setDither(true);
        
@@ -172,7 +181,7 @@ public class UTilitiesActivity extends FragmentActivity {
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        MenuInflater inflater = this.getSupportMenuInflater();
         inflater.inflate(R.layout.main_menu, menu);
         
         if(settings.getBoolean("loginpref", false))
