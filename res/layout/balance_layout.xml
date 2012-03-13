@@ -1,65 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/baltabhost"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">	
-		<LinearLayout 
-			android:id="@+id/balance_linlayout"
-			android:layout_width="fill_parent" 
-		    android:layout_height="fill_parent" 
-		    android:orientation="vertical">
-		    <TabWidget
-		    	android:id="@android:id/tabs"
-		    	android:layout_width="fill_parent"
-		    	android:layout_height="wrap_content"
-		    	/>
-		    <FrameLayout
-	            android:id="@android:id/tabcontent"
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"
-	            android:padding="5dp">
-	           <LinearLayout 
-					android:id="@+id/dineinlinlay"
-					
-					android:layout_width="fill_parent" 
-				    android:layout_height="fill_parent" 
-				    android:orientation="vertical">
-					 
-					<include android:id="@+id/dinein_progressbar_ll" layout="@layout/loading_content_layout"/>
-	               
-	               
-					 <ListView
-					     android:visibility="gone"
-					 	android:paddingTop="10dp"
-						android:id="@+id/dtransactions_listview"
-						android:layout_width="fill_parent" 
-					    android:layout_height="fill_parent"
-					    android:orientation="vertical" 
-					    android:scrollbars="none"
-					    />
-					    
-					    
-				</LinearLayout>
-				<LinearLayout 
-					android:id="@+id/bevolinlay"
-					android:layout_width="fill_parent" 
-				    android:layout_height="fill_parent" 
-				    android:orientation="vertical">
-				   	
-				    <include android:id="@+id/bevo_progressbar_ll" layout="@layout/loading_content_layout"/>
-				    
-				    
-				   	<ListView
-					 	android:visibility="gone"
-					 	android:paddingTop="10dp"
-						android:id="@+id/btransactions_listview"
-						android:layout_width="fill_parent" 
-					    android:layout_height="fill_parent" 
-					    android:orientation="vertical" 
-					    android:scrollbars="none"/>
-				   	
-				</LinearLayout>
-			
-			 </FrameLayout>	 
-		</LinearLayout>
-</TabHost>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" 
+	android:layout_height="fill_parent">
+<include layout="@layout/dinein_fragment_layout"/>
+<include layout="@layout/bevo_fragment_layout"/>
+</LinearLayout>

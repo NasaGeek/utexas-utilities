@@ -22,7 +22,7 @@ public class TransactionAdapter extends ArrayAdapter
 	private String currentDate;
 	boolean isSectionHeader;
 	
-	@SuppressWarnings("unchecked")
+	
 	public TransactionAdapter(Context c, ArrayList<String> objects)
 	{
 		super(c,0,objects);

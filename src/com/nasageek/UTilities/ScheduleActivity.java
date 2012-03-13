@@ -73,7 +73,7 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.schedulelayout);
+		setContentView(R.layout.schedule_layout);
 		ch = new ConnectionHelper(this);
 		sp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		cdb = new ClassDatabase(this);
@@ -195,7 +195,7 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 		    		String tempstr = time.text().replaceAll("- ","-");
 		    		String[] times = tempstr.split(" ");
 		    		
-		    		cdb.addClass(new Class(uniqueid.ownText(),classid.ownText(), classname.ownText(),buildings, rooms, days, times));
+		    		cdb.addClass(new UTClass(uniqueid.ownText(),classid.ownText(), classname.ownText(),buildings, rooms, days, times));
 		    	}
 		    	return null;
 				
@@ -282,21 +282,8 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 			{
 		//		menu.add(R.id.locate_class);
 				this.invalidateOptionsMenu();
-			//	ci_button.setText("Locate");
-		/*		ci_button.setOnClickListener(new OnClickListener(){
-
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						Intent map = new Intent(currentContext.getString(R.string.building_intent), null, currentContext, CampusMapActivity.class);
-						
-							map.setData(Uri.parse(clt.getBuilding().getId()));
-							currentContext.startActivity(map);
-		
-					}
-					
-				});*/
-			
-				//Make it info for whole class or just that session?
+	
+	
 				sd.setVisibility(View.VISIBLE);
 				//Cursor cur = cdb.getReadableDatabase().query("classes", null, "eid = \"" + sp.getString("eid", "eid not found")+"\" AND day = \""+ clt.getDay()+"\" AND start = \""+ clt.getStartTime()+"\"", null,null,null,null);
 				Cursor cur = cdb.getReadableDatabase().query("classes", null, "day = \""+ current_clt.getDay()+"\" AND start = \""+ current_clt.getStartTime()+"\"", null,null,null,null);
@@ -330,10 +317,10 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 			    	ci_iv.setBackgroundColor(Color.parseColor("#"+cdb.getColor(current_clt.getUnique(),current_clt.getStartTime(), current_clt.getDay()+"")));
 			    	ci_iv.setMinimumHeight(10);
 			    	ci_iv.setMinimumWidth(10);
-			    	TextView tv = new TextView(this);
+			    	
 		    		ci_tv.setTextColor(Color.BLACK);
 		    		ci_tv.setTextSize((float) 15);
-		    		ci_tv.setBackgroundColor(Color.LTGRAY);
+		    		ci_tv.setBackgroundColor(0x99F0F0F0);
 		    		ci_tv.setText(text);
 		 //   		sdll.addView(iv);
 		 //  		sdll.addView(tv);

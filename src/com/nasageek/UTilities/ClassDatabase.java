@@ -66,7 +66,7 @@ public class ClassDatabase extends SQLiteOpenHelper
 		// TODO Auto-generated method stub
 
 	}
-	public void addClass(Class cl)
+	public void addClass(UTClass cl)
 	{
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 		ContentValues val = null;

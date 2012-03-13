@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import android.util.Log;
 
-public class Class {
+public class UTClass {
 	
 	private String courseid, unique, name, professor;
 
@@ -12,7 +12,7 @@ public class Class {
 	private ArrayList<classtime> classtimes;
 	
 	
-	public Class(String u, String ci, String n, String[] b, String[] br, String[] d, String[] t)
+	public UTClass(String u, String ci, String n, String[] b, String[] br, String[] d, String[] t)
 	{
 		classtimes = new ArrayList<classtime>();
 		buildings = new ArrayList<building>();

@@ -36,12 +36,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClickListener{
+public class ClassAdapter extends BaseAdapter{
 
 	static ClassDatabase cdb;
 	private int height;
 	private ArrayList<classtime> cllist;
-	private ArrayList<Class> classlist;
+	private ArrayList<UTClass> classlist;
 	private Context currentContext;
 	private ArrayList<Boolean> firstlist;
 	private SharedPreferences sp;
@@ -95,7 +95,7 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		}
 		firstlist = new ArrayList<Boolean>();
 		
-		classlist = new ArrayList<Class>();
+		classlist = new ArrayList<UTClass>();
 		
 		cllist = new ArrayList<classtime>();
 		cllist.ensureCapacity(145);
@@ -273,83 +273,5 @@ public class ClassAdapter extends BaseAdapter implements AdapterView.OnItemClick
 		return true;
 	}*/
 	
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-	{
-		// TODO Auto-generated method stub
-		
-		
-		sd.close();
-	//	sdll.removeAllViews();
-		final classtime clt = (classtime) parent.getItemAtPosition(position);
-		if(clt!=null)
-		{
-			
-			
-		//	ci_button.setText("Locate");
-		/*	ci_button.setOnClickListener(new OnClickListener(){
-
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					Intent map = new Intent(currentContext.getString(R.string.building_intent), null, currentContext, CampusMapActivity.class);
-					
-						map.setData(Uri.parse(clt.getBuilding().getId()));
-						currentContext.startActivity(map);
 	
-				}
-				
-			});*/
-		
-			//Make it info for whole class or just that session?
-			sd.setVisibility(View.VISIBLE);
-			//Cursor cur = cdb.getReadableDatabase().query("classes", null, "eid = \"" + sp.getString("eid", "eid not found")+"\" AND day = \""+ clt.getDay()+"\" AND start = \""+ clt.getStartTime()+"\"", null,null,null,null);
-			Cursor cur = cdb.getReadableDatabase().query("classes", null, "day = \""+ clt.getDay()+"\" AND start = \""+ clt.getStartTime()+"\"", null,null,null,null);
-		    cur.moveToFirst();
-		    while(!cur.isAfterLast())
-		    {
-		    	String text = " ";
-		    	text+=cur.getString(3)+" - "+cur.getString(4)+" ";
-		    	String unique = cur.getString(2);
-		    	while(!cur.isAfterLast() && unique.equals(cur.getString(2)))
-		    	{
-		    		String daytext = "\n\t";
-		    		String building = cur.getString(5)+" "+cur.getString(6);
-		    		String checktext = cur.getString(8)+building;
-		    		String time = cur.getString(8);
-		    		String end = cur.getString(9);
-		    		while(!cur.isAfterLast() && checktext.equals(cur.getString(8)+cur.getString(5)+" "+cur.getString(6)) )
-		    		{
-		    			if(cur.getString(7).equals("H"))
-		    				daytext+="TH";
-		    			else
-		    				daytext+=cur.getString(7);
-		    			cur.moveToNext();
-		    		}
-		    		
-		    		text+=(daytext+" from " + time + "-"+end + " in "+building);
-		
-		    	}
-		    	text+="\n";
-		  //  	ImageView iv = new ImageView(currentContext);
-		    	ci_iv.setBackgroundColor(Color.parseColor("#"+cdb.getColor(clt.getUnique(),clt.getStartTime(), clt.getDay()+"")));
-		    	ci_iv.setMinimumHeight(10);
-		    	ci_iv.setMinimumWidth(10);
-		    	TextView tv = new TextView(currentContext);
-	    		ci_tv.setTextColor(Color.BLACK);
-	    		ci_tv.setTextSize((float) 15);
-	    		ci_tv.setBackgroundColor(Color.LTGRAY);
-	    		ci_tv.setText(text);
-	 //   		sdll.addView(iv);
-	 //  		sdll.addView(tv);
-
-	    	}
-		//    sdll.addView(button);
-		    
-		    sd.open();
-		    
-		    
-		}
-		else
-			sd.setVisibility(View.INVISIBLE);
-	//	Log.d("CLICKY", position+"");
-	}
 }

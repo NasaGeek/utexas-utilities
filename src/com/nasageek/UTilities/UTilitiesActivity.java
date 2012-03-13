@@ -49,6 +49,7 @@ public class UTilitiesActivity extends SherlockActivity {
 	Intent about_intent;
 	private Menu menu;
 	ActionBar actionbar;
+	Toast message;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,9 @@ public class UTilitiesActivity extends SherlockActivity {
     	about_intent = new Intent(this, AboutMeActivity.class);
     	
     	actionbar = getSupportActionBar();
+    	
+    	message = Toast.makeText(this, "Please log in before using this feature", Toast.LENGTH_SHORT);
+    	
     	if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
     		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
    // 	BitmapDrawable bmd = (BitmapDrawable) getResources().getDrawable(R.drawable.main_background);
@@ -104,7 +108,7 @@ public class UTilitiesActivity extends SherlockActivity {
             public void onClick(View v) {
             	if(!ConnectionHelper.cookieHasBeenSet() && new ClassDatabase(UTilitiesActivity.this).size()==0)// && (!settings.getBoolean("loginpref", true)||!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
             	{
-            		Toast.makeText(UTilitiesActivity.this, "Please log in before using this feature",Toast.LENGTH_SHORT).show();
+            		message.show();
             	}
             	else{
             	
@@ -125,7 +129,7 @@ public class UTilitiesActivity extends SherlockActivity {
             					settings.getString("eid", "error").equals("")||
             					settings.getString("password", "error").equals("")))*/
             	{
-            		Toast.makeText(UTilitiesActivity.this, "Please log in before using this feature",Toast.LENGTH_SHORT).show();
+            		message.show();
             	}
             	else{
             
@@ -151,7 +155,7 @@ public class UTilitiesActivity extends SherlockActivity {
             	
             	if(!ConnectionHelper.PNACookieHasBeenSet())// && (!settings.getBoolean("loginpref", true)|| !settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
             	{
-            		Toast.makeText(UTilitiesActivity.this, "Please log in before using this feature",Toast.LENGTH_SHORT).show();
+            		message.show();
             	}
             	else{
             
@@ -248,7 +252,8 @@ public class UTilitiesActivity extends SherlockActivity {
     public void logout()
     {
     	ConnectionHelper.logout(this);
-    	Toast.makeText(this, "You have been successfully logged out", Toast.LENGTH_SHORT).show();
+    	message.setText("You have been successfully logged out");
+    	message.show();
     }
     public void onResume()
     {
