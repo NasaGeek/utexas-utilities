@@ -12,7 +12,6 @@
 		 	android:visibility="gone"
 		 	android:paddingTop="10dp"
 		 	
-		 	android:layout_marginRight="5dp"
 			android:id="@+id/btransactions_listview"
 			android:layout_width="fill_parent" 
 		    android:layout_height="fill_parent" 

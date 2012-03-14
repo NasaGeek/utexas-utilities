@@ -190,36 +190,14 @@ public class ClassAdapter extends BaseAdapter{
             	if(position == currentTimePos)
             	{	
             		GradientDrawable back = (GradientDrawable) res.getDrawable(R.drawable.classbackground);
-	            	back.setColor(Color.LTGRAY);
+	            	back.setColor(getEmptyCellColor(position));
             		iv.setBackgroundDrawable(back);
            // 		Log.d("TIME", "Time Match: "+position);
             	}
             	else
             	{	
+            		iv.setBackgroundColor(getEmptyCellColor(position));
             		
-            		if(sp.getString("schedule_background_style", "checkhour").equals("checkhour"))
-            		{
-	            		if((position/10)%2==0)
-	            		{
-	            			if((position/5)%2==0)
-	            				iv.setBackgroundColor(position%2==0?Color.LTGRAY:0xFFbdbdbd);
-	            			else
-	            				iv.setBackgroundColor(position%2==0?0xFFbdbdbd:Color.LTGRAY);
-	            		}
-	            		else	
-	            		{
-	            			if((position/5)%2==0)
-	            				iv.setBackgroundColor(position%2==0?0xFFbdbdbd:Color.LTGRAY);
-	            			else
-	            				iv.setBackgroundColor(position%2==0?Color.LTGRAY:0xFFbdbdbd);
-	            		}
-            		}	
-            		else if(sp.getString("schedule_background_style", "checkhour").equals("checkhalf"))
-            			iv.setBackgroundColor(position%2==0 && (position%10)%2==0?Color.LTGRAY:0xFFbdbdbd);
-            		else if(sp.getString("schedule_background_style", "checkhour").equals("stripehour"))
-            			iv.setBackgroundColor(position/10%2==0?Color.LTGRAY:0xFFbdbdbd);
-            		else if(sp.getString("schedule_background_style", "checkhour").equals("stripehalf"))
-            			iv.setBackgroundColor(position/5%2==0?Color.LTGRAY:0xFFbdbdbd);
             	iv.setText("");
             	}
             }
@@ -259,6 +237,34 @@ public class ClassAdapter extends BaseAdapter{
             
       //  Log.d("ClassAdapter", "view drawn");
 		return iv;
+	}
+	private int getEmptyCellColor(int position)
+	{
+		if(sp.getString("schedule_background_style", "checkhour").equals("checkhour"))
+		{
+    		if((position/10)%2==0)
+    		{
+    			if((position/5)%2==0)
+    				return position%2==0?Color.LTGRAY:0xFFbdbdbd;
+    			else
+    				return position%2==0?0xFFbdbdbd:Color.LTGRAY;
+    		}
+    		else	
+    		{
+    			if((position/5)%2==0)
+    				return position%2==0?0xFFbdbdbd:Color.LTGRAY;
+    			else
+    				return position%2==0?Color.LTGRAY:0xFFbdbdbd;
+    		}
+		}	
+		else if(sp.getString("schedule_background_style", "checkhour").equals("checkhalf"))
+			return position%2==0 && (position%10)%2==0?Color.LTGRAY:0xFFbdbdbd;
+		else if(sp.getString("schedule_background_style", "checkhour").equals("stripehour"))
+			return position/10%2==0?Color.LTGRAY:0xFFbdbdbd;
+		else if(sp.getString("schedule_background_style", "checkhour").equals("stripehalf"))
+			return position/5%2==0?Color.LTGRAY:0xFFbdbdbd;
+		else
+			return Color.BLACK;
 	}
 /*	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
 	{

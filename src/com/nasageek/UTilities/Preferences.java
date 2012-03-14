@@ -10,14 +10,18 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Window;
 import android.widget.EditText;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -31,27 +35,34 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class Preferences extends PreferenceActivity {
+public class Preferences extends SherlockPreferenceActivity{
 
 	boolean set;
 	boolean pnalogindone, logindone;
 	Toast toast;
 	ProgressDialog pd;
 	SharedPreferences settings;
-	Preference loginfield, loginButton;
+	Preference loggedin;
+	Preference loginfield;
     Preference passwordfield;
- Editor edit;
+    CheckBoxPreference autologin;
+    Editor edit;
     BaseAdapter ba;
+    OnPreferenceChangeListener listen;
     
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        
-        settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+    	requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+    	super.onCreate(savedInstanceState);
+       
+       
+       settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+       
        edit = settings.edit();
        toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
+      
+       setSupportProgressBarIndeterminateVisibility(false);
         addPreferencesFromResource(R.xml.preferences);
         ba = (BaseAdapter)getPreferenceScreen().getRootAdapter();
    //     PreferenceGroup loginfields = (PreferenceGroup) findPreference("loginfields");
@@ -59,13 +70,26 @@ public class Preferences extends PreferenceActivity {
     /*    if(!settings.getBoolean("loginpref", true))
         	loginfields.setEnabled(false);
         else loginfields.setEnabled(true);*/
+   //     loggedin = (Preference) findPreference("loggedin");
+        autologin = (CheckBoxPreference) findPreference("autologin");
         loginfield = (Preference) findPreference("eid");
         passwordfield = (Preference) findPreference("password");
-       loginButton = (Preference) findPreference("loggedin");
+  //      loginButton = (Preference) findPreference("loggedin");
         final Preference logincheckbox = (Preference) findPreference("loginpref");
         
+        logincheckbox.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				// TODO Auto-generated method stub
+				if((Boolean)newValue==false)
+					autologin.setChecked(false);
+				return true;
+			}
+		});
         
-        	logincheckbox.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        
+        logincheckbox.setOnPreferenceClickListener(new OnPreferenceClickListener() {
        	 
         	
         	public boolean onPreferenceClick(final Preference preference) {
@@ -81,7 +105,7 @@ public class Preferences extends PreferenceActivity {
 	                    public void onClick(DialogInterface dialog, int id) {
 	                       ((CheckBoxPreference) preference).setChecked(true);
 	                       ConnectionHelper.logout(Preferences.this);
-	                       loginButton.setTitle("Login");
+	 //                    loginButton.setTitle("Login");
 	                       loginfield.setEnabled(true);
 	                       passwordfield.setEnabled(true);    
 	                       ba.notifyDataSetChanged();
@@ -103,7 +127,7 @@ public class Preferences extends PreferenceActivity {
             	}
             	else
             	{	ConnectionHelper.logout(Preferences.this);
-            		loginButton.setTitle("Login");
+ //           		loginButton.setTitle("Login");
             		loginfield.setEnabled(true);
                	  	passwordfield.setEnabled(true);    
             		ba.notifyDataSetChanged();
@@ -116,27 +140,31 @@ public class Preferences extends PreferenceActivity {
 
     });
       
-      if(ConnectionHelper.cookieHasBeenSet() && loginButton.isEnabled())
+      if(ConnectionHelper.cookieHasBeenSet())// && loginButton.isEnabled())
       {
-    	  loginButton.setTitle("Logout");
+  //  	  loginButton.setTitle("Logout");
     	  loginfield.setEnabled(false);
     	  passwordfield.setEnabled(false);
       }
       else
       {
-    	  loginButton.setTitle("Login");
+  //  	  loginButton.setTitle("Login");
     	  loginfield.setEnabled(true);
     	  passwordfield.setEnabled(true);      
     }
-      loginButton.setOnPreferenceChangeListener(new OnPreferenceChangeListener(){
-		public boolean onPreferenceChange(Preference preference, Object newValue) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-      });
+      listen = new OnPreferenceChangeListener(){
+  		public boolean onPreferenceChange(Preference preference, Object newValue) {
+  			// TODO Auto-generated method stub
+  			return false;
+  		}
+     };
+      
+ //     loginButton.setOnPreferenceChangeListener(listen);
+    		  
+    
       
       
-      loginButton.setOnPreferenceClickListener(new OnPreferenceClickListener(){
+ /*     loginButton.setOnPreferenceClickListener(new OnPreferenceClickListener(){
     	  
     	  public boolean onPreferenceClick(Preference preference)
     	  {
@@ -156,8 +184,9 @@ public class Preferences extends PreferenceActivity {
         				 return true;
       				 }
     			 
-    			 
-    			 pd = ProgressDialog.show(Preferences.this, "", "Logging in...");
+    			 setSupportProgressBarIndeterminateVisibility(true);
+    			 Toast.makeText(Preferences.this,"Logging in...", Toast.LENGTH_SHORT).show();
+    		//	 pd = ProgressDialog.show(Preferences.this, "", "Logging in...");
     		//     pd.setCancelable(true);
     		    
     			 ConnectionHelper ch = new ConnectionHelper(Preferences.this);
@@ -165,14 +194,9 @@ public class Preferences extends PreferenceActivity {
     			 DefaultHttpClient pnahttpclient = ConnectionHelper.getThreadSafeClient();
 
     			 ConnectionHelper.resetPNACookie();
-    			
-    			 
-    			
-    			 
-    			 
-    			 
-    			 new loginTask(httpclient,pnahttpclient,preference).execute(ch);
-				 new PNALoginTask(httpclient,pnahttpclient,preference).execute(ch);
+ 
+    			 ch.new loginTask(Preferences.this, httpclient,pnahttpclient).execute(ch);
+				 ch.new PNALoginTask(Preferences.this, httpclient,pnahttpclient).execute(ch);
 	 
     		 }
     		 else if(preference.getTitle().equals("Logout"))
@@ -187,7 +211,7 @@ public class Preferences extends PreferenceActivity {
     		 
     		 return true;
     	  }
-      });
+      });*/
         
         Preference resetclassesbutton = (Preference) findPreference("resetclassesbutton");
         resetclassesbutton.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -200,20 +224,37 @@ public class Preferences extends PreferenceActivity {
     });     
                 
     }
- @Override
-    public void onResume()
+    public void refreshPrefs()
     {
-    	super.onResume();
-    	if(ConnectionHelper.cookieHasBeenSet() && loginButton.isEnabled())
+    	if(ConnectionHelper.cookieHasBeenSet())//&& loginButton.isEnabled())
         {
-      	  loginButton.setTitle("Logout");
+  //    	  loginButton.setTitle("Logout");
       	  loginfield.setEnabled(false);
       	  passwordfield.setEnabled(false);
       	  ba.notifyDataSetChanged();
         }
         else
         {
-      	  loginButton.setTitle("Login");
+  //    	  loginButton.setTitle("Login");
+      	  loginfield.setEnabled(true);
+      	  passwordfield.setEnabled(true);  
+      	  ba.notifyDataSetChanged();
+      }
+    }
+ @Override
+    public void onResume()
+    {
+    	super.onResume();
+    	if(ConnectionHelper.cookieHasBeenSet())// && loginButton.isEnabled())
+        {
+    //  	  loginButton.setTitle("Logout");
+      	  loginfield.setEnabled(false);
+      	  passwordfield.setEnabled(false);
+      	  ba.notifyDataSetChanged();
+        }
+        else
+        {
+ //     	  loginButton.setTitle("Login");
       	  loginfield.setEnabled(true);
       	  passwordfield.setEnabled(true);  
       	  ba.notifyDataSetChanged();
@@ -238,23 +279,19 @@ public class Preferences extends PreferenceActivity {
 		{
 			boolean loginStatus = ((ConnectionHelper)params[0]).Login(Preferences.this, (DefaultHttpClient)httpclient);
 			publishProgress(loginStatus?0:1);
-			return loginStatus;
-			
-				
+			return loginStatus;		
 		}
     	@Override
 		protected void onProgressUpdate(Integer... progress)
-		{
-			
+		{			
     		switch(progress[0])
 			{
-    		case 1:
+    			case 1:
     			if(pd.isShowing())
 	    			pd.dismiss();
-    		Toast.makeText(Preferences.this, "There was an error while connecting to UTDirect, please check your internet connection and try again", Toast.LENGTH_LONG).show();
-				
+    			Toast.makeText(Preferences.this, "There was an error while connecting to UTDirect, please check your internet connection and try again", Toast.LENGTH_LONG).show();
 				break;
-    		case 0:break;
+    			case 0:break;
 			}
 		}
 		@Override
@@ -329,7 +366,7 @@ public class Preferences extends PreferenceActivity {
 				logindone = false;pnalogindone = false;
 				
 				if(!ConnectionHelper.getAuthCookie(Preferences.this, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(Preferences.this, pnahttpclient).equals(""))
-				 {
+				{
 					Toast.makeText(Preferences.this, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
 					preference.setTitle("Logout");
 					loginfield.setEnabled(false);
@@ -346,11 +383,4 @@ public class Preferences extends PreferenceActivity {
 		}
 		
 	}
-
-    
-    
-    
-    
-    
- 
 }

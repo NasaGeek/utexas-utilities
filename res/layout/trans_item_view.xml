@@ -5,6 +5,7 @@
 		    android:layout_height="fill_parent" 
 		    android:orientation="horizontal"
 		    android:clickable="false"
+		    
 		    android:paddingTop="3dp"
 		    android:paddingBottom="3dp">
 	<TextView 
@@ -19,6 +20,7 @@
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_weight="1"
+	    android:layout_marginRight="5dp"
 	    android:layout_gravity="right"
 	    android:gravity="right"/> 
 </LinearLayout>

@@ -31,16 +31,17 @@
                 android:title="Edit Password"
                 android:dialogTitle="Enter your password" 
                 android:inputType="textPassword"/>
-       <Preference
+   <!--     <Preference
        android:dependency="loginpref"
        		android:id="@+id/loginbutton"
-       		
-       		android:key="loggedin"/>   
-<!-- 		<CheckBoxPreference
+       		android:defaultValue="false"
+       		android:persistent="false"
+       		android:key="loggedin"/>  --> 
+ 		<CheckBoxPreference
 		    android:dependency="loginpref"
 		    android:key="autologin"
 		    android:title="Auto Login"
-		    android:defaultValue="false"/> -->
+		    android:defaultValue="false"/>
 		    
     </PreferenceCategory>
     

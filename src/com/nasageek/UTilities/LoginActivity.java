@@ -1,9 +1,15 @@
 package com.nasageek.UTilities;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.MotionEvent;
@@ -17,13 +23,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends SherlockActivity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
     	super.onCreate(savedInstanceState);
-  //  	CookieSyncManager.createInstance(this);
+    	ActionBar actionbar = getSupportActionBar();
+    	actionbar.setTitle("Login");
+    	actionbar.setHomeButtonEnabled(true);
+	    actionbar.setDisplayHomeAsUpEnabled(true);
     	
     	WebView wv = new WebView(this);
     	
@@ -34,7 +43,23 @@ public class LoginActivity extends Activity {
     	wv.loadUrl("https://utdirect.utexas.edu");
     	setContentView(wv);
     }
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+    	int id = item.getItemId();
+    	switch(id)
+    	{
+    	case android.R.id.home:
+            // app icon in action bar clicked; go home
+            Intent home = new Intent(this, UTilitiesActivity.class);
+            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(home);break;
+    	
+    	
+    	default: return super.onOptionsItemSelected(item);
+    	}
+    	return true;
+    }
     
     
     

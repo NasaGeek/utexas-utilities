@@ -2,11 +2,14 @@ package com.nasageek.UTilities;
 
 import java.util.ArrayList;
 
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -21,6 +24,7 @@ import android.content.SharedPreferences;
 
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -50,6 +54,7 @@ public class UTilitiesActivity extends SherlockActivity {
 	private Menu menu;
 	ActionBar actionbar;
 	Toast message;
+	 AnimationDrawable frameAnimation;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,8 +62,10 @@ public class UTilitiesActivity extends SherlockActivity {
   //    Window win = getWindow();
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
    //   win.setFormat(PixelFormat.RGBA_8888);
-       
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        
         setContentView(R.layout.main);
+        setSupportProgressBarIndeterminateVisibility(false);
   //    final Intent exams = new Intent(getBaseContext(), ExamScheduleActivity.class);
         final Intent schedule = new Intent(getBaseContext(), ScheduleActivity.class);
     	final Intent balance = new Intent(getBaseContext(), BalanceActivity.class);
@@ -68,7 +75,9 @@ public class UTilitiesActivity extends SherlockActivity {
     	
     	actionbar = getSupportActionBar();
     	
-    	message = Toast.makeText(this, "Please log in before using this feature", Toast.LENGTH_SHORT);
+    	message = Toast.makeText(this, R.string.login_first, Toast.LENGTH_SHORT);
+    	
+    	
     	
     	if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
     		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
@@ -96,25 +105,32 @@ public class UTilitiesActivity extends SherlockActivity {
         	AlertDialog nologin = nologin_builder.create();
         	nologin.show();
         }
-        
-        boolean autologin = settings.getBoolean("autologin", false);
-        if(autologin)
+        if(settings.getBoolean("autologin", false))
         {
-        	
+        	login(); 
         }
         
         final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
+        schedulebutton.setBackgroundResource(R.drawable.schedule_button_anim);
+
+        // Get the background, which has been compiled to an AnimationDrawable object.
+        frameAnimation = (AnimationDrawable) schedulebutton.getBackground();
+        
+        // Start the animation (looped playback by default).
+        
         schedulebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
+            	frameAnimation.start();
             	if(!ConnectionHelper.cookieHasBeenSet() && new ClassDatabase(UTilitiesActivity.this).size()==0)// && (!settings.getBoolean("loginpref", true)||!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
             	{
+            		message.setText(R.string.login_first);
+                	message.setDuration(Toast.LENGTH_SHORT);
             		message.show();
             	}
-            	else{
             	
-            	
-            	
-            	startActivity(schedule);
+            	else
+            	{
+            		startActivity(schedule);
             	}
             }
             
@@ -129,6 +145,8 @@ public class UTilitiesActivity extends SherlockActivity {
             					settings.getString("eid", "error").equals("")||
             					settings.getString("password", "error").equals("")))*/
             	{
+            		message.setText(R.string.login_first);
+                	message.setDuration(Toast.LENGTH_SHORT);
             		message.show();
             	}
             	else{
@@ -155,6 +173,8 @@ public class UTilitiesActivity extends SherlockActivity {
             	
             	if(!ConnectionHelper.PNACookieHasBeenSet())// && (!settings.getBoolean("loginpref", true)|| !settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
             	{
+            		message.setText(R.string.login_first);
+                	message.setDuration(Toast.LENGTH_SHORT);
             		message.show();
             	}
             	else{
@@ -188,12 +208,12 @@ public class UTilitiesActivity extends SherlockActivity {
         MenuInflater inflater = this.getSupportMenuInflater();
         inflater.inflate(R.layout.main_menu, menu);
         
-        if(settings.getBoolean("loginpref", false))
+  /*      if(settings.getBoolean("loginpref", false))
     	{
     		menu.removeItem(R.id.login);
     		menu.removeItem(11);
-    	}
-    	else if(ConnectionHelper.cookieHasBeenSet())
+    	}*/
+    	if(ConnectionHelper.cookieHasBeenSet())
     	{
     		menu.removeItem(R.id.login);
     		menu.removeItem(11);
@@ -246,8 +266,39 @@ public class UTilitiesActivity extends SherlockActivity {
     
     public void login()
     {
-    	Intent login_intent = new Intent(this, LoginActivity.class);
-    	startActivity(login_intent);
+    	if(settings.getBoolean("loginpref", false))
+    	{
+    		if( !settings.contains("eid") || 
+      				 !settings.contains("password") || 
+      				 settings.getString("eid", "error").equals("") ||
+      				 settings.getString("password", "error").equals("") )
+    				 {	
+      				 message.setText("Please enter your credentials to log in");
+          			 message.setDuration(Toast.LENGTH_LONG);
+          			 message.show();
+    				 }
+           	else
+           	{
+           		message.setText("Logging in...");
+         		message.setDuration(Toast.LENGTH_SHORT);
+         		message.show();
+         			 
+           		setSupportProgressBarIndeterminateVisibility(true);
+           		ConnectionHelper ch = new ConnectionHelper(this);
+      			DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
+      			DefaultHttpClient pnahttpclient = ConnectionHelper.getThreadSafeClient();
+
+      			ConnectionHelper.resetPNACookie();
+
+      			ch.new loginTask(this,httpclient,pnahttpclient).execute(ch);
+      			ch.new PNALoginTask(this,httpclient,pnahttpclient).execute(ch);
+           	}
+    	}
+    	else
+    	{
+	    	Intent login_intent = new Intent(this, LoginActivity.class);
+	    	startActivity(login_intent);
+    	}
     }
     public void logout()
     {

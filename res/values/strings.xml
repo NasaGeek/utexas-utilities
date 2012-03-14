@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">UTilities</string>
-    <string name="version"> 1.0</string>
+    <string name="version"> 1.5</string>
     <string name="login_button_text">Save</string>
     <string name="login_category">Persistent Login</string>
     <string name="edit_credentials">Edit login credentials</string>
@@ -13,7 +13,7 @@
     <string name="contact">Love the app?  Hate it?  Suggestions? Snide remarks?</string>
     <string name="email">Chris_Roberts@utexas.edu</string>
     <string name="loading_content">Loading content...</string>
-    
+    <string name="login_first">Please log in before using this feature</string>
     
       <string-array name="routes_array">
 			<item>Crossing Place</item>

@@ -18,9 +18,15 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -37,12 +43,11 @@ public class ConnectionHelper {
 	private static boolean cookieHasBeenSet = false;
 	private static boolean PNALoggedIn = false;
 	private static boolean loggedIn = false;
+	public static boolean logindone=false, pnalogindone=false;
 	
 	public ConnectionHelper(Context c)
 	{
 		mContext = c;
-		
-		
 	}
 	public static DefaultHttpClient getThreadSafeClient() {
 
@@ -90,9 +95,14 @@ public class ConnectionHelper {
 	}
 	public static void logout(Context con)
 	{
+		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		Editor edit = settings.edit();
 		getThreadSafeClient().getCookieStore().clear();
 		resetCookies();
 		new ClassDatabase(con).deleteDb();
+		edit.putBoolean("loggedin", false);
+		
+		edit.apply();
 		
 	}
 	public boolean PNALogin(Context con, DefaultHttpClient client)
@@ -222,4 +232,134 @@ public class ConnectionHelper {
 	{
 		return PNACookieHasBeenSet;
 	}
+	public class loginTask extends AsyncTask<Object,Integer,Boolean>
+	{
+		
+		DefaultHttpClient pnahttpclient;
+		DefaultHttpClient httpclient;
+		Editor edit;
+		Context context;
+    	
+    	public loginTask(Context con, DefaultHttpClient httpclient, DefaultHttpClient pnahttpclient)
+		{
+    		settings = PreferenceManager.getDefaultSharedPreferences(con);
+    		this.httpclient = httpclient;
+			this.pnahttpclient = pnahttpclient;
+			edit = settings.edit();
+			this.context = con;
+			
+		}
+    	@Override
+    	protected Boolean doInBackground(Object... params)
+		{
+			boolean loginStatus = ((ConnectionHelper)params[0]).Login(context, (DefaultHttpClient)httpclient);
+			publishProgress(loginStatus?0:1);
+			return loginStatus;		
+		}
+    	@Override
+		protected void onProgressUpdate(Integer... progress)
+		{
+			
+    		switch(progress[0])
+			{
+    		case 1:
+    			Toast.makeText(context, "There was an error while connecting to UTDirect, please check your internet connection and try again", Toast.LENGTH_LONG).show();
+    			cancelProgressBar();
+				break;
+    		case 0:break;
+			}
+		}
+		@Override
+		protected void onPostExecute(Boolean b)
+		{
+			logindone = b;
+			if(logindone && pnalogindone)
+			{
+				logindone = false;pnalogindone = false;
+				
+				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals(""))
+				 {
+					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
+					((SherlockActivity)(context)).invalidateOptionsMenu();
+					edit.putBoolean("loggedin", true);
+					edit.apply();
+					
+				 }
+				cancelProgressBar();
+			}
+		}
+		private void cancelProgressBar()
+		{
+			if(context.getClass().equals(UTilitiesActivity.class))
+				((SherlockActivity)context).setSupportProgressBarIndeterminateVisibility(false);
+			else if(context.getClass().equals(Preferences.class))
+				((SherlockPreferenceActivity)context).setSupportProgressBarIndeterminateVisibility(false);
+		}
+		
+	}
+    public class PNALoginTask extends AsyncTask<Object,Integer,Boolean>
+	{
+    	
+		DefaultHttpClient pnahttpclient;
+		DefaultHttpClient httpclient;
+		Editor edit;
+		Context context;
+    	
+    	public PNALoginTask(Context con, DefaultHttpClient httpclient, DefaultHttpClient pnahttpclient)
+		{
+    		settings = PreferenceManager.getDefaultSharedPreferences(con);
+    		this.httpclient = httpclient;
+			this.pnahttpclient = pnahttpclient;
+			this.context = con;
+			edit = settings.edit();
+		}
+		@Override
+		protected void onProgressUpdate(Integer... progress)
+		{
+    		switch(progress[0])
+			{
+    			case 1:
+    				
+    				Toast.makeText(context, "There was an error while connecting to UT PNA, please check your internet connection and try again", Toast.LENGTH_LONG).show();
+    				cancelProgressBar();
+    				break;
+    			case 0:break;
+			}
+		}
+    	
+		protected Boolean doInBackground(Object... params)
+		{
+			boolean pnaLoginStatus = ((ConnectionHelper)params[0]).PNALogin(context, (DefaultHttpClient)pnahttpclient);
+			publishProgress(pnaLoginStatus?0:1);
+			return pnaLoginStatus;
+		}
+		@Override
+		protected void onPostExecute(Boolean b)
+		{
+			pnalogindone = b;
+			if(logindone && pnalogindone)
+			{
+				logindone = false;pnalogindone = false;
+				
+				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals(""))
+				{
+					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
+					((SherlockActivity)(context)).invalidateOptionsMenu();
+					edit.putBoolean("loggedin", true);
+					edit.apply();
+					
+				 }
+				cancelProgressBar();
+			}
+		}
+		private void cancelProgressBar()
+		{
+			if(context.getClass().equals(UTilitiesActivity.class))
+				((SherlockActivity)context).setSupportProgressBarIndeterminateVisibility(false);
+			else if(context.getClass().equals(Preferences.class))
+				((SherlockPreferenceActivity)context).setSupportProgressBarIndeterminateVisibility(false);
+		}
+		
+	}
+    
 }
