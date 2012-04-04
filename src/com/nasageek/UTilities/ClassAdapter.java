@@ -142,7 +142,7 @@ public class ClassAdapter extends BaseAdapter{
 	{
 		String[] temp = time.split(":");
 		int pos = Integer.parseInt(temp[0])*2 - 16;
-		if(temp[1].contains("P") && pos!=8)
+		if(temp[1].contains("pm") && pos!=8)
 			pos+=24;
 		if(temp[1].charAt(0)=='3')
 			pos++;
