@@ -9,6 +9,7 @@ import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 
 
 import android.app.Activity;
@@ -32,9 +33,10 @@ import android.os.Build;
 import android.os.Bundle;
 
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Transformation;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -66,11 +68,12 @@ public class UTilitiesActivity extends SherlockActivity {
         
         setContentView(R.layout.main);
         setSupportProgressBarIndeterminateVisibility(false);
-  //    final Intent exams = new Intent(getBaseContext(), ExamScheduleActivity.class);
+        final Intent exams = new Intent(getBaseContext(), ExamScheduleActivity.class);
         final Intent schedule = new Intent(getBaseContext(), ScheduleActivity.class);
     	final Intent balance = new Intent(getBaseContext(), BalanceActivity.class);
     	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
     	final Intent data = new Intent(getBaseContext(), DataUsageActivity.class);
+    	final Intent menu = new Intent(getBaseContext(), MenuActivity.class);
     	about_intent = new Intent(this, AboutMeActivity.class);
     	
     	actionbar = getSupportActionBar();
@@ -105,22 +108,26 @@ public class UTilitiesActivity extends SherlockActivity {
         	AlertDialog nologin = nologin_builder.create();
         	nologin.show();
         }
-        if(settings.getBoolean("autologin", false))
+        if(settings.getBoolean("autologin", false) && !ConnectionHelper.cookieHasBeenSet())
         {
         	login(); 
         }
         
         final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
-        schedulebutton.setBackgroundResource(R.drawable.schedule_button_anim);
-
+    //    schedulebutton.setBackgroundResource(R.drawable.schedule_button_anim);
+    //    AlphaAnimation aa = new AlphaAnimation(0.0f,1.0f);
+        
+    //    Transformation tran = new Transformation();
+        
+  //      tran.setTransformationType(Transformation.TYPE_ALPHA);
         // Get the background, which has been compiled to an AnimationDrawable object.
-        frameAnimation = (AnimationDrawable) schedulebutton.getBackground();
+    //    frameAnimation = (AnimationDrawable) schedulebutton.getBackground();
         
         // Start the animation (looped playback by default).
         
         schedulebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-            	frameAnimation.start();
+          //  	frameAnimation.start();
             	if(!ConnectionHelper.cookieHasBeenSet() && new ClassDatabase(UTilitiesActivity.this).size()==0)// && (!settings.getBoolean("loginpref", true)||!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
             	{
             		message.setText(R.string.login_first);
@@ -185,7 +192,23 @@ public class UTilitiesActivity extends SherlockActivity {
             }
             
     });
- /*       final ImageButton examsbutton = (ImageButton) findViewById(R.id.exams_button);
+        final ImageButton menubutton = (ImageButton) findViewById(R.id.menu_button);
+        menubutton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+            	
+          //  	if(!ConnectionHelper.cookieHasBeenSet() )//&& (!settings.getBoolean("loginpref", true)|| !settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
+          //  	{
+          //  		Toast.makeText(UTilitiesActivity.this, "Please log in before using this feature",Toast.LENGTH_SHORT).show();
+          //  	}
+          //  	else
+         //  	{
+            		startActivity(menu);	
+           // 	}
+            		
+            }
+            
+    });
+        final ImageButton examsbutton = (ImageButton) findViewById(R.id.exams_button);
         examsbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	
@@ -200,7 +223,7 @@ public class UTilitiesActivity extends SherlockActivity {
             		
             }
             
-    });*/
+    });
         
     }
     @Override
@@ -284,6 +307,8 @@ public class UTilitiesActivity extends SherlockActivity {
          		message.show();
          			 
            		setSupportProgressBarIndeterminateVisibility(true);
+           		
+           		
            		ConnectionHelper ch = new ConnectionHelper(this);
       			DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
       			DefaultHttpClient pnahttpclient = ConnectionHelper.getThreadSafeClient();

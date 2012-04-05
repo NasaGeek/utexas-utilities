@@ -5,7 +5,10 @@
     android:layout_height="fill_parent"
     android:background="@drawable/main_background">
 <TableRow
-	android:paddingTop="64dp">
+
+	android:layout_weight="1"
+	android:layout_gravity="center">
+	<!-- 	android:paddingTop="64dp" -->
 	<ImageButton
 		android:layout_weight="1"
 	
@@ -27,7 +30,10 @@
 	
 </TableRow>
 <TableRow
-		android:layout_width="wrap_content" android:baselineAligned="true" android:paddingTop="47dp">
+    
+    android:layout_weight="1"
+	android:layout_gravity="center"
+		android:layout_width="fill_parent" android:baselineAligned="true"> <!-- android:paddingTop="47dp"  android:layout_marginBottom="27px"   -->
     <ImageButton android:src="@drawable/map_image_button" 
     android:layout_weight="1"
     android:id="@+id/map_button" 
@@ -46,9 +52,19 @@
 		
 </TableRow> 
 
-<!-- 	<TableRow
-	android:layout_width="wrap_content" android:baselineAligned="true" android:paddingTop="47dp">
-	<ImageButton android:src="@drawable/map_image_button" 
+  	<TableRow
+ 	    android:layout_marginBottom="27px"
+ 	    android:layout_weight="1"
+	android:layout_width="wrap_content" android:baselineAligned="true"> <!-- android:paddingTop="47dp"-->
+	<ImageButton android:src="@drawable/menu_image_button" 
+    android:layout_weight="1"
+    android:id="@+id/menu_button" 
+    android:layout_height="wrap_content" 
+    android:layout_gravity="center" 
+    android:layout_width="wrap_content" 
+    android:background="#00000000"></ImageButton>
+	
+	<ImageButton android:src="@drawable/data_image_button" 
     android:layout_weight="1"
     android:id="@+id/exams_button" 
     android:layout_height="wrap_content" 
@@ -57,6 +73,5 @@
     android:background="#00000000"></ImageButton>
 	
 	
-	
-	</TableRow>-->
+	</TableRow> -->
 </TableLayout>

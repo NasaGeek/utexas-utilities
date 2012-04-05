@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -48,13 +49,14 @@ public class ExamScheduleActivity extends Activity
 	private ListView examlistview;
 	private LinearLayout linlay;
 	private ExamAdapter ea;
+	private LinearLayout pb_ll;
 	
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.examschedule_layout);
 		
-		pd = ProgressDialog.show(ExamScheduleActivity.this, "", "Loading...");
+		pb_ll = (LinearLayout) findViewById(R.id.examschedule_progressbar_ll);
 		examlistview = (ListView) findViewById(R.id.examschedule_listview);
 		linlay = (LinearLayout) findViewById(R.id.examschedule_linlay);
 		
@@ -76,20 +78,7 @@ public class ExamScheduleActivity extends Activity
 
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
-		/*if(settings.getBoolean("loginpref", true))
-		{
-			if(!ch.Login(this, httpclient))	
-			{	
-				finish();
-				return;
-			}
-		}
 		
-		if(ConnectionHelper.getAuthCookie(this,httpclient).equals(""))
-		{
-			finish();
-			return;
-		}*/
 		BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(this,httpclient));
     	cookie.setDomain(".utexas.edu");
     	httpclient.getCookieStore().addCookie(cookie);
@@ -175,11 +164,8 @@ public class ExamScheduleActivity extends Activity
 	    		linlay.removeAllViews();
 	    		linlay.addView(tv);
 			}
-			
-			if(pd.isShowing())
-			{
-				pd.cancel();
-			}
+			pb_ll.setVisibility(View.GONE);
+			examlistview.setVisibility(View.VISIBLE);
 		}
 	}
 	

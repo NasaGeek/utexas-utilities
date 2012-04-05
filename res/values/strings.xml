@@ -6,7 +6,8 @@
     <string name="login_category">Persistent Login</string>
     <string name="edit_credentials">Edit login credentials</string>
     <string name="sharedpref_file">UTilities_preferences</string>
-    <string name="prompt">Select Route Overlay</string>
+    <string name="routeprompt">Select Route Overlay</string>
+    <string name="restaurantprompt">Select a Restaurant</string>
     <string name="building_intent">BUILDING</string>
     <string name="developer">Developer: Chris Roberts</string>
     <string name="classinfo">Electrical Engineering Class of 2015</string>

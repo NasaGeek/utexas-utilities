@@ -102,7 +102,7 @@ public class ConnectionHelper {
 		new ClassDatabase(con).deleteDb();
 		edit.putBoolean("loggedin", false);
 		
-		edit.apply();
+		edit.commit();
 		
 	}
 	public boolean PNALogin(Context con, DefaultHttpClient client)
@@ -282,7 +282,7 @@ public class ConnectionHelper {
 					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
 					((SherlockActivity)(context)).invalidateOptionsMenu();
 					edit.putBoolean("loggedin", true);
-					edit.apply();
+					edit.commit();
 					
 				 }
 				cancelProgressBar();
@@ -319,7 +319,6 @@ public class ConnectionHelper {
     		switch(progress[0])
 			{
     			case 1:
-    				
     				Toast.makeText(context, "There was an error while connecting to UT PNA, please check your internet connection and try again", Toast.LENGTH_LONG).show();
     				cancelProgressBar();
     				break;
@@ -346,7 +345,7 @@ public class ConnectionHelper {
 					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
 					((SherlockActivity)(context)).invalidateOptionsMenu();
 					edit.putBoolean("loggedin", true);
-					edit.apply();
+					edit.commit();
 					
 				 }
 				cancelProgressBar();

@@ -216,7 +216,7 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 				
 				
 				if(!ScheduleActivity.this.isFinishing())
-			    	Toast.makeText(ScheduleActivity.this, "Tap a class to see its information.\nTap and hold to see the class on a map.", Toast.LENGTH_LONG).show();
+			    	Toast.makeText(ScheduleActivity.this, "Tap a class to see its information.", Toast.LENGTH_SHORT).show();
 				
 			}
 		}

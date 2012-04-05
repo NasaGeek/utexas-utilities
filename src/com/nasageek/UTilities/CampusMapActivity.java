@@ -153,7 +153,7 @@ public class CampusMapActivity extends SherlockMapActivity  {
     		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
 		
         final Spinner spinner = new Spinner(this);
-        spinner.setPromptId(R.string.prompt);
+        spinner.setPromptId(R.string.routeprompt);
         TextView emptytv = new TextView(this);
         emptytv.setText("No route selected");
         

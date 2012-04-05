@@ -2,7 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/examschedule_linlay"
  	android:layout_width="fill_parent"
- 	android:layout_height="fill_parent">
+ 	android:layout_height="fill_parent"
+ 	android:orientation="vertical">
+	 
+	 <include android:id="@+id/examschedule_progressbar_ll" layout="@layout/loading_content_layout"/>
+	 
 	 <ListView
 		 	android:paddingTop="10dp"
 			android:id="@+id/examschedule_listview"
