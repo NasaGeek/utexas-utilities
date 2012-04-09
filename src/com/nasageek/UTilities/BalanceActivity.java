@@ -1,111 +1,59 @@
 package com.nasageek.UTilities;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Vector;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
-import android.util.TimingLogger;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 
+import android.support.v4.view.ViewPager;
+import android.util.Log;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.viewpagerindicator.TabPageIndicator;
 
-import android.view.View;
-
-import android.widget.ArrayAdapter;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TabHost;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.TwoLineListItem;
-import android.widget.TabHost.TabContentFactory;
 
 
-public class BalanceActivity extends SherlockFragmentActivity 
+
+public class BalanceActivity extends SherlockFragmentActivity
 {	
-	private  DefaultHttpClient httpclient;
-	private ProgressDialog pd;
-	private ProgressBar pb;
-	private LinearLayout b_pb_ll, d_pb_ll;
 	private ConnectionHelper ch;
-	private LinearLayout bevolinlay,dineinlinlay;
-	private ListView blv,dlv;
+	
 	ArrayList<String> dtransactionlist, btransactionlist, balancelist;
 	String[] dtransactionarray, btransactionarray;
-	private File transfile;
-	TimingLogger timings;
 	int count;
-	private boolean bfilled, dfilled;
 	TextView tv1, tv2,tv3,tv4;
 	ActionBar actionbar;
 	String bevobalance="", dineinbalance="No Dine In Dollars? What kind of animal are you?";
-	private SharedPreferences settings;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-	
-		settings = PreferenceManager.getDefaultSharedPreferences(this);
+		setContentView(R.layout.balance_layout);
+		this.initialisePaging();
 		
-
-		timings = new TimingLogger("Timing", "Balance OnCreate");
 		
 		ch = new ConnectionHelper(this);
 	
 		actionbar = getSupportActionBar();
 		actionbar.setTitle("Transactions");
-		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionbar.setHomeButtonEnabled(true);
 		actionbar.setDisplayHomeAsUpEnabled(true);
 		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
     		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
 		
-		 actionbar.addTab(actionbar.newTab()
+	/*	 actionbar.addTab(actionbar.newTab()
 		            .setText("Dinein")
 		            .setTabListener(new TabListener<DineinFragment>(
 		                    this, "dinein", DineinFragment.class, null)));
@@ -113,7 +61,7 @@ public class BalanceActivity extends SherlockFragmentActivity
 		    actionbar.addTab(actionbar.newTab()
 		            .setText("Bevo Bucks")
 		            .setTabListener(new TabListener<BevoFragment>(
-		                    this, "bevo", BevoFragment.class, null)));
+		                    this, "bevo", BevoFragment.class, null)));*/
 		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 			public void uncaughtException(Thread thread, Throwable ex)
@@ -123,34 +71,50 @@ public class BalanceActivity extends SherlockFragmentActivity
 				finish();
 				return;
 			}});
-	
-		try
-			{
-			
-				timings.addSplit("parsed");	
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-				finish();
-				return;
-			}
-	
-	//	    timings.addSplit("views set up");	
-	
-		
-		
-	//	timings.addSplit("set both adapters");
-		
-	
-		
-	//	timings.addSplit("set up tabs");
-	//	timings.dumpToLog();
 	}
 	
-
+	 /** maintains the pager adapter*/
+	
+	    private PagerAdapter mPagerAdapter;
+	
+	    /* (non-Javadoc)
+	
+	     * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
+	
+	     */
+	    /**
+	
+	     * Initialise the fragments to be paged
+	
+	     */
+	
+	    private void initialisePaging() {
+	
+	 
+	
+	        List<SherlockFragment> fragments = new Vector<SherlockFragment>();
+	        Bundle args = new Bundle(1);
+	        args.putString("title", "Dinein");
+	        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, DineinFragment.class.getName(), args));
+	        args = new Bundle(1);
+	        args.putString("title", "Bevo Bucks");
+	        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, BevoFragment.class.getName(), args));
+	
+	      
+	        this.mPagerAdapter  = new PagerAdapter(getSupportFragmentManager(), fragments);	
+	        ViewPager pager = (ViewPager)findViewById(R.id.viewpager);
+	        pager.setPageMargin(2);
+	        pager.setAdapter(this.mPagerAdapter);
+	        TabPageIndicator tabIndicator = (TabPageIndicator)findViewById(R.id.titles);
+			tabIndicator.setViewPager(pager);
+			
+	    }
+	
 	
 
+	
+	
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -216,8 +180,7 @@ public class BalanceActivity extends SherlockFragmentActivity
         }
 
         public void onTabReselected(Tab tab, FragmentTransaction fta) {
-        	FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
-            Toast.makeText(mActivity, "Reselected!", Toast.LENGTH_SHORT).show();
+        	
         }
     
 	}

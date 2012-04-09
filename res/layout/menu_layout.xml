@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" 
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+	 <com.viewpagerindicator.TabPageIndicator
+	     
+        android:id="@+id/titles"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        />
+    
+<android.support.v4.view.ViewPager
+    android:id="@+android:id/viewpager"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+
+    />
+    
+<!--  <include layout="@layout/dinein_fragment_layout"/>
+<include layout="@layout/bevo_fragment_layout"/> -->
+</LinearLayout>
+
+
+
+
+
+<!-- <TabHost xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/menutabhost"
    
     android:layout_width="fill_parent"
@@ -80,4 +106,4 @@
                                 
                          </FrameLayout>  
                 </LinearLayout>
-</TabHost>
+</TabHost> -->

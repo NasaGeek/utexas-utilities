@@ -41,10 +41,11 @@
 					   android:resource="@xml/searchable"/>
         		</activity>
         <activity android:name=".BalanceActivity" 
-
+					android:theme="@style/StyledIndicators"
         			android:screenOrientation="portrait"
         		></activity>
         <activity android:name=".MenuActivity"
+            		android:theme="@style/StyledIndicators"
             		android:screenOrientation="portrait"></activity>
         <activity android:name=".ExamScheduleActivity"
         			android:screenOrientation="portrait"></activity>
