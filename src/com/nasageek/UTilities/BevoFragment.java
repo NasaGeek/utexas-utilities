@@ -180,7 +180,7 @@ public class BevoFragment extends SherlockFragment
 		 	menu.removeItem(R.id.balance_refresh);
 			inflater.inflate(R.layout.balance_menu, menu);       
 	}
-	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 	    	int id = item.getItemId();

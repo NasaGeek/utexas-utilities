@@ -127,7 +127,7 @@ public class BalanceActivity extends SherlockFragmentActivity
 		            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		            startActivity(home);break;
 	    	}
-	    	return true;
+	    	return false;
 	}
 
 	public static class TabListener<T extends Fragment> implements ActionBar.TabListener 

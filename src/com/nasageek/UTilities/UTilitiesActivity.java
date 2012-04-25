@@ -344,6 +344,7 @@ public class UTilitiesActivity extends SherlockActivity {
     {
     	lt.cancel(true);
    		plt.cancel(true);
+   		message.setText("Cancelled");
     	ConnectionHelper.logout(this);
     	setSupportProgressBarIndeterminateVisibility(false);
 

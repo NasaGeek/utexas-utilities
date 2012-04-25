@@ -169,6 +169,7 @@ public class DineinFragment extends SherlockFragment
 			inflater.inflate(R.layout.balance_menu, menu);
 	        
 	}
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 	    	int id = item.getItemId();
