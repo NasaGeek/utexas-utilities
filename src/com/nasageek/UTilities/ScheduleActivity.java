@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jsoup.*;
@@ -14,9 +15,13 @@ import org.jsoup.select.Elements;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.viewpagerindicator.TabPageIndicator;
 
 
 import android.view.View;
@@ -31,6 +36,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.TimingLogger;
 import android.view.View.OnClickListener;
@@ -48,7 +54,7 @@ import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, AdapterView.OnItemClickListener{
+public class ScheduleActivity extends SherlockFragmentActivity implements SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, AdapterView.OnItemClickListener, ViewPager.OnPageChangeListener{
 	
 	private GridView gv;
 	private ConnectionHelper ch;
@@ -64,32 +70,36 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 	private LinearLayout ll;
 	private ImageView ci_iv;
 	private TextView ci_tv;
-	private Button ci_button;
+	
 	private ActionBar actionbar;
 	private Menu menu;
 	private classtime current_clt;
+	private ActionMode mode;
+	private PagerAdapter mPagerAdapter;
+	private List<SherlockFragment> fragments;
 	
 		
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.schedule_layout);
+		initialisePaging();
 		ch = new ConnectionHelper(this);
 		sp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-		cdb = new ClassDatabase(this);
-		sd = (WrappingSlidingDrawer) findViewById(R.id.drawer);
-	    sdll = (LinearLayout) findViewById(R.id.llsd);
+//		cdb = new ClassDatabase(this);
+//		sd = (WrappingSlidingDrawer) findViewById(R.id.drawer);
+//	    sdll = (LinearLayout) findViewById(R.id.llsd);
 	    
-	    ci_iv = (ImageView) findViewById(R.id.class_info_color);
-	    ci_tv = (TextView) findViewById(R.id.class_info_text);
-  //    ci_button = (Button) findViewById(R.id.class_locate_button);
+//	    ci_iv = (ImageView) findViewById(R.id.class_info_color);
+//	    ci_tv = (TextView) findViewById(R.id.class_info_text);
+
 	    
-	    pb_ll = (LinearLayout) findViewById(R.id.schedule_progressbar_ll);
-	    gv = (GridView) findViewById(R.id.scheduleview);
-		ll = (LinearLayout) findViewById(R.id.schedule_ll);
+//	    pb_ll = (LinearLayout) findViewById(R.id.schedule_progressbar_ll);
+//	    gv = (GridView) findViewById(R.id.scheduleview);
+//		ll = (LinearLayout) findViewById(R.id.schedule_ll);
 		actionbar = getSupportActionBar();
 		
-		ca = new ClassAdapter(this,sd,sdll,ci_iv,ci_tv,ci_button);
+//		ca = new ClassAdapter(this,sd,sdll,ci_iv,ci_tv);
 		
 		
 		actionbar.setTitle("Schedule");
@@ -106,18 +116,14 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 			return;
 		}});
 	
-		Cursor sizecheck = cdb.getReadableDatabase().query("classes", null, null, null, null, null, null);
-		
-		
-	//		TimingLogger timings = new TimingLogger("Timing", "talk to website, parse, add classes");
+/*		Cursor sizecheck = cdb.getReadableDatabase().query("classes", null, null, null, null, null, null);
+
 		if (sizecheck.getCount()<1)
 		{	
 			sizecheck.close();
 		
 			//	Log.d("SCHEDULE", "parsing");
-			//	timings.addSplit("split");
 			    parser();
-			//  timings.addSplit("finished");
 		}
 		else
 		{
@@ -134,17 +140,35 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 		    
 	   sd.setOnDrawerCloseListener(this);
 	   sd.setOnDrawerOpenListener(this);
-       sd.setVisibility(View.INVISIBLE);
-	}
-	
-
-		public void parser()
-	    {
-
-			client = ConnectionHelper.getThreadSafeClient();
-			new parseTask(client).execute();
+       sd.setVisibility(View.INVISIBLE); */
+		}
+		private void initialisePaging() 
+		{
 			
-	    }
+			fragments = new Vector<SherlockFragment>();
+	        Bundle args = new Bundle(1);
+	        args.putString("title", "Course Schedule");
+	        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, CourseScheduleFragment.class.getName(), args));
+	        args = new Bundle(1);
+	        args.putString("title", "Exam Schedule");
+	        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, ExamScheduleFragment.class.getName(), args));
+	
+	      
+	        this.mPagerAdapter  = new PagerAdapter(getSupportFragmentManager(), fragments);	
+	        ViewPager pager = (ViewPager)findViewById(R.id.viewpager);
+	        pager.setPageMargin(2);
+	        pager.setAdapter(this.mPagerAdapter);
+	        TabPageIndicator tabIndicator = (TabPageIndicator)findViewById(R.id.titles);
+			tabIndicator.setViewPager(pager);
+			
+			tabIndicator.setOnPageChangeListener(this);
+						
+	   }
+		@Override
+		public void onPause()
+		{
+			super.onPause();
+		}
 		private class parseTask extends AsyncTask<Object,Void,Object>
 		{
 			private DefaultHttpClient client;
@@ -158,7 +182,7 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 			protected Object doInBackground(Object... params)
 			{
 				Document doc = null;
-
+	
 			    	try{
 			    		doc = Jsoup.connect("https://utdirect.utexas.edu/registration/classlist.WBX")
 			    				.cookie("SC", ConnectionHelper.getAuthCookie(ScheduleActivity.this, client))
@@ -202,7 +226,7 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 			}
 			protected void onPostExecute(Object result)
 			{
-				ca = new ClassAdapter(ScheduleActivity.this,sd,sdll,ci_iv,ci_tv,ci_button);
+				ca = new ClassAdapter(ScheduleActivity.this,sd,sdll,ci_iv,ci_tv);
 				ca.updateTime();
 				
 				
@@ -218,18 +242,8 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 				if(!ScheduleActivity.this.isFinishing())
 			    	Toast.makeText(ScheduleActivity.this, "Tap a class to see its information.", Toast.LENGTH_SHORT).show();
 				
+				}
 			}
-		}
-		@Override
-		public boolean onCreateOptionsMenu(Menu menu) {
-			
-			MenuInflater inflater = this.getSupportMenuInflater();
-	        inflater.inflate(R.layout.schedule_menu, menu);
-			this.menu = menu;
-			if(current_clt == null)
-				menu.removeItem(R.id.locate_class);
-			return true;
-		}
 		public boolean onOptionsItemSelected(MenuItem item)
 	    {
 	    	int id = item.getItemId();
@@ -241,21 +255,17 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 	            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(home);break;
 	    	
-	    	case R.id.locate_class:
-	    		Intent map = new Intent(getString(R.string.building_intent), null, this, CampusMapActivity.class);
-				map.setData(Uri.parse(current_clt.getBuilding().getId()));
-				startActivity(map);break;
 	    	default: return super.onOptionsItemSelected(item);
 	    	}
 	    	return true;
 	    }
-		@Override
+/*		@Override
 		public void onResume()
 		{
 			super.onResume();
 			ca.updateTime();
 			gv.invalidateViews(); 		
-		}
+		}*/
 
 		public void onDrawerClosed()
 		{
@@ -280,9 +290,7 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 			current_clt = (classtime) parent.getItemAtPosition(position);
 			if(current_clt!=null)
 			{
-		//		menu.add(R.id.locate_class);
-				this.invalidateOptionsMenu();
-	
+				mode = startActionMode(new ScheduleActionMode());
 	
 				sd.setVisibility(View.VISIBLE);
 				//Cursor cur = cdb.getReadableDatabase().query("classes", null, "eid = \"" + sp.getString("eid", "eid not found")+"\" AND day = \""+ clt.getDay()+"\" AND start = \""+ clt.getStartTime()+"\"", null,null,null,null);
@@ -313,30 +321,77 @@ public class ScheduleActivity extends SherlockActivity implements SlidingDrawer.
 			
 			    	}
 			    	text+="\n";
-			  //  	ImageView iv = new ImageView(currentContext);
 			    	ci_iv.setBackgroundColor(Color.parseColor("#"+cdb.getColor(current_clt.getUnique(),current_clt.getStartTime(), current_clt.getDay()+"")));
 			    	ci_iv.setMinimumHeight(10);
 			    	ci_iv.setMinimumWidth(10);
 			    	
 		    		ci_tv.setTextColor(Color.BLACK);
-		    		ci_tv.setTextSize((float) 15);
+		    		ci_tv.setTextSize((float) 14);
 		    		ci_tv.setBackgroundColor(0x99F0F0F0);
 		    		ci_tv.setText(text);
-		 //   		sdll.addView(iv);
-		 //  		sdll.addView(tv);
 
 		    	}
-			//    sdll.addView(button);
-			    
-			    sd.open();
-			    
-			    
+			    sd.open();    
 			}
 			else
-			{	menu.removeItem(R.id.locate_class);
+			{	if(mode!=null)
+					mode.finish();
+				//menu.removeItem(R.id.locate_class);
 				sd.setVisibility(View.INVISIBLE);
 				this.invalidateOptionsMenu();}
 		//	Log.d("CLICKY", position+"");
+		}
+		
+		private final class ScheduleActionMode extends ViewPager.SimpleOnPageChangeListener implements ActionMode.Callback {
+	        @Override
+	        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+	            mode.setTitle("Class Info");
+	            MenuInflater inflater = getSupportMenuInflater();
+	            inflater.inflate(R.layout.schedule_menu, menu);
+	            return true;
+	        }
+
+	        @Override
+	        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+	            return false;
+	        }
+
+	        @Override
+	        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+	            switch(item.getItemId())
+	            {
+	            	case R.id.locate_class:
+	            		Intent map = new Intent(getString(R.string.building_intent), null, ScheduleActivity.this, CampusMapActivity.class);
+	    				map.setData(Uri.parse(current_clt.getBuilding().getId()));
+	    				startActivity(map);break;
+	            }
+	            return true;
+	        }
+
+	        @Override
+	        public void onDestroyActionMode(ActionMode mode) {
+	        }
+		}
+		
+		@Override
+		public void onPageScrollStateChanged(int arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void onPageScrolled(int arg0, float arg1, int arg2) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		// TODO not sure if I want this yet, maybe a more elegant solution?
+		@Override
+		public void onPageSelected(int location) {
+			// TODO Auto-generated method stub
+			
+			for(SherlockFragment csf : fragments)
+				if(((ActionModeFragment)csf).getActionMode()!=null)
+					((ActionModeFragment)csf).getActionMode().finish();
 		}
 		
 }

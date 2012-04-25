@@ -76,7 +76,6 @@ public class MenuActivity extends SherlockFragmentActivity {
 	      code = c;
 	      this.fullName = fullName;
 	    }
-
 	    public String getCode() {
 	      return code;
 	    }

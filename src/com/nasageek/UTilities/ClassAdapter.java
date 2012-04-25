@@ -54,10 +54,10 @@ public class ClassAdapter extends BaseAdapter{
 	
 	private ImageView ci_iv;
 	private TextView ci_tv;
-	private Button ci_button;
 	
-	public ClassAdapter(Context c, WrappingSlidingDrawer wsd, LinearLayout llsd, ImageView ci_iv, TextView ci_tv, Button ci_buttonb)
+	public ClassAdapter(Context c, WrappingSlidingDrawer wsd, LinearLayout llsd, ImageView ci_iv, TextView ci_tv)
 	{
+		
 		sdll = llsd;
 		sd = wsd;
 		sp = PreferenceManager.getDefaultSharedPreferences(c);
@@ -66,7 +66,7 @@ public class ClassAdapter extends BaseAdapter{
 		
 		this.ci_iv = ci_iv;
 		this.ci_tv = ci_tv;
-		this.ci_button = ci_button;
+		
 		
 		
 		updateTime();
@@ -129,7 +129,7 @@ public class ClassAdapter extends BaseAdapter{
 	{
 		cal = Calendar.getInstance();
 		day = cal.get(Calendar.DAY_OF_WEEK)-2;
-		time = cal.get(Calendar.HOUR)+(cal.get(Calendar.MINUTE)>30?":30":":00")+ (cal.get(Calendar.AM_PM)==Calendar.PM?"P":"");
+		time = cal.get(Calendar.HOUR)+(cal.get(Calendar.MINUTE)>30?":30":":00")+ (cal.get(Calendar.AM_PM)==Calendar.PM?"pm":"");
 		
 		if(day<5 && day>=0 && cal.get(Calendar.HOUR_OF_DAY)<=22 && cal.get(Calendar.HOUR_OF_DAY)>=8)
 		{
@@ -240,29 +240,32 @@ public class ClassAdapter extends BaseAdapter{
 	}
 	private int getEmptyCellColor(int position)
 	{
+		int darkgray = 0xFFcecece;
+		int lightgray = 0xFFdcdcdc;
+		
 		if(sp.getString("schedule_background_style", "checkhour").equals("checkhour"))
 		{
     		if((position/10)%2==0)
     		{
     			if((position/5)%2==0)
-    				return position%2==0?Color.LTGRAY:0xFFbdbdbd;
+    				return position%2==0?lightgray:darkgray;
     			else
-    				return position%2==0?0xFFbdbdbd:Color.LTGRAY;
+    				return position%2==0?darkgray:lightgray;
     		}
     		else	
     		{
     			if((position/5)%2==0)
-    				return position%2==0?0xFFbdbdbd:Color.LTGRAY;
+    				return position%2==0?darkgray:lightgray;
     			else
-    				return position%2==0?Color.LTGRAY:0xFFbdbdbd;
+    				return position%2==0?lightgray:darkgray;
     		}
 		}	
 		else if(sp.getString("schedule_background_style", "checkhour").equals("checkhalf"))
-			return position%2==0 && (position%10)%2==0?Color.LTGRAY:0xFFbdbdbd;
+			return position%2==0 && (position%10)%2==0?lightgray:darkgray;
 		else if(sp.getString("schedule_background_style", "checkhour").equals("stripehour"))
-			return position/10%2==0?Color.LTGRAY:0xFFbdbdbd;
+			return position/10%2==0?lightgray:darkgray;
 		else if(sp.getString("schedule_background_style", "checkhour").equals("stripehalf"))
-			return position/5%2==0?Color.LTGRAY:0xFFbdbdbd;
+			return position/5%2==0?lightgray:darkgray;
 		else
 			return Color.BLACK;
 	}

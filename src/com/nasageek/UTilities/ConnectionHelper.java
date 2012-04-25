@@ -44,6 +44,7 @@ public class ConnectionHelper {
 	private static boolean PNALoggedIn = false;
 	private static boolean loggedIn = false;
 	public static boolean logindone=false, pnalogindone=false;
+	public static boolean loggingIn=false;
 	
 	public ConnectionHelper(Context c)
 	{
@@ -103,7 +104,12 @@ public class ConnectionHelper {
 		edit.putBoolean("loggedin", false);
 		
 		edit.commit();
+		loggingIn = false;
 		
+	}
+	public static boolean isLoggingIn()
+	{
+		return loggingIn;
 	}
 	public boolean PNALogin(Context con, DefaultHttpClient client)
 	{
@@ -252,7 +258,8 @@ public class ConnectionHelper {
     	@Override
     	protected Boolean doInBackground(Object... params)
 		{
-			boolean loginStatus = ((ConnectionHelper)params[0]).Login(context, (DefaultHttpClient)httpclient);
+			loggingIn=true;
+    		boolean loginStatus = ((ConnectionHelper)params[0]).Login(context, (DefaultHttpClient)httpclient);
 			publishProgress(loginStatus?0:1);
 			return loginStatus;		
 		}
@@ -273,9 +280,11 @@ public class ConnectionHelper {
 		protected void onPostExecute(Boolean b)
 		{
 			logindone = b;
-			if(logindone && pnalogindone)
+			
+			if(logindone && pnalogindone && !isCancelled())
 			{
 				logindone = false;pnalogindone = false;
+				loggingIn=false;
 				
 				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals(""))
 				 {
@@ -328,6 +337,7 @@ public class ConnectionHelper {
     	
 		protected Boolean doInBackground(Object... params)
 		{
+			loggingIn = true;
 			boolean pnaLoginStatus = ((ConnectionHelper)params[0]).PNALogin(context, (DefaultHttpClient)pnahttpclient);
 			publishProgress(pnaLoginStatus?0:1);
 			return pnaLoginStatus;
@@ -336,9 +346,11 @@ public class ConnectionHelper {
 		protected void onPostExecute(Boolean b)
 		{
 			pnalogindone = b;
-			if(logindone && pnalogindone)
+			
+			if(logindone && pnalogindone && !isCancelled())
 			{
 				logindone = false;pnalogindone = false;
+				loggingIn=false;
 				
 				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals(""))
 				{

@@ -64,14 +64,14 @@
     android:layout_width="wrap_content" 
     android:background="#00000000"></ImageButton>
 	
-	<ImageButton android:src="@drawable/data_image_button" 
+<!-- 	<ImageButton android:src="@drawable/data_image_button" 
     android:layout_weight="1"
     android:id="@+id/exams_button" 
     android:layout_height="wrap_content" 
     android:layout_gravity="center" 
     android:layout_width="wrap_content" 
-    android:background="#00000000"></ImageButton>
+    android:background="#00000000"></ImageButton> -->
 	
 	
-	</TableRow> -->
+	</TableRow> 
 </TableLayout>

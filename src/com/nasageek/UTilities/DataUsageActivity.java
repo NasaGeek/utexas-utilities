@@ -35,7 +35,10 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.Paint.Align;
+import android.graphics.Paint.Style;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -54,6 +57,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.series.XYSeries;
 import com.androidplot.xy.*;
@@ -99,6 +103,8 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 		d_pb_ll = (LinearLayout) findViewById(R.id.data_progressbar_ll);
 		dataUsedText = (TextView) findViewById(R.id.dataUsedText);
 		mProgress = (ProgressBar) findViewById(R.id.percentDataUsed);
+		
+//		mProgress.setBackgroundColor(Color.rgb(204,85,0));
 		
 		actionbar = getSupportActionBar();
 		actionbar.setTitle("Data Usage");
@@ -331,8 +337,9 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    	
 			Pattern percentpattern = Pattern.compile("\\((.+?)%\\)");
 	    	Matcher percentmatcher = percentpattern.matcher(pagedata);
-			percentmatcher.find();
-			String found = percentmatcher.group(1);
+	    	String found = "0.00";
+			if(percentmatcher.find())
+				found = percentmatcher.group(1);
 			percentused = Double.parseDouble(found);
 			
 			Pattern usedpattern = Pattern.compile("<b>(.*?)</b>");
@@ -417,20 +424,67 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 			XYSeries series = new SimpleXYSeries(Arrays.asList(labels), Arrays.asList(downdata),  "Downloaded");
 			XYSeries seriestotal = new SimpleXYSeries(Arrays.asList(labels), Arrays.asList(totaldata),  "Uploaded");
 			
-			BarFormatter barformatter = new BarFormatter(Color.GREEN, Color.BLACK);
-			BarFormatter barformatter2 = new BarFormatter(Color.CYAN, Color.BLACK);
+			LineAndPointFormatter downlineformatter = new LineAndPointFormatter(0xFFFFAD3B, 0xFFFFAD3B, 0xFFFFAD3B);
+			LineAndPointFormatter uplineformatter = new LineAndPointFormatter(0xFF388DFF, 0xFF388DFF, 0xFF388DFF);
+			
+			BarFormatter downbarformatter = new BarFormatter( 0xFFFFAD3B/*Color.rgb(68,166,75)*/, Color.BLACK);
+			BarFormatter upbarformatter = new BarFormatter(0xFF388DFF/*Color.rgb(130,159,255)*/, Color.BLACK);
+			downbarformatter.getBorderPaint().setStrokeWidth(0);
+			upbarformatter.getBorderPaint().setStrokeWidth(0);
+			
+			graph.getBackgroundPaint().setAlpha(0);
+			graph.getBorderPaint().setAlpha(0);
+			
+			
+			Paint borderpaint = new Paint();
+			borderpaint.setColor(Color.BLACK);
+			borderpaint.setAntiAlias(true);
+			
+			Paint legendtextpaint = new Paint(borderpaint);
+			borderpaint.setTextAlign(Paint.Align.CENTER);
+	
+			Paint backgroundpaint = new Paint();
+			backgroundpaint.setColor(0xFFDDDDDD);
+			backgroundpaint.setStyle(Style.FILL);
+			
+			Paint gridpaint = new Paint();
+			gridpaint.setColor(Color.DKGRAY);
+			gridpaint.setAntiAlias(true);
+	        gridpaint.setStyle(Paint.Style.STROKE);
+	        
+	        Paint rangepaint = new Paint();
+	        rangepaint.setColor(Color.BLACK);
+	        rangepaint.setStyle(Style.STROKE);
+	        rangepaint.setAntiAlias(true);
+	        rangepaint.setTextAlign(Align.RIGHT);
+			
+	        graph.getGraphWidget().getBackgroundPaint().setAlpha(0);
+			graph.getGraphWidget().setGridLinePaint(gridpaint);
+			graph.getGraphWidget().setGridBackgroundPaint(backgroundpaint);
+			graph.getGraphWidget().setDomainOriginLinePaint(gridpaint);
+			graph.getGraphWidget().setRangeOriginLinePaint(gridpaint);
+			graph.getGraphWidget().setDomainOriginLabelPaint(borderpaint);
+			graph.getGraphWidget().setDomainLabelPaint(borderpaint);
+			graph.getGraphWidget().setRangeLabelPaint(rangepaint);
+			graph.getGraphWidget().setRangeOriginLabelPaint(rangepaint);
+			
+			graph.getLegendWidget().setTextPaint(legendtextpaint);
 			
 			graph.setDomainLabel("Date");
+			graph.getDomainLabelWidget().setMarginTop(3);
 			graph.getDomainLabelWidget().setHeight(30.0f);
+			graph.getDomainLabelWidget().setLabelPaint(borderpaint);
 			graph.getDomainLabelWidget().pack();
 			
 			graph.setRangeLabel("Data (MB)");
 			graph.getRangeLabelWidget().setHeight(20.0f);
+			graph.getRangeLabelWidget().setLabelPaint(borderpaint);
 			graph.getRangeLabelWidget().pack();
 			
-			graph.addSeries(seriestotal, barformatter2);
-			graph.addSeries(series, barformatter);
-			
+		//	graph.addSeries(seriestotal, upbarformatter);
+		//	graph.addSeries(series, downbarformatter);
+			graph.addSeries(seriestotal, uplineformatter);
+			graph.addSeries(series, downlineformatter);
 			
 			graph.setTicksPerDomainLabel(4);
 			
@@ -457,10 +511,10 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	 
 			//Check x data to find the minimum difference between two neighboring domain values
 			//Will use to prevent zooming further in than this distance
-			double temp1 = series.getX(0).doubleValue();
+		/*	double temp1 = series.getX(0).doubleValue();
 			double temp2 = series.getX(1).doubleValue();
 			double temp3;
-			double thisDif;
+			double thisDif;*/
 		/*	minDif = 1000000;	//increase if necessary for domain values
 			for (int i = 2; i < series.size(); i++) {
 				temp3 = series.getX(i).doubleValue();
@@ -486,8 +540,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    	graph.setVisibility(View.VISIBLE);
 	    	d_pb_ll.setVisibility(View.GONE);
 	    	
-	  //  	if(pd.isShowing())
-    //			pd.dismiss();
+
 		}	
 	}
 	@Override

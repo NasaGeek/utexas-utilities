@@ -57,6 +57,9 @@ public class UTilitiesActivity extends SherlockActivity {
 	ActionBar actionbar;
 	Toast message;
 	 AnimationDrawable frameAnimation;
+	 ConnectionHelper.loginTask lt;
+	 ConnectionHelper.PNALoginTask plt;
+	
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,7 +111,7 @@ public class UTilitiesActivity extends SherlockActivity {
         	AlertDialog nologin = nologin_builder.create();
         	nologin.show();
         }
-        if(settings.getBoolean("autologin", false) && !ConnectionHelper.cookieHasBeenSet())
+        if(settings.getBoolean("autologin", false) && !ConnectionHelper.cookieHasBeenSet() && !ConnectionHelper.isLoggingIn())
         {
         	login(); 
         }
@@ -208,7 +211,7 @@ public class UTilitiesActivity extends SherlockActivity {
             }
             
     });
-        final ImageButton examsbutton = (ImageButton) findViewById(R.id.exams_button);
+ /*       final ImageButton examsbutton = (ImageButton) findViewById(R.id.exams_button);
         examsbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	
@@ -223,7 +226,7 @@ public class UTilitiesActivity extends SherlockActivity {
             		
             }
             
-    });
+    });*/
         
     }
     @Override
@@ -231,29 +234,32 @@ public class UTilitiesActivity extends SherlockActivity {
         MenuInflater inflater = this.getSupportMenuInflater();
         inflater.inflate(R.layout.main_menu, menu);
         
-  /*      if(settings.getBoolean("loginpref", false))
+  
+    	if(!ConnectionHelper.isLoggingIn())
     	{
-    		menu.removeItem(R.id.login);
-    		menu.removeItem(11);
-    	}*/
-    	if(ConnectionHelper.cookieHasBeenSet())
-    	{
-    		menu.removeItem(R.id.login);
-    		menu.removeItem(11);
-    		menu.add(Menu.NONE, 11, Menu.NONE, "Log out");
-    		MenuItem item = menu.findItem(11);
-    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-    	}
-    	else if(!ConnectionHelper.cookieHasBeenSet())
-    	{
-    		menu.removeItem(R.id.login);
-    		menu.removeItem(11);
-    		menu.add(Menu.NONE, R.id.login, Menu.NONE, "Log in");
-    		MenuItem item = menu.findItem(R.id.login);
-    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-    	}
+	        if(ConnectionHelper.cookieHasBeenSet())
+	    	{
+	    		menu.removeGroup(R.id.log);
+	    		menu.add(R.id.log, 11, Menu.NONE, "Log out");
+	    		MenuItem item = menu.findItem(11);
+	    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+	    	}
+	    	else if(!ConnectionHelper.cookieHasBeenSet())
+	    	{
+	    		menu.removeGroup(R.id.log);
+	    		menu.add(R.id.log, R.id.login, Menu.NONE, "Log in");
+	    		MenuItem item = menu.findItem(R.id.login);
+	    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+	    	}
     	
-        
+    	}
+    	else if(ConnectionHelper.isLoggingIn())
+    	{
+    		menu.removeGroup(R.id.log);
+    		menu.add(R.id.log, 12, Menu.NONE, "Cancel");
+    		MenuItem item = menu.findItem(12);
+    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    	}
         
         return true;
     }
@@ -273,6 +279,7 @@ public class UTilitiesActivity extends SherlockActivity {
     		case R.id.settings:loadSettings();break;
     		case R.id.about:aboutMe();break;
     		case 11:logout();invalidateOptionsMenu();break;
+    		case 12:cancelLogin();invalidateOptionsMenu();break;
     	}
     	return true;
     }
@@ -292,20 +299,22 @@ public class UTilitiesActivity extends SherlockActivity {
     	if(settings.getBoolean("loginpref", false))
     	{
     		if( !settings.contains("eid") || 
-      				 !settings.contains("password") || 
+      				!settings.contains("password") || 
       				 settings.getString("eid", "error").equals("") ||
       				 settings.getString("password", "error").equals("") )
-    				 {	
-      				 message.setText("Please enter your credentials to log in");
-          			 message.setDuration(Toast.LENGTH_LONG);
-          			 message.show();
-    				 }
+			{	
+  				message.setText("Please enter your credentials to log in");
+      			message.setDuration(Toast.LENGTH_LONG);
+      			message.show();
+			}
            	else
            	{
+           		
            		message.setText("Logging in...");
          		message.setDuration(Toast.LENGTH_SHORT);
          		message.show();
-         			 
+         		ConnectionHelper.loggingIn=true;
+         		
            		setSupportProgressBarIndeterminateVisibility(true);
            		
            		
@@ -315,15 +324,29 @@ public class UTilitiesActivity extends SherlockActivity {
 
       			ConnectionHelper.resetPNACookie();
 
-      			ch.new loginTask(this,httpclient,pnahttpclient).execute(ch);
-      			ch.new PNALoginTask(this,httpclient,pnahttpclient).execute(ch);
+      	//		ch.new loginTask(this,httpclient,pnahttpclient).execute(ch);
+      	//		ch.new PNALoginTask(this,httpclient,pnahttpclient).execute(ch);
+      			
+      			lt = ch.new loginTask(this,httpclient,pnahttpclient);
+      			lt.execute(ch);
+      			plt = ch.new PNALoginTask(this,httpclient,pnahttpclient);
+      			plt.execute(ch);
            	}
+  		
     	}
     	else
     	{
 	    	Intent login_intent = new Intent(this, LoginActivity.class);
 	    	startActivity(login_intent);
     	}
+    }
+    public void cancelLogin()
+    {
+    	lt.cancel(true);
+   		plt.cancel(true);
+    	ConnectionHelper.logout(this);
+    	setSupportProgressBarIndeterminateVisibility(false);
+
     }
     public void logout()
     {
