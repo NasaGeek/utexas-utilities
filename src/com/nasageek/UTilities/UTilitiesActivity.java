@@ -71,7 +71,6 @@ public class UTilitiesActivity extends SherlockActivity {
         
         setContentView(R.layout.main);
         setSupportProgressBarIndeterminateVisibility(false);
-        final Intent exams = new Intent(getBaseContext(), ExamScheduleActivity.class);
         final Intent schedule = new Intent(getBaseContext(), ScheduleActivity.class);
     	final Intent balance = new Intent(getBaseContext(), BalanceActivity.class);
     	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
@@ -93,7 +92,28 @@ public class UTilitiesActivity extends SherlockActivity {
   /*    TableLayout tl = (TableLayout) findViewById(R.id.button_table);
         tl.setBackgroundDrawable(bmd);
         */
-        if(!ConnectionHelper.cookieHasBeenSet() && (!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
+        if(!settings.contains("firstRun"))
+        {
+        	AlertDialog.Builder nologin_builder = new AlertDialog.Builder(this);
+        	nologin_builder.setMessage("This is your first time running UTilities; why don't you try logging in to get the most use out of the app?")
+        			.setCancelable(false)
+        			.setPositiveButton("Ok!", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    loadSettings();
+                }
+            })
+            .setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                     dialog.cancel();
+                }
+            });
+        	AlertDialog nologin = nologin_builder.create();
+        	nologin.show();
+        	settings.edit().putBoolean("firstRun", false).commit();
+        }
+    	
+    	
+   /* 	if(!ConnectionHelper.cookieHasBeenSet() && (!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
         {
         	AlertDialog.Builder nologin_builder = new AlertDialog.Builder(this);
         	nologin_builder.setMessage("It would seem that you are not logged into UTDirect yet, why don't we take care of that?")
@@ -110,7 +130,7 @@ public class UTilitiesActivity extends SherlockActivity {
             });
         	AlertDialog nologin = nologin_builder.create();
         	nologin.show();
-        }
+        }*/
         if(settings.getBoolean("autologin", false) && !ConnectionHelper.cookieHasBeenSet() && !ConnectionHelper.isLoggingIn())
         {
         	login(); 
@@ -197,37 +217,12 @@ public class UTilitiesActivity extends SherlockActivity {
     });
         final ImageButton menubutton = (ImageButton) findViewById(R.id.menu_button);
         menubutton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-            	
-          //  	if(!ConnectionHelper.cookieHasBeenSet() )//&& (!settings.getBoolean("loginpref", true)|| !settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
-          //  	{
-          //  		Toast.makeText(UTilitiesActivity.this, "Please log in before using this feature",Toast.LENGTH_SHORT).show();
-          //  	}
-          //  	else
-         //  	{
-            		startActivity(menu);	
-           // 	}
-            		
+            public void onClick(View v) {        
+           		startActivity(menu);	          		
             }
             
     });
- /*       final ImageButton examsbutton = (ImageButton) findViewById(R.id.exams_button);
-        examsbutton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-            	
-            	if(!ConnectionHelper.cookieHasBeenSet() )//&& (!settings.getBoolean("loginpref", true)|| !settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
-            	{
-            		Toast.makeText(UTilitiesActivity.this, "Please log in before using this feature",Toast.LENGTH_SHORT).show();
-            	}
-            	else
-            	{
-            		startActivity(exams);	
-            	}
-            		
-            }
-            
-    });*/
-        
+ 
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -263,12 +258,7 @@ public class UTilitiesActivity extends SherlockActivity {
         
         return true;
     }
-/*    public boolean onPrepareOptionsMenu(Menu menu)
-    {
-    	
-    	
-    	 return super.onPrepareOptionsMenu(menu);
-    }*/
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {

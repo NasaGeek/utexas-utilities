@@ -29,6 +29,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -83,6 +84,7 @@ public class CampusMapActivity extends SherlockMapActivity  {
 	NavigationDataSet buildingDataSet;
 	ContentResolver buildingresolver;
 	Bundle savedInstanceState;
+	String locProvider;
 	private ActionBar actionbar;
 
 	public enum Route {
@@ -139,6 +141,7 @@ public class CampusMapActivity extends SherlockMapActivity  {
         }
         
         mapView = (MapView) findViewById(R.id.campusmapview);
+        mapView.setSatellite(false);
         myLoc = new MyLocationOverlay(this, mapView);
         mc = mapView.getController();
         
@@ -154,10 +157,6 @@ public class CampusMapActivity extends SherlockMapActivity  {
 		
         final Spinner spinner = new Spinner(this);
         spinner.setPromptId(R.string.routeprompt);
-        TextView emptytv = new TextView(this);
-        emptytv.setText("No route selected");
-        
- //       spinner.setEmptyView(emptytv);
         
 		final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(actionbar.getThemedContext(), android.R.layout.simple_spinner_item, Route.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -177,15 +176,36 @@ public class CampusMapActivity extends SherlockMapActivity  {
         myLoc.enableCompass();
         myLoc.enableMyLocation();
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        Criteria crit = new Criteria();
+        locProvider = locationManager.getBestProvider(crit, true);
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+              // Called when a new location is found by the network location provider.
+            	int lat = (int) (location.getLatitude() * 1E6);
+    			int lng = (int) (location.getLongitude() * 1E6);
+    			GeoPoint point = new GeoPoint(lat, lng);
+    			mc.animateTo(point);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+          };
+
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(locProvider, 0, 0, locationListener);
+        
+        lastKnownLocation = locationManager.getLastKnownLocation(locProvider);
        
-       if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+        if(lastKnownLocation != null)
         {
-        	lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         	mc.animateTo(new GeoPoint((int)(lastKnownLocation.getLatitude()*1E6),(int)(lastKnownLocation.getLongitude()*1E6)));
         }
         else
         {
-        	mc.animateTo(new GeoPoint((int)(30.285706*1E6),(int)(-97.739423*1E6)));
+        	mc.animateTo(new GeoPoint((int)(30.285706*1E6),(int)(-97.739423*1E6))); //UT Tower
         }
 
         mapView.setBuiltInZoomControls(true);

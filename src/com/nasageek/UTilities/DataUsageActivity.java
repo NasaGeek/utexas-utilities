@@ -481,10 +481,10 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 			graph.getRangeLabelWidget().setLabelPaint(borderpaint);
 			graph.getRangeLabelWidget().pack();
 			
-		//	graph.addSeries(seriestotal, upbarformatter);
-		//	graph.addSeries(series, downbarformatter);
-			graph.addSeries(seriestotal, uplineformatter);
-			graph.addSeries(series, downlineformatter);
+			graph.addSeries(seriestotal, upbarformatter);
+			graph.addSeries(series, downbarformatter);
+		//	graph.addSeries(seriestotal, uplineformatter);
+		//	graph.addSeries(series, downlineformatter);
 			
 			graph.setTicksPerDomainLabel(4);
 			

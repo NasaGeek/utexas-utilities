@@ -9,9 +9,9 @@
 		android:id="@+id/campusmapview"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:apiKey="0QimFugzhdFbLa_nwEY-9UWSsske-Op80RMjuSA"
+		android:apiKey="0QimFugzhdFYSbDa4DCFoCvT_PyH7VToIIDbBbw"
 		android:clickable="true"/>
 	
 </LinearLayout>
 
-<!-- debug "0QimFugzhdFYSbDa4DCFoCvT_PyH7VToIIDbBbw" -->
+<!-- debug "0QimFugzhdFbLa_nwEY-9UWSsske-Op80RMjuSA" -->

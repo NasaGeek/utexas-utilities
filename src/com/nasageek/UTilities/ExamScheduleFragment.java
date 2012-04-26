@@ -27,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -236,13 +237,19 @@ public class ExamScheduleFragment extends ActionModeFragment {
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent)
 			{
-						
 				String[] examdata = exams.get(position).split("\\^");
+				
+				boolean examRequested = !examdata[2].contains("The department");	
+				
+
 				String id = examdata[1];
 				String name = examdata[2];
-				String date = examdata[3];
-				String location = examdata[4];
-				
+				String date = "";
+				String location = "";
+				if(examRequested)
+				{	date = examdata[3];
+					location = examdata[4];
+				}
 				String course = "";
 				ViewGroup vg = (ViewGroup)convertView;
 				vg =(ViewGroup)li.inflate(R.layout.exam_item_view,null,false);
@@ -259,7 +266,7 @@ public class ExamScheduleFragment extends ActionModeFragment {
 					return (View)vg;
 				}*/
 				
-				if(name.contains("The department"))
+				if(!examRequested)
 				{
 					course = id;
 					TextView left= (TextView) vg.findViewById(R.id.examdateview);
@@ -317,6 +324,8 @@ public class ExamScheduleFragment extends ActionModeFragment {
 		    				String[] elements = exams.get(position).split("\\^");
 		    				if(elements[2].contains("The department"))
 		    				{
+		    					Toast.makeText(con, "This exam does not exist and therefore has no location.", Toast.LENGTH_SHORT);
+		    					
 		    					return true;
 		    				}
 		    				else

@@ -289,11 +289,12 @@ public class ConnectionHelper {
 				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals(""))
 				 {
 					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
-					((SherlockActivity)(context)).invalidateOptionsMenu();
+					
 					edit.putBoolean("loggedin", true);
 					edit.commit();
 					
 				 }
+				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
 			}
 		}
@@ -355,11 +356,12 @@ public class ConnectionHelper {
 				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals(""))
 				{
 					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
-					((SherlockActivity)(context)).invalidateOptionsMenu();
+				
 					edit.putBoolean("loggedin", true);
 					edit.commit();
 					
 				 }
+				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
 			}
 		}
