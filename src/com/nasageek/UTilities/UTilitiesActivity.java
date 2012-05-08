@@ -32,6 +32,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
@@ -64,6 +65,7 @@ public class UTilitiesActivity extends SherlockActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("website", "Hello, Sarah!");
   //    Window win = getWindow();
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
    //   win.setFormat(PixelFormat.RGBA_8888);

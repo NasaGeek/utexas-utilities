@@ -50,13 +50,15 @@ public class MenuFragment extends SherlockFragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{	
+		vg =  inflater.inflate(R.layout.menu_fragment_layout, container, false);
+		
 		if(restId.equals("0"))
-		{	vg =  inflater.inflate(R.layout.menu_fragment_layout, container, false);
+		{	
 			((LinearLayout) vg.findViewById(R.id.menu_progressbar_ll)).setVisibility(View.GONE);
 			return vg;
 		}
 
-		vg =  inflater.inflate(R.layout.menu_fragment_layout, container, false);
+		
 			
 		updateView(restId);
 

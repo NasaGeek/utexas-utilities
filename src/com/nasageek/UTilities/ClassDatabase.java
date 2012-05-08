@@ -29,6 +29,7 @@ public class ClassDatabase extends SQLiteOpenHelper
 	private static final String KEY_START = "start";
 	private static final String KEY_END = "end";
 	private static final String KEY_COLOR = "color";
+	private static final String KEY_SEMESTER = "semester";
 	
 	private static final String TABLE_NAME = "classes";
 	private static final String TABLE_CREATE =
@@ -43,7 +44,8 @@ public class ClassDatabase extends SQLiteOpenHelper
 		KEY_DAY + " TEXT NOT NULL, " +
 		KEY_START + " TEXT NOT NULL, " +
 		KEY_END + " TEXT NOT NULL, " +
-		KEY_COLOR + " TEXT NOT NULL);";
+		KEY_COLOR + " TEXT NOT NULL, " +
+		KEY_SEMESTER + " TEXT NOT NULL);";
 	
 	
 	public ClassDatabase(Context con)
@@ -66,11 +68,12 @@ public class ClassDatabase extends SQLiteOpenHelper
 		// TODO Auto-generated method stub
 
 	}
+	
 	public void addClass(UTClass cl)
 	{
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 		ContentValues val = null;
-		sqldb=getWritableDatabase();
+		SQLiteDatabase sqldb=getWritableDatabase();
 		
 		String colorhex = colors[count++];
 	
@@ -87,28 +90,33 @@ public class ClassDatabase extends SQLiteOpenHelper
 			val.put(KEY_START, cl.getClassTimes().get(k).getStartTime());
 			val.put(KEY_END, cl.getClassTimes().get(k).getEndTime());
 			val.put(KEY_COLOR, colorhex);
+			val.put(KEY_SEMESTER, cl.getSemId());
 			
 			sqldb.insert(TABLE_NAME, null, val);
 		}
 		sqldb.close();
+	}
+	public void resetColorCount()
+	{
+		count = 0;
 	}
 	public String getColor(String unique, String start, String day)
 	{
 		SQLiteDatabase sqldb = getReadableDatabase();
 		Cursor cur = sqldb.rawQuery("SELECT " +KEY_COLOR+" FROM "+TABLE_NAME+" WHERE "+KEY_UNIQUEID+" = "+"\""+unique+"\" AND "+KEY_DAY+" = "+"\""+day+"\" AND "+KEY_START+" = "+"\""+start+"\"", null);
 		cur.moveToFirst();
-		String temp = cur.getString(0);
+		String color = cur.getString(0);
 		cur.close();
 		sqldb.close();
 		
-		return temp;
+		return color;
 	}
 
 	@Override
 	public void close()
 	{
 		super.close();
-		sqldb.close();
+	//	sqldb.close();
 	}
 	public int size()
 	{
@@ -117,11 +125,11 @@ public class ClassDatabase extends SQLiteOpenHelper
 		Cursor cur = sqldb.query(TABLE_NAME, null, null, null, null, null, null);
 		
 		
-		int temp = cur.getCount();
+		int size = cur.getCount();
 		cur.close();
 		sqldb.close();
 		
-		return temp;
+		return size;
 	}
 	public void deleteDb()
 	{

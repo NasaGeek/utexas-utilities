@@ -6,14 +6,15 @@ import android.util.Log;
 
 public class UTClass {
 	
-	private String courseid, unique, name, professor;
+	private String courseid, unique, name, professor, semId;
 
 	private ArrayList<building> buildings;
 	private ArrayList<classtime> classtimes;
 	
 	
-	public UTClass(String u, String ci, String n, String[] b, String[] br, String[] d, String[] t)
+	public UTClass(String u, String ci, String n, String[] b, String[] br, String[] d, String[] t, String semId)
 	{
+		this.semId = semId;
 		classtimes = new ArrayList<classtime>();
 		buildings = new ArrayList<building>();
 		//Log.d("BLENGTH", b.length+ " "+br.length);
@@ -68,6 +69,10 @@ public class UTClass {
 	public String getUnique()
 	{
 		return unique;
+	}
+	public String getSemId()
+	{
+		return semId;
 	}
 }
 

@@ -55,7 +55,7 @@ public class ClassAdapter extends BaseAdapter{
 	private ImageView ci_iv;
 	private TextView ci_tv;
 	
-	public ClassAdapter(Context c, WrappingSlidingDrawer wsd, LinearLayout llsd, ImageView ci_iv, TextView ci_tv)
+	public ClassAdapter(Context c, WrappingSlidingDrawer wsd, LinearLayout llsd, ImageView ci_iv, TextView ci_tv, String semId)
 	{
 		
 		sdll = llsd;
@@ -71,7 +71,7 @@ public class ClassAdapter extends BaseAdapter{
 		
 		updateTime();
 		
-		SQLiteDatabase sqldb = cdb.getWritableDatabase();
+		SQLiteDatabase sqldb = cdb.getReadableDatabase();
 		Cursor cur = null;
 		String[] col = {"uniqueid","day","start","end","building"};
 		ArrayList<classtime> cl = new ArrayList<classtime>(50);
@@ -85,7 +85,7 @@ public class ClassAdapter extends BaseAdapter{
 		}*/
 		//aw :( temp login makes this not work as I can no longer rely on the EID being stored in settings, oh well	
 		//cur = sqldb.query("classes",col,"eid = \""+sp.getString("eid", "no eid found")+"\"",null,null,null, null);
-		cur = sqldb.query("classes",col,null,null,null,null, null);
+		cur = sqldb.query("classes",col,"semester = \""+semId+"\"",null,null,null, null);
 		cur.moveToFirst();
 		
 		while(!cur.isAfterLast())
@@ -93,6 +93,10 @@ public class ClassAdapter extends BaseAdapter{
 			cl.add(new classtime(cur.getString(0),cur.getString(1).charAt(0),cur.getString(2),cur.getString(3),cur.getString(4)));
 			cur.moveToNext();
 		}
+		cur.close();
+		sqldb.close();
+		cdb.close();
+		
 		firstlist = new ArrayList<Boolean>();
 		
 		classlist = new ArrayList<UTClass>();
@@ -123,7 +127,6 @@ public class ClassAdapter extends BaseAdapter{
 			
 		}
 		
-
 	}
 	public void updateTime()
 	{

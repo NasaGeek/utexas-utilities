@@ -64,12 +64,30 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 	public ActionMode mode;
 	private View vg;
 	private SherlockFragmentActivity parentAct;
-	
+	String semId;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		vg = inflater.inflate(R.layout.course_schedule_fragment_layout, container, false);
+		vg =  inflater.inflate(R.layout.course_schedule_fragment_layout, container, false);
+		
+		//updateView(semId);
+
+		return vg;	
+	}
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		parentAct = this.getSherlockActivity();
+		semId = getArguments().getString("semId");
+		ch = new ConnectionHelper(parentAct);
+		sp = PreferenceManager.getDefaultSharedPreferences(parentAct.getBaseContext());
+		cdb = new ClassDatabase(parentAct);
+	}
+	public void updateView(String semId)
+	{
+		this.semId = semId;
 		
 		sd = (WrappingSlidingDrawer) vg.findViewById(R.id.drawer);
 	    sdll = (LinearLayout) vg.findViewById(R.id.llsd);
@@ -82,9 +100,9 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 	    gv = (GridView) vg.findViewById(R.id.scheduleview);
 		ll = (LinearLayout) vg.findViewById(R.id.schedule_ll);
 		
-		ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv);
+		cdb.resetColorCount();
 		
-		Cursor sizecheck = cdb.getReadableDatabase().query("classes", null, null, null, null, null, null);
+		Cursor sizecheck = cdb.getReadableDatabase().query("classes", null, "semester = \""+this.semId+"\"" , null, null, null, null);
 		
 		if (sizecheck.getCount()<1)
 		{	
@@ -95,10 +113,12 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 		else
 		{
 			sizecheck.close();
+			ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv,semId);
 			ca.updateTime();
 			gv.setOnItemClickListener(this);
 		    gv.setAdapter(ca);
 		    pb_ll.setVisibility(GridView.GONE);
+		    
 			gv.setVisibility(GridView.VISIBLE);
 		    if(!parentAct.isFinishing())
 		    	Toast.makeText(parentAct, "Tap a class to see its information.", Toast.LENGTH_LONG).show();
@@ -106,27 +126,15 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 		sd.setOnDrawerCloseListener(this);
 		sd.setOnDrawerOpenListener(this);
 	    sd.setVisibility(View.INVISIBLE);
-
-		return vg;
-		
 	}
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		parentAct = this.getSherlockActivity();
-		
-		ch = new ConnectionHelper(parentAct);
-		sp = PreferenceManager.getDefaultSharedPreferences(parentAct.getBaseContext());
-		cdb = new ClassDatabase(parentAct);
-	}
-
 	@Override
 	public void onResume()
 	{
 		super.onResume();
-		ca.updateTime();
-		gv.invalidateViews(); 		
+		if(ca != null)
+			ca.updateTime();
+		if(gv != null)
+			gv.invalidateViews(); 		
 	}
 
 	public ActionMode getActionMode()
@@ -149,8 +157,6 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	{
 		// TODO Auto-generated method stub
-		
-		
 		sd.close();
 	//	sdll.removeAllViews();
 		current_clt = (classtime) parent.getItemAtPosition(position);
@@ -197,6 +203,7 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 	    		ci_tv.setText(text);
 
 	    	}
+		    cur.close();
 		    sd.open();    
 		}
 		else
@@ -217,16 +224,26 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 		{
 			this.client = client;
 		}
+		@Override
+		protected void onPreExecute()
+		{
+			((ScheduleActivity)parentAct).spinner.setClickable(false);
+			((ScheduleActivity)parentAct).spinner.setActivated(false);
+			pb_ll.setVisibility(GridView.VISIBLE);
+			gv.setVisibility(GridView.GONE);
+		}
 		
 		@Override
 		protected Object doInBackground(Object... params)
 		{
 			Document doc = null;
 
-		    	try{
-		    		doc = Jsoup.connect("https://utdirect.utexas.edu/registration/classlist.WBX")
+		    	try
+		    	{
+		    		doc = Jsoup.connect("https://utdirect.utexas.edu/registration/classlist.WBX?sem="+semId)
 		    				.cookie("SC", ConnectionHelper.getAuthCookie(parentAct, client))
-		    				.get();}
+		    				.get();
+		    	}
 		    	catch(Exception e)
 		    	{
 		    //		Log.d("JSOUP", "Jsoup could not connect to utexas.edu");
@@ -260,14 +277,14 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 	    		String tempstr = time.text().replaceAll("- ","-");
 	    		String[] times = tempstr.split(" ");
 	    		
-	    		cdb.addClass(new UTClass(uniqueid.ownText(),classid.ownText(), classname.ownText(),buildings, rooms, days, times));
+	    		cdb.addClass(new UTClass(uniqueid.ownText(),classid.ownText(), classname.ownText(),buildings, rooms, days, times, semId));
 	    	}
 	    	return null;
 			
 		}
 		protected void onPostExecute(Object result)
 		{
-			ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv);
+			ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv,semId);
 			ca.updateTime();
 			
 			
@@ -275,7 +292,7 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 			gv.setOnItemClickListener(CourseScheduleFragment.this);
 		    gv.setAdapter(ca);
 		
-			
+	//	    ((ScheduleActivity)parentAct).spinner.setEnabled(true);
 			pb_ll.setVisibility(GridView.GONE);
 			gv.setVisibility(GridView.VISIBLE);
 			

@@ -8,6 +8,7 @@
     <string name="sharedpref_file">UTilities_preferences</string>
     <string name="routeprompt">Select Route Overlay</string>
     <string name="restaurantprompt">Select a Restaurant</string>
+    <string name="semesterprompt">Select a Semester</string>
     <string name="building_intent">BUILDING</string>
     <string name="developer">Developer: Chris Roberts</string>
     <string name="classinfo">Electrical Engineering Class of 2015</string>
@@ -36,10 +37,10 @@
 			<item>Wickersham/Crossing Pl</item>
     </string-array>
     <string-array name="schedule_background_array">
-    	<item>Checkerboard (every hour)</item>
-    	<item>Checkerboard (every half hour)</item>
-    	<item>Striped (every hour)</item>
-    	<item>Striped (every half hour)</item>
+    	<item>Checkerboard (1 hour)</item>
+    	<item>Checkerboard (1/2 hour)</item>
+    	<item>Striped (1 hour)</item>
+    	<item>Striped (1/2 hour)</item>
     </string-array>
      <string-array name="schedule_background_value_array">
     	<item>checkhour</item>

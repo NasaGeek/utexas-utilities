@@ -1,6 +1,7 @@
 package com.nasageek.UTilities;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,33 +55,15 @@ public class ExamScheduleFragment extends ActionModeFragment {
 	private SherlockFragmentActivity parentAct;
 	private View vg;
 	public ActionMode mode;
-	
+	private TextView netv;
+	String semId;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{			
 		vg = inflater.inflate(R.layout.exam_schedule_fragment_layout, container, false);
 		
-		login_first = (TextView) vg.findViewById(R.id.login_first_tv);
-		pb_ll = (LinearLayout) vg.findViewById(R.id.examschedule_progressbar_ll);
-		examlistview = (ListView) vg.findViewById(R.id.examschedule_listview);
-		linlay = (LinearLayout) vg.findViewById(R.id.examschedule_linlay);
-		
-		if(!ConnectionHelper.cookieHasBeenSet())
-		{	
-			pb_ll.setVisibility(View.GONE);
-			login_first.setVisibility(View.VISIBLE);
-			return vg;
-		}
-
-		try
-		{
-			parser();
-		} catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		//updateView(semId);
 		
 		return vg;
 	}
@@ -88,12 +71,41 @@ public class ExamScheduleFragment extends ActionModeFragment {
 	{
 		super.onCreate(savedInstanceState);
 		parentAct = this.getSherlockActivity();
-
-		examlist=  new ArrayList<String>();
+		semId = getArguments().getString("semdId");
+		
 		settings = PreferenceManager.getDefaultSharedPreferences(parentAct);
 		ch = new ConnectionHelper(parentAct);
 		
 		
+		
+	}
+	public void updateView(String semId)
+	{
+		this.semId = semId;
+		
+		examlist=  new ArrayList<String>();
+		login_first = (TextView) vg.findViewById(R.id.login_first_tv);
+		pb_ll = (LinearLayout) vg.findViewById(R.id.examschedule_progressbar_ll);
+		examlistview = (ListView) vg.findViewById(R.id.examschedule_listview);
+		linlay = (LinearLayout) vg.findViewById(R.id.examschedule_linlay);
+		netv = (TextView) vg.findViewById(R.id.no_exams);
+		
+		if(!ConnectionHelper.cookieHasBeenSet())
+		{	
+			pb_ll.setVisibility(View.GONE);
+			login_first.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			try
+			{
+				parser();
+			} catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 	}
 	public void parser() throws Exception
@@ -120,13 +132,37 @@ public class ExamScheduleFragment extends ActionModeFragment {
 		{
 			this.client = client;
 		}
-		
+		@Override
+		protected void onPreExecute()
+		{
+			pb_ll.setVisibility(View.VISIBLE);
+			examlistview.setVisibility(View.GONE);
+			netv.setVisibility(View.GONE);
+		}
 		@Override
 		protected Character doInBackground(Object... params)
 		{
 			HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registrar/exam_schedule.WBX");
 	    	String pagedata="";
 
+	    	String tempId="";
+	    	switch (Calendar.getInstance().get(Calendar.MONTH))
+			{
+				case 7:
+				case 8:
+				case 9:
+				case 10:
+				case 11:tempId="20129";break;
+				case 0:
+				case 1:
+				case 2:
+				case 3:
+				case 4:tempId="20122";break;
+				case 5:
+				case 6:tempId="20126";break;
+			}
+	    	
+	    	
 	    	try
 			{
 				HttpResponse response = client.execute(hget);
@@ -137,7 +173,7 @@ public class ExamScheduleFragment extends ActionModeFragment {
 				e.printStackTrace();
 			}
 
-	    	if(pagedata.contains("will be available approximately three weeks"))
+	    	if(pagedata.contains("will be available approximately three weeks") || !tempId.equals(semId))
 	    	{	
 	    		noExams = true;
 	    		return ' ';
@@ -179,23 +215,22 @@ public class ExamScheduleFragment extends ActionModeFragment {
 				ea = new ExamAdapter(parentAct, examlist);
 				examlistview.setAdapter(ea);
 				examlistview.setOnItemClickListener(ea);
+				examlistview.setVisibility(View.VISIBLE);
 			}
 			else
 			{
-				TextView tv = new TextView(parentAct);
-	    		tv.setText("      'Tis not the season for exams.\n                    Try back later!\n  (about 3 weeks before they begin)");
-	    		tv.setTextSize(19);
-	    		linlay.removeAllViews();
-	    		linlay.addView(tv);
+				
+	    		netv.setText("'Tis not the season for exams.\nTry back later!\n(about 3 weeks before they begin)");
+	    		netv.setTextSize(19);
+	    		netv.setVisibility(View.VISIBLE);
 			}
 			pb_ll.setVisibility(View.GONE);
-			examlistview.setVisibility(View.VISIBLE);
+			
 		}
 	}
 	
 	private class ExamAdapter extends ArrayAdapter implements AdapterView.OnItemClickListener
 	{
-		
 			private Context con;
 			private ArrayList<String> exams;
 			private LayoutInflater li;

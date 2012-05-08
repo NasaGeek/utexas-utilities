@@ -17,10 +17,12 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.nasageek.UTilities.MenuActivity.Restaurant;
 import com.viewpagerindicator.TabPageIndicator;
 
 
@@ -46,11 +48,13 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SlidingDrawer;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,33 +81,66 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 	private ActionMode mode;
 	private PagerAdapter mPagerAdapter;
 	private List<SherlockFragment> fragments;
+	String semId;
+	int selection;
+	Spinner spinner;
 	
 		
+	public enum Semester {
+		No_Overlay(Calendar.getInstance().get(Calendar.YEAR)+"2","Spring"),
+		JesterCityLimits(Calendar.getInstance().get(Calendar.YEAR)+"6","Summer"),
+		JesterCityMarket(Calendar.getInstance().get(Calendar.YEAR)+"9","Fall");
+		
+	    private String code;
+	    private String fullName; 
+
+	    private Semester(String c, String fullName) {
+	      code = c;
+	      this.fullName = fullName;
+	    }
+	    public String getCode() {
+	      return code;
+	    }
+	    public String fullName()
+	    {
+	    	return fullName;
+	    }
+	    public String toString()
+	    {
+	    	return fullName;
+	    }
+	}
+	
+	
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.schedule_layout);
+		
+		Calendar cal = Calendar.getInstance();
+		int month = cal.get(Calendar.MONTH);
+		switch (month)
+		{
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:semId=cal.get(Calendar.YEAR)+"2";selection=0;break;
+		case 5:
+		case 6:semId=cal.get(Calendar.YEAR)+"6";selection=1;break;
+		case 7:
+		case 8:
+		case 9:
+		case 10:
+		case 11:semId=cal.get(Calendar.YEAR)+"9";selection=2;break;
+		}
+		
 		initialisePaging();
-		ch = new ConnectionHelper(this);
 		sp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-//		cdb = new ClassDatabase(this);
-//		sd = (WrappingSlidingDrawer) findViewById(R.id.drawer);
-//	    sdll = (LinearLayout) findViewById(R.id.llsd);
-	    
-//	    ci_iv = (ImageView) findViewById(R.id.class_info_color);
-//	    ci_tv = (TextView) findViewById(R.id.class_info_text);
-
-	    
-//	    pb_ll = (LinearLayout) findViewById(R.id.schedule_progressbar_ll);
-//	    gv = (GridView) findViewById(R.id.scheduleview);
-//		ll = (LinearLayout) findViewById(R.id.schedule_ll);
+		
 		actionbar = getSupportActionBar();
-		
-//		ca = new ClassAdapter(this,sd,sdll,ci_iv,ci_tv);
-		
-		
 		actionbar.setTitle("Schedule");
-		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 	    actionbar.setHomeButtonEnabled(true);
 	    actionbar.setDisplayHomeAsUpEnabled(true);
 		
@@ -116,41 +153,45 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 			return;
 		}});
 	
-/*		Cursor sizecheck = cdb.getReadableDatabase().query("classes", null, null, null, null, null, null);
-
-		if (sizecheck.getCount()<1)
-		{	
-			sizecheck.close();
 		
-			//	Log.d("SCHEDULE", "parsing");
-			    parser();
-		}
-		else
-		{
-			sizecheck.close();
-			ca.updateTime();
-	//		gv.setOnItemLongClickListener(ca);
-			gv.setOnItemClickListener(this);
-		    gv.setAdapter(ca);
-		    pb_ll.setVisibility(GridView.GONE);
-			gv.setVisibility(GridView.VISIBLE);
-		    if(!this.isFinishing())
-		    	Toast.makeText(this, "Tap a class to see its information.", Toast.LENGTH_LONG).show();
-		}
-		    
-	   sd.setOnDrawerCloseListener(this);
-	   sd.setOnDrawerOpenListener(this);
-       sd.setVisibility(View.INVISIBLE); */
+		spinner = new Spinner(this);
+        spinner.setPromptId(R.string.semesterprompt);
+        spinner.setSelection(selection);
+		final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(actionbar.getThemedContext(), android.R.layout.simple_spinner_item, Semester.values());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        
+        
+		
+        spinner.setAdapter(adapter);
+        
+        
+        actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() 
+        {
+        	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+        		// TODO Auto-generated method stub
+        		String semId = ((Semester) spinner.getAdapter().getItem(itemPosition)).getCode();
+         			
+         		((CourseScheduleFragment)(fragments.get(0))).updateView(semId);
+         		((ExamScheduleFragment)(fragments.get(1))).updateView(semId);
+
+        		return true;
+        	}
+        });
+		
 		}
 		private void initialisePaging() 
 		{
 			
 			fragments = new Vector<SherlockFragment>();
-	        Bundle args = new Bundle(1);
+			
+	        Bundle args = new Bundle(2);
 	        args.putString("title", "Course Schedule");
+	        args.putString("semId", semId);
 	        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, CourseScheduleFragment.class.getName(), args));
-	        args = new Bundle(1);
+	        
+	        args = new Bundle(2);
 	        args.putString("title", "Exam Schedule");
+	        args.putString("semId", semId);
 	        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, ExamScheduleFragment.class.getName(), args));
 	
 	      
@@ -169,81 +210,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		{
 			super.onPause();
 		}
-		private class parseTask extends AsyncTask<Object,Void,Object>
-		{
-			private DefaultHttpClient client;
-			
-			public parseTask(DefaultHttpClient client)
-			{
-				this.client = client;
-			}
-			
-			@Override
-			protected Object doInBackground(Object... params)
-			{
-				Document doc = null;
-	
-			    	try{
-			    		doc = Jsoup.connect("https://utdirect.utexas.edu/registration/classlist.WBX")
-			    				.cookie("SC", ConnectionHelper.getAuthCookie(ScheduleActivity.this, client))
-			    				.get();}
-			    	catch(Exception e)
-			    	{
-			    //		Log.d("JSOUP", "Jsoup could not connect to utexas.edu");
-			    		Log.d("JSOUP EXCEPTION",e.getMessage());
-			    		finish();
-			    		return null;
-			    	}
-			
-		    	Elements classels  = doc.select("div[align]").get(0).select("tr[valign]");
-		    	
-		    	
-		    	for(int i = 0; i<classels.size(); i++)
-		    	{
-		    		Element temp = classels.get(i);
-		    		Element uniqueid = temp.child(0);
-		    		Element classid = temp.child(1);
-		    		Element classname = temp.child(2);
-		    		
-		    		Element building = temp.child(3);
-		    		String[] buildings = building.text().split(" ");
-		    		
-		    		Element room = temp.child(4);
-		    		String[] rooms = room.text().split(" ");
-		    		
-		    		Element day = temp.child(5);
-		    		String[] days = day.text().split(" ");
-		    		for(int a = 0; a<days.length;a++) days[a] = days[a].replaceAll("TH", "H");
-		    		
-		    		Element time = temp.child(6);
-		    		String tempstr = time.text().replaceAll("- ","-");
-		    		String[] times = tempstr.split(" ");
-		    		
-		    		cdb.addClass(new UTClass(uniqueid.ownText(),classid.ownText(), classname.ownText(),buildings, rooms, days, times));
-		    	}
-		    	return null;
-				
-			}
-			protected void onPostExecute(Object result)
-			{
-				ca = new ClassAdapter(ScheduleActivity.this,sd,sdll,ci_iv,ci_tv);
-				ca.updateTime();
-				
-				
-		//		gv.setOnItemLongClickListener(ca);
-				gv.setOnItemClickListener(ScheduleActivity.this);
-			    gv.setAdapter(ca);
-			
-				
-				pb_ll.setVisibility(GridView.GONE);
-				gv.setVisibility(GridView.VISIBLE);
-				
-				
-				if(!ScheduleActivity.this.isFinishing())
-			    	Toast.makeText(ScheduleActivity.this, "Tap a class to see its information.", Toast.LENGTH_SHORT).show();
-				
-				}
-			}
+		
 		public boolean onOptionsItemSelected(MenuItem item)
 	    {
 	    	int id = item.getItemId();
@@ -259,14 +226,6 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 	    	}
 	    	return true;
 	    }
-/*		@Override
-		public void onResume()
-		{
-			super.onResume();
-			ca.updateTime();
-			gv.invalidateViews(); 		
-		}*/
-
 		public void onDrawerClosed()
 		{
 			// TODO Auto-generated method stub
