@@ -10,8 +10,8 @@
     		android:key = "loginpref"
     		android:title = "Persistent login"
     		android:defaultValue="false"
-    		android:summaryOn = "Use persistent login; stores credentials on device." 
-    		android:summaryOff= "Log in using UTDirect each session."
+    		android:summaryOn = "Persistent login is turned on; credentials stored on device." 
+    		android:summaryOff= "Persistent login is currently off."
     		/>
     </PreferenceCategory>
     <PreferenceCategory
@@ -61,15 +61,31 @@
     		android:defaultValue="checkhour"
     		
     		/>
-    	<Preference
-            android:id="@+id/resetclassesbutton"
-            android:title="Reset class database."
-            android:key="resetclassesbutton" />
+    	
     	
    <!--  	</PreferenceScreen> -->
 
     </PreferenceCategory>
+    
+    
+    <PreferenceCategory
+    	android:title="Campus Map">
+    	<CheckBoxPreference    
+    	    android:summaryOn="Map currently centers on your location."
+    	    android:summaryOff="Map currently centers on UT Tower."
+		    android:key="starting_location"
+		    android:title="Center on My Location"
+		    android:defaultValue="true"/>
+        </PreferenceCategory>
     	
+    <PreferenceCategory 
+        android:title="Data">
+        
+        <Preference
+            android:id="@+id/resetclassesbutton"
+            android:title="Clear temporary data."
+            android:key="resetclassesbutton" />
+    </PreferenceCategory>
 
   
 </PreferenceScreen>

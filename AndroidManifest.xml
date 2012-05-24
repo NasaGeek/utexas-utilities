@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.nasageek.UTilities"
-      android:versionCode="6"
-      android:versionName="1.5">
+      package="com.nasageek.utexasutilities"
+      android:versionCode="2"
+      android:versionName="1.51">
     <uses-sdk android:minSdkVersion="7"
     		  android:targetSdkVersion="15"/>
 	<uses-permission android:name="android.permission.INTERNET"/>
@@ -58,7 +58,7 @@
          	
         
         <provider android:name=".BuildingProvider"
-         			 android:authorities="com.nasageek.utilities.buildingprovider"/>
+         			 android:authorities="com.nasageek.utexasutilities.buildingprovider"/>
         
         <uses-library android:name="com.google.android.maps" />
 

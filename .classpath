@@ -11,6 +11,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/actionbarsherlock-plugin-maps-4.0.0.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="C:/Users/Chris/Dropbox/Programming/Android/JakeWharton-ActionBarSherlock-2eabf25/library/libs/android-support-v4.jar"/>
+	<classpathentry kind="lib" path="/actionbarsherlock/libs/android-support-v4.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

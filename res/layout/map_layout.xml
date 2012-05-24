@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/map_framelayout"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
@@ -11,7 +11,16 @@
 		android:layout_height="wrap_content"
 		android:apiKey="0QimFugzhdFbLa_nwEY-9UWSsske-Op80RMjuSA"
 		android:clickable="true"/>
+<!-- 	<Button
+	    android:id="@+id/mylocation_button"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentTop="true"
+	    android:layout_alignParentRight="true" 
+	    android:onClick="locate" 
+	    android:text="Locate"
+	   /> -->
 	
-</LinearLayout>
+</RelativeLayout>
 
 <!-- debug "0QimFugzhdFYSbDa4DCFoCvT_PyH7VToIIDbBbw" -->

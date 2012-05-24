@@ -16,6 +16,7 @@
     <string name="email">Chris_Roberts@utexas.edu</string>
     <string name="loading_content">Loading content...</string>
     <string name="login_first">Please log in before using this feature</string>
+    <string name="login_pna_first">Please log in to UT PNA before using this feature (not possible with temp login :( )</string>
     
       <string-array name="routes_array">
 			<item>Crossing Place</item>

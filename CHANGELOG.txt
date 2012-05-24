@@ -18,3 +18,10 @@ Preferences moved around a bit to reflect new features
 
 Okay, at this point it might as well be a 1.5/2.0 release.
 ActionBar added along with all accompanying shiny features.
+
+Versioncode 2
+
+Changed preferences to make the functions of some of them more clear.
+Button added to map to return to user's current location.
+Preference added to choose where to center map upon initial load.
+Times of operation added to dining menus.

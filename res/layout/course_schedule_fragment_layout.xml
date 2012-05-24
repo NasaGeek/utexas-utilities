@@ -18,37 +18,37 @@ android:layout_height="fill_parent">
 	    android:weightSum="5">
     	
     	<TextView  
-    		android:layout_width="wrap_content" 
+    		android:layout_width="fill_parent" 
 	    	android:layout_height="fill_parent"
-	    	android:text=" Mon  "
+	    	android:text="Mon"
 	    	android:layout_weight="1"
 	    	android:layout_gravity="center_horizontal"
 	    	android:gravity="center_horizontal"/>
     	<TextView 
-	    	android:text="Tues " 
+	    	android:text="Tues" 
 	    	android:layout_weight="1" 
-	    	android:layout_width="wrap_content" 
+	    	android:layout_width="fill_parent" 
 	    	android:layout_height="fill_parent" 
 	    	android:layout_gravity="center_horizontal"
 	    	android:gravity="center_horizontal"/>
 	    <TextView  
-    		android:layout_width="wrap_content" 
+    		android:layout_width="fill_parent" 
 	    	android:layout_height="fill_parent"
-	    	android:text=" Wed  "
+	    	android:text="Wed"
 	    	android:layout_weight="1"
 	    	android:layout_gravity="center_horizontal"
 	    	android:gravity="center_horizontal"/>
 	    <TextView  
-    		android:layout_width="wrap_content" 
+    		android:layout_width="fill_parent" 
 	    	android:layout_height="fill_parent"
-	    	android:text="Thurs  "
+	    	android:text="Thurs"
 	    	android:layout_weight="1"
 	    	android:layout_gravity="center_horizontal"
 	    	android:gravity="center_horizontal"/>
 	    <TextView  
-    		android:layout_width="wrap_content" 
+    		android:layout_width="fill_parent" 
 	    	android:layout_height="fill_parent"
-	    	android:text="Fri   "
+	    	android:text="Fri"
 	    	android:layout_weight="1"
 	    	android:layout_gravity="center_horizontal"
 	    	android:gravity="center_horizontal"/>
@@ -154,7 +154,7 @@ android:layout_height="fill_parent">
 </LinearLayout>
 
 	
-	<com.nasageek.UTilities.WrappingSlidingDrawer
+	<com.nasageek.utexasutilities.WrappingSlidingDrawer
      android:id="@+id/drawer"
      android:layout_width="fill_parent"
      android:layout_height="wrap_content"
@@ -177,13 +177,10 @@ android:layout_height="fill_parent">
     
 	    <LinearLayout
 	         android:id="@+id/llsd"
-	        
 	         android:layout_width="fill_parent"
 	         android:layout_height="fill_parent"
-	         android:orientation="vertical"
-	        >
-	        
-	        
+	         android:orientation="vertical">
+
 	        <ImageView
     	android:id="@+id/class_info_color"
 		android:layout_width="fill_parent"
@@ -197,5 +194,5 @@ android:layout_height="fill_parent">
 	
 	    </LinearLayout>
 	</ScrollView>
- </com.nasageek.UTilities.WrappingSlidingDrawer>
+ </com.nasageek.utexasutilities.WrappingSlidingDrawer>
 </FrameLayout>
