@@ -7,6 +7,5 @@
     <item android:id="@+id/map_locate"
         	android:showAsAction="ifRoom"
     		android:icon="@drawable/ic_action_locate"
-            android:title="Locate"
-            />
+            android:title="Locate" />
 </menu>

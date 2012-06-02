@@ -60,6 +60,7 @@ public class UTilitiesActivity extends SherlockActivity {
 	 AnimationDrawable frameAnimation;
 	 ConnectionHelper.loginTask lt;
 	 ConnectionHelper.PNALoginTask plt;
+	 ConnectionHelper.bbLoginTask bblt;
 	
 	
 	@Override
@@ -78,6 +79,7 @@ public class UTilitiesActivity extends SherlockActivity {
     	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
     	final Intent data = new Intent(getBaseContext(), DataUsageActivity.class);
     	final Intent menu = new Intent(getBaseContext(), MenuActivity.class);
+    	final Intent blackboard = new Intent(getBaseContext(), BlackboardActivity.class);
     	about_intent = new Intent(this, AboutMeActivity.class);
     	
     	actionbar = getSupportActionBar();
@@ -224,6 +226,22 @@ public class UTilitiesActivity extends SherlockActivity {
             }
             
     });
+ /*       final ImageButton blackboardbutton = (ImageButton) findViewById(R.id.blackboard_button);
+        blackboardbutton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+            	if(!ConnectionHelper.bbCookieHasBeenSet())
+            	{
+            		message.setText(R.string.login_first);
+                	message.setDuration(Toast.LENGTH_SHORT);
+            		message.show();
+            	}
+            	else{
+            
+            	startActivity(blackboard);
+            		}
+            }
+            
+    });*/
  
     }
     @Override
@@ -318,7 +336,8 @@ public class UTilitiesActivity extends SherlockActivity {
 
       	//		ch.new loginTask(this,httpclient,pnahttpclient).execute(ch);
       	//		ch.new PNALoginTask(this,httpclient,pnahttpclient).execute(ch);
-      			
+      			bblt = ch.new bbLoginTask(this, httpclient, pnahttpclient);
+      	//		bblt.execute(ch);
       			lt = ch.new loginTask(this,httpclient,pnahttpclient);
       			lt.execute(ch);
       			plt = ch.new PNALoginTask(this,httpclient,pnahttpclient);
@@ -336,6 +355,7 @@ public class UTilitiesActivity extends SherlockActivity {
     {
     	lt.cancel(true);
    		plt.cancel(true);
+// 		bblt.cancel(true);
    		message.setText("Cancelled");
     	ConnectionHelper.logout(this);
     	setSupportProgressBarIndeterminateVisibility(false);
