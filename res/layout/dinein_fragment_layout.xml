@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/dineinlinlay"
+	android:layout_width="fill_parent" 
+    android:layout_height="fill_parent" 
+    android:orientation="vertical">
+	 
+	<include android:id="@+id/dinein_progressbar_ll" layout="@layout/loading_content_layout"/>
+            
+            
+	 <ListView
+	     android:visibility="gone"
+	 	android:paddingTop="10dp"
+	 	
+		android:id="@+id/dtransactions_listview"
+		android:layout_width="fill_parent" 
+	    android:layout_height="fill_parent"
+	    android:orientation="vertical" 
+	    android:scrollbars="none"
+	    />				    
+</LinearLayout>

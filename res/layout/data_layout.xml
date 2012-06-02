@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+ 	
+ 	<TextView
+ 	android:id = "@+id/dataUsedText"
+ 	android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize = "15sp"
+    android:gravity="center"
+    android:paddingBottom="3dp"
+    />
+ 	<ProgressBar
+ 	android:id = "@+id/percentDataUsed"
+ 	android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="10dp"
+    android:layout_marginLeft="10dp"
+ 	android:max = "1000"
+ 	android:background="#e0e0e0"
+ 	
+ 	style="@style/Widget.Sherlock.ProgressBar.Horizontal"/>
+ 	
+ 	<include android:id="@+id/data_progressbar_ll" layout="@layout/loading_content_layout"/>
+ 	
+    <com.androidplot.xy.XYPlot
+     
+    android:id="@+id/mySimpleXYPlot"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+   	android:layout_marginRight="10dp"
+    android:layout_marginLeft="10dp"
+    
+    android:visibility="gone"
+    title=""
+    />
+</LinearLayout>

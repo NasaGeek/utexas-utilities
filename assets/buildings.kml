@@ -1,0 +1,2588 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml 
+  xmlns="http://www.opengis.net/kml/2.2" 
+  xmlns:kml="http://www.opengis.net/kml/2.2" 
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd
+    http://www.w3.org/2005/Atom http://schemas.opengis.net/kml/2.2.0/atom-author-link.xsd" >
+<Document>
+  <Style id="building">
+    <IconStyle>
+      <scale>0.7</scale>
+      <Icon>
+        <href>http://www.spoon.cx/projects/map/greendot1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  <Style id="garage">
+    <IconStyle>
+      <Icon>
+        <href>greendot1.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
+  <Folder>
+      <name>UT Campus Buildings</name>
+
+  <Placemark id="ACA">
+    <name>Academic Annex</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+	<img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/aca.jpg" border="0" alt="" /> 
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73555517196655,30.287902164880588</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="ACE">
+    <name>ACES Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+	<img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ace.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73659,30.28685</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="ADH">
+    <name>Almetris Duren Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/adh.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74049043655396,30.29164489978496</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="AFP">
+    <name>Athletic Fields Pavilion</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+	<img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/afp.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72662878036499,30.285196930943098</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="AHG">
+    <name>Anna Hiss Gymnasium</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ahg.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.7377438545227,30.28864331184466</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="ANB">
+    <name>Arno Nowotny Building </name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+	<img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/anb.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73107051849365,30.278229683682895</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="AND">
+    <name>Andrews Dormitory</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/and.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73973941802979,30.288272739062574</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="ARC">
+    <name>Animal Resources Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+	<div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/arc.jpg" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.utexas.edu/research/arc/">Animal Resources 
+            Center</a>
+        </li>
+      </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73602724075317,30.29173753992684</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="ART">
+    <name>Art Building and Museum</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+	<img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/art.gif" border="0" alt="" /> 
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73304462432861,30.286364267065906</coordinates>
+    </Point>
+  </Placemark>
+  
+  <Placemark id="ATT">
+    <name>ATT Executive Education and Conference Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+	<img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/att.jpg" border="0" alt="" /> 
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.740869,30.282021</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="BAT">
+    <name>Batts Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/bat.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73905277252197,30.28488193310168</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="BEL">
+    <name>L. Theo Bellmont Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/bel.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73389756679535,30.283858183132406</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="BEN">
+    <name>Benedict Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ben.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73910641670227,30.284057375139948</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="BHD">
+    <name>Brackenridge Hall Dormitory</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/bhd.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.735995054245,30.283149426896017</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="BIO">
+    <name>Biological Laboratories</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/bio.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73961067199707,30.287235127825305</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="BLD">
+    <name>Blanton Dormitory</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/bld.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.7393102645874,30.288856390560465</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="BMA">
+    <name>Blanton Museum of Art</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    &nbsp;<img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/bma.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73734,30.28081</coordinates>
+    </Point>
+  </Placemark>
+
+	<Placemark id="BME">
+    <name>Biomedical Engineering Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    &nbsp;<img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/bme.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.738559,30.289333</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="BOT">
+    <name>Biological Greenhouse</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/bot.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.7397608757019,30.286929400992495</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="BRB">
+    <name>Bernard and Audre Rapoport Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/brb.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73686408996582,30.285345164871444</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="BTL">
+    <name>Battle Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/btl.jpg" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.utexas.edu/architecture/center/">American 
+            Architecture &amp; Design, Center for</a>
+        </li>
+        <li>
+          <a href="http://www.lib.utexas.edu/apl/">Architecture 
+            &amp; Planning Library</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74019002914429,30.285419281751626</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="BUR">
+    <name>Burdine Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/bur.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73855924606323,30.28886565484195</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="BWY">
+    <name>2616 Wichita</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/bwy.jpg" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.utexas.edu/academic/mec/">Measurement 
+            &amp; Evaluation Center</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73832321166992,30.290774078174323</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="CAL">
+    <name>Calhoun Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/cal.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74014711380005,30.284529875493853</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="CBA">
+    <name>McCombs School of Business</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/cba.jpg" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.mccombs.utexas.edu/aimcenter/">AIM 
+            Investment Center</a>
+        </li>
+        <li>
+          <a href="http://www.mccombs.utexas.edu/">Business, 
+            Red McCombs School of</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/depts/bbr/">Business Research, 
+            Bureau of</a>
+        </li>
+        <li>
+          <a href="http://cci.mccombs.utexas.edu/">Customer 
+            Insight, Center for</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/administration/oic/">Institutional 
+            Compliance, Office of</a>
+        </li>
+        <li>
+         <a href="http://www.utexas.edu/depts/bbr/natfiber/">Natural 
+            Fibers Information Center</a>
+        </li>
+        <li>
+          <a href="http://crec.mccombs.utexas.edu/">Research 
+            in Electronic Commerce, Center for</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73763656616211,30.28433531680018</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="CCJ">
+    <name>John B. Connally Center for Justice</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ccj.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.7303946018219,30.288319060736907</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="CDA">
+    <name>Comal Child Development Center Annex</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/cml.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72567391395569,30.282991924814866</coordinates>
+    </Point>
+  </Placemark>
+  
+  <Placemark id="CPE">
+    <name>Chemical and Petroleum Engineering Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/cml.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.736137,30.290299</coordinates>
+    </Point>
+  </Placemark>
+
+   <Placemark id="CRH">
+    <name>Creekside Residence Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/crh.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.733408,30.288586</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="CS5">
+    <name>Chilling Station No. 5</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/cs5.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.7355444431305,30.29073702176409</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="CSA">
+    <name>Computer Science Annex</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+	<img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/csa.jpg" border="0" alt="" /> 
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73607015609741,30.28864331184466</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="DCP">
+    <name>Denton A. Cooley Pavilion</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+<img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/dcp.jpg" alt="" width="320" height="240" border="0" /> 
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73272275924683,30.276024520985445</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="DEV">
+    <name>Development Office Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/dev.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72356033325195,30.28742041635117</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="DFA">
+    <name>E. William Doty Fine Arts Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/dfa.jpg" border="0" alt="" /> </div>
+      <ul>
+        <li> 
+          <a href="http://www.utexas.edu/finearts/">Fine Arts, College 
+            of</a>
+        </li>
+        <li> 
+          <a href="http://www.lib.utexas.edu/fal/">Fine 
+            Arts Library</a>
+        </li>
+      </ul>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73184299468994,30.28604927297253</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="DFF">
+    <name>UFCU Disch-Falk Field</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/dff.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72619962692261,30.279452693733294</coordinates>
+    </Point>
+  </Placemark>
+
+   <Placemark id="EAS">
+    <name>Edgar A. Smith Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/eas.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.738219,30.281155</coordinates>
+    </Point>
+  </Placemark>
+  
+  <Placemark id="ECJ">
+    <name>Ernest Cockrell Jr. Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ecj.jpg" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.engr.utexas.edu/">Engineering, 
+            College of </a>
+        </li>
+        <li>
+          <a href="http://www.lib.utexas.edu/engin/">Engineering 
+            (McKinney) Library</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.735276222229,30.2892732823614</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="ENS">
+    <name>Engineering-Science Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ens.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.7350401878357,30.288383911044207</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="EPS">
+    <name>E. P. Schoch Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/eps.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73697137832642,30.285789865312687</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="ERC">
+    <name>Frank Erwin Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+<img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/erc2.jpg" alt="" width="320" height="210" border="0" /> 
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73182,30.27658</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="ESB">
+    <name>Experimental Science Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+cat: esb.html: No such file or directory
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73792624473572,30.287559382515912</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="ETC">
+    <name>Engineering Teaching Center II</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/etc.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73496508598328,30.290347928611254</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="FAC">
+    <name>Peter T. Flawn Academic Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/fac.jpg" border="0" alt="" /> 
+<ul>
+<!--li>
+      
+<a href="http://www.utexas.edu/research/accessibility/">Accessibility Institute</a></li-->
+<li><a href="http://www.utexas.edu/its/store/">Campus Computer Store</a></li>
+<li><a href="http://www.cwrl.utexas.edu/">Computer Writing &amp; Research Lab (CWRL)</a></li>
+<!--li><a href="http://www.utexas.edu/student/connexus/">Connexus: Connections in Undergraduate Studies</a></li-->
+<li><a href="http://www.utexas.edu/its/idcenter/">ID Center</a></li>
+<li><a href="http://www.utexas.edu/its/">Information Technology, Office of the Vice President for</a></li>
+<li>
+         <a href="http://www.utexas.edu/academic/diia/">Instructional 
+            Innovation &amp; Assessment, Division of</a> 
+</li>
+ <li><a href="http://www.tx-learn.org/">LEARN</a></li>
+      <li><a href="http://www.utexas.edu/cola/lacs/">Liberal Arts Career Services</a></li> 
+<li>
+  <a href="http://www.utexas.edu/cola/offices/lac/">Liberal 
+Arts Council</a> </li>
+ <li><a href="http://www.sts.utexas.edu/">Science, Technology &amp; Society Program</a></li>
+<li><a href="http://www.dars.state.tx.us/">State of Texas Blind Services - Department of Assistive and<br />
+Rehabilitative Services</a></li>
+       <li> 
+        <a href="http://www.utexas.edu/smf/">Student Microcomputer Facility (SMF)</a>
+</li>
+        <li>
+         <a href="http://www.utexas.edu/academic/tsi/">Texas Success 
+            Initiative (TSI) Office</a> 
+        </li>
+        <li>
+<a href="http://uwc.utexas.edu/">Undergraduate 
+            Writing Center</a> 
+</li>
+</ul>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74045825004578,30.286271621849316</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="FC1">
+    <name>Facilities Complex Building 1</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/fc1.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72214412689209,30.284353846216202</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="FC2">
+    <name>Facilities Complex Building 2</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/fc2.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72249817848206,30.283853550755325</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="FC3">
+    <name>Facilities Complex Building 3</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/fc3.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72317409515381,30.284742963144243</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="FC4">
+    <name>Facilities Complex Building 4</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/fc4.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72256255149841,30.284224140230563</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="FC5">
+    <name>Facilities Complex Building 5</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/fc5.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.7238929271698,30.2836219316225</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="FC6">
+    <name>Facilities Complex Building 6</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/fc6.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72515892982483,30.283408841537355</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="FC7">
+    <name>Facilities Complex Building 7</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/fc7.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72556662559509,30.283381047144303</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="FC8">
+    <name>Facilities Complex Building 8</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/fc8.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72341012954712,30.285178401686284</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="FDF">
+    <name>Frank Denius Fields</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/fdf.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72690773010254,30.28574354244412</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="FDH">
+    <name>J. Frank Dobie House</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/fdh.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73261547088623,30.289764285988053</coordinates>
+    </Point>
+  </Placemark>
+  
+   <Placemark id="FNT">
+    <name>Larry R. Faulkner Nano Science and Technology Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/nst.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.7378511428833,30.288087452146577</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="GAR">
+    <name>Garrison Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/gar.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73832321166992,30.28515060779454</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="GEA">
+    <name>Mary E. Gearing Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/gea.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73923516273499,30.2876334977233</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="GEB">
+    <name>Dorothy L. Gebauer Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/geb.gif" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.utexas.edu/cola/">Liberal Arts, College 
+            of</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73870944976807,30.286364267065906</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="GIA">
+    <name>Graduate and International Admissions</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/gia.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74066209793091,30.29024602300666</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="GOL">
+    <name>Goldsmith Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/gol.jpg" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://soa.utexas.edu/">Architecture, 
+            School of </a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74126291275024,30.28559530911769</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="GRE">
+    <name>Gregory Gym</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/gre.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73650,30.28361</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="GRG">
+    <name>Geography Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/grg.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74001836776733,30.287661290911608</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="GSB">
+    <name>McCombs School of Business</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/gsb.jpg" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.mccombs.utexas.edu/">Business, 
+            Red McCombs School of</a>
+        </li>
+        <li>
+          <a href="http://www.edscenter.utexas.edu/">EDS 
+            Financial Trading &amp; Technology Center</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/academic/cit/">Instructional 
+            Technologies, Center for</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73792,30.28398</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="HMA">
+    <name>Hogg Memorial Auditorium</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/hma.jpg" border="0" alt="" /></div>
+	<ul>
+		<li>
+          <a href="http://www.utpac.org/venues/hogg">Hogg Memorial Auditorium</a>
+        </li>
+      </ul>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74066209793091,30.286883078661976</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="HRC">
+    <name>Ransom Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/hrc.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74124,30.28420</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="HRH">
+    <name>Homer Rainey Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/hrh.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74014711380005,30.284122228264426</coordinates>
+    </Point>
+  </Placemark>
+  
+  <Placemark id="HSM">
+    <name>William Randolph Hearst Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/hsm.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.740743,30.28894</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="JES">
+    <name>Beauford H. Jester Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/jes.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73682117462158,30.28312163242948</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="JGB">
+    <name>Jackson Geological Sciences Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/jgb.jpg" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.esi.utexas.edu/">Environmental 
+            Science Institute</a>
+        </li>
+        <li>
+          <a href="http://www.lib.utexas.edu/geo/">Geology 
+            (Walter) Library</a>
+        </li>
+        <li>
+          <a href="http://www.geosci.utexas.edu/">John 
+            A. &amp; Katherine G. Jackson School of Geosciences</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73565173149109,30.286114124780312</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="JHH">
+    <name>John W. Hargis Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/jhh.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73213267326355,30.278220418397066</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="JON">
+    <name>Jesse H. Jones Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/jon.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73155331611633,30.289078733074792</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="KIN">
+    <name>Kinsolving Dormitory</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/kin.jpg" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.utexas.edu/student/housing/">Housing &amp; 
+            Food Service, Division of</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73937463760376,30.290329400327362</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="LBJ">
+    <name>Lyndon B. Johnson Library</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/lbj.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72920,30.28575</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="LCH">
+    <name>Littlefield Carriage House</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/lch.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74066209793091,30.288569197400225</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="LFH">
+    <name>Littlefield Home</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/lfh.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74068355560303,30.288198624338175</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="LLA">
+    <name>LLA Living Learning Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/lla.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74029731750488,30.29068143712248</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="LLB">
+    <name>LLB Living Learning Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/lla.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74025440216064,30.290977888180446</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="LLC">
+    <name>LLC Living Learning Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/llc.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74027585983276,30.29131139454971</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="LLD">
+    <name>LLD Living Learning Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/lla.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74102687835693,30.29075554997094</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="LLE">
+    <name>LLE Living Learning Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/llc.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74100542068481,30.291070528952304</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="LLF">
+    <name>LLF Living Learning Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/llc.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74085521697998,30.291366978834333</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="LTD">
+    <name>Littlefield Dormitory</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ltd.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73965358734131,30.28942151013031</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="LTH">
+    <name>Laboratory Theater Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/lth.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73523330688477,30.28590104010804</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="MAI">
+    <name>Main Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/mai.gif" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.utexas.edu/business/accounting/">Accounting, 
+            Office of</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/student/admissions/">Admissions, 
+            Office of</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/business/budget/">Budget Office</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/business/busmgr/">Controller, 
+            Office of the</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/diversity/">Diversity  &amp; Community Engagement, Office of the Vice President for</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/vp/ecs/">Employee &amp; Campus 
+            Services, Office of the Vice President for</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/business/">Financial Affairs 
+            (Office of the Vice President &amp; Chief Financial Officer)</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/ogs/">Graduate Studies, Office 
+            of</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/academic/oir/">Information Management and 
+	    Analysis, Office of</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/vp/irla/">Institutional Relations 
+            &amp; Legal Affairs, Office of the Vice President for</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/admin/audit/">Internal Audits, 
+            Office of</a>
+        </li>
+        <li>
+          <a href="http://www.lib.utexas.edu/lsl/">Life 
+            Science Library</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/payroll/">Payroll Services</a>
+        </li>
+        <li>
+          <a href="http://www.biosci.utexas.edu/prc/">Plant 
+            Resources Center</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/cola/centers/prc/">Population 
+            Research Center</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/president/">President, Office 
+            of the</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/provost/">Provost, Office of 
+            the Executive Vice President &amp;</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/opa/">Public Affairs, Office 
+            of the Vice President for</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/student/registrar/">Registrar, 
+            Office of the</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/research/vp/">Research, Office 
+            of the Vice President for</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/student/vpsa/">Student Affairs, 
+            Office of the Vice President for</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/academic/cte/">Teaching Effectiveness, 
+            Center for</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73921,30.28565</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="MBB">
+    <name>Louise and James Robert Moffett Molecular Biology Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/mbb.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73712158203125,30.28871742623309</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="MEZ">
+    <name>Mezes Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/mez.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73900985717773,30.284437228544977</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="MHD">
+    <name>Moore-Hill Dormitory</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/mhd.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73521184921265,30.28356634294924</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="MMS">
+    <name>Mike A. Myers Track and Soccer Stadium</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/mms.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72995471954346,30.28243603309577</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="MNC">
+    <name>Moncrief-Neuhaus Athletics Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+	 <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/mnc.gif" border="0" alt="" /> 
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.7327013015747,30.282398973535845</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="MRH">
+    <name>Music Building East and Music Building/Recital Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/mrh.jpg" border="0" alt="" /></div>
+      <ul>
+        <li>
+          <a href="http://www.utpac.org/venues/bates">Bates Recital Hall</a>
+        </li>
+      </ul>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73072719573975,30.287327772132002</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="MSB">
+    <name>Mail Services Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/msb.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72568464279175,30.28288074672298</coordinates>
+    </Point>
+  </Placemark>
+  
+  <Placemark id="NHB">
+    <name>Norman Hackerman Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/nhb_1.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.738302,30.287761</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="NMS">
+    <name>Neural Molecular Science Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/nms.jpg" alt="" width="385" height="343" border="0" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73759365081787,30.289365924743226</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="NOA">
+    <name>North Office Building A</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/noa.gif" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.utexas.edu/eos/">Equal Opportunity Services</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/hr/">Human Resource Services</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/research/rsc/">Research Support 
+            &amp; Compliance, Office of</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/research/osp/">Sponsored Projects, 
+            Office of</a>
+        </li>
+    </ul>
+
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73742198944092,30.291070528952304</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="NUR">
+    <name>Nursing School</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/nur.gif" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.utexas.edu/nursing/">Nursing, School of</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73343086242676,30.277840540924984</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="PAC">
+    <name>Performing Arts Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/pac.jpg" border="0" alt="" /></div>
+    <ul>        
+		<li>
+          <a href="http://www.utpac.org/venues/bass_concert_hall">Bass Concert Hall</a>
+        </li>
+		<li>
+          <a href="http://www.utpac.org/venues/bates">Bates Recital Hall</a>
+        </li>
+		<li>
+          <a href="http://www.utpac.org/venues/brockett">Oscar G. Brockett Theatre</a>
+        </li>
+		<li>
+          <a href="http://www.utpac.org/venues/mccullough">McCullough Theater</a>
+        </li>
+		<li>
+          <a href="http://www.utpac.org/venues/b_iden_payne">B. Iden Payne Theatre</a>
+        </li>
+      </ul>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73135,30.28604</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="PAI">
+    <name>T. S. Painter Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/pai.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73855924606323,30.286994252218467</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="PAR">
+    <name>Parlin Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/par.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.7399754524231,30.28490046241447</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="PAT">
+    <name>J. T. Patterson Laboratories Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/pat.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.7364993095398,30.288087452146577</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="PCL">
+    <name>Perry-Castaneda Library</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/pcl.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73788,30.28240</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="PHD">
+    <name>Prather Hall Dormitory</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/phd.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73516893386841,30.282528681934327</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="PHR">
+    <name>Pharmacy Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/phr.gif" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.utexas.edu/research/asrec/">Addiction 
+            Science Research &amp; Education Center</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/neuroscience/">Neuroscience, 
+            Institute for</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/pharmacy/">Pharmacy, College 
+            of</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.738516330719,30.288217153024522</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="PPA">
+    <name>Hal C. Weaver Power Plant Annex</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ppa.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73446083068848,30.286864549723653</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="PPB">
+    <name>Printing and Press Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ppb.jpg" border="0" alt="" width ="330" height="550" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.72695064544678,30.28195425772502</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="PPE">
+    <name>Hal C. Weaver Power Plant Expansion</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ppe.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73585557937622,30.286864549723653</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="PPL">
+    <name>Hal C. Weaver Power Plant</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ppl.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73516893386841,30.286586615228746</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="RAS">
+    <name>Russell A. Steindam Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ras.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73566246032715,30.284956050331797</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="RHD">
+    <name>Roberts Hall Dormitory</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/rhd.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73510456085205,30.283028984150803</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="RLM">
+    <name>Robert Lee Moore Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/rlm.jpg" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://order.ph.utexas.edu/"> Complex Quantum Systems, Center for</a>
+        </li>
+        <li>
+          <a href="http://www.frc.utexas.edu/">Fusion 
+            Research Center</a>
+        </li>
+        <li>
+          <a href="http://w3fusion.ph.utexas.edu/ifs/">Fusion 
+            Studies, Institute for</a>
+        </li>
+        <li>
+          <a href="http://www.mcdonaldobservatory.org/">McDonald 
+            Observatory</a>
+        </li>
+        <li>
+          <a href="http://chaos.ph.utexas.edu/home.html">Nonlinear 
+            Dynamics, Center for</a>
+        </li>
+        <li>
+          <a href="http://www.lib.utexas.edu/pma/">Physics-Mathematics-Astronomy 
+            (Kuehne) Library</a>
+        </li>
+        <li>
+          <a href="http://wwwrel.ph.utexas.edu/">Relativity, 
+            Center for</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73634,30.28892</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="RRN">
+    <name>ROTC Rifle Range Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/rrn.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73544788360596,30.284641051716992</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="RSC">
+    <name>Recreational Sports Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/rsc.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73244380950928,30.28156512973712</coordinates>
+    </Point>
+  </Placemark>
+  
+  <Placemark id="SAC">
+    <name>Student Activity Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/sac_north.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.736851,30.28479</coordinates>
+    </Point>
+  </Placemark>
+  
+   <Placemark id="SEA">
+    <name>Sarah M. and Charles E. Seay Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/seay.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.737674,30.28988</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="SRH">
+    <name>Sid Richardson Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/srh.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.728885,30.28503</coordinates>
+    </Point>
+  </Placemark>
+  
+  <Placemark id="SSB">
+    <name>Student Services Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ssb.jpg" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://cmhc.utexas.edu">Counseling &amp; 
+            Mental Health Center</a>
+        </li>
+        <li>
+          <a href="http://deanofstudents.utexas.edu/">Dean 
+            of Students, Office of the</a>
+        </li>
+	<li>
+          <a href="http://www.utexas.edu/diversity/ddce/gsc/">
+	    Gender and Sexuality Center</a>
+        </li>
+		<li>
+          <a href="http://www.utexas.edu/diversity/ddce/lcae/">Longhorn Center for Academic Excellence</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/student/mic/">Multicultural 
+            Information Center</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/student/ombuds/">Ombudsman</a>
+        </li>
+        <li>
+          <a href="http://healthyhorns.utexas.edu/pharmacy.html">Pharmacy, 
+            University Health Services</a>
+        </li>
+        <li>
+          <a href="http://www.utsenate.org/">Senate 
+            of College Councils</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/student/finaid/">Student Financial 
+            Services</a>
+        </li>
+        <li>
+          <a href="http://www.utstudentgovernment.com/">Student 
+            Government</a>
+        </li>
+        <li>
+          <a href="http://deanofstudents.utexas.edu/sald/soc.php">Student 
+            Organization Center</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/student/health/">University 
+            Health Services</a>
+        </li>
+        <li>
+          <a href="http://deanofstudents.utexas.edu/vslc/">University 
+            Volunteer &amp; Service Learning Center</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73850,30.29017</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="SSW">
+    <name>School of Social Work Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ssw.gif" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.utexas.edu/services/childcare/">Child 
+            Care Center, University</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/ssw/">Social Work, School of</a>
+        </li>
+        <li>
+          <a href="http://www.utexas.edu/services/duplicating/">University 
+            Duplicating Service</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73252,30.28037</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="STD">
+    <name>Texas Memorial Stadium</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/std.gif" border="0" alt="" /></div>
+	<ul>
+		<li><a href="resources/stadium_ada_gate_082008.pdf">ADA Accessible Entrances (PDF)</a></li>
+		<li><a href="../../../parking/ftballparking.html#ada">ADA Parking for Football Games</a></li>
+	</ul>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73252,30.28361</coordinates>
+    </Point>
+  </Placemark>
+  
+   <Placemark id="SUT">
+    <name>Sutton Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/sut.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.740831,30.285002</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="SZB">
+    <name>George I. Sanchez Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/szb.jpg" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.utexas.edu/education/">Education, College 
+            of</a>
+        </li>
+        <li>
+          <a href="http://www.ischool.utexas.edu/">Information, 
+            School of</a>
+        </li>
+        <li>
+          <a href="http://www.texasfamilyliteracy.org/">Texas 
+            Family Literacy Center</a>
+        </li>
+	<li>
+          <a href="http://www.texasreading.org/utcrla/">Vaughn Gross 
+	  Center for Reading <br />and Language Arts</a>
+        </li>
+    </ul></td>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73875,30.28140</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="TNH">
+    <name>Townes Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/tnh.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73113,30.288514</coordinates>
+    </Point>
+  </Placemark>
+  
+  <Placemark id="UNB">
+    <name>Texas Union</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/unb.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.74116,30.28663</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="UPB">
+    <name>UTPD</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/upb.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73036,30.28398</coordinates>
+    </Point>
+  </Placemark>
+  
+   <Placemark id="UTA">
+    <name>UT Administration Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/uta.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.742808,30.279397</coordinates>
+    </Point>
+  </Placemark>
+  
+  <Placemark id="UTC">
+    <name>University Teaching Center</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/utc.gif" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.738471,30.282902</coordinates>
+    </Point>
+  </Placemark>
+  <Placemark id="WAG">
+   <name>Waggener Hall</name>
+	    <visibility>0</visibility>
+	    <address>...</address>
+    <description>
+	    <![CDATA[
+	    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/wag.gif" border="0" alt="" />
+	    ]]>
+	    </description>
+	    <styleUrl>#building</styleUrl>
+	    <ExtendedData>
+	    </ExtendedData>
+	    <Point>
+	      <coordinates>-97.737601,30.285107</coordinates>
+	    </Point>
+  </Placemark>
+  <Placemark id="WEL">
+    <name>Welch Hall</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+    <div align="center"><img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/wel.gif" border="0" alt="" /> </div>
+      <ul>
+        <li>
+          <a href="http://www.lib.utexas.edu/chem/">Chemistry 
+            (Mallet) Library</a>
+        </li>
+        <li>
+          <a href="http://www.cnm.utexas.edu/">Nano- 
+            &amp; Molecular Science &amp; Technology, Center for</a>
+        </li>
+        <li>
+          <a href="http://itc.cm.utexas.edu/">Theoretical 
+            Chemistry, Institute for</a>
+        </li>
+    </ul>
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73783,30.28656</coordinates>
+    </Point>
+  </Placemark>
+
+</Folder>
+</Document>
+</kml>
+    
+
+

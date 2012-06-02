@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">UTilities</string>
+    <string name="version"> 1.5</string>
+    <string name="login_button_text">Save</string>
+    <string name="login_category">Persistent Login</string>
+    <string name="edit_credentials">Edit login credentials</string>
+    <string name="sharedpref_file">UTilities_preferences</string>
+    <string name="routeprompt">Select Route Overlay</string>
+    <string name="restaurantprompt">Select a Restaurant</string>
+    <string name="semesterprompt">Select a Semester</string>
+    <string name="building_intent">BUILDING</string>
+    <string name="developer">Developer: Chris Roberts</string>
+    <string name="classinfo">Electrical Engineering Class of 2015</string>
+    <string name="contact">Love the app?  Hate it?  Suggestions? Snide remarks?</string>
+    <string name="email">Chris_Roberts@utexas.edu</string>
+    <string name="loading_content">Loading content...</string>
+    <string name="login_first">Please log in before using this feature</string>
+    <string name="login_pna_first">Please log in to UT PNA before using this feature (not possible with temp login :( )</string>
+    
+      <string-array name="routes_array">
+			<item>Crossing Place</item>
+			<item>Cameron Rd</item>
+			<item>East Campus</item>
+			<item>Forty Acres</item>
+			<item>Far West</item>
+			<item>Intramural Fields</item>
+			<item>Intramural Fields/Far West</item>
+			<item>Lake Austin Blvd</item>
+			<item>Lakeshore</item>
+			<item>North Riverside</item>
+			<item>North Riverside/Lakeshore</item>
+			<item>Pickle Research Campus</item>
+			<item>Red River</item>
+			<item>Red River/Cameron Rd</item>
+			<item>West Campus</item>
+			<item>Wickersham Lane</item>
+			<item>Wickersham/Crossing Pl</item>
+    </string-array>
+    <string-array name="schedule_background_array">
+    	<item>Checkerboard (1 hour)</item>
+    	<item>Checkerboard (1/2 hour)</item>
+    	<item>Striped (1 hour)</item>
+    	<item>Striped (1/2 hour)</item>
+    </string-array>
+     <string-array name="schedule_background_value_array">
+    	<item>checkhour</item>
+    	<item>checkhalf</item>
+    	<item>stripehour</item>
+    	<item>stripehalf</item>
+    </string-array>
+</resources>

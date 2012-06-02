@@ -1,0 +1,5 @@
+making bus stops appear within a radius of the user rather than the current route list implementation
+longclick buildings for directions
+edit classes
+
+fix multiple schedules

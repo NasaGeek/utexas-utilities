@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+    		android:title="Login Style"
+    		android:key = "loginstyle">
+    	<CheckBoxPreference
+    		android:id="@+id/login_pref"
+    		android:key = "loginpref"
+    		android:title = "Persistent login"
+    		android:defaultValue="false"
+    		android:summaryOn = "Persistent login is turned on; credentials stored on device." 
+    		android:summaryOff= "Persistent login is currently off."
+    		/>
+    </PreferenceCategory>
+    <PreferenceCategory
+            android:title="@string/login_category"
+			android:key="loginfields"
+			android:dependency="loginpref">
+       <EditTextPreference
+       android:dependency="loginpref"
+       			android:id="@+id/eidfield"
+                android:key="eid"
+                android:title="Edit UT EID"
+                android:dialogTitle="Enter your EID" />
+       <EditTextPreference
+       android:dependency="loginpref"
+       			android:id="@+id/passwordfield"
+                android:key="password"
+                android:title="Edit Password"
+                android:dialogTitle="Enter your password" 
+                android:inputType="textPassword"/>
+   <!--     <Preference
+       android:dependency="loginpref"
+       		android:id="@+id/loginbutton"
+       		android:defaultValue="false"
+       		android:persistent="false"
+       		android:key="loggedin"/>  --> 
+ 		<CheckBoxPreference
+		    android:dependency="loginpref"
+		    android:key="autologin"
+		    android:title="Auto Login"
+		    android:defaultValue="false"/>
+		    
+    </PreferenceCategory>
+    
+    
+    
+    <PreferenceCategory
+    	android:title="Schedule">
+    	
+    <!-- 	<PreferenceScreen
+    	android:title="Schedule Preferences"> -->
+    	<ListPreference
+    		android:id="@+id/schedule_background_style"
+    		android:key = "schedule_background_style"
+    		android:title = "Background Style"
+    		android:entries="@array/schedule_background_array"
+    		android:entryValues="@array/schedule_background_value_array"
+    		android:defaultValue="checkhour"
+    		
+    		/>
+    	
+    	
+   <!--  	</PreferenceScreen> -->
+
+    </PreferenceCategory>
+    
+    
+    <PreferenceCategory
+    	android:title="Campus Map">
+    	<CheckBoxPreference    
+    	    android:summaryOn="Map currently centers on your location."
+    	    android:summaryOff="Map currently centers on UT Tower."
+		    android:key="starting_location"
+		    android:title="Center on My Location"
+		    android:defaultValue="true"/>
+        </PreferenceCategory>
+    	
+    <PreferenceCategory 
+        android:title="Data">
+        
+        <Preference
+            android:id="@+id/resetclassesbutton"
+            android:title="Clear temporary data."
+            android:key="resetclassesbutton" />
+    </PreferenceCategory>
+
+  
+</PreferenceScreen>

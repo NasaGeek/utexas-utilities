@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+<EditText
+    android:id="@+id/edit_eid"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:hint="UT EID"
+    android:maxLines="1"/></LinearLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+<EditText
+    android:id="@+id/edit_password"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:hint="Password"
+    android:maxLines="1"
+    android:inputType="textPassword"/></LinearLayout>
+<Button 
+	android:id="@+id/login_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/login_button_text"/>
+</LinearLayout>
