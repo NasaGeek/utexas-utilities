@@ -49,7 +49,6 @@ public class DineinFragment extends SherlockFragment
 	private ListView dlv;
 	ArrayList<String> dtransactionlist, balancelist;
 	String[] dtransactionarray;
-	TimingLogger timings;
 	int count;
 	private boolean dfilled;
 	ViewGroup cont;
@@ -70,9 +69,7 @@ public class DineinFragment extends SherlockFragment
 		
 		
 		dlv = (ListView) vg.findViewById(R.id.dtransactions_listview);
-		
 		dineinlinlay = (LinearLayout) vg.findViewById(R.id.dineinlinlay);
-
 		d_pb_ll = (LinearLayout) vg.findViewById(R.id.dinein_progressbar_ll);
 		
 
@@ -81,11 +78,7 @@ public class DineinFragment extends SherlockFragment
 		
 		try
 		{
-			
 			parser();
-			
-			timings.addSplit("parsed");
-			
 		}
 		catch(Exception e)
 		{
@@ -114,13 +107,8 @@ public class DineinFragment extends SherlockFragment
 		tv1 = new TextView(parentAct);
 		tv2 = new TextView(parentAct);
 
-		
-		
-		timings = new TimingLogger("Timing", "Balance OnCreate");
-		
 		ch = new ConnectionHelper(parentAct);
 
-		
 		dtransactionlist = new ArrayList<String>();
 
 
@@ -134,20 +122,6 @@ public class DineinFragment extends SherlockFragment
 				return;
 			}});
 	
-		try
-			{
-				
-		//		parser();
-				
-				timings.addSplit("parsed");
-				
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-				parentAct.finish();
-				return;
-			}
 			tv1.setGravity(0x01);		
 		  	tv2.setGravity(0x01);
 		  			
@@ -156,18 +130,13 @@ public class DineinFragment extends SherlockFragment
 		    tv1.setTextColor(Color.DKGRAY);
 		    tv2.setTextColor(Color.DKGRAY);
 
-		/*  dineinlinlay.addView(tv1,0);
-			dineinlinlay.addView(tv2,1);*/
-
-
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) 
 	{
-	        menu.removeItem(R.id.balance_refresh);
-			inflater.inflate(R.layout.balance_menu, menu);
-	        
+	     menu.removeItem(R.id.balance_refresh);
+	     inflater.inflate(R.layout.balance_menu, menu);     
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -178,22 +147,19 @@ public class DineinFragment extends SherlockFragment
 		   
 	    		case R.id.balance_refresh:
 	    			
-	    			
 					dlv.setVisibility(View.GONE);
-					
 					d_pb_ll.setVisibility(View.VISIBLE);
-	    		try
-				{
-	    			dtransactionlist.clear();
-					dineinbalance = "No Dine In Dollars? What kind of animal are you?";
-					parser();	
-					
-				}
-				catch(Exception e)
-				{
-					e.printStackTrace();
-				}
-	    			break;
+		    		try
+					{
+		    			dtransactionlist.clear();
+						dineinbalance = "No Dine In Dollars? What kind of animal are you?";
+						parser();		
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+		    			break;
 	    	}
 	    	return true;
 	}
@@ -209,12 +175,10 @@ public class DineinFragment extends SherlockFragment
     	BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(parentAct,httpclient));
     	cookie.setDomain(".utexas.edu");
     	httpclient.getCookieStore().addCookie(cookie);
-		timings.addSplit("logged in");
-
+		
     	fetch = new fetchTransactionDataTask(httpclient);
 		fetch.execute("rRequestSw",'d');
-    	
-    	timings.addSplit("parsed page");
+
     }
 	
 	@Override
@@ -256,8 +220,6 @@ public class DineinFragment extends SherlockFragment
 				e.printStackTrace();
 			}
 	    	
-	    	timings.addSplit("got page");
-	    	
 	    	Pattern pattern3 = Pattern.compile("(?<=\"center\">\\s{1,10})\\S.*(?=\\s*<)");
 	    	Matcher matcher3 = pattern3.matcher(pagedata);
 	    	Pattern pattern4 = Pattern.compile("(?<=\"right\">\\s).*(?=</td>\\s*<td)");
@@ -281,10 +243,7 @@ public class DineinFragment extends SherlockFragment
 	    		transaction+=matcher4.group().replaceAll("\\s","");
 	    		if (((Character)params[1]).equals('d'))
 	    			dtransactionlist.add(transaction);
-	    		else
-	    			Log.d("WTF MAN", "HOW DID YOU SCREW THIS UP");
 	    	}
-	    	timings.addSplit("parsed page");
 			// TODO Auto-generated method stub
 	    	
 			return (Character) params[1];
@@ -292,9 +251,6 @@ public class DineinFragment extends SherlockFragment
 		@Override
 		protected void onPostExecute(Character result)
 		{
-	
-	//		Log.d("onPostExecute", "oh lawdz it's  postexecuting");
-			
 			if ((result).equals('d') && !this.isCancelled())
 	    	{
 	    		dfilled = true;

@@ -80,7 +80,7 @@ public class BlackboardActivity extends SherlockActivity {
 		{
 	//		DefaultHttpClient httpclient = ch.getThreadSafeClient();
 
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/portal/frameset.jsp");
+			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
 	    	String pagedata="";
 	    	
 	    	

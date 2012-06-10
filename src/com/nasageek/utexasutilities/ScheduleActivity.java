@@ -139,7 +139,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		
 		actionbar = getSupportActionBar();
 		actionbar.setTitle("Schedule");
-		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		
 	    actionbar.setHomeButtonEnabled(true);
 	    actionbar.setDisplayHomeAsUpEnabled(true);
 		
@@ -162,9 +162,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
         
 		
         spinner.setAdapter(adapter);
-        
-        
-        actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() 
+        getSupportActionBar().setListNavigationCallbacks(adapter, new OnNavigationListener() 
         {
         	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
         		// TODO Auto-generated method stub
@@ -176,6 +174,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
         		return true;
         	}
         });
+        
 		
 		}
 		private void initialisePaging() 

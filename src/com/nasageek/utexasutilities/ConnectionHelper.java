@@ -355,7 +355,7 @@ public class ConnectionHelper {
 		{
 			logindone = b;
 			
-			if(logindone && pnalogindone && bbLoginDone && !isCancelled())
+			if(logindone && pnalogindone && !isCancelled()) //&& bbLoginDone 
 			{
 				logindone = false;pnalogindone = false;bbLoginDone=false;
 				loggingIn=false;
@@ -425,7 +425,7 @@ public class ConnectionHelper {
 		{
 			pnalogindone = b;
 			
-			if(logindone && pnalogindone && bbLoginDone && !isCancelled())
+			if(logindone && pnalogindone && !isCancelled()) //&& bbLoginDone 
 			{
 				logindone = false;pnalogindone = false;bbLoginDone=false;
 				loggingIn=false;

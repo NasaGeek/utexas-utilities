@@ -155,7 +155,7 @@ public class UTilitiesActivity extends SherlockActivity {
         schedulebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
           //  	frameAnimation.start();
-            	if(!ConnectionHelper.cookieHasBeenSet() && new ClassDatabase(UTilitiesActivity.this).size()==0)// && (!settings.getBoolean("loginpref", true)||!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
+            	if((!ConnectionHelper.cookieHasBeenSet() && new ClassDatabase(UTilitiesActivity.this).size()==0) || ConnectionHelper.isLoggingIn())// && (!settings.getBoolean("loginpref", true)||!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
             	{
             		message.setText(R.string.login_first);
                 	message.setDuration(Toast.LENGTH_SHORT);
@@ -172,7 +172,7 @@ public class UTilitiesActivity extends SherlockActivity {
         final ImageButton balancebutton = (ImageButton) findViewById(R.id.balance_button);
         balancebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-            	if(!ConnectionHelper.cookieHasBeenSet()) /*&& 
+            	if(!ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.isLoggingIn()) /*&& 
             			(!settings.getBoolean("loginpref", true)||
             					!settings.contains("eid") || 
             					!settings.contains("password")||
@@ -205,7 +205,7 @@ public class UTilitiesActivity extends SherlockActivity {
         databutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	
-            	if(!ConnectionHelper.PNACookieHasBeenSet())// && (!settings.getBoolean("loginpref", true)|| !settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
+            	if(!ConnectionHelper.PNACookieHasBeenSet() || ConnectionHelper.isLoggingIn())// && (!settings.getBoolean("loginpref", true)|| !settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
             	{
             		message.setText(R.string.login_pna_first);
                 	message.setDuration(Toast.LENGTH_SHORT);

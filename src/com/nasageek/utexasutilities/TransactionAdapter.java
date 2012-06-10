@@ -79,17 +79,6 @@ public class TransactionAdapter extends ArrayAdapter
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
-		/*String place = transactions.get(position).split(" ")[0];
-		String cost = transactions.get(position).split(" ")[1];
-		TextView left= new TextView(con);
-		left.setText(place);
-		TextView right = new TextView(con);
-		right.setText(cost);
-		LinearLayout lin = new LinearLayout(con);
-		lin.addView(left);lin.addView(right);
-		Log.d("GETVIEW", position+"");
-		return (View)lin;
-		*/
 		String trans = transactions.get(position);
 		
 		String dateplace = trans.substring(0,trans.indexOf("$"));

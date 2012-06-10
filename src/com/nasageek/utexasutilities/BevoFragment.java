@@ -52,7 +52,6 @@ public class BevoFragment extends SherlockFragment
 	private ListView blv;
 	ArrayList<String> btransactionlist;
 	String[] btransactionarray;
-	TimingLogger timings;
 	int count;
 	private boolean bfilled;
 	TextView tv1, tv2,tv3,tv4;
@@ -82,12 +81,8 @@ public class BevoFragment extends SherlockFragment
 		bevolinlay.addView(tv4,1);
 		
 		try
-		{
-			
+		{	
 			parser();
-			
-			timings.addSplit("parsed");
-			
 		}
 		catch(Exception e)
 		{
@@ -116,21 +111,9 @@ public class BevoFragment extends SherlockFragment
 		tv3 = new TextView(parentAct);
 		tv4 = new TextView(parentAct);
 		
-		
-		timings = new TimingLogger("Timing", "Balance OnCreate");
-		
 		ch = new ConnectionHelper(parentAct);
-	//	blv = (ListView) act.findViewById(R.id.btransactions_listview);
-		
-		
-	//	bevolinlay = (LinearLayout) act.findViewById(R.id.bevolinlay);
-
+	
 		btransactionlist = new ArrayList<String>();
-		
-	//	b_pb_ll = (LinearLayout) act.findViewById(R.id.bevo_progressbar_ll);
-		
-		
-		
 		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 			public void uncaughtException(Thread thread, Throwable ex)
@@ -141,20 +124,6 @@ public class BevoFragment extends SherlockFragment
 				return;
 			}});
 	
-		try
-			{
-				
-		//		parser();
-				
-				timings.addSplit("parsed");
-				
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-				parentAct.finish();
-				return;
-			}
 			tv3.setGravity(0x01);
 		  	tv4.setGravity(0x01);
 		  	
@@ -163,18 +132,6 @@ public class BevoFragment extends SherlockFragment
 		    tv3.setTextColor(Color.DKGRAY);
 		    tv4.setTextColor(Color.DKGRAY);
 		    		
-		
-
-	//	    bevolinlay.addView(tv3,0);
-	//		bevolinlay.addView(tv4,1);
-	//	    timings.addSplit("views set up");	
-	
-		
-		
-	//	timings.addSplit("set both adapters");		
-		
-	//	timings.addSplit("set up tabs");
-	//	timings.dumpToLog();
 	}
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) 
@@ -223,13 +180,11 @@ public class BevoFragment extends SherlockFragment
     	BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(parentAct,httpclient));
     	cookie.setDomain(".utexas.edu");
     	httpclient.getCookieStore().addCookie(cookie);
-		timings.addSplit("logged in");
-		fetch = new fetchTransactionDataTask(httpclient);
 		
-    	fetch.execute("sRequestSw",'b');
     	
-    	timings.addSplit("parsed page");
-  	
+		fetch = new fetchTransactionDataTask(httpclient);
+    	fetch.execute("sRequestSw",'b');
+    
     }
 	
 	@Override
@@ -271,24 +226,24 @@ public class BevoFragment extends SherlockFragment
 				e.printStackTrace();
 			}
 	    	
-	    	timings.addSplit("got page");
-	    	
 	    	Pattern pattern3 = Pattern.compile("(?<=\"center\">\\s{1,10})\\S.*(?=\\s*<)");
 	    	Matcher matcher3 = pattern3.matcher(pagedata);
+	    	
 	    	Pattern pattern4 = Pattern.compile("(?<=\"right\">\\s).*(?=</td>\\s*<td)");
 	    	Matcher matcher4 = pattern4.matcher(pagedata);
+	    	
 	    	Pattern datepattern = Pattern.compile("(?<=\"left\">\\s{1,10})\\S+");
 	    	Matcher datematcher = datepattern.matcher(pagedata);
+	    	
 	    	Pattern balancepattern = Pattern.compile("(?<=\"right\">\\s).*(?=</td>\\s*</tr)");
 	    	Matcher balancematcher = balancepattern.matcher(pagedata);
+	    	
 	    	if(balancematcher.find())
 	    	{
 	    		if(((Character)params[1]).equals('b'))
 	    		{	
 	    			bevobalance = balancematcher.group();
-	    		}
-	    		
-	    			
+	    		}		
 	    	}
 	    	while(matcher3.find() && matcher4.find() && datematcher.find())
 	    	{
@@ -297,10 +252,7 @@ public class BevoFragment extends SherlockFragment
 	    		transaction+=matcher4.group().replaceAll("\\s","");
 	    		if(((Character)params[1]).equals('b'))
 	    			btransactionlist.add(transaction);
-	    		else
-	    			Log.d("WTF MAN", "HOW DID YOU SCREW THIS UP");
 	    	}
-	    	timings.addSplit("parsed page");
 			// TODO Auto-generated method stub
 	    	
 			return (Character) params[1];
@@ -308,8 +260,6 @@ public class BevoFragment extends SherlockFragment
 		@Override
 		protected void onPostExecute(Character result)
 		{
-	
-	//		Log.d("onPostExecute", "oh lawdz it's  postexecuting");
 			if((result).equals('b') && !this.isCancelled())
 	    	{
 	    		bfilled = true;
