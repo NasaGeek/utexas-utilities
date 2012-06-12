@@ -10,7 +10,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.actionbarsherlock.view.MenuItem;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -20,6 +22,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.EditText;
@@ -48,6 +51,7 @@ public class Preferences extends SherlockPreferenceActivity{
     CheckBoxPreference autologin;
     Editor edit;
     BaseAdapter ba;
+    ActionBar actionbar;
     OnPreferenceChangeListener listen;
     
     
@@ -59,9 +63,17 @@ public class Preferences extends SherlockPreferenceActivity{
        
        settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
        
+       
        edit = settings.edit();
        toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
       
+       actionbar = getSupportActionBar();
+       actionbar.setTitle("Preferences");
+       actionbar.setHomeButtonEnabled(true);
+       actionbar.setDisplayHomeAsUpEnabled(true);
+		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
+			actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
+       
        setSupportProgressBarIndeterminateVisibility(false);
         addPreferencesFromResource(R.xml.preferences);
         ba = (BaseAdapter)getPreferenceScreen().getRootAdapter();
@@ -223,6 +235,21 @@ public class Preferences extends SherlockPreferenceActivity{
       	  ba.notifyDataSetChanged();
       }
     }
+    @Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+	    	int id = item.getItemId();
+	    	switch(id)
+	    	{
+		    	case android.R.id.home:
+		            // app icon in action bar clicked; go home
+		            Intent home = new Intent(this, UTilitiesActivity.class);
+		            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		            startActivity(home);break;
+	    	}
+	    	return false;
+	}
+
  @Override
     public void onResume()
     {

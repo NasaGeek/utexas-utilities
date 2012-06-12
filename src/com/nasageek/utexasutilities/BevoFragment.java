@@ -297,10 +297,8 @@ public class BevoFragment extends SherlockFragment
 	    		transaction+=matcher4.group().replaceAll("\\s","");
 	    		if(((Character)params[1]).equals('b'))
 	    			btransactionlist.add(transaction);
-	    		else
-	    			Log.d("WTF MAN", "HOW DID YOU SCREW THIS UP");
 	    	}
-	    	timings.addSplit("parsed page");
+	    	
 			// TODO Auto-generated method stub
 	    	
 			return (Character) params[1];
@@ -309,7 +307,7 @@ public class BevoFragment extends SherlockFragment
 		protected void onPostExecute(Character result)
 		{
 	
-	//		Log.d("onPostExecute", "oh lawdz it's  postexecuting");
+	
 			if((result).equals('b') && !this.isCancelled())
 	    	{
 	    		bfilled = true;

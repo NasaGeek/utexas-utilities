@@ -110,11 +110,7 @@ public class BalanceActivity extends SherlockFragmentActivity
 			
 	    }
 	
-	
 
-	
-	
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
