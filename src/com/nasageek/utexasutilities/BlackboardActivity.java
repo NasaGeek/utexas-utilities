@@ -1,5 +1,7 @@
 package com.nasageek.utexasutilities;
 
+import com.nasageek.utexasutilities.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -17,17 +19,18 @@ import org.apache.http.util.EntityUtils;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.foound.widget.AmazingAdapter;
 import com.foound.widget.AmazingListView;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -61,19 +64,7 @@ public class BlackboardActivity extends SherlockActivity {
     	classList = new ArrayList<BBClass>();
     	classSectionList = new ArrayList<Pair<String,ArrayList<BBClass>>>();
     	
-    	bblv.setOnItemClickListener(new OnItemClickListener() {
-			
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				// TODO Auto-generated method stub
-				Intent classLaunch = new Intent();
-				
-			}
-		});
-    	
-    	
-		actionbar = getSupportActionBar();
+    	actionbar = getSupportActionBar();
 		actionbar.setTitle("Blackboard");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionbar.setHomeButtonEnabled(true);
@@ -151,14 +142,20 @@ public class BlackboardActivity extends SherlockActivity {
 	    			{	
 	    				currentCategory = classList.get(i).getSemester();
 	    				sectionList = new ArrayList();
-	    				
+	    				sectionList.add(classList.get(i));
 	    			}
 	    			else if(!classList.get(i).getSemester().equals(currentCategory) || i == classList.size()-1)
 	    			{
-	    				sectionList.add(classList.get(i));
+	    				if(i == classList.size()-1)
+	    					sectionList.add(classList.get(i));
+	    					
 	    				classSectionList.add(new Pair(currentCategory,sectionList));
+	    				
 	    				currentCategory = classList.get(i).getSemester();
 	    				sectionList=new ArrayList();
+	    				
+	    				if(i != classList.size()-1)
+	    					sectionList.add(classList.get(i));
 	    			}
 	    			else
 	    			{
@@ -170,6 +167,24 @@ public class BlackboardActivity extends SherlockActivity {
 				bblv.setAdapter(new BBClassAdapter(BlackboardActivity.this,classSectionList));
 				bblv.setPinnedHeaderView(BlackboardActivity.this.getLayoutInflater().inflate(R.layout.menu_header_item_view, bblv, false));
 				
+				bblv.setOnItemClickListener(new OnItemClickListener() {
+					
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view, int position,
+							long id) {
+						// TODO Auto-generated method stub
+						Intent classLaunch = new Intent(getString(R.string.coursemap_intent), null, BlackboardActivity.this, CourseMapActivity.class);
+						classLaunch.setData(Uri.parse(((BBClass)(parent.getItemAtPosition(position))).getBbid()));
+						BBClass bbclass = (BBClass)(parent.getItemAtPosition(position));
+						String unique = bbclass.getCourseid().split("_")[2];
+						String cid = bbclass.getCourseid().substring(bbclass.getCourseid().indexOf(unique)+6).replaceAll("_"," ");
+						classLaunch.putExtra("folderName", cid);
+						startActivity(classLaunch);
+
+					}
+				});
+				
+				
 				bb_pb_ll.setVisibility(View.GONE);
 	    		bblv.setVisibility(View.VISIBLE);
 	    	}
@@ -179,7 +194,8 @@ public class BlackboardActivity extends SherlockActivity {
 	public void onStop()
 	{
 		super.onStop();
-		fetch.cancel(true);
+		if(fetch!=null)
+			fetch.cancel(true);
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)

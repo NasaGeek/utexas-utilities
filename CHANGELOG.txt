@@ -29,3 +29,4 @@ Times of operation added to dining menus.
 Versioncode 3
 
 Fixed bug with Login button state when no internet connectivity is present
+Blackboard support!

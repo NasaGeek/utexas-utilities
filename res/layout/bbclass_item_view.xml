@@ -28,8 +28,7 @@
 		        android:ellipsize="marquee"
 		        android:lines="1"
 		        android:scrollHorizontally="true"
-		        android:focusable="true"
-				android:focusableInTouchMode="true"
+
 		        android:textSize="15sp"/>
 		      <TextView 
 		        android:id="@+id/bb_class_id"

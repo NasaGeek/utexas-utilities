@@ -14,7 +14,7 @@
         
         <activity android:name=".UTilitiesActivity"
                   android:label="@string/app_name"
-        		 android:screenOrientation="portrait"
+        		  android:screenOrientation="portrait"
                   android:clearTaskOnLaunch="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,8 +25,14 @@
         <activity android:name=".DataUsageActivity"
         		 android:screenOrientation="portrait"></activity>
         
+        <activity android:name=".BlackboardItemActivity"
+            	 android:screenOrientation="portrait"></activity>
+        
         <activity android:name=".BlackboardActivity"
         		 android:screenOrientation="portrait"></activity>
+        
+        <activity android:name=".CourseMapActivity"
+            	android:screenOrientation="portrait"></activity>
          
         <activity android:name=".AboutMeActivity"
         		 android:screenOrientation="portrait"></activity>

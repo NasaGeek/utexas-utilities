@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.foound.widget.AmazingAdapter;
-import com.nasageek.utexasutilities.MenuFragment.food;
+import com.nasageek.utexasutilities.Pair;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +27,7 @@ public class BBClassAdapter extends AmazingAdapter
 	public BBClassAdapter(Context con, ArrayList<Pair<String,ArrayList<BBClass>>> objects)
 	{
 		all = objects;
-		li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	
-		
+		li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);	
 	}
 	@Override
 	public int getCount() {
@@ -90,7 +87,9 @@ public class BBClassAdapter extends AmazingAdapter
 		
 		BBClass bbclass = getItem(position);
 		
-		String name = bbclass.getName().substring(0,bbclass.getName().indexOf("(")-1);
+		
+		String name = (bbclass.getName().contains("(")) ? bbclass.getName().substring(0,bbclass.getName().indexOf("(")-1)
+														: bbclass.getName();
 		String unique = bbclass.getCourseid().split("_")[2];
 		String id = bbclass.getCourseid().substring(bbclass.getCourseid().indexOf(unique)+6).replaceAll("_"," ");
 		

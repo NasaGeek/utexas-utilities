@@ -70,6 +70,8 @@ import com.google.android.maps.OverlayItem;
 public class CampusMapActivity extends SherlockMapActivity  {
 
 	LocationManager locationManager;
+	LocationListener locationListener;
+	String locProvider;
 	Location lastKnownLocation;
 	MyLocationOverlay myLoc;
 	MapController mc;
@@ -86,10 +88,9 @@ public class CampusMapActivity extends SherlockMapActivity  {
 	NavigationDataSet buildingDataSet;
 	ContentResolver buildingresolver;
 	Bundle savedInstanceState;
-	String locProvider;
 	SharedPreferences settings;
 	private ActionBar actionbar;
-	LocationListener locationListener;
+	
 
 	public enum Route {
 		No_Overlay(0,"No Bus Route Overlay"),
@@ -184,7 +185,7 @@ public class CampusMapActivity extends SherlockMapActivity  {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         Criteria crit = new Criteria();
         locProvider = locationManager.getBestProvider(crit, true);
-     locationListener = new LocationListener() {
+        locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
               // Called when a new location is found by the network location provider.
          //   	int lat = (int) (location.getLatitude() * 1E6);

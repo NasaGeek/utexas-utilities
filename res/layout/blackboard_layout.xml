@@ -10,6 +10,7 @@
 	   	 <com.foound.widget.AmazingListView
 		 	android:visibility="gone"
 			android:id="@+id/blackboard_class_listview"
+			android:clickable="true"
 			android:layout_width="fill_parent" 
 		    android:layout_height="fill_parent"/>			   	
 </LinearLayout>
