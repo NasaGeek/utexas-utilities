@@ -223,7 +223,6 @@ public class BevoFragment extends SherlockFragment
     	BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(parentAct,httpclient));
     	cookie.setDomain(".utexas.edu");
     	httpclient.getCookieStore().addCookie(cookie);
-		timings.addSplit("logged in");
 		fetch = new fetchTransactionDataTask(httpclient);
 		
     	fetch.execute("sRequestSw",'b');

@@ -5,12 +5,12 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
     
-     <include android:id="@+id/coursemap_progressbar_ll" layout="@layout/loading_content_layout"/>
+    <include android:id="@+id/coursemap_progressbar_ll" layout="@layout/loading_content_layout"/>
 
-	   	 <ListView
-		 	android:visibility="gone"
-			android:id="@+id/coursemap_listview"
-			android:layout_width="fill_parent" 
-		    android:layout_height="fill_parent"/>
+   	<ListView
+		android:visibility="gone"
+		android:id="@+id/coursemap_listview"
+		android:layout_width="fill_parent" 
+		android:layout_height="fill_parent"/>
 
 </LinearLayout>

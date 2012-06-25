@@ -9,8 +9,8 @@ public class Pair<F,S> implements Serializable{
 
 	static final long serialVersionUID = 1L;
 	
-	final F first;
-	final S second;
+	public final F first;
+	public final S second;
 	
 	public Pair(F first, S second) 
 	{

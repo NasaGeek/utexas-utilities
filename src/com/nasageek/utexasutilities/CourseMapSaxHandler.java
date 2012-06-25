@@ -10,7 +10,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.nasageek.utexasutilities.Pair;
 
 public class CourseMapSaxHandler extends DefaultHandler {
 
@@ -66,12 +65,15 @@ public class CourseMapSaxHandler extends DefaultHandler {
 	 public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException { 
 	      if (localName.equals("map-item")) { 
 	           this.in_maptag = true;
-	           if(!atts.getValue("name").contains("divider"))
+	           if(atts.getValue("linktype")!=null && !atts.getValue("linktype").equals("DIVIDER"))
 	           {
 	        	   String host = "";
+	        	   Boolean blackboardItem = false;
 	        	   if(!(atts.getValue("viewurl").contains("http://") || atts.getValue("viewurl").contains("https://")))
-	        	   		host="https://courses.utexas.edu";
-	        	   content.add(new Pair(atts.getValue("name")+"^" + host+atts.getValue("viewurl"),new ArrayList()));
+	        	   {
+	        		   host="https://courses.utexas.edu";
+	        	   }
+	        	   content.add(new Pair(new courseMapItem(atts.getValue("name"),host+atts.getValue("viewurl").replace("&amp;","&"),atts.getValue("contentid"),atts.getValue("linktype")),new ArrayList()));
 	           }
 	           folderDepth++;
 	           

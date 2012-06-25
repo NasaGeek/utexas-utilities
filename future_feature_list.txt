@@ -3,3 +3,6 @@ longclick buildings for directions
 edit classes
 
 fix multiple schedules
+AccountManager stuff?
+onResume check login status
+click grade to see comments/more info, icon to show a comment is available

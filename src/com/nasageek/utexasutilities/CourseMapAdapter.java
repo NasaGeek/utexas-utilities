@@ -3,7 +3,7 @@ package com.nasageek.utexasutilities;
 import java.util.ArrayList;
 
 import android.content.Context;
-import com.nasageek.utexasutilities.Pair;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +11,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class CourseMapAdapter extends ArrayAdapter<Pair<String,ArrayList>> {
+public class CourseMapAdapter extends ArrayAdapter<Pair<courseMapItem,ArrayList>> {
 
 	private Context con;
-	private ArrayList<Pair<String,ArrayList>> items;
+	private ArrayList<Pair<courseMapItem,ArrayList>> items;
 	private LayoutInflater li;
 	
-	public CourseMapAdapter(Context c, ArrayList<Pair<String,ArrayList>> items)
+	public CourseMapAdapter(Context c, ArrayList<Pair<courseMapItem,ArrayList>> items)
 	{
 		super(c,0,items);
 		con = c;
@@ -53,9 +53,9 @@ public class CourseMapAdapter extends ArrayAdapter<Pair<String,ArrayList>> {
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
 		Boolean isFolder = true;
-		Pair<String, ArrayList> item = items.get(position);
+		Pair<courseMapItem, ArrayList> item = items.get(position);
 		
-		String title = item.first.split("\\^")[0];
+		String title = item.first.getName();
 		if(item.second.size()==0)
 			isFolder = false;
 		

@@ -141,7 +141,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		actionbar.setTitle("Schedule");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 	    actionbar.setHomeButtonEnabled(true);
-	    actionbar.setDisplayHomeAsUpEnabled(true);
+	    // actionbar.setDisplayHomeAsUpEnabled(true);
 		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 		public void uncaughtException(Thread thread, Throwable ex)

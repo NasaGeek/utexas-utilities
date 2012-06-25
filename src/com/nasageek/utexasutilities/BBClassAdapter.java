@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.foound.widget.AmazingAdapter;
-import com.nasageek.utexasutilities.Pair;
 
 import android.content.Context;
 import android.content.res.Resources;

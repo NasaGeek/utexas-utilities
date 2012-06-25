@@ -1,28 +1,15 @@
 package com.nasageek.utexasutilities;
 
-import com.nasageek.utexasutilities.Pair;
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.MenuItem;
-import com.foound.widget.AmazingAdapter;
-import com.foound.widget.AmazingListView;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -30,13 +17,15 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
+import com.foound.widget.AmazingListView;
 
 public class BlackboardActivity extends SherlockActivity {
 	
@@ -50,6 +39,8 @@ public class BlackboardActivity extends SherlockActivity {
 	private ArrayList<BBClass> classList;
 	private ArrayList<Pair<String,ArrayList<BBClass>>> classSectionList;
 	private fetchClassesTask fetch;
+	public static String currentBBCourseId;
+	public static String currentBBCourseName;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -68,7 +59,7 @@ public class BlackboardActivity extends SherlockActivity {
 		actionbar.setTitle("Blackboard");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionbar.setHomeButtonEnabled(true);
-		actionbar.setDisplayHomeAsUpEnabled(true);
+		// actionbar.setDisplayHomeAsUpEnabled(true);
 		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
     		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
 		
@@ -173,12 +164,15 @@ public class BlackboardActivity extends SherlockActivity {
 					public void onItemClick(AdapterView<?> parent, View view, int position,
 							long id) {
 						// TODO Auto-generated method stub
+						
 						Intent classLaunch = new Intent(getString(R.string.coursemap_intent), null, BlackboardActivity.this, CourseMapActivity.class);
-						classLaunch.setData(Uri.parse(((BBClass)(parent.getItemAtPosition(position))).getBbid()));
 						BBClass bbclass = (BBClass)(parent.getItemAtPosition(position));
+						currentBBCourseId = bbclass.getBbid();
+						classLaunch.setData(Uri.parse((bbclass).getBbid()));
 						String unique = bbclass.getCourseid().split("_")[2];
 						String cid = bbclass.getCourseid().substring(bbclass.getCourseid().indexOf(unique)+6).replaceAll("_"," ");
 						classLaunch.putExtra("folderName", cid);
+						currentBBCourseName = cid;
 						startActivity(classLaunch);
 
 					}

@@ -1,5 +1,6 @@
 package com.nasageek.utexasutilities;
 
+import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
 
@@ -14,7 +15,9 @@ import org.apache.http.util.EntityUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -25,24 +28,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-import com.nasageek.utexasutilities.Pair;
 
 
 public class CourseMapActivity extends SherlockActivity {
@@ -56,13 +54,13 @@ public class CourseMapActivity extends SherlockActivity {
 	private LinearLayout coursemaplinlay;
 	private ListView cmlv;
 	private ArrayList<BBClass> classList;
-	private ArrayList<Pair<String,ArrayList<BBClass>>> classSectionList;
+	private ArrayList<Pair<courseMapItem,ArrayList<BBClass>>> classSectionList;
 	private fetchCoursemapTask fetch;
 	private String bbid;
 	private XMLReader xmlreader;
 	private CourseMapSaxHandler courseMapSaxHandler;
 	private int itemNumber;
-	private ArrayList<Pair<String,ArrayList>> mainList;
+	private ArrayList<Pair<courseMapItem, ArrayList>> mainList;
 	private View prior;
 	
 	@Override
@@ -73,12 +71,12 @@ public class CourseMapActivity extends SherlockActivity {
 			actionbar = getSupportActionBar();
 			actionbar.setDisplayShowCustomEnabled(true);
 			actionbar.setHomeButtonEnabled(true);
-			actionbar.setDisplayHomeAsUpEnabled(true);
+			// actionbar.setDisplayHomeAsUpEnabled(true);
 			
 			TextView titleView = new TextView(this);
 			titleView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
 			titleView.setLines(1);
-			titleView.setTextSize(17);
+			titleView.setTextSize(18);
 			titleView.setPadding(0, 0, 7, 0);
 			titleView.setSingleLine(true);
 			titleView.setTextColor(Color.BLACK);
@@ -97,7 +95,7 @@ public class CourseMapActivity extends SherlockActivity {
 			}
 			else if(getString(R.string.coursemap_nest_intent).equals(getIntent().getAction()))
 			{
-				mainList = (ArrayList<Pair<String, ArrayList>>) getIntent().getSerializableExtra("mainList");
+				mainList = (ArrayList<Pair<courseMapItem, ArrayList>>) getIntent().getSerializableExtra("mainList");
 				itemNumber = Integer.parseInt(getIntent().getDataString());		
 			}
 			if(getIntent().getStringExtra("folderName")!=null)
@@ -114,25 +112,47 @@ public class CourseMapActivity extends SherlockActivity {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position,
 						long id) {
-					// TODO Auto-generated method stub
+
+					String linkType = mainList.get(position).first.getLinkType();
+					String url = mainList.get(position).first.getViewUrl();
+					
 					if(mainList.get(position).second.size() != 0)
 					{	
 						Intent courseMapLaunch = new Intent(getString(R.string.coursemap_nest_intent), Uri.parse(position+""), CourseMapActivity.this, CourseMapActivity.class);
 						courseMapLaunch.putExtra("mainList", mainList.get(position).second);
-						courseMapLaunch.putExtra("folderName", ((TextView)(actionbar.getCustomView())).getText() + "/" + mainList.get(position).first.split("\\^")[0]);
+						courseMapLaunch.putExtra("folderName", ((TextView)(actionbar.getCustomView())).getText() + "/" + mainList.get(position).first.getName());
+						courseMapLaunch.putExtra("viewUri", mainList.get(position).first.getViewUrl());
 						startActivity(courseMapLaunch);
+					}
+					else if(linkType.equals("resource/x-bb-file") || linkType.equals("resource/x-bb-document"))
+					{
+						
+						String contentid = mainList.get(position).first.getContentId();
+						Intent bbItemLaunch = new Intent(null, null, CourseMapActivity.this, BlackboardDownloadableItemActivity.class);
+						bbItemLaunch.putExtra("contentid", contentid);
+						bbItemLaunch.putExtra("itemName", mainList.get(position).first.getName());
+						bbItemLaunch.putExtra("viewUri", url);
+						startActivity(bbItemLaunch);
+					}
+					else if(linkType.equals("resource/x-bb-externallink"))
+					{
+						//((TextView)(actionbar.getCustomView())).setText((((TextView) actionbar.getCustomView()).getText()) + "/" + mainList.get(position).first.split("\\^")[0]);	
+												Intent exItemLaunch = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
+						startActivity(exItemLaunch);
+						//actionbar.setTitle(actionbar.getTitle()+"/"+mainList.get(position).first.split("\\^")[0]);
+					}
+					else if(linkType.equals("student_gradebook"))
+					{
+						Intent gradesLaunch = new Intent(null, null, CourseMapActivity.this, BlackboardGradesActivity.class);
+						gradesLaunch.putExtra("viewUri", url);
+						startActivity(gradesLaunch);
 					}
 					else
 					{
-						//((TextView)(actionbar.getCustomView())).setText((((TextView) actionbar.getCustomView()).getText()) + "/" + mainList.get(position).first.split("\\^")[0]);	
-						String url = mainList.get(position).first.split("\\^")[1];
-						Intent bbItemLaunch = new Intent(null, Uri.parse(url), CourseMapActivity.this, BlackboardItemActivity.class);
+						Intent bbItemLaunch = new Intent(null, Uri.parse(url), CourseMapActivity.this, BlackboardExternalItemActivity.class);
 						bbItemLaunch.putExtra("mainList", mainList.get(position).second);
-						bbItemLaunch.putExtra("folderName", ((TextView)(actionbar.getCustomView())).getText() + "/" + mainList.get(position).first.split("\\^")[0]);
+						bbItemLaunch.putExtra("itemName", ((TextView)(actionbar.getCustomView())).getText() + "/" + mainList.get(position).first.getName());
 						startActivity(bbItemLaunch);
-						
-						
-						//actionbar.setTitle(actionbar.getTitle()+"/"+mainList.get(position).first.split("\\^")[0]);
 					}
 		
 				}
@@ -156,26 +176,71 @@ public class CourseMapActivity extends SherlockActivity {
 		////
 			else if(mainList!= null && mainList.size() != 0)
 			{
+				
 				cmlv.setAdapter(new CourseMapAdapter(this,mainList));
 				cm_pb_ll.setVisibility(View.GONE);
 	    		cmlv.setVisibility(View.VISIBLE);
 			}		
 	}
-	
-	
-/*	@Override
-	public void onBackPressed()
+	@Override
+	public void onStop()
 	{
-		if( ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0) instanceof WebView)
-		{	
-			((ViewGroup)findViewById(android.R.id.content)).removeAllViews();
-			setContentView(coursemaplinlay);
-			((TextView)(actionbar.getCustomView())).setText((((TextView) actionbar.getCustomView()).getText().toString()).substring(0,(((TextView) actionbar.getCustomView()).getText()).toString().lastIndexOf("/")));	
-		}
-		else
-			super.onBackPressed();
-	}*/
-	
+		super.onStop();
+		if(fetch!=null)
+			fetch.cancel(true);
+	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		MenuInflater inflater = this.getSupportMenuInflater();
+        inflater.inflate(R.layout.blackboard_dlable_item_menu, menu);
+		return itemNumber!=-1; //return true only if not top-level
+		 
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+	    	int id = item.getItemId();
+	    	switch(id)
+	    	{
+		    	case android.R.id.home:
+		            // app icon in action bar clicked; go home
+		            Intent home = new Intent(this, UTilitiesActivity.class);
+		            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		            startActivity(home);break;
+		    	case R.id.viewInWeb:
+		    		showAreYouSureDlg(CourseMapActivity.this);
+		    		break;
+	    	}
+	    	return false;
+	}
+	private void showAreYouSureDlg(Context con)
+	{
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(con);
+		alertBuilder.setMessage("Would you like to view this item on the Blackboard website?");
+		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.dismiss();
+				
+			}
+		});
+		
+		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() 
+		{
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				// TODO Auto-generated method stub
+				Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),CourseMapActivity.this,BlackboardExternalItemActivity.class);
+	    		web.putExtra("itemName", getIntent().getStringExtra("folderName"));
+	    		startActivity(web);
+			}		
+		});
+		alertBuilder.setTitle("View on Blackboard");
+		alertBuilder.show();
+	}
 	private class fetchCoursemapTask extends AsyncTask<Object,Void,ArrayList>
 	{
 		private DefaultHttpClient client;
@@ -242,28 +307,43 @@ public class CourseMapActivity extends SherlockActivity {
 	    	}
 		}	
 	}
-	@Override
-	public void onStop()
-	{
-		super.onStop();
-		if(fetch!=null)
-			fetch.cancel(true);
-	}
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-	    	int id = item.getItemId();
-	    	switch(id)
-	    	{
-		    	case android.R.id.home:
-		            // app icon in action bar clicked; go home
-		            Intent home = new Intent(this, UTilitiesActivity.class);
-		            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		            startActivity(home);break;
-	    	}
-	    	return false;
-	}
 
+}
+
+class courseMapItem implements Serializable
+{
+
+	private static final long serialVersionUID = 1L;
 	
-
+	private String name,viewUrl,contentId,linkType;
+	private boolean blackboardItem;
+	
+	public courseMapItem(String name, String viewUrl, String contentId, String linkType)//, boolean blackboardItem)
+	{
+		this.name = name;
+		this.viewUrl = viewUrl;
+		this.contentId = contentId;
+		this.linkType = linkType;
+	//	this.blackboardItem = blackboardItem;
+	}
+	public String getName()
+	{
+		return name;
+	}
+	public String getViewUrl()
+	{
+		return viewUrl;
+	}
+	public String getContentId()
+	{
+		return contentId;
+	}
+	public String getLinkType()
+	{
+		return linkType;
+	}
+	public boolean isBlackboardItem()
+	{
+		return blackboardItem;
+	}
 }

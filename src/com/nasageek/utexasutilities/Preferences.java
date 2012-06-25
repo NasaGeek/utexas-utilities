@@ -70,7 +70,7 @@ public class Preferences extends SherlockPreferenceActivity{
        actionbar = getSupportActionBar();
        actionbar.setTitle("Preferences");
        actionbar.setHomeButtonEnabled(true);
-       actionbar.setDisplayHomeAsUpEnabled(true);
+       // actionbar.setDisplayHomeAsUpEnabled(true);
 		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
 			actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
        

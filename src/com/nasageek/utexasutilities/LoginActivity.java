@@ -33,7 +33,7 @@ public class LoginActivity extends SherlockActivity {
     	ActionBar actionbar = getSupportActionBar();
     	actionbar.setTitle("Login");
     	actionbar.setHomeButtonEnabled(true);
-	    actionbar.setDisplayHomeAsUpEnabled(true);
+	    // actionbar.setDisplayHomeAsUpEnabled(true);
 	    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
 			actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
     	

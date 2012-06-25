@@ -18,7 +18,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
 
-public class BlackboardItemActivity extends SherlockActivity {
+public class BlackboardExternalItemActivity extends SherlockActivity {
 	
 	ActionBar actionbar;
 	
@@ -30,20 +30,20 @@ public class BlackboardItemActivity extends SherlockActivity {
 			actionbar = getSupportActionBar();
 			actionbar.setDisplayShowCustomEnabled(true);
 			actionbar.setHomeButtonEnabled(true);
-			actionbar.setDisplayHomeAsUpEnabled(true);
+			// actionbar.setDisplayHomeAsUpEnabled(true);
 			actionbar.setTitle("");
 			
 			TextView titleView = new TextView(this);
 			titleView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
 			titleView.setLines(1);
-			titleView.setTextSize(17);
+			titleView.setTextSize(18);
 			titleView.setPadding(0, 0, 7, 0);
 			titleView.setSingleLine(true);
 			titleView.setTextColor(Color.BLACK);
 			titleView.setTypeface(Typeface.DEFAULT);
 			titleView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
 			
-			titleView.setText(getIntent().getStringExtra("folderName"));
+			titleView.setText(getIntent().getStringExtra("itemName"));
 			actionbar.setCustomView(titleView);
 			
 			CookieSyncManager.createInstance(getApplicationContext());
