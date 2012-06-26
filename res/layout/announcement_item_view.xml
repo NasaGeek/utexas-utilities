@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+    
+	<LinearLayout
+	    android:id="@+id/announcement_header_layout"
+	    android:layout_height="wrap_content"
+	    android:layout_width="fill_parent"
+	    android:orientation="horizontal"
+	    android:paddingTop="12dp"
+	   >
+	    
+	    <TextView
+		    android:id = "@+id/announcement_header_subject"
+		    android:layout_width="0dp"
+		    android:layout_weight="7"
+		    android:layout_height="fill_parent"
+		    style="?android:attr/listSeparatorTextViewStyle"
+		    android:layout_gravity="left|top"
+		    android:gravity="left|top"
+		    android:paddingLeft="8dp"
+		     android:paddingBottom="12dp"/>	    
+	    <TextView 
+		    android:id = "@+id/announcement_header_date"
+		    android:layout_width="0dp"
+		    android:layout_weight="3"
+		    android:layout_height="fill_parent"
+		    style="?android:attr/listSeparatorTextViewStyle"
+		    android:layout_gravity="right|top"
+		    android:gravity="right|top"
+		    android:paddingRight="8dp"
+		     android:paddingBottom="12dp"/>
+	    
+    </LinearLayout>  
+     <TextView 
+        android:id="@+id/announcement_body"
+        android:padding="8dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:textColor="@android:color/black"/>
+		    
+</LinearLayout>

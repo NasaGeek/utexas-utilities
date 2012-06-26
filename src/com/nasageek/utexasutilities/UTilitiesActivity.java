@@ -76,7 +76,7 @@ public class UTilitiesActivity extends SherlockActivity {
         setSupportProgressBarIndeterminateVisibility(false);
         final Intent schedule = new Intent(getBaseContext(), ScheduleActivity.class);
     	final Intent balance = new Intent(getBaseContext(), BalanceActivity.class);
-   // 	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
+    	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
     	final Intent data = new Intent(getBaseContext(), DataUsageActivity.class);
     	final Intent menu = new Intent(getBaseContext(), MenuActivity.class);
     	final Intent blackboard = new Intent(getBaseContext(), BlackboardActivity.class);
@@ -196,7 +196,7 @@ public class UTilitiesActivity extends SherlockActivity {
             	
          //		pd = ProgressDialog.show(UTilitiesActivity.this, "", "Loading. Please wait...");
             
-        //    	startActivity(map);
+            	startActivity(map);
             		
             }
             

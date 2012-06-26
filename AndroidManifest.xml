@@ -26,6 +26,9 @@
         <activity android:name=".DataUsageActivity"
         		 android:screenOrientation="portrait"></activity>
         
+        <activity android:name=".BlackboardAnnouncementsActivity"
+            	 android:screenOrientation="portrait"></activity>
+        
         <activity android:name=".BlackboardGradesActivity"
             	 android:screenOrientation="portrait"></activity>
         

@@ -36,7 +36,7 @@ public class LoginWebViewClient extends WebViewClient {
 		if(!authCookie.equals("") && !authCookie.equals("NONE") && url.equals("https://utdirect.utexas.edu/security-443/logon_check.logonform"))
 		{
 			ConnectionHelper.setAuthCookie(authCookie);
-			Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
+			Toast.makeText(context, "You're now logged in to UTDirect, unfortunately temp login does not currently support Blackboard or PNA.", Toast.LENGTH_LONG).show();
 			Intent main_intent = new Intent(context, UTilitiesActivity.class);
 	    	main_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			context.startActivity(main_intent);

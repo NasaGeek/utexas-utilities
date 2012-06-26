@@ -147,6 +147,12 @@ public class CourseMapActivity extends SherlockActivity {
 						gradesLaunch.putExtra("viewUri", url);
 						startActivity(gradesLaunch);
 					}
+					else if(linkType.equals("announcements"))
+					{
+						Intent announcementsLaunch = new Intent(null, null, CourseMapActivity.this, BlackboardAnnouncementsActivity.class);
+						announcementsLaunch.putExtra("viewUri", url);
+						startActivity(announcementsLaunch);
+					}
 					else
 					{
 						Intent bbItemLaunch = new Intent(null, Uri.parse(url), CourseMapActivity.this, BlackboardExternalItemActivity.class);
