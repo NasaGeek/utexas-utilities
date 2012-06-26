@@ -19,10 +19,12 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
@@ -34,6 +36,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -70,6 +73,8 @@ import com.google.android.maps.OverlayItem;
 public class CampusMapActivity extends SherlockMapActivity  {
 
 	LocationManager locationManager;
+	LocationListener locationListener;
+	String locProvider;
 	Location lastKnownLocation;
 	MyLocationOverlay myLoc;
 	MapController mc;
@@ -86,10 +91,9 @@ public class CampusMapActivity extends SherlockMapActivity  {
 	NavigationDataSet buildingDataSet;
 	ContentResolver buildingresolver;
 	Bundle savedInstanceState;
-	String locProvider;
 	SharedPreferences settings;
 	private ActionBar actionbar;
-	LocationListener locationListener;
+	
 
 	public enum Route {
 		No_Overlay(0,"No Bus Route Overlay"),
@@ -157,7 +161,7 @@ public class CampusMapActivity extends SherlockMapActivity  {
 		actionbar.setTitle("Map and Bus Routes");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionbar.setHomeButtonEnabled(true);
-		actionbar.setDisplayHomeAsUpEnabled(true);
+		// actionbar.setDisplayHomeAsUpEnabled(true);
 		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
     		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
 		
@@ -184,27 +188,56 @@ public class CampusMapActivity extends SherlockMapActivity  {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         Criteria crit = new Criteria();
         locProvider = locationManager.getBestProvider(crit, true);
-     locationListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
-              // Called when a new location is found by the network location provider.
-         //   	int lat = (int) (location.getLatitude() * 1E6);
-    	//		int lng = (int) (location.getLongitude() * 1E6);
-    	//		GeoPoint point = new GeoPoint(lat, lng);
-    			lastKnownLocation.set(location);
-            } 
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-            public void onProviderEnabled(String provider) {}
-
-            public void onProviderDisabled(String provider) {}
-          }; 
-
-        // Register the listener with the Location Manager to receive location updates
-        locationManager.requestLocationUpdates(locProvider, 0, 0, locationListener);
-        
-        lastKnownLocation = locationManager.getLastKnownLocation(locProvider);
-       
+        if(locProvider == null)
+        {
+        	if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+        	{	
+        		locProvider = locationManager.getProvider(LocationManager.NETWORK_PROVIDER).getName();
+        	}
+        	else if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        	{
+        		locProvider = locationManager.getProvider(LocationManager.GPS_PROVIDER).getName();
+        	}
+        	else
+        	{
+        		AlertDialog.Builder noproviders_builder = new AlertDialog.Builder(this);
+        		noproviders_builder.setMessage("You don't have any location services enabled. If you want to see your " +
+        				"location you'll need to enable at least one in the Location menu of your device's Settings.")
+            			.setCancelable(true)
+            			.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
+    	                    public void onClick(DialogInterface dialog, int id) {               
+    		                       dialog.cancel(); 
+    		                    }
+    	            			});	
+        		
+        		AlertDialog noproviders = noproviders_builder.create();
+            	noproviders.show();   
+        	}
+        	
+        }
+        if(locProvider!=null)
+        {
+        	locationListener = new LocationListener() {
+	            public void onLocationChanged(Location location) {
+	              // Called when a new location is found by the network location provider.
+	         //   	int lat = (int) (location.getLatitude() * 1E6);
+	    	//		int lng = (int) (location.getLongitude() * 1E6);
+	    	//		GeoPoint point = new GeoPoint(lat, lng);
+	    			lastKnownLocation.set(location);
+	            } 
+	
+	            public void onStatusChanged(String provider, int status, Bundle extras) {}
+	
+	            public void onProviderEnabled(String provider) {}
+	
+	            public void onProviderDisabled(String provider) {}
+	          }; 
+	
+	        // Register the listener with the Location Manager to receive location updates
+	        locationManager.requestLocationUpdates(locProvider, 0, 0, locationListener);
+	        
+	        lastKnownLocation = locationManager.getLastKnownLocation(locProvider);
+        }    
         if(lastKnownLocation != null && settings.getBoolean("starting_location", true))
         {
         	mc.animateTo(new GeoPoint((int)(lastKnownLocation.getLatitude()*1E6),(int)(lastKnownLocation.getLongitude()*1E6)));
@@ -349,7 +382,7 @@ public class CampusMapActivity extends SherlockMapActivity  {
   		else
   		{
   			mc.setZoom(18);
-  			if(settings.getBoolean("starting_location", true))
+  			if(settings.getBoolean("starting_location", true) && locProvider!=null)
   			{
   				lastKnownLocation = locationManager.getLastKnownLocation(locProvider);
   				if(lastKnownLocation!=null)

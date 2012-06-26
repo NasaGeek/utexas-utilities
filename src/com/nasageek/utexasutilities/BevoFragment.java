@@ -253,6 +253,8 @@ public class BevoFragment extends SherlockFragment
 	    		if(((Character)params[1]).equals('b'))
 	    			btransactionlist.add(transaction);
 	    	}
+
+	    	
 			// TODO Auto-generated method stub
 	    	
 			return (Character) params[1];

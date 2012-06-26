@@ -229,6 +229,7 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 		@Override
 		protected void onPreExecute()
 		{
+			////figure this shit out
 			((ScheduleActivity)parentAct).spinner.setClickable(false);
 			((ScheduleActivity)parentAct).spinner.setActivated(false);
 			pb_ll.setVisibility(GridView.VISIBLE);

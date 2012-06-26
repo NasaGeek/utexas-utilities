@@ -194,7 +194,7 @@ public class UTilitiesActivity extends SherlockActivity {
         mapbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	
-         		pd = ProgressDialog.show(UTilitiesActivity.this, "", "Loading. Please wait...");
+         //		pd = ProgressDialog.show(UTilitiesActivity.this, "", "Loading. Please wait...");
             
             	startActivity(map);
             		
@@ -226,7 +226,7 @@ public class UTilitiesActivity extends SherlockActivity {
             }
             
     });
- /*       final ImageButton blackboardbutton = (ImageButton) findViewById(R.id.blackboard_button);
+        final ImageButton blackboardbutton = (ImageButton) findViewById(R.id.blackboard_button);
         blackboardbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	if(!ConnectionHelper.bbCookieHasBeenSet())
@@ -241,7 +241,7 @@ public class UTilitiesActivity extends SherlockActivity {
             		}
             }
             
-    });*/
+    });
  
     }
     @Override
@@ -337,7 +337,7 @@ public class UTilitiesActivity extends SherlockActivity {
       	//		ch.new loginTask(this,httpclient,pnahttpclient).execute(ch);
       	//		ch.new PNALoginTask(this,httpclient,pnahttpclient).execute(ch);
       			bblt = ch.new bbLoginTask(this, httpclient, pnahttpclient);
-      	//		bblt.execute(ch);
+      			bblt.execute(ch);
       			lt = ch.new loginTask(this,httpclient,pnahttpclient);
       			lt.execute(ch);
       			plt = ch.new PNALoginTask(this,httpclient,pnahttpclient);
@@ -355,7 +355,7 @@ public class UTilitiesActivity extends SherlockActivity {
     {
     	lt.cancel(true);
    		plt.cancel(true);
-// 		bblt.cancel(true);
+ 		bblt.cancel(true);
    		message.setText("Cancelled");
     	ConnectionHelper.logout(this);
     	setSupportProgressBarIndeterminateVisibility(false);

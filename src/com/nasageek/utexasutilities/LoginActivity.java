@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.MotionEvent;
@@ -32,7 +33,9 @@ public class LoginActivity extends SherlockActivity {
     	ActionBar actionbar = getSupportActionBar();
     	actionbar.setTitle("Login");
     	actionbar.setHomeButtonEnabled(true);
-	    actionbar.setDisplayHomeAsUpEnabled(true);
+	    // actionbar.setDisplayHomeAsUpEnabled(true);
+	    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
+			actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
     	
     	WebView wv = new WebView(this);
     	

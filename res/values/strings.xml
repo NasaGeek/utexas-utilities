@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">UTilities</string>
-    <string name="version"> 1.5</string>
+    <string name="version"> 1.51</string>
     <string name="login_button_text">Save</string>
     <string name="login_category">Persistent Login</string>
     <string name="edit_credentials">Edit login credentials</string>
@@ -10,6 +10,8 @@
     <string name="restaurantprompt">Select a Restaurant</string>
     <string name="semesterprompt">Select a Semester</string>
     <string name="building_intent">BUILDING</string>
+    <string name="coursemap_intent">COURSE_BBID</string>
+    <string name="coursemap_nest_intent">COURSEMAP_ITEM</string>
     <string name="developer">Developer: Chris Roberts</string>
     <string name="classinfo">Electrical Engineering Class of 2015</string>
     <string name="contact">Love the app?  Hate it?  Suggestions? Snide remarks?</string>
