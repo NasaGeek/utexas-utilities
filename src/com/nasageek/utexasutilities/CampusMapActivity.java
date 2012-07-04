@@ -40,6 +40,7 @@ import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 
 
 import android.util.Log;
@@ -183,73 +184,7 @@ public class CampusMapActivity extends SherlockMapActivity  {
         });
      // Acquire a reference to the system Location Manager
         
-        myLoc.enableCompass();
-        myLoc.enableMyLocation();
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        Criteria crit = new Criteria();
-        locProvider = locationManager.getBestProvider(crit, true);
-        if(locProvider == null)
-        {
-        	if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
-        	{	
-        		locProvider = locationManager.getProvider(LocationManager.NETWORK_PROVIDER).getName();
-        	}
-        	else if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-        	{
-        		locProvider = locationManager.getProvider(LocationManager.GPS_PROVIDER).getName();
-        	}
-        	else
-        	{
-        		AlertDialog.Builder noproviders_builder = new AlertDialog.Builder(this);
-        		noproviders_builder.setMessage("You don't have any location services enabled. If you want to see your " +
-        				"location you'll need to enable at least one in the Location menu of your device's Settings.")
-            			.setCancelable(true)
-            			.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
-    	                    public void onClick(DialogInterface dialog, int id) {               
-    		                       dialog.cancel(); 
-    		                    }
-    	            			});	
-        		
-        		AlertDialog noproviders = noproviders_builder.create();
-            	noproviders.show();   
-        	}
-        	
-        }
-        if(locProvider!=null)
-        {
-        	locationListener = new LocationListener() {
-	            public void onLocationChanged(Location location) {
-	              // Called when a new location is found by the network location provider.
-	         //   	int lat = (int) (location.getLatitude() * 1E6);
-	    	//		int lng = (int) (location.getLongitude() * 1E6);
-	    	//		GeoPoint point = new GeoPoint(lat, lng);
-	    			lastKnownLocation.set(location);
-	            } 
-	
-	            public void onStatusChanged(String provider, int status, Bundle extras) {}
-	
-	            public void onProviderEnabled(String provider) {}
-	
-	            public void onProviderDisabled(String provider) {}
-	          }; 
-	
-	        // Register the listener with the Location Manager to receive location updates
-	        locationManager.requestLocationUpdates(locProvider, 0, 0, locationListener);
-	        
-	        lastKnownLocation = locationManager.getLastKnownLocation(locProvider);
-        }    
-        if(lastKnownLocation != null && settings.getBoolean("starting_location", true))
-        {
-        	mc.animateTo(new GeoPoint((int)(lastKnownLocation.getLatitude()*1E6),(int)(lastKnownLocation.getLongitude()*1E6)));
-        	mc.setZoom(18);
-        }
-        else
-        {
-        	mc.animateTo(new GeoPoint((int)(30.285706*1E6),(int)(-97.739423*1E6))); //UT Tower
-        	mc.setZoom(18);
-        }
-
-        mapView.setBuiltInZoomControls(true);
+        locationSetup();
 
         
         String[] stopsa=null;
@@ -337,6 +272,14 @@ public class CampusMapActivity extends SherlockMapActivity  {
         });*/
            
     }
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		if(requestCode == 0 && resultCode == 0)
+		{
+			locationSetup();
+		}
+	}
 	
 	public void loadBuildingOverlay()
 	{
@@ -362,8 +305,8 @@ public class CampusMapActivity extends SherlockMapActivity  {
         	Placemark pm = (Placemark) it.next();
         	if(buildingId.equalsIgnoreCase(pm.getTitle()))
         	{
-        		OverlayItem oi = new OverlayItem(new GeoPoint(new Double((Double.parseDouble(pm.getCoordinates().split(",")[1].trim()))*1E6).intValue(),
-					new Double((Double.parseDouble(pm.getCoordinates().split(",")[0].trim()))*1E6).intValue()),pm.getTitle(),pm.getDescription());
+        		OverlayItem oi = new OverlayItem(new GeoPoint(Double.valueOf(Double.valueOf(pm.getCoordinates().split(",")[1].trim())*1E6).intValue(),
+        				Double.valueOf(Double.valueOf(pm.getCoordinates().split(",")[0].trim())*1E6).intValue()),pm.getTitle(),pm.getDescription());
         		bio.addOverlay(oi);
         	}
        }
@@ -400,6 +343,86 @@ public class CampusMapActivity extends SherlockMapActivity  {
        
        
 	}
+	private void locationSetup()
+	{
+		myLoc.enableCompass();
+        myLoc.enableMyLocation();
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        Criteria crit = new Criteria();
+        locProvider = locationManager.getBestProvider(crit, true);
+        if(locProvider == null)
+        {
+        	if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+        	{	
+        		locProvider = locationManager.getProvider(LocationManager.NETWORK_PROVIDER).getName();
+        	}
+        	else if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        	{
+        		locProvider = locationManager.getProvider(LocationManager.GPS_PROVIDER).getName();
+        	}
+        	else
+        	{
+        		AlertDialog.Builder noproviders_builder = new AlertDialog.Builder(this);
+        		noproviders_builder.setMessage("You don't have any location services enabled. If you want to see your " +
+        				"location you'll need to enable at least one in the Location menu of your device's Settings.  Would you like to do that now?")
+            			.setCancelable(true)
+            			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+								startActivityForResult(intent,0);
+								
+							}
+						})
+            			.setNegativeButton("No", new DialogInterface.OnClickListener() {
+    	                    public void onClick(DialogInterface dialog, int id) {               
+    		                       dialog.cancel(); 
+    		                    }
+    	            			});	
+        		
+        		AlertDialog noproviders = noproviders_builder.create();
+            	noproviders.show();   
+        	}
+        	
+        }
+        if(locProvider!=null)
+        {
+        	locationListener = new LocationListener() {
+	            public void onLocationChanged(Location location) {
+	              // Called when a new location is found by the network location provider.
+	         //   	int lat = (int) (location.getLatitude() * 1E6);
+	    	//		int lng = (int) (location.getLongitude() * 1E6);
+	    	//		GeoPoint point = new GeoPoint(lat, lng);
+	    			lastKnownLocation.set(location);
+	            } 
+	
+	            public void onStatusChanged(String provider, int status, Bundle extras) {}
+	
+	            public void onProviderEnabled(String provider) {}
+	
+	            public void onProviderDisabled(String provider) {}
+	          }; 
+	
+	        // Register the listener with the Location Manager to receive location updates
+	        locationManager.requestLocationUpdates(locProvider, 0, 0, locationListener);
+	        
+	        lastKnownLocation = locationManager.getLastKnownLocation(locProvider);
+        }    
+        if(lastKnownLocation != null && settings.getBoolean("starting_location", true))
+        {
+        	mc.animateTo(new GeoPoint((int)(lastKnownLocation.getLatitude()*1E6),(int)(lastKnownLocation.getLongitude()*1E6)));
+        	mc.setZoom(18);
+        }
+        else
+        {
+        	mc.animateTo(new GeoPoint((int)(30.285706*1E6),(int)(-97.739423*1E6))); //UT Tower
+        	mc.setZoom(18);
+        }
+
+        mapView.setBuiltInZoomControls(true);
+	}
+	
 	public void onSaveInstanceState(Bundle savedInstanceState)
 	{
 		savedInstanceState.putString("buildingId", buildingId);

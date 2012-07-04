@@ -80,7 +80,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 	private ActionMode mode;
 	private PagerAdapter mPagerAdapter;
 	private List<SherlockFragment> fragments;
-	String semId;
+	String semId ="";
 	int selection;
 	Spinner spinner;
 	
@@ -116,7 +116,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.schedule_layout);
 		
-		Calendar cal = Calendar.getInstance();
+/*		Calendar cal = Calendar.getInstance();
 		int month = cal.get(Calendar.MONTH);
 		switch (month)
 		{
@@ -132,7 +132,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		case 9:
 		case 10:
 		case 11:semId=cal.get(Calendar.YEAR)+"9";selection=2;break;
-		}
+		}*/
 		
 		initialisePaging();
 		sp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -147,13 +147,13 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		public void uncaughtException(Thread thread, Throwable ex)
 		{
 			// TODO Auto-generated method stub
-	//		Log.e("UNCAUGHT",ex.getMessage(),ex);
+			Log.e("UNCAUGHT",ex.getMessage(),ex);
 			finish();
 			return;
 		}});
 	
 		
-		spinner = new Spinner(this);
+/*		spinner = new Spinner(this);
         spinner.setPromptId(R.string.semesterprompt);
         spinner.setSelection(selection);
 		final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(actionbar.getThemedContext(), android.R.layout.simple_spinner_item, Semester.values());
@@ -173,7 +173,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 
         		return true;
         	}
-        });
+        });*/
         
 		
 		}

@@ -50,7 +50,7 @@ public class ClassDatabase extends SQLiteOpenHelper
 	
 	public ClassDatabase(Context con)
 	{
-		super(con, TABLE_NAME, null, 1);
+		super(con, TABLE_NAME, null, 2);
 		context = con;
 		count=0;
 	}
@@ -66,6 +66,11 @@ public class ClassDatabase extends SQLiteOpenHelper
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 	{
 		// TODO Auto-generated method stub
+		if(oldVersion == 1 && newVersion == 2)
+		{
+			db.execSQL("ALTER TABLE "+TABLE_NAME+" ADD "+KEY_SEMESTER+" TEXT;");
+			Log.d("Database","Upgraded database from version 1 to 2.");
+		}
 
 	}
 	

@@ -41,6 +41,7 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	private ActionBar actionbar;
 	private LinearLayout a_pb_ll;
 	private ListView alv;
+	private TextView atv;
 	private ConnectionHelper ch;
 	private SharedPreferences settings;
 	private DefaultHttpClient httpclient;
@@ -55,6 +56,7 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 			
 			a_pb_ll = (LinearLayout) findViewById(R.id.announcements_progressbar_ll);
 	    	alv = (ListView) findViewById(R.id.announcementsListView);
+	    	atv = (TextView) findViewById(R.id.no_announcements_textview);
 	    		
 	    	
 	    	actionbar = getSupportActionBar();
@@ -176,11 +178,17 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 		{
 			if(!this.isCancelled())
 	    	{
-				
-				alv.setAdapter(new AnnouncementsAdapter(BlackboardAnnouncementsActivity.this,result));
-				
+				if(!result.isEmpty())
+				{
+					alv.setAdapter(new AnnouncementsAdapter(BlackboardAnnouncementsActivity.this,result));
+					alv.setVisibility(View.VISIBLE);
+				}
+				else
+				{	
+					atv.setVisibility(View.VISIBLE);
+				}
 				a_pb_ll.setVisibility(View.GONE);
-	    		alv.setVisibility(View.VISIBLE);
+				
 	    	}
 		}	
 	}

@@ -10,6 +10,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
@@ -33,6 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.RemoteViews.RemoteView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -44,6 +46,7 @@ import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+
 
 public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	
@@ -217,8 +220,8 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 							final bbFile item = (bbFile)(arg0.getAdapter().getItem(arg2));
 							
 							AlertDialog.Builder alertBuilder = new AlertDialog.Builder(BlackboardDownloadableItemActivity.this);
-							alertBuilder.setMessage("Would you like to download this attached file?");
-							alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
+							alertBuilder.setMessage("Would you like to download this attached file?").
+							setNegativeButton("No", new DialogInterface.OnClickListener()
 							{
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
@@ -226,20 +229,26 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 									dialog.dismiss();
 									
 								}
-							});
+							}).
 							
-							alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+							setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 								
 								@Override
+								@TargetApi(11)
 								public void onClick(DialogInterface dialog, int which) {
 									// TODO Auto-generated method stub
 
-									if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) 
+									if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && Environment.getExternalStorageDirectory().equals(Environment.MEDIA_MOUNTED)) 
 									{	 
-										showNotSupportedDlg(BlackboardDownloadableItemActivity.this);
+										Intent downloadAttachment = new Intent(BlackboardDownloadableItemActivity.this, AttachmentDownloadService.class);
+										downloadAttachment.putExtra("fileName", item.getName());
+										downloadAttachment.putExtra("url", item.getDlUri());
+										startService(downloadAttachment);
+										
+										//showNotSupportedDlg(BlackboardDownloadableItemActivity.this);
 									}	
-									 else
-								     { 
+									else if(Environment.getExternalStorageDirectory().equals(Environment.MEDIA_MOUNTED) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+									{ 
 								    	 Uri uri = Uri.parse("https://courses.utexas.edu"+Uri.decode(item.getDlUri()));
 										 DownloadManager.Request request = new DownloadManager.Request(uri);
 										 
@@ -247,11 +256,12 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 								    	 request.setDescription("Downloading to the UTilities folder.");
 								    	 request.setTitle(item.getName());
 								    	 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getName());
+								    	 
 								    	 request.addRequestHeader("Cookie", "s_session_id="+ConnectionHelper.getBBAuthCookie(BlackboardDownloadableItemActivity.this, client));
 								    	 manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
 								    	 dlID = manager.enqueue(request);
 								    	 
-								    	 if(Build.VERSION.SDK_INT<Build.VERSION_CODES.HONEYCOMB)
+								    /*	 if(Build.VERSION.SDK_INT<Build.VERSION_CODES.HONEYCOMB)
 								    	 {
 								    		 BroadcastReceiver receiver = new BroadcastReceiver() {
 									             @Override
@@ -281,13 +291,30 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 									         };
 									         registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 								    	 }
-								    	 Toast.makeText(BlackboardDownloadableItemActivity.this, "Download started, item should appear in the \"Download\" folder on your external storage.", Toast.LENGTH_LONG).show();
+								    	 Toast.makeText(BlackboardDownloadableItemActivity.this, "Download started, item should appear in the \"Download\" folder on your external storage.", Toast.LENGTH_LONG).show();*/
 								     }
+									 else
+									 {
+										 AlertDialog.Builder build = new AlertDialog.Builder(BlackboardDownloadableItemActivity.this);
+										 build.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
+											
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+												dialog.dismiss();
+												
+											}
+										}).
+										 setTitle("No External Media").
+										 setMessage("Your external storage media (such as a microSD Card) is currently unavailable; "+
+										 "the download cannot start.").
+										 show();
+										 
+									 }
 									
 								}
-							});
-							alertBuilder.setTitle("Download Attachment");
-							alertBuilder.show();
+							}).
+							setTitle("Download Attachment").
+							show();
 						}
 					});
 					dlil_pb_ll.setVisibility(View.GONE);
@@ -295,20 +322,20 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		    		dlableItems.setVisibility(View.VISIBLE);
 		    	}
 			}
-			private void showNotSupportedDlg(Context con)
+/*			private void showNotSupportedDlg(Context con)
 			{
 				AlertDialog.Builder build = new AlertDialog.Builder(con);
 				build.setMessage("Sorry! Downloading attachments is currently only supported on Android 3 and above. " +
-						"Your version should receive support in the near future.");
-				build.setNeutralButton("Okay", new DialogInterface.OnClickListener()
+						"Your version should receive support in the near future.").
+				setNeutralButton("Okay", new DialogInterface.OnClickListener()
 				{
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.dismiss();
 					}	
-				});
-				build.show();
-			}
+				}).
+				show();
+			}*/
 		
 	}
 	

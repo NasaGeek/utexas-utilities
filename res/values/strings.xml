@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">UTilities</string>
-    <string name="version"> 1.51</string>
+    <string name="version"> 1.6</string>
     <string name="login_button_text">Save</string>
     <string name="login_category">Persistent Login</string>
     <string name="edit_credentials">Edit login credentials</string>
@@ -16,8 +16,9 @@
     <string name="classinfo">Electrical Engineering Class of 2015</string>
     <string name="contact">Love the app?  Hate it?  Suggestions? Snide remarks?</string>
     <string name="email">Chris_Roberts@utexas.edu</string>
-    <string name="loading_content">Loading content...</string>
+    <string name="loading_content">Loading content…</string>
     <string name="login_first">Please log in before using this feature</string>
+    <string name="login_bb_first">Please log in to Blackboard before using this feature (not possible with temp login :( )</string>
     <string name="login_pna_first">Please log in to UT PNA before using this feature (not possible with temp login :( )</string>
     
       <string-array name="routes_array">
@@ -41,9 +42,9 @@
     </string-array>
     <string-array name="schedule_background_array">
     	<item>Checkerboard (1 hour)</item>
-    	<item>Checkerboard (1/2 hour)</item>
+    	<item>Checkerboard (&#189; hour)</item>
     	<item>Striped (1 hour)</item>
-    	<item>Striped (1/2 hour)</item>
+    	<item>Striped (&#189; hour)</item>
     </string-array>
      <string-array name="schedule_background_value_array">
     	<item>checkhour</item>

@@ -6,3 +6,6 @@ fix multiple schedules
 AccountManager stuff?
 onResume check login status
 click grade to see comments/more info, icon to show a comment is available
+spinner for multiple days worth of bandwidth graphs or dynamic loading of multiple days?
+infinite loading transactions (AmazingListView)
+remove certain blackboard "apps"/folders/whatever

@@ -32,3 +32,6 @@ Fixed bug with Login button state when no internet connectivity is present
 Fixed bug causing a crash when no Location services are enabled
 Home button UI changed to better reflect its function
 Blackboard support!
+
+Versioncode 4
+

@@ -63,7 +63,7 @@ public class ExamScheduleFragment extends ActionModeFragment {
 	{			
 		vg = inflater.inflate(R.layout.exam_schedule_fragment_layout, container, false);
 		
-		//updateView(semId);
+		updateView(semId);
 		
 		return vg;
 	}
@@ -145,7 +145,7 @@ public class ExamScheduleFragment extends ActionModeFragment {
 			HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registrar/exam_schedule.WBX");
 	    	String pagedata="";
 
-	    	String tempId="";
+/*	    	String tempId="";
 	    	switch (Calendar.getInstance().get(Calendar.MONTH))
 			{
 				case 7:
@@ -160,7 +160,7 @@ public class ExamScheduleFragment extends ActionModeFragment {
 				case 4:tempId="20122";break;
 				case 5:
 				case 6:tempId="20126";break;
-			}
+			}*/
 	    	
 	    	
 	    	try
@@ -173,10 +173,15 @@ public class ExamScheduleFragment extends ActionModeFragment {
 				e.printStackTrace();
 			}
 
-	    	if(pagedata.contains("will be available approximately three weeks") || !tempId.equals(semId))
+	    	if(pagedata.contains("will be available approximately three weeks"))// || !tempId.equals(semId))
 	    	{	
 	    		noExams = true;
-	    		return ' ';
+	    		return 'c';
+	    	}
+	    	else if(pagedata.contains("Our records indicate that you are not enrolled for the current semester."))
+	    	{
+	    		noExams = true;
+	    		return 'b';
 	    	}
 	    	else
 	    		noExams = false;
@@ -219,9 +224,13 @@ public class ExamScheduleFragment extends ActionModeFragment {
 			}
 			else
 			{
-				
-	    		netv.setText("'Tis not the season for exams.\nTry back later!\n(about 3 weeks before they begin)");
+				switch(result)
+				{
+					case 'c':netv.setText("'Tis not the season for exams.\nTry back later!\n(about 3 weeks before they begin)");break;
+					case 'b':netv.setText("You aren't enrolled for the current semester.");break;
+				}
 	    		netv.setTextSize(19);
+	    		
 	    		netv.setVisibility(View.VISIBLE);
 			}
 			pb_ll.setVisibility(View.GONE);
@@ -359,7 +368,7 @@ public class ExamScheduleFragment extends ActionModeFragment {
 		    				String[] elements = exams.get(position).split("\\^");
 		    				if(elements[2].contains("The department"))
 		    				{
-		    					Toast.makeText(con, "This exam does not exist and therefore has no location.", Toast.LENGTH_SHORT);
+		    					Toast.makeText(con, "This exam does not exist and therefore has no location.", Toast.LENGTH_SHORT).show();
 		    					
 		    					return true;
 		    				}

@@ -85,7 +85,7 @@ public class ClassAdapter extends BaseAdapter{
 		}*/
 		//aw :( temp login makes this not work as I can no longer rely on the EID being stored in settings, oh well	
 		//cur = sqldb.query("classes",col,"eid = \""+sp.getString("eid", "no eid found")+"\"",null,null,null, null);
-		cur = sqldb.query("classes",col,"semester = \""+semId+"\"",null,null,null, null);
+		cur = sqldb.query("classes",col,/*"semester = \""+semId+"\""*/null,null,null,null, null);
 		cur.moveToFirst();
 		
 		while(!cur.isAfterLast())

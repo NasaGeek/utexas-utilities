@@ -30,7 +30,7 @@
 		android:layout_marginTop="10dp"
 		android:layout_centerHorizontal="true"
 		
-		/>"
+		/>
 
 	<ScrollView android:id="@+id/scroll_content_description"
 	    android:layout_below="@+id/content_description_separator"

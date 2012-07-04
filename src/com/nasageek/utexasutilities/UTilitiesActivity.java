@@ -2,6 +2,8 @@ package com.nasageek.utexasutilities;
 
 import java.util.ArrayList;
 
+import com.crittercism.app.Crittercism;
+
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -66,7 +68,7 @@ public class UTilitiesActivity extends SherlockActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("website", "Hello, Sarah!");
+        Crittercism.init(getApplicationContext(), "4fed1764be790e4597000001");
   //    Window win = getWindow();
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
    //   win.setFormat(PixelFormat.RGBA_8888);
@@ -76,7 +78,7 @@ public class UTilitiesActivity extends SherlockActivity {
         setSupportProgressBarIndeterminateVisibility(false);
         final Intent schedule = new Intent(getBaseContext(), ScheduleActivity.class);
     	final Intent balance = new Intent(getBaseContext(), BalanceActivity.class);
-    	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
+  //  	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
     	final Intent data = new Intent(getBaseContext(), DataUsageActivity.class);
     	final Intent menu = new Intent(getBaseContext(), MenuActivity.class);
     	final Intent blackboard = new Intent(getBaseContext(), BlackboardActivity.class);
@@ -196,7 +198,7 @@ public class UTilitiesActivity extends SherlockActivity {
             	
          //		pd = ProgressDialog.show(UTilitiesActivity.this, "", "Loading. Please wait...");
             
-            	startActivity(map);
+      //      	startActivity(map);
             		
             }
             
@@ -229,9 +231,9 @@ public class UTilitiesActivity extends SherlockActivity {
         final ImageButton blackboardbutton = (ImageButton) findViewById(R.id.blackboard_button);
         blackboardbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-            	if(!ConnectionHelper.bbCookieHasBeenSet())
+            	if(!ConnectionHelper.bbCookieHasBeenSet() || ConnectionHelper.isLoggingIn())
             	{
-            		message.setText(R.string.login_first);
+            		message.setText(R.string.login_bb_first);
                 	message.setDuration(Toast.LENGTH_SHORT);
             		message.show();
             	}

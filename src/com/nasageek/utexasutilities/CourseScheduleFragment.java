@@ -73,7 +73,7 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 	{
 		vg =  inflater.inflate(R.layout.course_schedule_fragment_layout, container, false);
 		
-		//updateView(semId);
+		updateView(semId);
 
 		return vg;	
 	}
@@ -104,7 +104,8 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 		
 		cdb.resetColorCount();
 		
-		Cursor sizecheck = cdb.getReadableDatabase().query("classes", null, "semester = \""+this.semId+"\"" , null, null, null, null);
+//		Cursor sizecheck = cdb.getReadableDatabase().query("classes", null, "semester = \""+this.semId+"\"" , null, null, null, null);
+		Cursor sizecheck = cdb.getReadableDatabase().query("classes", null, null , null, null, null, null);
 		
 		if (sizecheck.getCount()<1)
 		{	
@@ -230,8 +231,8 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 		protected void onPreExecute()
 		{
 			////figure this shit out
-			((ScheduleActivity)parentAct).spinner.setClickable(false);
-			((ScheduleActivity)parentAct).spinner.setActivated(false);
+//			((ScheduleActivity)parentAct).spinner.setClickable(false);
+//			((ScheduleActivity)parentAct).spinner.setActivated(false);
 			pb_ll.setVisibility(GridView.VISIBLE);
 			gv.setVisibility(GridView.GONE);
 		}
@@ -243,7 +244,7 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 
 		    	try
 		    	{
-		    		doc = Jsoup.connect("https://utdirect.utexas.edu/registration/classlist.WBX?sem="+semId)
+		    		doc = Jsoup.connect("https://utdirect.utexas.edu/registration/classlist.WBX")//?sem="+semId)
 		    				.cookie("SC", ConnectionHelper.getAuthCookie(parentAct, client))
 		    				.get();
 		    	}
@@ -303,7 +304,7 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 			if(!parentAct.isFinishing())
 		    	Toast.makeText(parentAct, "Tap a class to see its information.", Toast.LENGTH_SHORT).show();
 			
-			parentAct.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+	//		parentAct.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 	        
 			
 		}
