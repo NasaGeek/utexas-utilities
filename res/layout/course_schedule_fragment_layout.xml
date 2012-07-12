@@ -16,42 +16,47 @@ android:layout_height="fill_parent">
 	    android:gravity="center_horizontal"
 	    android:orientation="horizontal"
 	    android:weightSum="5">
-    	
-    	<TextView  
-    		android:layout_width="fill_parent" 
-	    	android:layout_height="fill_parent"
-	    	android:text="Mon"
-	    	android:layout_weight="1"
-	    	android:layout_gravity="center_horizontal"
-	    	android:gravity="center_horizontal"/>
-    	<TextView 
-	    	android:text="Tues" 
-	    	android:layout_weight="1" 
-	    	android:layout_width="fill_parent" 
-	    	android:layout_height="fill_parent" 
-	    	android:layout_gravity="center_horizontal"
-	    	android:gravity="center_horizontal"/>
-	    <TextView  
-    		android:layout_width="fill_parent" 
-	    	android:layout_height="fill_parent"
-	    	android:text="Wed"
-	    	android:layout_weight="1"
-	    	android:layout_gravity="center_horizontal"
-	    	android:gravity="center_horizontal"/>
-	    <TextView  
-    		android:layout_width="fill_parent" 
-	    	android:layout_height="fill_parent"
-	    	android:text="Thurs"
-	    	android:layout_weight="1"
-	    	android:layout_gravity="center_horizontal"
-	    	android:gravity="center_horizontal"/>
-	    <TextView  
-    		android:layout_width="fill_parent" 
-	    	android:layout_height="fill_parent"
-	    	android:text="Fri"
-	    	android:layout_weight="1"
-	    	android:layout_gravity="center_horizontal"
-	    	android:gravity="center_horizontal"/>
+    	
+    	<TextView
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="fill_parent"
+    	    android:layout_gravity="center_horizontal"
+    	    android:layout_weight="1"
+    	    android:gravity="center_horizontal"
+    	    android:text="Mon" />
+
+    	<TextView
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="fill_parent"
+    	    android:layout_gravity="center_horizontal"
+    	    android:layout_weight="1"
+    	    android:gravity="center_horizontal"
+    	    android:text="Tues" />
+
+    	<TextView
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="fill_parent"
+    	    android:layout_gravity="center_horizontal"
+    	    android:layout_weight="1"
+    	    android:gravity="center_horizontal"
+    	    android:text="Wed" />
+
+    	<TextView
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="fill_parent"
+    	    android:layout_gravity="center_horizontal"
+    	    android:layout_weight="1"
+    	    android:gravity="center_horizontal"
+    	    android:text="Thurs" />
+
+    	<TextView
+    	    android:layout_width="fill_parent"
+    	    android:layout_height="fill_parent"
+    	    android:layout_gravity="center_horizontal"
+    	    android:layout_weight="1"
+    	    android:gravity="center_horizontal"
+    	    android:text="Fri" />
+
     </LinearLayout>
     
     <include android:id="@+id/schedule_progressbar_ll" layout="@layout/loading_content_layout"/>
@@ -132,25 +137,25 @@ android:layout_height="fill_parent">
 				android:text="10:00"/> 
 		</LinearLayout> 
 	 </ScrollView> -->
-	
-			<GridView 
-			    android:id="@+id/scheduleview"
-			    android:layout_width="fill_parent"
-			    android:layout_height="fill_parent"
-			    android:numColumns="5"
-				
-				android:visibility="gone"	   
-			    android:verticalSpacing="0dp"
-			    android:horizontalSpacing="1dp"
-			    android:stretchMode="columnWidth"
-			    android:gravity="center"
-				   
-			    />
-		
-	
+	 
+	    <GridView
+            android:id="@+id/scheduleview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:horizontalSpacing="1dp"
+            android:numColumns="5"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="0dp"
+            android:visibility="gone" />
 
-	
-	
+        <TextView
+            android:id="@+id/no_courses"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:textSize="19sp"
+            android:gravity="center"
+            android:visibility="gone" />
 </LinearLayout>
 
 	
@@ -160,7 +165,6 @@ android:layout_height="fill_parent">
      android:layout_height="wrap_content"
      android:orientation="vertical"
      android:layout_gravity="bottom"
-
      android:handle="@+id/handle"
      android:content="@+id/content">
 
@@ -182,16 +186,13 @@ android:layout_height="fill_parent">
 	         android:orientation="vertical">
 
 	        <ImageView
-    	android:id="@+id/class_info_color"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"/>
-	<TextView  
-		android:id="@+id/class_info_text"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		/>
-	
-	
+		    	android:id="@+id/class_info_color"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"/>
+			<TextView  
+				android:id="@+id/class_info_text"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"/>
 	    </LinearLayout>
 	</ScrollView>
  </com.nasageek.utexasutilities.WrappingSlidingDrawer>

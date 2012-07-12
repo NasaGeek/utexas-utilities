@@ -50,7 +50,7 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	
-	private DownloadManager manager;
+	
 	private long dlID;
 	private ListView dlableItems;
 	private TextView contentDescription;
@@ -70,7 +70,6 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		
 		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
 			actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
-		
 		
 		dlableItems = (ListView) findViewById(R.id.dlable_item_list);
 		dlil_pb_ll = (LinearLayout) findViewById(R.id.blackboard_dl_items_progressbar_ll);
@@ -128,7 +127,6 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		{
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
-				// TODO Auto-generated method stub
 				Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardDownloadableItemActivity.this,BlackboardExternalItemActivity.class);
 	    		web.putExtra("itemName", getIntent().getStringExtra("itemName"));
 	    		startActivity(web);
@@ -140,203 +138,185 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	
 	private class fetchData extends AsyncTask<String, Void, Object[]>
 	{
-			private DefaultHttpClient client;
-			
-			public fetchData(DefaultHttpClient client)
-			{
-				this.client = client;
-			}
-			
-			@Override
-			protected Object[] doInBackground(String... params)
-			{
-				String contentid = params[0];
-				
-				HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/contentDetail?content_id="+contentid+"&course_id="+BlackboardActivity.currentBBCourseId);
-		    	String pagedata="";
-
-		    	try
-				{
-					HttpResponse response = client.execute(hget);
-			    	pagedata = EntityUtils.toString(response.getEntity());
-				} catch (Exception e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		    	Object[] result = new Object[2];
-		    	ArrayList<bbFile> data=new ArrayList<bbFile>();
-		    	String content;
-		    	
-		    	Pattern contentPattern = Pattern.compile("<body>(.*?)</body>",Pattern.DOTALL);
-		    	Matcher contentMatcher = contentPattern.matcher(pagedata);
-		    	if(contentMatcher.find())
-		    	{
-		    		content = contentMatcher.group(1);
-		    	}
-		    	else
-		    		content = "No description";
-		    	
-		       	Pattern attachmentPattern = Pattern.compile("<attachment.*?/>");
-		    	Matcher attachmentMatcher = attachmentPattern.matcher(pagedata);
-		    	
-		    	while(attachmentMatcher.find())
-		    	{
-		    		String attachData = attachmentMatcher.group();
-		    		Pattern namePattern = Pattern.compile("linkLabel=\"(.*?)\"");
-			    	Matcher nameMatcher = namePattern.matcher(attachData);
-			    	Pattern uriPattern = Pattern.compile("uri=\"(.*?)\"");
-			    	Matcher uriMatcher = uriPattern.matcher(attachData);
-			    	Pattern sizePattern = Pattern.compile("filesize=\"(.*?)\"");
-			    	Matcher sizeMatcher = sizePattern.matcher(attachData);
-			    	
-			    	if(sizeMatcher.find() && nameMatcher.find() && uriMatcher.find())
-			    		data.add(new bbFile(nameMatcher.group(1),sizeMatcher.group(1),uriMatcher.group(1).replace("&amp;", "&"),getIntent().getStringExtra("itemName")));
-		    	}
-		    	
-		    	result[0] = content;
-		    	result[1] = data;
-		    	
-				return result;
-			}
-			@Override
-			protected void onPostExecute(Object... result)
-			{
-				if(!this.isCancelled())
-		    	{
-					String content = Html.fromHtml(Html.fromHtml(((String) result[0]).replaceAll("<!--.*?-->", "")).toString()).toString();
-					ArrayList<bbFile> data = (ArrayList<bbFile>) result[1];
-					
-					
-					contentDescription.setText(content);
-					
-					
-					dlableItems.setAdapter(new dlableItemAdapter(BlackboardDownloadableItemActivity.this,data));
-					dlableItems.setOnItemClickListener(new OnItemClickListener() {
-						
-						@Override
-						public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
-						{
-							final bbFile item = (bbFile)(arg0.getAdapter().getItem(arg2));
-							
-							AlertDialog.Builder alertBuilder = new AlertDialog.Builder(BlackboardDownloadableItemActivity.this);
-							alertBuilder.setMessage("Would you like to download this attached file?").
-							setNegativeButton("No", new DialogInterface.OnClickListener()
-							{
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									// TODO Auto-generated method stub
-									dialog.dismiss();
-									
-								}
-							}).
-							
-							setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-								
-								@Override
-								@TargetApi(11)
-								public void onClick(DialogInterface dialog, int which) {
-									// TODO Auto-generated method stub
-
-									if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && Environment.getExternalStorageDirectory().equals(Environment.MEDIA_MOUNTED)) 
-									{	 
-										Intent downloadAttachment = new Intent(BlackboardDownloadableItemActivity.this, AttachmentDownloadService.class);
-										downloadAttachment.putExtra("fileName", item.getName());
-										downloadAttachment.putExtra("url", item.getDlUri());
-										startService(downloadAttachment);
-										
-										//showNotSupportedDlg(BlackboardDownloadableItemActivity.this);
-									}	
-									else if(Environment.getExternalStorageDirectory().equals(Environment.MEDIA_MOUNTED) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-									{ 
-								    	 Uri uri = Uri.parse("https://courses.utexas.edu"+Uri.decode(item.getDlUri()));
-										 DownloadManager.Request request = new DownloadManager.Request(uri);
-										 
-										 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-								    	 request.setDescription("Downloading to the UTilities folder.");
-								    	 request.setTitle(item.getName());
-								    	 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getName());
-								    	 
-								    	 request.addRequestHeader("Cookie", "s_session_id="+ConnectionHelper.getBBAuthCookie(BlackboardDownloadableItemActivity.this, client));
-								    	 manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-								    	 dlID = manager.enqueue(request);
-								    	 
-								    /*	 if(Build.VERSION.SDK_INT<Build.VERSION_CODES.HONEYCOMB)
-								    	 {
-								    		 BroadcastReceiver receiver = new BroadcastReceiver() {
-									             @Override
-									             public void onReceive(Context context, Intent intent) {
-									                 String action = intent.getAction();
-									                 if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-									                     long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-									                     Query query = new Query();
-									                     query.setFilterById(dlID);
-									                     Cursor c = manager.query(query);
-									                     if (c.moveToFirst()) {
-									                         int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
-									                         if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
-									                        	 Notification n;
-								                        		 Notification.Builder notbuild = new Notification.Builder(BlackboardDownloadableItemActivity.this);
-									                        	 notbuild.setSmallIcon(android.R.drawable.stat_sys_download_done);
-									                             notbuild.setContentTitle(item.getName());
-									                             notbuild.setContentText("Download complete");
-									                             notbuild.setTicker("UTilities download completed.");
-									                             notbuild.setContentIntent(PendingIntent.getActivity(BlackboardDownloadableItemActivity.this, 0, new Intent(Intent.ACTION_VIEW,manager.getUriForDownloadedFile(dlID)),0));
-									                             n = notbuild.getNotification();
-									                             ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(item.getName(),0,n);
-									                         }
-									                     }
-									                 }
-									             }
-									         };
-									         registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-								    	 }
-								    	 Toast.makeText(BlackboardDownloadableItemActivity.this, "Download started, item should appear in the \"Download\" folder on your external storage.", Toast.LENGTH_LONG).show();*/
-								     }
-									 else
-									 {
-										 AlertDialog.Builder build = new AlertDialog.Builder(BlackboardDownloadableItemActivity.this);
-										 build.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
-											
-											@Override
-											public void onClick(DialogInterface dialog, int which) {
-												dialog.dismiss();
-												
-											}
-										}).
-										 setTitle("No External Media").
-										 setMessage("Your external storage media (such as a microSD Card) is currently unavailable; "+
-										 "the download cannot start.").
-										 show();
-										 
-									 }
-									
-								}
-							}).
-							setTitle("Download Attachment").
-							show();
-						}
-					});
-					dlil_pb_ll.setVisibility(View.GONE);
-					contentDescription.setVisibility(View.VISIBLE);
-		    		dlableItems.setVisibility(View.VISIBLE);
-		    	}
-			}
-/*			private void showNotSupportedDlg(Context con)
-			{
-				AlertDialog.Builder build = new AlertDialog.Builder(con);
-				build.setMessage("Sorry! Downloading attachments is currently only supported on Android 3 and above. " +
-						"Your version should receive support in the near future.").
-				setNeutralButton("Okay", new DialogInterface.OnClickListener()
-				{
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}	
-				}).
-				show();
-			}*/
+		private DefaultHttpClient client;
 		
+		public fetchData(DefaultHttpClient client)
+		{
+			this.client = client;
+		}
+		
+		@Override
+		protected Object[] doInBackground(String... params)
+		{
+			String contentid = params[0];
+			
+			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/contentDetail?content_id="+contentid+"&course_id="+BlackboardActivity.currentBBCourseId);
+	    	String pagedata="";
+
+	    	try
+			{
+				HttpResponse response = client.execute(hget);
+		    	pagedata = EntityUtils.toString(response.getEntity());
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+	    	Object[] result = new Object[2];
+	    	ArrayList<bbFile> data=new ArrayList<bbFile>();
+	    	String content;
+	    	
+	    	Pattern contentPattern = Pattern.compile("<body>(.*?)</body>",Pattern.DOTALL);
+	    	Matcher contentMatcher = contentPattern.matcher(pagedata);
+	    	if(contentMatcher.find())
+	    	{
+	    		content = contentMatcher.group(1);
+	    	}
+	    	else
+	    		content = "No description";
+	    	
+	       	Pattern attachmentPattern = Pattern.compile("<attachment.*?/>");
+	    	Matcher attachmentMatcher = attachmentPattern.matcher(pagedata);
+	    	
+	    	while(attachmentMatcher.find())
+	    	{
+	    		String attachData = attachmentMatcher.group();
+	    		Pattern namePattern = Pattern.compile("linkLabel=\"(.*?)\"");
+		    	Matcher nameMatcher = namePattern.matcher(attachData);
+		    	Pattern uriPattern = Pattern.compile("uri=\"(.*?)\"");
+		    	Matcher uriMatcher = uriPattern.matcher(attachData);
+		    	Pattern sizePattern = Pattern.compile("filesize=\"(.*?)\"");
+		    	Matcher sizeMatcher = sizePattern.matcher(attachData);
+		    	
+		    	if(sizeMatcher.find() && nameMatcher.find() && uriMatcher.find())
+		    		data.add(new bbFile(nameMatcher.group(1),sizeMatcher.group(1),uriMatcher.group(1).replace("&amp;", "&"),getIntent().getStringExtra("itemName")));
+	    	}
+	    	
+	    	result[0] = content;
+	    	result[1] = data;
+	    	
+			return result;
+		}
+		@Override
+		protected void onPostExecute(Object... result)
+		{
+			if(!this.isCancelled())
+	    	{
+				String content = Html.fromHtml(Html.fromHtml(((String) result[0]).replaceAll("<!--.*?-->", "")).toString()).toString();
+				ArrayList<bbFile> data = (ArrayList<bbFile>) result[1];
+				
+				
+				contentDescription.setText(content);
+				
+				
+				dlableItems.setAdapter(new dlableItemAdapter(BlackboardDownloadableItemActivity.this,data));
+				dlableItems.setOnItemClickListener(new OnItemClickListener() {
+					
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
+					{
+						final bbFile item = (bbFile)(arg0.getAdapter().getItem(arg2));
+						
+						AlertDialog.Builder alertBuilder = new AlertDialog.Builder(BlackboardDownloadableItemActivity.this);
+						alertBuilder.setMessage("Would you like to download this attached file?").
+						setNegativeButton("No", new DialogInterface.OnClickListener()
+						{
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
+								dialog.dismiss();
+								
+							}
+						}).
+						
+						setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+							
+							@Override
+							@TargetApi(11)
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
+
+								if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
+								{	 
+									Intent downloadAttachment = new Intent(BlackboardDownloadableItemActivity.this, AttachmentDownloadService.class);
+									downloadAttachment.putExtra("fileName", item.getName());
+									downloadAttachment.putExtra("url", item.getDlUri());
+									startService(downloadAttachment);
+									
+									//showNotSupportedDlg(BlackboardDownloadableItemActivity.this);
+								}	
+								else if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+								{ 
+									 final DownloadManager manager; 
+									 Uri uri = Uri.parse("https://courses.utexas.edu"+Uri.decode(item.getDlUri()));
+									 DownloadManager.Request request = new DownloadManager.Request(uri);
+									 
+									 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+							    	 request.setDescription("Downloading to the UTilities folder.");
+							    	 request.setTitle(item.getName());
+							    	 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getName());
+							    	 
+							    	 request.addRequestHeader("Cookie", "s_session_id="+ConnectionHelper.getBBAuthCookie(BlackboardDownloadableItemActivity.this, client));
+							    	 manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+							    	 dlID = manager.enqueue(request);
+							    	 
+							    /*	 if(Build.VERSION.SDK_INT<Build.VERSION_CODES.HONEYCOMB)
+							    	 {
+							    		 BroadcastReceiver receiver = new BroadcastReceiver() {
+								             @Override
+								             public void onReceive(Context context, Intent intent) {
+								                 String action = intent.getAction();
+								                 if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+								                     long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+								                     Query query = new Query();
+								                     query.setFilterById(dlID);
+								                     Cursor c = manager.query(query);
+								                     if (c.moveToFirst()) {
+								                         int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
+								                         if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
+								                        	 Notification n;
+							                        		 Notification.Builder notbuild = new Notification.Builder(BlackboardDownloadableItemActivity.this);
+								                        	 notbuild.setSmallIcon(android.R.drawable.stat_sys_download_done);
+								                             notbuild.setContentTitle(item.getName());
+								                             notbuild.setContentText("Download complete");
+								                             notbuild.setTicker("UTilities download completed.");
+								                             notbuild.setContentIntent(PendingIntent.getActivity(BlackboardDownloadableItemActivity.this, 0, new Intent(Intent.ACTION_VIEW,manager.getUriForDownloadedFile(dlID)),0));
+								                             n = notbuild.getNotification();
+								                             ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(item.getName(),0,n);
+								                         }
+								                     }
+								                 }
+								             }
+								         };
+								         registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+							    	 }
+							    	 Toast.makeText(BlackboardDownloadableItemActivity.this, "Download started, item should appear in the \"Download\" folder on your external storage.", Toast.LENGTH_LONG).show();*/
+							     }
+								 else
+								 {
+									 AlertDialog.Builder build = new AlertDialog.Builder(BlackboardDownloadableItemActivity.this);
+									 build.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
+										
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											dialog.dismiss();	
+										}
+									}).
+									 setTitle("No External Media").
+									 setMessage("Your external storage media (such as a microSD Card) is currently unavailable; "+
+									 "the download cannot start.").
+									 show();	 
+								 }	
+							}
+						}).
+						setTitle("Download Attachment").
+						show();
+					}
+				});
+				dlil_pb_ll.setVisibility(View.GONE);
+				contentDescription.setVisibility(View.VISIBLE);
+	    		dlableItems.setVisibility(View.VISIBLE);
+	    	}
+		}		
 	}
 	
 	private class dlableItemAdapter extends ArrayAdapter<bbFile>

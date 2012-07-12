@@ -13,76 +13,65 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-
-
+import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.util.TimingLogger;
-import android.view.LayoutInflater;
-
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import com.foound.widget.AmazingListView;
 
 
 public class BevoFragment extends SherlockFragment
 {
 	private  DefaultHttpClient httpclient;
-	private ProgressBar pb;
 	private LinearLayout b_pb_ll;
-	private ConnectionHelper ch;
 	private LinearLayout bevolinlay;
-	private ListView blv;
+	private AmazingListView blv;
 	ArrayList<String> btransactionlist;
 	String[] btransactionarray;
 	int count;
-	private boolean bfilled;
-	TextView tv1, tv2,tv3,tv4;
+	private TransactionAdapter ta;
+	TextView tv3,tv4;
+	
+	private List<BasicNameValuePair> postdata;
 	private SherlockFragmentActivity parentAct;
-	String bevobalance="";
+	
 	ViewGroup cont;
 	View vg;
-	private SharedPreferences settings;
+
+	String bevobalance="";
 	private fetchTransactionDataTask fetch;	
 	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-	
 		if(vg==null)
 		{vg = inflater.inflate(R.layout.bevo_fragment_layout, container, false);
 		
-		blv = (ListView) vg.findViewById(R.id.btransactions_listview);
-		
+		blv = (AmazingListView) vg.findViewById(R.id.btransactions_listview);
 		bevolinlay = (LinearLayout) vg.findViewById(R.id.bevolinlay);
-
 		b_pb_ll = (LinearLayout) vg.findViewById(R.id.bevo_progressbar_ll);
 		
+		blv.setLoadingView(getLayoutInflater(savedInstanceState).inflate(R.layout.loading_content_layout, null));
+		blv.setAdapter(ta);
 
 	    bevolinlay.addView(tv3,0);
 		bevolinlay.addView(tv4,1);
 		
 		try
 		{	
-			parser();
+			parser(false);
 		}
 		catch(Exception e)
 		{
@@ -90,11 +79,11 @@ public class BevoFragment extends SherlockFragment
 			parentAct.finish();
 			return null;
 		}
-		
-		
-		return vg;}
+		return vg;
+		}
 		else
-		{	((ViewGroup)(vg.getParent())).removeView(vg);
+		{	
+			((ViewGroup)(vg.getParent())).removeView(vg);
 			return vg;
 		}
 	}
@@ -103,22 +92,21 @@ public class BevoFragment extends SherlockFragment
 	{
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-		parentAct = this.getSherlockActivity();
-	//	setContentView(R.layout.balance_layout);
-		settings = PreferenceManager.getDefaultSharedPreferences(parentAct);
 		
-	
+		parentAct = this.getSherlockActivity();
+		
 		tv3 = new TextView(parentAct);
 		tv4 = new TextView(parentAct);
 		
-		ch = new ConnectionHelper(parentAct);
-	
+		postdata = new ArrayList<BasicNameValuePair>();
+		postdata.add(new BasicNameValuePair("sRequestSw","B"));
+		
 		btransactionlist = new ArrayList<String>();
+		ta = new TransactionAdapter(parentAct, this, btransactionlist);
 		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 			public void uncaughtException(Thread thread, Throwable ex)
 			{
-				// TODO Auto-generated method stub
 				Log.e("UNCAUGHT",ex.getMessage(),ex);
 				//finish();
 				return;
@@ -133,42 +121,7 @@ public class BevoFragment extends SherlockFragment
 		    tv4.setTextColor(Color.DKGRAY);
 		    		
 	}
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) 
-	{
-		 	menu.removeItem(R.id.balance_refresh);
-			inflater.inflate(R.layout.balance_menu, menu);       
-	}
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-	    	int id = item.getItemId();
-	    	switch(id)
-	    	{
-	    		case R.id.balance_refresh:
-	    			
-	    			blv.setVisibility(View.GONE);
-					
-					b_pb_ll.setVisibility(View.VISIBLE);
-					
-	    		try
-				{
-	    			
-					btransactionlist.clear();
-					bevobalance = "";
-					
-					parser();	
-					
-				}
-				catch(Exception e)
-				{
-					e.printStackTrace();
-				}
-	    			break;
-	    	}
-	    	return true;
-	}
-	public void parser() throws Exception
+	public void parser(boolean refresh) throws Exception
     {
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
@@ -181,15 +134,47 @@ public class BevoFragment extends SherlockFragment
     	cookie.setDomain(".utexas.edu");
     	httpclient.getCookieStore().addCookie(cookie);
 		
-    	
-		fetch = new fetchTransactionDataTask(httpclient);
-    	fetch.execute("sRequestSw",'b');
-    
+		fetch = new fetchTransactionDataTask(httpclient, refresh);
+    	fetch.execute();
     }
-	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) 
+	{
+		menu.removeItem(R.id.balance_refresh);
+		inflater.inflate(R.layout.balance_menu, menu);       
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+	    	int id = item.getItemId();
+	    	switch(id)
+	    	{
+	    		case R.id.balance_refresh:
+	    			
+	    			blv.setVisibility(View.GONE);
+					b_pb_ll.setVisibility(View.VISIBLE);
+					if(fetch!=null)
+						fetch.cancel(true);
+		    		try
+					{
+						btransactionlist.clear();
+						bevobalance = "";
+						postdata.clear();
+						postdata.add(new BasicNameValuePair("sRequestSw","B"));
+						parser(true);		
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+		    		break;
+	    	}
+	    	ta.resetPage();
+    		blv.setSelectionFromTop(0, 0);
+	    	return true;
+	}
 	@Override
 	public void onStop() {
-		// TODO Auto-generated method stub
 		super.onStop();
 		fetch.cancel(true);
 	}
@@ -197,23 +182,19 @@ public class BevoFragment extends SherlockFragment
 	private class fetchTransactionDataTask extends AsyncTask<Object,Void,Character>
 	{
 		private DefaultHttpClient client;
+		private boolean refresh;
 		
-		public fetchTransactionDataTask(DefaultHttpClient client)
+		public fetchTransactionDataTask(DefaultHttpClient client, boolean refresh)
 		{
 			this.client = client;
+			this.refresh = refresh;
 		}
 		
 		@Override
 		protected Character doInBackground(Object... params)
 		{
-	//		DefaultHttpClient httpclient = ch.getThreadSafeClient();
-
 			HttpPost hpost = new HttpPost("https://utdirect.utexas.edu/hfis/transactions.WBX");
 	    	String pagedata="";
-	    	
-	    	
-	    	List<BasicNameValuePair> postdata = new ArrayList<BasicNameValuePair>();
-	    	postdata.add(new BasicNameValuePair((String) params[0], "B"));
 	    	
 	    	try
 			{
@@ -222,7 +203,6 @@ public class BevoFragment extends SherlockFragment
 		    	pagedata = EntityUtils.toString(response.getEntity());
 			} catch (Exception e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	    	
@@ -238,41 +218,65 @@ public class BevoFragment extends SherlockFragment
 	    	Pattern balancepattern = Pattern.compile("(?<=\"right\">\\s).*(?=</td>\\s*</tr)");
 	    	Matcher balancematcher = balancepattern.matcher(pagedata);
 	    	
-	    	if(balancematcher.find())
-	    	{
-	    		if(((Character)params[1]).equals('b'))
-	    		{	
-	    			bevobalance = balancematcher.group();
-	    		}		
+	    	if(balancematcher.find() && ta.page == 1)
+	    	{	
+	    		bevobalance = balancematcher.group();	
 	    	}
 	    	while(matcher3.find() && matcher4.find() && datematcher.find())
 	    	{
 	    		String transaction=datematcher.group()+" ";
 	    		transaction+=matcher3.group()+" ";
 	    		transaction+=matcher4.group().replaceAll("\\s","");
-	    		if(((Character)params[1]).equals('b'))
-	    			btransactionlist.add(transaction);
+	    		btransactionlist.add(transaction);
 	    	}
-
-	    	
-			// TODO Auto-generated method stub
-	    	
-			return (Character) params[1];
+	    	if(pagedata.contains("<form name=\"next\""))
+	    	{
+	    		Pattern namePattern = Pattern.compile("sNameFL\".*?value=\"(.*?)\"");
+	    		Matcher nameMatcher = namePattern.matcher(pagedata);
+	    		Pattern nextTransPattern = Pattern.compile("nexttransid\".*?value=\"(.*?)\"");
+	    		Matcher nextTransMatcher = nextTransPattern.matcher(pagedata);
+	    		Pattern dateTimePattern = Pattern.compile("sStartDateTime\".*?value=\"(.*?)\"");
+	    		Matcher dateTimeMatcher = dateTimePattern.matcher(pagedata);
+	    		if(nameMatcher.find() && nextTransMatcher.find() && dateTimeMatcher.find())
+	    		{	
+	    			postdata.clear();
+			    	postdata.add(new BasicNameValuePair("sNameFL",nameMatcher.group(1)));
+			    	postdata.add(new BasicNameValuePair("nexttransid",nextTransMatcher.group(1)));
+			    	postdata.add(new BasicNameValuePair("sRequestSw","B"));
+			    	postdata.add(new BasicNameValuePair("sStartDateTime",dateTimeMatcher.group(1)));
+			    }
+	    		return 'm';
+	    	}
+	    	else
+	    		return 'n';
 		}
 		@Override
 		protected void onPostExecute(Character result)
 		{
-			if((result).equals('b') && !this.isCancelled())
+			if (!this.isCancelled())
 	    	{
-	    		bfilled = true;
-	    		blv.setAdapter(new TransactionAdapter(parentAct, btransactionlist));	
-	    		
+				ta.updateHeaders();
+				int index = blv.getFirstVisiblePosition();
+		    	View v = blv.getChildAt(0);
+		    	int top = (v == null) ? 0 : v.getTop();
+	    		ta.notifyDataSetChanged();
+	    		if(result == 'm')
+	    		{
+	    			ta.notifyMayHaveMorePages();
+	    		}
+	    		if(result == 'n')
+	    			ta.notifyNoMorePages();
+	    		if(!refresh)
+	    			blv.setSelectionFromTop(index, top);
+	    		else
+	    			blv.setSelection(0);
 	    		tv3.setText("Bevo Bucks ");
 				tv4.setText(bevobalance);
-				
-	    		b_pb_ll.setVisibility(View.GONE);
-	    		blv.setVisibility(View.VISIBLE);
-	    	}
+	    		
+				b_pb_ll.setVisibility(View.GONE);
+				blv.setVisibility(View.VISIBLE);
+	    		
+	    	} 	
 		}	
 	}
 }

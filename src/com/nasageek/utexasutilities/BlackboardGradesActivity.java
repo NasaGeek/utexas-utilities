@@ -11,6 +11,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,12 +19,17 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -54,6 +60,42 @@ public class BlackboardGradesActivity extends SherlockActivity
 			
 			g_pb_ll = (LinearLayout)findViewById(R.id.grades_progressbar_ll);
 			glv = (ListView) findViewById(R.id.gradesListView);
+			
+			glv.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					bbGrade grade = (bbGrade) arg0.getAdapter().getItem(arg2);
+					
+					Dialog dlg = new Dialog(BlackboardGradesActivity.this);
+					dlg.setContentView(R.layout.grade_info_dialog);
+					dlg.setTitle("Grade Info");
+					
+					TextView name = (TextView) dlg.findViewById(R.id.grade_info_name);
+					TextView value = (TextView) dlg.findViewById(R.id.grade_info_value);
+					TextView comment = (TextView) dlg.findViewById(R.id.grade_info_comment);
+					
+					name.setText(grade.getName());
+					
+					String valueString = null;
+					if(grade.getNumGrade().equals(-1))
+						valueString = "-";
+					else if(grade.getNumGrade().equals(-2))
+						valueString = grade.getGrade();
+					else
+						valueString = grade.getNumGrade() +"/"+grade.getNumPointsPossible();
+					value.setText(valueString);
+					comment.setText(grade.getComment());
+					
+					dlg.setCanceledOnTouchOutside(true);
+					dlg.show();
+					
+							
+					
+				}
+				
+			});
 			
 			ch = new ConnectionHelper(this);
 			
@@ -148,7 +190,6 @@ public class BlackboardGradesActivity extends SherlockActivity
 				e.printStackTrace();
 			}
 	    	ArrayList<bbGrade> data=new ArrayList<bbGrade>();
-	//    	pagedata = pagedata.replaceAll("comments=\".*?\"", ""); //might include later, need to strip for now for grade recognition
 	    	
 	    	Pattern gradeItemPattern = Pattern.compile("<grade-item.*?/>",Pattern.DOTALL);
 	    	Matcher gradeItemMatcher = gradeItemPattern.matcher(pagedata);
@@ -162,9 +203,14 @@ public class BlackboardGradesActivity extends SherlockActivity
 		    	Matcher pointsMatcher = pointsPattern.matcher(gradeData);
 		    	Pattern gradePattern = Pattern.compile("grade=\"(.*?)\"");
 		    	Matcher gradeMatcher = gradePattern.matcher(gradeData);
+		    	Pattern commentPattern = Pattern.compile("comments=\"(.*?)\"",Pattern.DOTALL);
+		    	Matcher commentMatcher = commentPattern.matcher(gradeData);
 		    	
 		    	if(nameMatcher.find() && pointsMatcher.find() && gradeMatcher.find())
-		    		data.add(new bbGrade(nameMatcher.group(1),gradeMatcher.group(1),pointsMatcher.group(1)));
+		    	{	
+		    		data.add(new bbGrade(nameMatcher.group(1),gradeMatcher.group(1),pointsMatcher.group(1), commentMatcher.find() ? Html.fromHtml(Html.fromHtml(commentMatcher.group(1)).toString()).toString() 
+		    																													  : "No comments"));
+		    	}
 	    	}
 			return data;
 		}
@@ -237,12 +283,16 @@ public class BlackboardGradesActivity extends SherlockActivity
 			ViewGroup lin = (ViewGroup) convertView;
 
 			if (lin == null)
-				lin = (LinearLayout) li.inflate(R.layout.grade_item_view,null,false);
+				lin = (RelativeLayout) li.inflate(R.layout.grade_item_view,null,false);
 			
 			TextView gradeName = (TextView) lin.findViewById(R.id.grade_name);
 			TextView gradeValue = (TextView) lin.findViewById(R.id.grade_value);
+			ImageView commentImg = (ImageView) lin.findViewById(R.id.comment_available_img);
 		
-			
+			if(grade.getComment().equals("No comments"))
+				commentImg.setVisibility(View.INVISIBLE);
+			else
+				commentImg.setVisibility(View.VISIBLE);
 			gradeName.setText(title);
 			gradeValue.setText(value);
 	
@@ -252,17 +302,22 @@ public class BlackboardGradesActivity extends SherlockActivity
 
 	class bbGrade
 	{
-		String name, grade, pointsPossible;
+		String name, grade, pointsPossible, comment;
 		
-		public bbGrade(String name, String grade, String pointsPossible)
+		public bbGrade(String name, String grade, String pointsPossible, String comment)
 		{
 			this.name = name;
 			this.grade = grade;
 			this.pointsPossible = pointsPossible;
+			this.comment = comment;
 		}
 		public String getName()
 		{
 			return name;
+		}
+		public String getComment()
+		{
+			return comment;
 		}
 		public Number getNumGrade()
 		{

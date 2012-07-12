@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="10dp" >
+
+    <TextView
+        android:id="@+id/grade_info_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
+
+    <TextView
+        android:id="@+id/grade_info_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true" />
+    
+     <ImageView 
+        android:id="@+id/grade_comment_separator"
+        android:layout_width="fill_parent"
+		android:layout_height="1dp"
+		android:layout_below="@id/grade_info_name"
+		android:src="#99AAAAAA"
+		android:layout_marginTop="10dp"
+		android:layout_centerHorizontal="true"
+		
+		/>
+
+    <ScrollView
+        android:id="@+id/grade_comment_scrollview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/grade_comment_separator"
+        android:gravity="left|top"
+        android:padding="7dp" >
+
+        <TextView
+            android:id="@+id/grade_info_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:gravity="left|top" />
+    </ScrollView>
+
+</RelativeLayout>

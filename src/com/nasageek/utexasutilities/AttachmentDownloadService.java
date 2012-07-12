@@ -1,6 +1,7 @@
 package com.nasageek.utexasutilities;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,17 +21,32 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.support.v4.app.NotificationCompat;
 import android.widget.AbsListView;
+import android.widget.Toast;
 
 @SuppressLint("NewApi")
 public class AttachmentDownloadService extends IntentService {
 
+	private Handler handler;
+	
 	public AttachmentDownloadService() {
 		super("AttachmentDownload");
 	}
+	
+	
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		// TODO Auto-generated method stub
+		handler = new Handler();
+		return super.onStartCommand(intent, flags, startId);
+	}
+
+
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
@@ -56,11 +72,16 @@ public class AttachmentDownloadService extends IntentService {
             connection.addRequestProperty("Cookie", "s_session_id="+ConnectionHelper.getBBAuthCookie(AttachmentDownloadService.this, ConnectionHelper.getThreadSafeClient()));
             
             if(Build.VERSION.SDK_INT<=Build.VERSION_CODES.ECLAIR_MR1)
+            {	(new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Download")).mkdirs();
             	dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment.getExternalStorageDirectory()), "Download/"+fileName);
+            }
             else
+            {	Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
             	dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)),fileName);
+            }
             // download the file
             InputStream input = new BufferedInputStream(url.openStream());
+
             OutputStream output = new FileOutputStream(dlLocation.getPath());
             byte data[] = new byte[2048];
             int count;
@@ -81,12 +102,26 @@ public class AttachmentDownloadService extends IntentService {
             ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(fileName, 1123, n);
             return;
         }
-       	
+
+        if(new Intent(Intent.ACTION_VIEW, dlLocation).resolveActivity(getPackageManager()) == null)
+        {	
+        	handler.post(new Runnable()
+        	{
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					Toast.makeText(getApplicationContext(), "You do not have any apps that can open this file; download one from the Play Store.", Toast.LENGTH_LONG).show();
+					
+				}
+        		
+        	});
+        }
         n = notbuild.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(Intent.ACTION_VIEW,dlLocation), 0))
        	.setOngoing(false)
        	.setSmallIcon(android.R.drawable.stat_sys_download_done)
-       	.setContentText("Download completed")
-        .setTicker("Download completed.")
+       	.setContentText("Download complete")
+        .setTicker("Download complete.")
         .getNotification();
        	((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(fileName, 1123, n);
         

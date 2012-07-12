@@ -13,11 +13,14 @@ import android.util.Log;
 
 public class ClassDatabase extends SQLiteOpenHelper
 {
+	
+	
 	private Context context;
 //	private String[] colors = {"00b060","ff4500","ff9200","793a8c","06799f","ff5d40","a6b900"};
 	private String[] colors = {"ffe45e","ff866e","b56eb3","488ab0","00b060","94c6ff","81b941"};
 	private double oldH=0; 
 	private int count;
+	public static ClassDatabase cdbInstance = null;
 	private SQLiteDatabase sqldb;
 	private static final String KEY_EID = "eid";
 	private static final String KEY_UNIQUEID = "uniqueid";
@@ -45,10 +48,23 @@ public class ClassDatabase extends SQLiteOpenHelper
 		KEY_START + " TEXT NOT NULL, " +
 		KEY_END + " TEXT NOT NULL, " +
 		KEY_COLOR + " TEXT NOT NULL, " +
-		KEY_SEMESTER + " TEXT NOT NULL);";
+		KEY_SEMESTER + " TEXT);";
+	
+	public static ClassDatabase getInstance(Context ctx) {
+        /** 
+         * use the application context as suggested by CommonsWare.
+         * this will ensure that you dont accidentally leak an Activitys
+         * context (see this article for more information: 
+         * http://developer.android.com/resources/articles/avoiding-memory-leaks.html)
+         */
+        if (cdbInstance == null) {
+            cdbInstance = new ClassDatabase(ctx.getApplicationContext());
+        }
+        return cdbInstance;
+    }
 	
 	
-	public ClassDatabase(Context con)
+	private ClassDatabase(Context con)
 	{
 		super(con, TABLE_NAME, null, 2);
 		context = con;
@@ -79,7 +95,6 @@ public class ClassDatabase extends SQLiteOpenHelper
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 		ContentValues val = null;
 		SQLiteDatabase sqldb=getWritableDatabase();
-		
 		String colorhex = colors[count++];
 	
 		for(int k = 0; k<cl.getClassTimes().size(); k++)

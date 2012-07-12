@@ -61,7 +61,7 @@ public class ClassAdapter extends BaseAdapter{
 		sdll = llsd;
 		sd = wsd;
 		sp = PreferenceManager.getDefaultSharedPreferences(c);
-		cdb  = new ClassDatabase(c);
+		cdb  = ClassDatabase.getInstance(c);
 		currentContext = c;
 		
 		this.ci_iv = ci_iv;
@@ -85,7 +85,7 @@ public class ClassAdapter extends BaseAdapter{
 		}*/
 		//aw :( temp login makes this not work as I can no longer rely on the EID being stored in settings, oh well	
 		//cur = sqldb.query("classes",col,"eid = \""+sp.getString("eid", "no eid found")+"\"",null,null,null, null);
-		cur = sqldb.query("classes",col,/*"semester = \""+semId+"\""*/null,null,null,null, null);
+		cur = sqldb.query("classes",col,"semester = \""+semId+"\"",null,null,null,null, null);
 		cur.moveToFirst();
 		
 		while(!cur.isAfterLast())
@@ -153,20 +153,17 @@ public class ClassAdapter extends BaseAdapter{
 	}
 	
 	public int getCount() {
-		// TODO Auto-generated method stub
 		return cllist.size();
 	}
 
 	public Object getItem(int position) {
-		// TODO Auto-generated method stub
 		return cllist.get(position);
 	}
 
 	public long getItemId(int position) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
-//	@Override
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) 
 	{
 	//	Log.d("POSITIONS", position+":"+currentTimePos);

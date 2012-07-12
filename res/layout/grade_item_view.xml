@@ -1,38 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:paddingTop="7dp"
-	android:paddingBottom="7dp">
+    android:padding="7dp">
     	     
+     <View android:id="@+id/strut"
+        android:layout_width="0dp"
+        android:layout_height="0dp" 
+        android:layout_centerHorizontal="true"/> 
+    
      <TextView 
         android:id="@+id/grade_name"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_weight="2"
-    	android:layout_gravity="left"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/strut"
     	android:gravity="left"
     	
         android:ellipsize="marquee"
         android:singleLine="true"
         android:lines="1"
+        android:layout_alignParentTop="true"
         android:scrollHorizontally="true"
         android:textSize="18sp"/>
      <TextView 
         android:id="@+id/grade_value"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
-    	android:layout_gravity="center"
-    	android:gravity="center"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/strut"
+    	android:gravity="right"
         android:textSize="18sp"
         android:ellipsize="marquee"
+        android:marqueeRepeatLimit ="marquee_forever"
+ 
         android:singleLine="true"
-        android:lines="1"
+ 
         android:scrollHorizontally="true"/>
+     <ImageView
+         android:id="@+id/comment_available_img"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_below="@+id/grade_value"
+         android:layout_alignRight="@+id/grade_value"
+         android:src="@drawable/ic_action_comment"/>
      
      
-</LinearLayout>
+</RelativeLayout>

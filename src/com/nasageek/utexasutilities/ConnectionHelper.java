@@ -126,7 +126,7 @@ public class ConnectionHelper {
 		Editor edit = settings.edit();
 		getThreadSafeClient().getCookieStore().clear();
 		resetCookies();
-		new ClassDatabase(con).deleteDb();
+		ClassDatabase.getInstance(con).deleteDb();
 		edit.putBoolean("loggedin", false);
 		
 		edit.commit();

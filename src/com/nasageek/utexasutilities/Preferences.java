@@ -127,7 +127,7 @@ public class Preferences extends SherlockPreferenceActivity{
             		ba.notifyDataSetChanged();
             	}	
             	
-            	new ClassDatabase(Preferences.this).deleteDb();
+            	ClassDatabase.getInstance(Preferences.this).deleteDb();
             	return true;
             	
             }
@@ -211,7 +211,7 @@ public class Preferences extends SherlockPreferenceActivity{
         resetclassesbutton.setOnPreferenceClickListener(new OnPreferenceClickListener() {
         	 
             public boolean onPreferenceClick(Preference preference) {
-                    new ClassDatabase(Preferences.this).deleteDb();
+                    ClassDatabase.getInstance(Preferences.this).deleteDb();
                     Toast.makeText(getBaseContext(), "Classes deleted!", Toast.LENGTH_SHORT).show();
                     return true;
             }

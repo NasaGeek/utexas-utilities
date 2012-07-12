@@ -139,7 +139,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		
 		actionbar = getSupportActionBar();
 		actionbar.setTitle("Schedule");
-		
+		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 	    actionbar.setHomeButtonEnabled(true);
 	    // actionbar.setDisplayHomeAsUpEnabled(true);
 		
@@ -153,11 +153,11 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		}});
 	
 		
-/*		spinner = new Spinner(this);
+		spinner = new Spinner(this);
         spinner.setPromptId(R.string.semesterprompt);
         spinner.setSelection(selection);
-		final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(actionbar.getThemedContext(), android.R.layout.simple_spinner_item, Semester.values());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(actionbar.getThemedContext(), android.R.layout.simple_spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         
         
 		
@@ -165,15 +165,30 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
         getSupportActionBar().setListNavigationCallbacks(adapter, new OnNavigationListener() 
         {
         	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        		// TODO Auto-generated method stub
-        		String semId = ((Semester) spinner.getAdapter().getItem(itemPosition)).getCode();
+
+        		String semStr = ((String) spinner.getAdapter().getItem(itemPosition));
+        		
+        		String semId = "20" +semStr.substring(semStr.length()-2);
+        		if(semStr.contains("Summer"))
+        		{
+        			semId+="6";
+        		}
+        		else if(semStr.contains("Spring"))
+        		{
+        			semId+="2";
+        		}
+        		else if(semStr.contains("Fall"))
+        		{
+        			semId+="9";
+        		}
+        		 
          			
          		((CourseScheduleFragment)(fragments.get(0))).updateView(semId);
          		((ExamScheduleFragment)(fragments.get(1))).updateView(semId);
 
         		return true;
         	}
-        });*/
+        });
         
 		
 		}
@@ -226,22 +241,14 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 	    }
 		public void onDrawerClosed()
 		{
-			// TODO Auto-generated method stub
-		
 			((ImageView)(sd.getHandle())).setImageResource(R.drawable.ic_expand_half);
 		}
 		public void onDrawerOpened()
 		{
-			// TODO Auto-generated method stub
 			((ImageView)(sd.getHandle())).setImageResource(R.drawable.ic_collapse_half);
 		}
-
-
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 		{
-			// TODO Auto-generated method stub
-			
-			
 			sd.close();
 		//	sdll.removeAllViews();
 			current_clt = (classtime) parent.getItemAtPosition(position);
@@ -298,7 +305,6 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 				this.invalidateOptionsMenu();}
 		//	Log.d("CLICKY", position+"");
 		}
-		
 		private final class ScheduleActionMode extends ViewPager.SimpleOnPageChangeListener implements ActionMode.Callback {
 	        @Override
 	        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -332,20 +338,17 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		
 		@Override
 		public void onPageScrollStateChanged(int arg0) {
-			// TODO Auto-generated method stub
 			
 		}
 		@Override
 		public void onPageScrolled(int arg0, float arg1, int arg2) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		// TODO not sure if I want this yet, maybe a more elegant solution?
 		@Override
 		public void onPageSelected(int location) {
-			// TODO Auto-generated method stub
-			
+
 			for(SherlockFragment csf : fragments)
 				if(((ActionModeFragment)csf).getActionMode()!=null)
 					((ActionModeFragment)csf).getActionMode().finish();

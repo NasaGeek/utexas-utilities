@@ -13,51 +13,43 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.util.TimingLogger;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import com.foound.widget.AmazingListView;
 
 
 public class DineinFragment extends SherlockFragment
 {
 	private  DefaultHttpClient httpclient;
-	private ProgressBar pb;
 	private LinearLayout d_pb_ll;
-	private ConnectionHelper ch;
 	private LinearLayout dineinlinlay;
-	private ListView dlv;
-	ArrayList<String> dtransactionlist, balancelist;
+	private AmazingListView dlv;
+	ArrayList<String> dtransactionlist;
 	String[] dtransactionarray;
 	int count;
-	private boolean dfilled;
-	ViewGroup cont;
-	TextView tv1, tv2,tv3,tv4;
-	View vg;
+	private TransactionAdapter ta;
+	TextView tv1, tv2;
+
+	private List<BasicNameValuePair> postdata;
 	private SherlockFragmentActivity parentAct;
+
+	ViewGroup cont;
+	View vg;
 	
 	String  dineinbalance="No Dine In Dollars? What kind of animal are you?";
-	private SharedPreferences settings;
 	private fetchTransactionDataTask fetch;
 	
 	
@@ -67,18 +59,19 @@ public class DineinFragment extends SherlockFragment
 		if(vg==null){
 		vg =  inflater.inflate(R.layout.dinein_fragment_layout, container, false);
 		
-		
-		dlv = (ListView) vg.findViewById(R.id.dtransactions_listview);
+		dlv = (AmazingListView) vg.findViewById(R.id.dtransactions_listview);
 		dineinlinlay = (LinearLayout) vg.findViewById(R.id.dineinlinlay);
 		d_pb_ll = (LinearLayout) vg.findViewById(R.id.dinein_progressbar_ll);
 		
-
+		dlv.setLoadingView(getLayoutInflater(savedInstanceState).inflate(R.layout.loading_content_layout, null));
+		dlv.setAdapter(ta);
+		
 	    dineinlinlay.addView(tv1,0);
 		dineinlinlay.addView(tv2,1);
 		
 		try
 		{
-			parser();
+			parser(false);
 		}
 		catch(Exception e)
 		{
@@ -89,12 +82,11 @@ public class DineinFragment extends SherlockFragment
 		return vg;
 		}
 		else
-		{	((ViewGroup)(vg.getParent())).removeView(vg);
+		{	
+			((ViewGroup)(vg.getParent())).removeView(vg);
 			return vg;
 		}
 	}
-	
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -102,21 +94,19 @@ public class DineinFragment extends SherlockFragment
 		setHasOptionsMenu(true);
 		
 		parentAct = this.getSherlockActivity();
-		settings = PreferenceManager.getDefaultSharedPreferences(parentAct);
 		
 		tv1 = new TextView(parentAct);
 		tv2 = new TextView(parentAct);
 
-		ch = new ConnectionHelper(parentAct);
-
+		postdata = new ArrayList<BasicNameValuePair>();
+		postdata.add(new BasicNameValuePair("rRequestSw","B"));
+		
 		dtransactionlist = new ArrayList<String>();
-
-
+		ta = new TransactionAdapter(parentAct, this, dtransactionlist);
 		
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 			public void uncaughtException(Thread thread, Throwable ex)
 			{
-				// TODO Auto-generated method stub
 				Log.e("UNCAUGHT",ex.getMessage(),ex);
 				//finish();
 				return;
@@ -131,12 +121,27 @@ public class DineinFragment extends SherlockFragment
 		    tv2.setTextColor(Color.DKGRAY);
 
 	}
-
+	public void parser(boolean refresh) throws Exception
+	{
+		
+		httpclient = ConnectionHelper.getThreadSafeClient();
+		httpclient.getCookieStore().clear();
+		
+		BasicClientCookie screen = new BasicClientCookie("webBrowserSize", "B");
+		screen.setDomain(".utexas.edu");
+		httpclient.getCookieStore().addCookie(screen);
+		BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(parentAct,httpclient));
+		cookie.setDomain(".utexas.edu");
+		httpclient.getCookieStore().addCookie(cookie);
+		
+		fetch = new fetchTransactionDataTask(httpclient, refresh);
+		fetch.execute();	
+	}
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) 
 	{
-	     menu.removeItem(R.id.balance_refresh);
-	     inflater.inflate(R.layout.balance_menu, menu);     
+		menu.removeItem(R.id.balance_refresh);
+	    inflater.inflate(R.layout.balance_menu, menu);     
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -144,46 +149,32 @@ public class DineinFragment extends SherlockFragment
 	    	int id = item.getItemId();
 	    	switch(id)
 	    	{
-		   
 	    		case R.id.balance_refresh:
 	    			
 					dlv.setVisibility(View.GONE);
 					d_pb_ll.setVisibility(View.VISIBLE);
+					if(fetch!=null)
+						fetch.cancel(true);
 		    		try
 					{
 		    			dtransactionlist.clear();
 						dineinbalance = "No Dine In Dollars? What kind of animal are you?";
-						parser();		
+						postdata.clear();
+						postdata.add(new BasicNameValuePair("rRequestSw","B"));
+						parser(true);		
 					}
 					catch(Exception e)
 					{
 						e.printStackTrace();
 					}
-		    			break;
+		    		break;
 	    	}
+	    	ta.resetPage();
+    		dlv.setSelectionFromTop(0, 0);
 	    	return true;
 	}
-	public void parser() throws Exception
-    {
-		
-		httpclient = ConnectionHelper.getThreadSafeClient();
-		httpclient.getCookieStore().clear();
-				
-		BasicClientCookie screen = new BasicClientCookie("webBrowserSize", "B");
-    	screen.setDomain(".utexas.edu");
-    	httpclient.getCookieStore().addCookie(screen);
-    	BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(parentAct,httpclient));
-    	cookie.setDomain(".utexas.edu");
-    	httpclient.getCookieStore().addCookie(cookie);
-		
-    	fetch = new fetchTransactionDataTask(httpclient);
-		fetch.execute("rRequestSw",'d');
-
-    }
-	
 	@Override
 	public void onStop() {
-		// TODO Auto-generated method stub
 		super.onStop();
 		fetch.cancel(true);
 	}
@@ -191,24 +182,20 @@ public class DineinFragment extends SherlockFragment
 	private class fetchTransactionDataTask extends AsyncTask<Object,Void,Character>
 	{
 		private DefaultHttpClient client;
+		private boolean refresh;
 		
-		public fetchTransactionDataTask(DefaultHttpClient client)
+		public fetchTransactionDataTask(DefaultHttpClient client, boolean refresh)
 		{
 			this.client = client;
+			this.refresh = refresh;
 		}
 		
 		@Override
 		protected Character doInBackground(Object... params)
 		{
-	//		DefaultHttpClient httpclient = ch.getThreadSafeClient();
-
 			HttpPost hpost = new HttpPost("https://utdirect.utexas.edu/hfis/transactions.WBX");
 	    	String pagedata="";
-	    	
-	    	
-	    	List<BasicNameValuePair> postdata = new ArrayList<BasicNameValuePair>();
-	    	postdata.add(new BasicNameValuePair((String) params[0], "B"));
-	    	
+
 	    	try
 			{
 				hpost.setEntity(new UrlEncodedFormEntity(postdata));
@@ -216,46 +203,73 @@ public class DineinFragment extends SherlockFragment
 		    	pagedata = EntityUtils.toString(response.getEntity());
 			} catch (Exception e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	    	
 	    	Pattern pattern3 = Pattern.compile("(?<=\"center\">\\s{1,10})\\S.*(?=\\s*<)");
 	    	Matcher matcher3 = pattern3.matcher(pagedata);
+	    	
 	    	Pattern pattern4 = Pattern.compile("(?<=\"right\">\\s).*(?=</td>\\s*<td)");
 	    	Matcher matcher4 = pattern4.matcher(pagedata);
+	    	
 	    	Pattern datepattern = Pattern.compile("(?<=\"left\">\\s{1,10})\\S+");
 	    	Matcher datematcher = datepattern.matcher(pagedata);
+	    	
 	    	Pattern balancepattern = Pattern.compile("(?<=\"right\">\\s).*(?=</td>\\s*</tr)");
 	    	Matcher balancematcher = balancepattern.matcher(pagedata);
-	    	if(balancematcher.find())
+	    	
+	    	if(balancematcher.find() && ta.page == 1)
 	    	{
-	    		if (((Character)params[1]).equals('d'))
-	    		{	
-	    			dineinbalance = balancematcher.group();
-	    		}
-	    			
+	    		dineinbalance = balancematcher.group();	
 	    	}
 	    	while(matcher3.find() && matcher4.find() && datematcher.find())
 	    	{
 	    		String transaction=datematcher.group()+" ";
 	    		transaction+=matcher3.group()+" ";
 	    		transaction+=matcher4.group().replaceAll("\\s","");
-	    		if (((Character)params[1]).equals('d'))
-	    			dtransactionlist.add(transaction);
+	    		dtransactionlist.add(transaction);
 	    	}
-			// TODO Auto-generated method stub
-	    	
-			return (Character) params[1];
+	    	if(pagedata.contains("<form name=\"next\""))
+	    	{
+	    		Pattern namePattern = Pattern.compile("sNameFL\".*?value=\"(.*?)\"");
+	    		Matcher nameMatcher = namePattern.matcher(pagedata);
+	    		Pattern nextTransPattern = Pattern.compile("nexttransid\".*?value=\"(.*?)\"");
+	    		Matcher nextTransMatcher = nextTransPattern.matcher(pagedata);
+	    		Pattern dateTimePattern = Pattern.compile("sStartDateTime\".*?value=\"(.*?)\"");
+	    		Matcher dateTimeMatcher = dateTimePattern.matcher(pagedata);
+	    		if(nameMatcher.find() && nextTransMatcher.find() && dateTimeMatcher.find())
+	    		{	
+	    			postdata.clear();
+			    	postdata.add(new BasicNameValuePair("sNameFL",nameMatcher.group(1)));
+			    	postdata.add(new BasicNameValuePair("nexttransid",nextTransMatcher.group(1)));
+			    	postdata.add(new BasicNameValuePair("rReqeuestSw","B"));
+			    	postdata.add(new BasicNameValuePair("sStartDateTime",dateTimeMatcher.group(1)));
+			    }
+	    		return 'm';
+	    	}
+	    	else
+	    		return 'n';
 		}
 		@Override
 		protected void onPostExecute(Character result)
 		{
-			if ((result).equals('d') && !this.isCancelled())
+			if (!this.isCancelled())
 	    	{
-	    		dfilled = true;
-	    		dlv.setAdapter(new TransactionAdapter(parentAct, dtransactionlist));
-	    		
+				ta.updateHeaders();
+				int index = dlv.getFirstVisiblePosition();
+		    	View v = dlv.getChildAt(0);
+		    	int top = (v == null) ? 0 : v.getTop();
+	    		ta.notifyDataSetChanged();
+	    		if(result == 'm')
+	    		{
+	    			ta.notifyMayHaveMorePages();
+	    		}
+	    		if(result == 'n')
+	    			ta.notifyNoMorePages();
+	    		if(!refresh)
+	    			dlv.setSelectionFromTop(index, top);
+	    		else
+	    			dlv.setSelection(0);
 	    		tv1.setText("Dine In Dollars ");
 				tv2.setText(dineinbalance);
 	    		

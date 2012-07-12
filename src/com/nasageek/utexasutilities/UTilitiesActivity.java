@@ -68,7 +68,7 @@ public class UTilitiesActivity extends SherlockActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Crittercism.init(getApplicationContext(), "4fed1764be790e4597000001");
+   //     Crittercism.init(getApplicationContext(), "4fed1764be790e4597000001");
   //    Window win = getWindow();
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
    //   win.setFormat(PixelFormat.RGBA_8888);
@@ -78,7 +78,7 @@ public class UTilitiesActivity extends SherlockActivity {
         setSupportProgressBarIndeterminateVisibility(false);
         final Intent schedule = new Intent(getBaseContext(), ScheduleActivity.class);
     	final Intent balance = new Intent(getBaseContext(), BalanceActivity.class);
-  //  	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
+    	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
     	final Intent data = new Intent(getBaseContext(), DataUsageActivity.class);
     	final Intent menu = new Intent(getBaseContext(), MenuActivity.class);
     	final Intent blackboard = new Intent(getBaseContext(), BlackboardActivity.class);
@@ -157,7 +157,7 @@ public class UTilitiesActivity extends SherlockActivity {
         schedulebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
           //  	frameAnimation.start();
-            	if((!ConnectionHelper.cookieHasBeenSet() && new ClassDatabase(UTilitiesActivity.this).size()==0) || ConnectionHelper.isLoggingIn())// && (!settings.getBoolean("loginpref", true)||!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
+            	if((!ConnectionHelper.cookieHasBeenSet() && ClassDatabase.getInstance(UTilitiesActivity.this).size()==0) || ConnectionHelper.isLoggingIn())// && (!settings.getBoolean("loginpref", true)||!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
             	{
             		message.setText(R.string.login_first);
                 	message.setDuration(Toast.LENGTH_SHORT);
@@ -198,7 +198,7 @@ public class UTilitiesActivity extends SherlockActivity {
             	
          //		pd = ProgressDialog.show(UTilitiesActivity.this, "", "Loading. Please wait...");
             
-      //      	startActivity(map);
+            	startActivity(map);
             		
             }
             

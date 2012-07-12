@@ -18,6 +18,7 @@
 	     android:layout_width="fill_parent"
 	     android:layout_height="fill_parent"
 	     android:gravity="center"
+	     android:textSize="19sp"
 	     android:visibility="gone"/>
 	 
 	 <include android:id="@+id/examschedule_progressbar_ll" layout="@layout/loading_content_layout"/>

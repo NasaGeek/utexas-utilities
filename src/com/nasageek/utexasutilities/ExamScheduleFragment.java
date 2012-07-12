@@ -102,7 +102,6 @@ public class ExamScheduleFragment extends ActionModeFragment {
 				parser();
 			} catch (Exception e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -169,7 +168,6 @@ public class ExamScheduleFragment extends ActionModeFragment {
 		    	pagedata = EntityUtils.toString(response.getEntity());
 			} catch (Exception e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -229,7 +227,6 @@ public class ExamScheduleFragment extends ActionModeFragment {
 					case 'c':netv.setText("'Tis not the season for exams.\nTry back later!\n(about 3 weeks before they begin)");break;
 					case 'b':netv.setText("You aren't enrolled for the current semester.");break;
 				}
-	    		netv.setTextSize(19);
 	    		
 	    		netv.setVisibility(View.VISIBLE);
 			}
@@ -238,7 +235,7 @@ public class ExamScheduleFragment extends ActionModeFragment {
 		}
 	}
 	
-	private class ExamAdapter extends ArrayAdapter implements AdapterView.OnItemClickListener
+	private class ExamAdapter extends ArrayAdapter<String> implements AdapterView.OnItemClickListener
 	{
 			private Context con;
 			private ArrayList<String> exams;
@@ -246,7 +243,7 @@ public class ExamScheduleFragment extends ActionModeFragment {
 			private String currentDate;
 			boolean isSectionHeader;
 			
-			@SuppressWarnings("unchecked")
+
 			public ExamAdapter(Context c, ArrayList<String> objects)
 			{
 				super(c,0,objects);
@@ -255,17 +252,14 @@ public class ExamScheduleFragment extends ActionModeFragment {
 				li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			}
 			public int getCount() {
-				// TODO Auto-generated method stub
 				return exams.size();
 			}
 
-			public Object getItem(int position) {
-				// TODO Auto-generated method stub
+			public String getItem(int position) {
 				return exams.get(position);
 			}
 
 			public long getItemId(int position) {
-				// TODO Auto-generated method stub
 				return 0;
 			}
 			@Override
