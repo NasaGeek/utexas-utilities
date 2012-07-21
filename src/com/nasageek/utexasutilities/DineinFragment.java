@@ -103,14 +103,6 @@ public class DineinFragment extends SherlockFragment
 		
 		dtransactionlist = new ArrayList<String>();
 		ta = new TransactionAdapter(parentAct, this, dtransactionlist);
-		
-		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
-			public void uncaughtException(Thread thread, Throwable ex)
-			{
-				Log.e("UNCAUGHT",ex.getMessage(),ex);
-				//finish();
-				return;
-			}});
 	
 			tv1.setGravity(0x01);		
 		  	tv2.setGravity(0x01);
@@ -154,7 +146,9 @@ public class DineinFragment extends SherlockFragment
 					dlv.setVisibility(View.GONE);
 					d_pb_ll.setVisibility(View.VISIBLE);
 					if(fetch!=null)
-						fetch.cancel(true);
+					{	fetch.cancel(true);
+						fetch = null;
+					}
 		    		try
 					{
 		    			dtransactionlist.clear();
@@ -174,8 +168,8 @@ public class DineinFragment extends SherlockFragment
 	    	return true;
 	}
 	@Override
-	public void onStop() {
-		super.onStop();
+	public void onDestroy() {
+		super.onDestroy();
 		fetch.cancel(true);
 	}
 

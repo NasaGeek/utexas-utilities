@@ -18,6 +18,7 @@ import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.crittercism.app.Crittercism;
 import com.viewpagerindicator.TabPageIndicator;
 
 import android.widget.TextView;
@@ -71,6 +72,7 @@ public class BalanceActivity extends SherlockFragmentActivity
 				finish();
 				return;
 			}});
+		Crittercism.leaveBreadcrumb("BalanceActivity entered");
 	}
 	
 	 /** maintains the pager adapter*/
@@ -89,9 +91,7 @@ public class BalanceActivity extends SherlockFragmentActivity
 	     */
 	
 	    private void initialisePaging() {
-	
-	 
-	
+
 	        List<SherlockFragment> fragments = new Vector<SherlockFragment>();
 	        Bundle args = new Bundle(1);
 	        args.putString("title", "Dinein");
@@ -109,8 +109,6 @@ public class BalanceActivity extends SherlockFragmentActivity
 			tabIndicator.setViewPager(pager);
 			
 	    }
-	
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -126,13 +124,13 @@ public class BalanceActivity extends SherlockFragmentActivity
 	    	return false;
 	}
 
-	public static class TabListener<T extends Fragment> implements ActionBar.TabListener 
+	public static class TabListener<T extends SherlockFragment> implements ActionBar.TabListener 
 	{
         private final SherlockFragmentActivity mActivity;
         private final String mTag;
         private final Class<T> mClass;
         private final Bundle mArgs;
-        private Fragment mFragment;
+        private SherlockFragment mFragment;
 
         public TabListener(SherlockFragmentActivity activity, String tag, Class<T> clz) {
             this(activity, tag, clz, null);
@@ -147,7 +145,7 @@ public class BalanceActivity extends SherlockFragmentActivity
             // Check to see if we already have a fragment for this tab, probably
             // from a previously saved state.  If so, deactivate it, because our
             // initial state is that a tab isn't shown.
-            mFragment = mActivity.getSupportFragmentManager().findFragmentByTag(mTag);
+            mFragment = (SherlockFragment) mActivity.getSupportFragmentManager().findFragmentByTag(mTag);
             if (mFragment != null && !mFragment.isDetached()) {
                 FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
                 ft.detach(mFragment);
@@ -158,7 +156,7 @@ public class BalanceActivity extends SherlockFragmentActivity
         public void onTabSelected(Tab tab, FragmentTransaction fta) {
         	FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
             if (mFragment == null) {
-                mFragment = Fragment.instantiate(mActivity, mClass.getName(), mArgs);
+                mFragment = (SherlockFragment) SherlockFragment.instantiate(mActivity, mClass.getName(), mArgs);
                 ft.add(android.R.id.content, mFragment, mTag);
                 ft.commit();
             } else {

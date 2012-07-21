@@ -74,6 +74,11 @@ public class MenuFragment extends SherlockFragment
 	{
 		this.restId = restId;
 		
+	//  This might be a better option than saving vg in onCreateView, but vg works for the time being.
+	/*	if(getView() instanceof LinearLayout)
+			vg = getView();
+		else
+			vg = ((ViewGroup)getView()).getChildAt(0);*/
 		m_pb_ll = (LinearLayout) vg.findViewById(R.id.menu_progressbar_ll);
         mlv = (AmazingListView) vg.findViewById(R.id.menu_listview);
   
@@ -88,7 +93,13 @@ public class MenuFragment extends SherlockFragment
 	{
 		return times;
 	}
-	
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		if(fetchMTask!=null)
+			fetchMTask.cancel(true);
+	}
 	private class fetchMenuTask extends AsyncTask<Object,Integer,String>
 	{
 		private AmazingListView lv;

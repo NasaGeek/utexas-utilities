@@ -18,7 +18,7 @@ public class AboutMeActivity extends SherlockActivity
 		setContentView(R.layout.aboutme_layout);
 		
 		actionbar = getSupportActionBar();
-		actionbar.setTitle("Transactions");
+		actionbar.setTitle("About");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionbar.setHomeButtonEnabled(true);
 		// actionbar.setDisplayHomeAsUpEnabled(true);

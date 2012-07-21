@@ -16,7 +16,6 @@ import org.apache.http.util.EntityUtils;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,14 +102,6 @@ public class BevoFragment extends SherlockFragment
 		
 		btransactionlist = new ArrayList<String>();
 		ta = new TransactionAdapter(parentAct, this, btransactionlist);
-		
-		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
-			public void uncaughtException(Thread thread, Throwable ex)
-			{
-				Log.e("UNCAUGHT",ex.getMessage(),ex);
-				//finish();
-				return;
-			}});
 	
 			tv3.setGravity(0x01);
 		  	tv4.setGravity(0x01);
@@ -154,7 +145,9 @@ public class BevoFragment extends SherlockFragment
 	    			blv.setVisibility(View.GONE);
 					b_pb_ll.setVisibility(View.VISIBLE);
 					if(fetch!=null)
-						fetch.cancel(true);
+					{	fetch.cancel(true);
+						fetch = null;
+					}
 		    		try
 					{
 						btransactionlist.clear();
@@ -174,11 +167,10 @@ public class BevoFragment extends SherlockFragment
 	    	return true;
 	}
 	@Override
-	public void onStop() {
-		super.onStop();
+	public void onDestroy() {
+		super.onDestroy();
 		fetch.cancel(true);
 	}
-
 	private class fetchTransactionDataTask extends AsyncTask<Object,Void,Character>
 	{
 		private DefaultHttpClient client;
@@ -222,14 +214,14 @@ public class BevoFragment extends SherlockFragment
 	    	{	
 	    		bevobalance = balancematcher.group();	
 	    	}
-	    	while(matcher3.find() && matcher4.find() && datematcher.find())
+	    	while(matcher3.find() && matcher4.find() && datematcher.find() && !this.isCancelled())
 	    	{
 	    		String transaction=datematcher.group()+" ";
 	    		transaction+=matcher3.group()+" ";
 	    		transaction+=matcher4.group().replaceAll("\\s","");
 	    		btransactionlist.add(transaction);
 	    	}
-	    	if(pagedata.contains("<form name=\"next\""))
+	    	if(pagedata.contains("<form name=\"next\"") && !this.isCancelled())
 	    	{
 	    		Pattern namePattern = Pattern.compile("sNameFL\".*?value=\"(.*?)\"");
 	    		Matcher nameMatcher = namePattern.matcher(pagedata);
@@ -237,7 +229,7 @@ public class BevoFragment extends SherlockFragment
 	    		Matcher nextTransMatcher = nextTransPattern.matcher(pagedata);
 	    		Pattern dateTimePattern = Pattern.compile("sStartDateTime\".*?value=\"(.*?)\"");
 	    		Matcher dateTimeMatcher = dateTimePattern.matcher(pagedata);
-	    		if(nameMatcher.find() && nextTransMatcher.find() && dateTimeMatcher.find())
+	    		if(nameMatcher.find() && nextTransMatcher.find() && dateTimeMatcher.find() && !this.isCancelled())
 	    		{	
 	    			postdata.clear();
 			    	postdata.add(new BasicNameValuePair("sNameFL",nameMatcher.group(1)));

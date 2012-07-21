@@ -1,7 +1,6 @@
 package com.nasageek.utexasutilities;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,11 +12,9 @@ import org.apache.http.util.EntityUtils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -30,26 +27,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-
-
-
 public class ExamScheduleFragment extends ActionModeFragment {
 
 	private boolean noExams;
 	private TextView login_first;
-	private ConnectionHelper ch;
 	private DefaultHttpClient httpclient;
-	private SharedPreferences settings;
 	private ArrayList<String> examlist;
 	private ListView examlistview;
-	private LinearLayout linlay;
 	private ExamAdapter ea;
 	private LinearLayout pb_ll;
 	private SherlockFragmentActivity parentAct;
@@ -72,12 +62,6 @@ public class ExamScheduleFragment extends ActionModeFragment {
 		super.onCreate(savedInstanceState);
 		parentAct = this.getSherlockActivity();
 		semId = getArguments().getString("semdId");
-		
-		settings = PreferenceManager.getDefaultSharedPreferences(parentAct);
-		ch = new ConnectionHelper(parentAct);
-		
-		
-		
 	}
 	public void updateView(String semId)
 	{
@@ -87,7 +71,6 @@ public class ExamScheduleFragment extends ActionModeFragment {
 		login_first = (TextView) vg.findViewById(R.id.login_first_tv);
 		pb_ll = (LinearLayout) vg.findViewById(R.id.examschedule_progressbar_ll);
 		examlistview = (ListView) vg.findViewById(R.id.examschedule_listview);
-		linlay = (LinearLayout) vg.findViewById(R.id.examschedule_linlay);
 		netv = (TextView) vg.findViewById(R.id.no_exams);
 		
 		if(!ConnectionHelper.cookieHasBeenSet())
@@ -240,9 +223,6 @@ public class ExamScheduleFragment extends ActionModeFragment {
 			private Context con;
 			private ArrayList<String> exams;
 			private LayoutInflater li;
-			private String currentDate;
-			boolean isSectionHeader;
-			
 
 			public ExamAdapter(Context c, ArrayList<String> objects)
 			{

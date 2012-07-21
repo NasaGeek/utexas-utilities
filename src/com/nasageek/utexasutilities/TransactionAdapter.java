@@ -142,10 +142,10 @@ public class TransactionAdapter extends AmazingAdapter
 	}
 	@Override
 	protected void onNextPageRequested(int page) {
+		nextPage();
 		try {
 			Method meth = sf.getClass().getMethod("parser",Boolean.TYPE);
-			meth.invoke(sf, new Object[] {false});
-			nextPage();
+			meth.invoke(sf, new Object[] {false});	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

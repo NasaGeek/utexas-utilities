@@ -1,81 +1,43 @@
 package com.nasageek.utexasutilities;
 
-import android.graphics.Color;
-import java.io.*;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.jsoup.*;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.SlidingDrawer;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.crittercism.app.Crittercism;
 import com.viewpagerindicator.TabPageIndicator;
-
-
-import android.view.View;
-import android.app.Activity;
-
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-
-import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.util.TimingLogger;
-import android.view.View.OnClickListener;
-import android.view.animation.ScaleAnimation;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.SlidingDrawer.OnDrawerCloseListener;
-import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.SlidingDrawer;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class ScheduleActivity extends SherlockFragmentActivity implements SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, AdapterView.OnItemClickListener, ViewPager.OnPageChangeListener{
 	
-	private GridView gv;
-	private ConnectionHelper ch;
 	private WrappingSlidingDrawer sd ;
-	private LinearLayout sdll;
 	private ClassDatabase cdb;
-	private SharedPreferences sp;
-	private ClassAdapter ca;
-	private DefaultHttpClient client;
 	
-	private ProgressBar pb;
-	private LinearLayout pb_ll;
-	private LinearLayout ll;
 	private ImageView ci_iv;
 	private TextView ci_tv;
 	
 	private ActionBar actionbar;
-	private Menu menu;
 	private classtime current_clt;
 	private ActionMode mode;
 	private PagerAdapter mPagerAdapter;
@@ -135,25 +97,15 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		}*/
 		
 		initialisePaging();
-		sp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		
 		actionbar = getSupportActionBar();
 		actionbar.setTitle("Schedule");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 	    actionbar.setHomeButtonEnabled(true);
+	    Crittercism.leaveBreadcrumb("Entered ScheduleActivity");
 	    // actionbar.setDisplayHomeAsUpEnabled(true);
 		
-		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
-		public void uncaughtException(Thread thread, Throwable ex)
-		{
-			// TODO Auto-generated method stub
-			Log.e("UNCAUGHT",ex.getMessage(),ex);
-			finish();
-			return;
-		}});
-	
-		
-		spinner = new Spinner(this);
+/*		spinner = new Spinner(this);
         spinner.setPromptId(R.string.semesterprompt);
         spinner.setSelection(selection);
 		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(actionbar.getThemedContext(), android.R.layout.simple_spinner_item);
@@ -189,7 +141,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
         		return true;
         	}
         });
-        
+        */
 		
 		}
 		private void initialisePaging() 

@@ -12,8 +12,6 @@ fix multiple schedules
 				best to have spinner web call in separate ast even if it's inefficient
 AccountManager stuff?
 onResume check login status
-click grade to see comments/more info, icon to show a comment is available
 spinner for multiple days worth of bandwidth graphs or dynamic loading of multiple days?
-infinite loading transactions (AmazingListView)
 remove certain blackboard "apps"/folders/whatever
-prompt for alternate location if external storage is not available (Data directory probably)
+prompt for alternate location if external storage is not available (Data directory probably)  -  ?

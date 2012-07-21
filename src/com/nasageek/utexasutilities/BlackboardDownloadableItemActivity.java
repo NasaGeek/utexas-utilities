@@ -13,16 +13,9 @@ import org.apache.http.util.EntityUtils;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
-import android.app.DownloadManager.Query;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -34,18 +27,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.RemoteViews.RemoteView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.crittercism.app.Crittercism;
 
 
 public class BlackboardDownloadableItemActivity extends SherlockActivity {
@@ -85,7 +77,6 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// TODO Auto-generated method stub
 		MenuInflater inflater = this.getSupportMenuInflater();
         inflater.inflate(R.layout.blackboard_dlable_item_menu, menu);
 		return true;
@@ -117,9 +108,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		{
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
 				dialog.dismiss();
-				
 			}
 		});
 		
@@ -188,7 +177,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		    	Matcher sizeMatcher = sizePattern.matcher(attachData);
 		    	
 		    	if(sizeMatcher.find() && nameMatcher.find() && uriMatcher.find())
-		    		data.add(new bbFile(nameMatcher.group(1),sizeMatcher.group(1),uriMatcher.group(1).replace("&amp;", "&"),getIntent().getStringExtra("itemName")));
+		    		data.add(new bbFile(nameMatcher.group(1).replace("&amp;", "&"),sizeMatcher.group(1),uriMatcher.group(1).replace("&amp;", "&"),getIntent().getStringExtra("itemName")));
 	    	}
 	    	
 	    	result[0] = content;
@@ -222,19 +211,14 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 						{
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
-								// TODO Auto-generated method stub
 								dialog.dismiss();
-								
 							}
 						}).
-						
 						setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-							
 							@Override
 							@TargetApi(11)
 							public void onClick(DialogInterface dialog, int which) {
-								// TODO Auto-generated method stub
-
+		
 								if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
 								{	 
 									Intent downloadAttachment = new Intent(BlackboardDownloadableItemActivity.this, AttachmentDownloadService.class);
@@ -259,6 +243,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 							    	 manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
 							    	 dlID = manager.enqueue(request);
 							    	 
+							    	 Crittercism.leaveBreadcrumb("Attachment Downloaded (>=3.0)");
 							    /*	 if(Build.VERSION.SDK_INT<Build.VERSION_CODES.HONEYCOMB)
 							    	 {
 							    		 BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -336,17 +321,14 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		}
 		@Override
 		public int getCount() {
-			// TODO Auto-generated method stub
 			return items.size();
 		}
 		@Override
 		public bbFile getItem(int position) {
-			// TODO Auto-generated method stub
 			return items.get(position);
 		}
 		@Override
 		public long getItemId(int position) {
-			// TODO Auto-generated method stub
 			return 0;
 		}
 		@Override
@@ -416,13 +398,9 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		public void setSize(String size) {
 			this.size = size;
 		}
-
-
 		public String getDlUri() {
 			return dlUri;
 		}
-
-
 		public void setdlUri(String dlUri) {
 			this.dlUri = dlUri;
 		}

@@ -9,6 +9,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import com.crittercism.app.Crittercism;
+
 import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.app.Notification;
@@ -36,18 +38,12 @@ public class AttachmentDownloadService extends IntentService {
 	public AttachmentDownloadService() {
 		super("AttachmentDownload");
 	}
-	
-	
-
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// TODO Auto-generated method stub
 		handler = new Handler();
 		return super.onStartCommand(intent, flags, startId);
 	}
-
-
-
 	@Override
 	protected void onHandleIntent(Intent intent) {
 
@@ -107,14 +103,10 @@ public class AttachmentDownloadService extends IntentService {
         {	
         	handler.post(new Runnable()
         	{
-
 				@Override
 				public void run() {
-					// TODO Auto-generated method stub
-					Toast.makeText(getApplicationContext(), "You do not have any apps that can open this file; download one from the Play Store.", Toast.LENGTH_LONG).show();
-					
-				}
-        		
+					Toast.makeText(getApplicationContext(), "You do not have any apps that can open this file; download one from the Play Store.", Toast.LENGTH_LONG).show();	
+				}	
         	});
         }
         n = notbuild.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(Intent.ACTION_VIEW,dlLocation), 0))
@@ -124,6 +116,6 @@ public class AttachmentDownloadService extends IntentService {
         .setTicker("Download complete.")
         .getNotification();
        	((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(fileName, 1123, n);
-        
+       	Crittercism.leaveBreadcrumb("Attachment Downloaded (<3.0)");
     }
 }

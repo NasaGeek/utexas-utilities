@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -95,7 +96,8 @@ public class ClassDatabase extends SQLiteOpenHelper
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 		ContentValues val = null;
 		SQLiteDatabase sqldb=getWritableDatabase();
-		String colorhex = colors[count++];
+		count = (count == colors.length-1) ? 0 : count+1;
+		String colorhex = colors[count];
 	
 		for(int k = 0; k<cl.getClassTimes().size(); k++)
 		{
@@ -153,12 +155,19 @@ public class ClassDatabase extends SQLiteOpenHelper
 	}
 	public void deleteDb()
 	{
-		
-		SQLiteDatabase sqldb = getWritableDatabase();
+		new Thread(new Runnable(){
 
-		sqldb.execSQL("DROP TABLE "+TABLE_NAME);
-		sqldb.execSQL(TABLE_CREATE);
-		sqldb.close();
+			@Override
+			public void run() {
+				SQLiteDatabase sqldb = getWritableDatabase();
+				
+				sqldb.execSQL("DROP TABLE "+TABLE_NAME);
+				sqldb.execSQL(TABLE_CREATE);
+				sqldb.close();
+			}
+			
+		}).start();
+
 	}
 
 }

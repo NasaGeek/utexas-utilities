@@ -20,6 +20,7 @@ import org.apache.http.protocol.HTTP;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.crittercism.app.Crittercism;
 
 import android.app.Activity;
 import android.content.Context;
@@ -129,8 +130,9 @@ public class ConnectionHelper {
 		ClassDatabase.getInstance(con).deleteDb();
 		edit.putBoolean("loggedin", false);
 		
-		edit.commit();
+		Utility.commit(edit);
 		loggingIn = false;
+		Crittercism.leaveBreadcrumb("Logged out");
 		
 	}
 	public static boolean isLoggingIn()
@@ -365,11 +367,12 @@ public class ConnectionHelper {
 					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
 					
 					edit.putBoolean("loggedin", true);
-					edit.commit();
+					Utility.commit(edit);
 					
 				 }
 				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
+				Crittercism.leaveBreadcrumb("Logged in (persistent)");
 			}
 		}
 		private void cancelProgressBar()
@@ -411,8 +414,7 @@ public class ConnectionHelper {
     				break;
     			case 0:break;
 			}
-		}
-    	
+		}	
 		protected Boolean doInBackground(Object... params)
 		{
 			loggingIn = true;
@@ -435,11 +437,12 @@ public class ConnectionHelper {
 					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
 					
 					edit.putBoolean("loggedin", true);
-					edit.commit();
+					Utility.commit(edit);
 					
 				 }
 				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
+				Crittercism.leaveBreadcrumb("Logged in (persistent)");
 			}
 		}
 		private void cancelProgressBar()
@@ -507,11 +510,12 @@ public class ConnectionHelper {
 					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
 					
 					edit.putBoolean("loggedin", true);
-					edit.commit();
+					Utility.commit(edit);
 					
 				 }
 				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
+				Crittercism.leaveBreadcrumb("Logged in (persistent)");
 			}
 		}
 		private void cancelProgressBar()

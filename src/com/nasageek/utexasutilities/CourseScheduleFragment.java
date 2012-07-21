@@ -8,62 +8,48 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.nasageek.utexasutilities.ScheduleActivity.Semester;
-
-
+import com.crittercism.app.Crittercism;
 
 public class CourseScheduleFragment extends ActionModeFragment implements SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, AdapterView.OnItemClickListener {
 	
 	private GridView gv;
-	private ConnectionHelper ch;
 	private WrappingSlidingDrawer sd ;
 	private LinearLayout sdll;
 	private ClassDatabase cdb;
-	private SharedPreferences sp;
 	private ClassAdapter ca;
 	private DefaultHttpClient client;
-	
 	
 	private LinearLayout pb_ll;
 	private LinearLayout daylist;
 	private ImageView ci_iv;
 	private TextView ci_tv;
 	private TextView nc_tv;
-	
-	
 	
 	private classtime current_clt;
 	public ActionMode mode;
@@ -86,8 +72,7 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 		super.onCreate(savedInstanceState);
 		parentAct = this.getSherlockActivity();
 		semId = "";
-		ch = new ConnectionHelper(parentAct);
-		sp = PreferenceManager.getDefaultSharedPreferences(parentAct.getBaseContext());
+		PreferenceManager.getDefaultSharedPreferences(parentAct.getBaseContext());
 		cdb = ClassDatabase.getInstance(parentAct);
 	}
 	public void updateView(String semId)
@@ -115,7 +100,7 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 		{	
 			sizecheck.close();
 			client = ConnectionHelper.getThreadSafeClient();
-			new parseTask(client).execute();	   
+			new parseTask(client).execute();
 		}
 		else
 		{
@@ -125,13 +110,14 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 			gv.setOnItemClickListener(this);
 		    gv.setAdapter(ca);
 		    
-			parentAct.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+//			parentAct.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		    pb_ll.setVisibility(GridView.GONE);
 		    
 			gv.setVisibility(GridView.VISIBLE);
 			daylist.setVisibility(View.VISIBLE);
 		    if(!parentAct.isFinishing())
 		    	Toast.makeText(parentAct, "Tap a class to see its information.", Toast.LENGTH_LONG).show();
+		    Crittercism.leaveBreadcrumb("Loaded schedule from db");
 		}
 		sd.setOnDrawerCloseListener(this);
 		sd.setOnDrawerOpenListener(this);
@@ -261,19 +247,19 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 		    	}
 		
 	    	Elements classels  = doc.select("div[align]").get(0).select("tr[valign]");
-	    	Elements semForm = doc.select("form[name=SelectSem]").select("option");
-	    	ArrayList<String> semesters = new ArrayList<String>();
-	    	int itemSelected=0;
-	    	for(int i = 0; i<semForm.size(); i++)
+	//    	Elements semForm = doc.select("form[name=SelectSem]").select("option");
+	//    	ArrayList<String> semesters = new ArrayList<String>();
+	//    	int itemSelected=0;
+/*	    	for(int i = 0; i<semForm.size(); i++)
 	    	{
 	    		semesters.add(semForm.get(i).attr("value"));
 	    		if(semForm.get(i).attr("selected").equals("selected"))
 	    		{
 	    			itemSelected = i;
 	    		}
-	    	}
-	    	if(!semId.equals(""))
-	    	{
+	    	}*/
+	//    	if(!semId.equals(""))
+	//    	{
 		    	for(int i = 0; i<classels.size(); i++)
 		    	{
 		    		Element temp = classels.get(i);
@@ -297,22 +283,22 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 		    		
 		    		cdb.addClass(new UTClass(uniqueid.ownText(),classid.ownText(), classname.ownText(),buildings, rooms, days, times, semId));
 		    	}
-	    	}
+	 //   	}
 	    	result[0] = classels.size();
-	    	result[1] = itemSelected;
-	    	result[2] = semesters;
+	//    	result[1] = itemSelected;
+	//    	result[2] = semesters;
 	    	return result;
 			
 		}
 		@Override
 		protected void onPostExecute(Object[] result)
 		{
-			ArrayList<String> semesters = (ArrayList<String>)result[2];
+//			ArrayList<String> semesters = (ArrayList<String>)result[2];
 			pb_ll.setVisibility(GridView.GONE);
-			parentAct.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-			parentAct.getSupportActionBar().setSelectedNavigationItem((Integer)result[1]);
-			((ArrayAdapter)((ScheduleActivity)parentAct).spinner.getAdapter()).clear();
-			for(int i = 0; i<semesters.size(); i++)
+//			parentAct.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+//			parentAct.getSupportActionBar().setSelectedNavigationItem((Integer)result[1]);
+//			((ArrayAdapter)((ScheduleActivity)parentAct).spinner.getAdapter()).clear();
+/*			for(int i = 0; i<semesters.size(); i++)
 			{
 				switch(semesters.get(i).charAt(4))
 				{
@@ -323,7 +309,7 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 				
 			}
 			((ArrayAdapter)((ScheduleActivity)parentAct).spinner.getAdapter()).notifyDataSetChanged();
-			
+			*/
 			if((Integer)result[0]==0)
 			{	
 				daylist.setVisibility(View.GONE);
@@ -345,6 +331,7 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 				
 				if(!parentAct.isFinishing())
 			    	Toast.makeText(parentAct, "Tap a class to see its information.", Toast.LENGTH_SHORT).show();
+				Crittercism.leaveBreadcrumb("Loaded schedule from web");
 			}
 	        
 			

@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.crittercism.app.Crittercism;
 import com.foound.widget.AmazingListView;
 
 public class BlackboardActivity extends SherlockActivity {
@@ -75,7 +76,7 @@ public class BlackboardActivity extends SherlockActivity {
     	fetch = new fetchClassesTask(httpclient);
     	fetch.execute();
 		
-		
+    	 Crittercism.leaveBreadcrumb("Loaded BlackboardActivity");
 	}
 
 	
@@ -102,21 +103,17 @@ public class BlackboardActivity extends SherlockActivity {
 		    	pagedata = EntityUtils.toString(response.getEntity());
 			} catch (Exception e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	    	
-	    
-	    	
+
 	    	Pattern class_pattern = Pattern.compile("bbid=\"(.*?)\" name=\"(.*?)\" courseid=\"(.*?)\"");
 	    	Matcher class_matcher = class_pattern.matcher(pagedata);
 	    	
 	    	while(class_matcher.find())
 	    	{
-	    		classList.add(new BBClass(class_matcher.group(2),class_matcher.group(1),class_matcher.group(3)));
+	    		classList.add(new BBClass(class_matcher.group(2),class_matcher.group(1).replace("&amp;","&"),class_matcher.group(3)));
 	    		
 	    	}
-			// TODO Auto-generated method stub
 	    	
 			return pagedata;
 		}
@@ -163,8 +160,7 @@ public class BlackboardActivity extends SherlockActivity {
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view, int position,
 							long id) {
-						// TODO Auto-generated method stub
-						
+
 						Intent classLaunch = new Intent(getString(R.string.coursemap_intent), null, BlackboardActivity.this, CourseMapActivity.class);
 						BBClass bbclass = (BBClass)(parent.getItemAtPosition(position));
 						currentBBCourseId = bbclass.getBbid();

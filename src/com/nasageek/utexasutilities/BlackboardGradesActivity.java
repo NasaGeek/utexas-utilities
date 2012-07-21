@@ -208,7 +208,7 @@ public class BlackboardGradesActivity extends SherlockActivity
 		    	
 		    	if(nameMatcher.find() && pointsMatcher.find() && gradeMatcher.find())
 		    	{	
-		    		data.add(new bbGrade(nameMatcher.group(1),gradeMatcher.group(1),pointsMatcher.group(1), commentMatcher.find() ? Html.fromHtml(Html.fromHtml(commentMatcher.group(1)).toString()).toString() 
+		    		data.add(new bbGrade(nameMatcher.group(1).replace("&amp;", "&"),gradeMatcher.group(1),pointsMatcher.group(1), commentMatcher.find() ? Html.fromHtml(Html.fromHtml(commentMatcher.group(1)).toString()).toString() 
 		    																													  : "No comments"));
 		    	}
 	    	}

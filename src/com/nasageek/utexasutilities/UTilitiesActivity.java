@@ -14,6 +14,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -33,6 +34,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 
 import android.util.Log;
 import android.view.View;
@@ -65,13 +67,30 @@ public class UTilitiesActivity extends SherlockActivity {
 	 ConnectionHelper.bbLoginTask bblt;
 	
 	
+//	@TargetApi(9)
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-   //     Crittercism.init(getApplicationContext(), "4fed1764be790e4597000001");
+       
+        
+ /*       if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
+        {
+        	StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+	        .detectAll()
+	        .penaltyLog()
+	        .build());
+        	StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+        	.detectAll()
+        	.penaltyLog()
+        	.build());
+        	
+        }*/
+        Crittercism.init(getApplicationContext(), "4fed1764be790e4597000001");
+        
   //    Window win = getWindow();
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
-   //   win.setFormat(PixelFormat.RGBA_8888);
+        Crittercism.setOptOutStatus(!settings.getBoolean("sendcrashes", true));
+  //    win.setFormat(PixelFormat.RGBA_8888);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         
         setContentView(R.layout.main);
@@ -115,7 +134,7 @@ public class UTilitiesActivity extends SherlockActivity {
             });
         	AlertDialog nologin = nologin_builder.create();
         	nologin.show();
-        	settings.edit().putBoolean("firstRun", false).commit();
+        	Utility.commit(settings.edit().putBoolean("firstRun", false));
         }
     	
     	

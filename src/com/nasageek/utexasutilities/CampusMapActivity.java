@@ -63,6 +63,7 @@ import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockMapActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.crittercism.app.Crittercism;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -175,7 +176,6 @@ public class CampusMapActivity extends SherlockMapActivity  {
         actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() 
         {
         	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        		// TODO Auto-generated method stub
         		if(!"0".equals(((Route) spinner.getAdapter().getItem(itemPosition)).getCode()))
             		loadOverlay(((Route) spinner.getAdapter().getItem(itemPosition)).getCode());
         		
@@ -270,7 +270,7 @@ public class CampusMapActivity extends SherlockMapActivity  {
         		return;
         	}
         });*/
-           
+        Crittercism.leaveBreadcrumb("Loaded CampusMapActivity");
     }
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)

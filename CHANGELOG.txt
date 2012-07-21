@@ -35,3 +35,9 @@ Blackboard support!
 
 Versioncode 4
 
+Some small UI changes
+Can now load last 6 months of transactions (not just the last 20)
+All devices can now download attachments.
+Grade comments are now viewable.
+Crash reports will automatically be sent in the background to make it easier to diagnose problems.
+Minor bug fixes.

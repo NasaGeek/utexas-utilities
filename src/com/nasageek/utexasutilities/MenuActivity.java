@@ -142,7 +142,7 @@ public class MenuActivity extends SherlockFragmentActivity {
         actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() 
         {
         	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        		// TODO Auto-generated method stub
+
         		Restaurant r = (Restaurant)spinner.getAdapter().getItem(itemPosition);
         		
         		String restId = r.getCode();
