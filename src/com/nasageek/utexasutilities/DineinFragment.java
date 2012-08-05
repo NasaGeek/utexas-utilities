@@ -16,7 +16,6 @@ import org.apache.http.util.EntityUtils;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,8 @@ public class DineinFragment extends SherlockFragment
 	int count;
 	private TransactionAdapter ta;
 	TextView tv1, tv2;
-
+	private TextView etv;
+	
 	private List<BasicNameValuePair> postdata;
 	private SherlockFragmentActivity parentAct;
 
@@ -62,6 +62,7 @@ public class DineinFragment extends SherlockFragment
 		dlv = (AmazingListView) vg.findViewById(R.id.dtransactions_listview);
 		dineinlinlay = (LinearLayout) vg.findViewById(R.id.dineinlinlay);
 		d_pb_ll = (LinearLayout) vg.findViewById(R.id.dinein_progressbar_ll);
+		etv = (TextView) vg.findViewById(R.id.dinein_error);
 		
 		dlv.setLoadingView(getLayoutInflater(savedInstanceState).inflate(R.layout.loading_content_layout, null));
 		dlv.setAdapter(ta);
@@ -69,16 +70,8 @@ public class DineinFragment extends SherlockFragment
 	    dineinlinlay.addView(tv1,0);
 		dineinlinlay.addView(tv2,1);
 		
-		try
-		{
-			parser(false);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-			parentAct.finish();
-			return null;
-		}
+		parser(false);
+
 		return vg;
 		}
 		else
@@ -113,7 +106,7 @@ public class DineinFragment extends SherlockFragment
 		    tv2.setTextColor(Color.DKGRAY);
 
 	}
-	public void parser(boolean refresh) throws Exception
+	public void parser(boolean refresh)
 	{
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
@@ -133,7 +126,7 @@ public class DineinFragment extends SherlockFragment
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) 
 	{
 		menu.removeItem(R.id.balance_refresh);
-	    inflater.inflate(R.layout.balance_menu, menu);     
+	    inflater.inflate(R.menu.balance_menu, menu);     
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -144,23 +137,18 @@ public class DineinFragment extends SherlockFragment
 	    		case R.id.balance_refresh:
 	    			
 					dlv.setVisibility(View.GONE);
+					etv.setVisibility(View.GONE);
 					d_pb_ll.setVisibility(View.VISIBLE);
 					if(fetch!=null)
 					{	fetch.cancel(true);
 						fetch = null;
 					}
-		    		try
-					{
-		    			dtransactionlist.clear();
-						dineinbalance = "No Dine In Dollars? What kind of animal are you?";
-						postdata.clear();
-						postdata.add(new BasicNameValuePair("rRequestSw","B"));
-						parser(true);		
-					}
-					catch(Exception e)
-					{
-						e.printStackTrace();
-					}
+	    			dtransactionlist.clear();
+					dineinbalance = "No Dine In Dollars? What kind of animal are you?";
+					postdata.clear();
+					postdata.add(new BasicNameValuePair("rRequestSw","B"));
+					parser(true);		
+
 		    		break;
 	    	}
 	    	ta.resetPage();
@@ -172,18 +160,17 @@ public class DineinFragment extends SherlockFragment
 		super.onDestroy();
 		fetch.cancel(true);
 	}
-
 	private class fetchTransactionDataTask extends AsyncTask<Object,Void,Character>
 	{
 		private DefaultHttpClient client;
 		private boolean refresh;
+		private String errorMsg;
 		
 		public fetchTransactionDataTask(DefaultHttpClient client, boolean refresh)
 		{
 			this.client = client;
 			this.refresh = refresh;
 		}
-		
 		@Override
 		protected Character doInBackground(Object... params)
 		{
@@ -198,6 +185,9 @@ public class DineinFragment extends SherlockFragment
 			} catch (Exception e)
 			{
 				e.printStackTrace();
+				errorMsg = "UTilities could not fetch transaction data.  Try refreshing.";
+				cancel(true);
+				return null;
 			}
 	    	
 	    	Pattern pattern3 = Pattern.compile("(?<=\"center\">\\s{1,10})\\S.*(?=\\s*<)");
@@ -216,14 +206,14 @@ public class DineinFragment extends SherlockFragment
 	    	{
 	    		dineinbalance = balancematcher.group();	
 	    	}
-	    	while(matcher3.find() && matcher4.find() && datematcher.find())
+	    	while(matcher3.find() && matcher4.find() && datematcher.find() && !this.isCancelled())
 	    	{
 	    		String transaction=datematcher.group()+" ";
 	    		transaction+=matcher3.group()+" ";
 	    		transaction+=matcher4.group().replaceAll("\\s","");
 	    		dtransactionlist.add(transaction);
 	    	}
-	    	if(pagedata.contains("<form name=\"next\""))
+	    	if(pagedata.contains("<form name=\"next\"") && !this.isCancelled())
 	    	{
 	    		Pattern namePattern = Pattern.compile("sNameFL\".*?value=\"(.*?)\"");
 	    		Matcher nameMatcher = namePattern.matcher(pagedata);
@@ -231,7 +221,7 @@ public class DineinFragment extends SherlockFragment
 	    		Matcher nextTransMatcher = nextTransPattern.matcher(pagedata);
 	    		Pattern dateTimePattern = Pattern.compile("sStartDateTime\".*?value=\"(.*?)\"");
 	    		Matcher dateTimeMatcher = dateTimePattern.matcher(pagedata);
-	    		if(nameMatcher.find() && nextTransMatcher.find() && dateTimeMatcher.find())
+	    		if(nameMatcher.find() && nextTransMatcher.find() && dateTimeMatcher.find() && !this.isCancelled())
 	    		{	
 	    			postdata.clear();
 			    	postdata.add(new BasicNameValuePair("sNameFL",nameMatcher.group(1)));
@@ -268,9 +258,22 @@ public class DineinFragment extends SherlockFragment
 				tv2.setText(dineinbalance);
 	    		
 	    		d_pb_ll.setVisibility(View.GONE);
+	    		etv.setVisibility(View.GONE);
 				dlv.setVisibility(View.VISIBLE);
 	    		
 	    	} 	
-		}	
+		}
+		@Override
+		protected void onCancelled(Character nullIfError)
+		{
+			if(nullIfError == null)
+			{
+				//etv off center, not sure if worth hiding the balance stuff to get it centered
+				etv.setText(errorMsg);
+				d_pb_ll.setVisibility(View.GONE);
+				dlv.setVisibility(View.GONE);
+				etv.setVisibility(View.VISIBLE);
+			}
+		}
 	}
 }

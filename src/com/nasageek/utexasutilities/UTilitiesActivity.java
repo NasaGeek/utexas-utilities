@@ -1,10 +1,20 @@
 package com.nasageek.utexasutilities;
 
-import java.util.ArrayList;
-
-import com.crittercism.app.Crittercism;
-
 import org.apache.http.impl.client.DefaultHttpClient;
+
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.drawable.AnimationDrawable;
+import android.os.Build;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -12,45 +22,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
-
-
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.app.TabActivity;
-import android.preference.PreferenceManager;
-
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-
-import android.graphics.Color;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.StrictMode;
-
-import android.util.Log;
-import android.view.View;
-import android.view.WindowManager;
-import android.view.View.OnClickListener;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Transformation;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.GridView;
-import android.widget.ImageButton;
-
-import android.widget.TableLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import com.crittercism.app.Crittercism;
 
 
 public class UTilitiesActivity extends SherlockActivity {
@@ -104,7 +76,7 @@ public class UTilitiesActivity extends SherlockActivity {
     	about_intent = new Intent(this, AboutMeActivity.class);
     	
     	actionbar = getSupportActionBar();
-    	
+    	actionbar.show();
     	message = Toast.makeText(this, R.string.login_first, Toast.LENGTH_SHORT);
     	
     	
@@ -268,19 +240,19 @@ public class UTilitiesActivity extends SherlockActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = this.getSupportMenuInflater();
-        inflater.inflate(R.layout.main_menu, menu);
+        inflater.inflate(R.menu.main_menu, menu);
         
   
     	if(!ConnectionHelper.isLoggingIn())
     	{
-	        if(ConnectionHelper.cookieHasBeenSet())
+	        if(ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.bbCookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet())
 	    	{
 	    		menu.removeGroup(R.id.log);
 	    		menu.add(R.id.log, 11, Menu.NONE, "Log out");
 	    		MenuItem item = menu.findItem(11);
 	    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 	    	}
-	    	else if(!ConnectionHelper.cookieHasBeenSet())
+	    	else if(!ConnectionHelper.cookieHasBeenSet() || !ConnectionHelper.bbCookieHasBeenSet() || !ConnectionHelper.PNACookieHasBeenSet())
 	    	{
 	    		menu.removeGroup(R.id.log);
 	    		menu.add(R.id.log, R.id.login, Menu.NONE, "Log in");
@@ -349,7 +321,7 @@ public class UTilitiesActivity extends SherlockActivity {
            		setSupportProgressBarIndeterminateVisibility(true);
            		
            		
-           		ConnectionHelper ch = new ConnectionHelper(this);
+           		ConnectionHelper ch = new ConnectionHelper();
       			DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
       			DefaultHttpClient pnahttpclient = ConnectionHelper.getThreadSafeClient();
 
@@ -374,9 +346,12 @@ public class UTilitiesActivity extends SherlockActivity {
     }
     public void cancelLogin()
     {
-    	lt.cancel(true);
-   		plt.cancel(true);
- 		bblt.cancel(true);
+    	if(lt!=null)
+    		lt.cancel(true);
+   		if(plt!=null)
+   			plt.cancel(true);
+   		if(bblt!=null)
+   			bblt.cancel(true);
    		message.setText("Cancelled");
     	ConnectionHelper.logout(this);
     	setSupportProgressBarIndeterminateVisibility(false);

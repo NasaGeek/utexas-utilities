@@ -9,57 +9,48 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TabHost;
-import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.foound.widget.AmazingAdapter;
 import com.foound.widget.AmazingListView;
 
 public class MenuFragment extends SherlockFragment
 {
-	private  DefaultHttpClient httpclient;
-	ArrayList<String> mealList;
-	ArrayList<food> foodList;
-	AmazingListView mlv;
-	LinearLayout m_pb_ll;
-	fetchMenuTask fetchMTask;
-	View vg;
-	String restId;
-	String times;
+	private DefaultHttpClient httpclient;
+	private ArrayList<String> mealList;
+	private ArrayList<food> foodList;
+	private AmazingListView mlv;
+	private LinearLayout m_pb_ll;
+	private TextView metv;
+	private fetchMenuTask fetchMTask;
+	private String restId;
+	private String times;
 	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{	
 		if(restId.equals("0"))
-		{	vg =  inflater.inflate(R.layout.menu_fragment_layout, container, false);
+		{	View vg =  inflater.inflate(R.layout.menu_fragment_layout, container, false);
 			((LinearLayout) vg.findViewById(R.id.menu_progressbar_ll)).setVisibility(View.GONE);
 			return vg;
 		}
 
-		vg =  inflater.inflate(R.layout.menu_fragment_layout, container, false);
+		View vg =  inflater.inflate(R.layout.menu_fragment_layout, container, false);
 			
-		updateView(restId);
+		updateView(restId, vg);
 
 		return vg;
 	}
@@ -70,17 +61,13 @@ public class MenuFragment extends SherlockFragment
 		restId = getArguments().getString("restId");
         httpclient = ConnectionHelper.getThreadSafeClient();      
 	}
-	public void updateView(String restId)
+	public void updateView(String restId, View vg)
 	{
 		this.restId = restId;
-		
-	//  This might be a better option than saving vg in onCreateView, but vg works for the time being.
-	/*	if(getView() instanceof LinearLayout)
-			vg = getView();
-		else
-			vg = ((ViewGroup)getView()).getChildAt(0);*/
+
 		m_pb_ll = (LinearLayout) vg.findViewById(R.id.menu_progressbar_ll);
         mlv = (AmazingListView) vg.findViewById(R.id.menu_listview);
+        metv = (TextView) vg.findViewById(R.id.menu_error);
   
 		m_pb_ll.setVisibility(View.VISIBLE);
 		mlv.setVisibility(View.GONE);
@@ -106,6 +93,7 @@ public class MenuFragment extends SherlockFragment
 		private ArrayList<Pair<String,ArrayList<food>>> listOfLists;
 		private DefaultHttpClient client;
 		private String meal;
+		private String errorMsg;
 		
 		public fetchMenuTask(DefaultHttpClient client)
 		{
@@ -136,8 +124,10 @@ public class MenuFragment extends SherlockFragment
 		    	pagedata = EntityUtils.toString(response.getEntity());
 			} catch (Exception e)
 			{
-				// TODO Auto-generated catch block
+				errorMsg = "UTilities could not fetch this menu";
+				cancel(true);
 				e.printStackTrace();
+				return null;
 			}
 	    	if(pagedata.contains("No Data Available"))
 	    	{
@@ -168,7 +158,6 @@ public class MenuFragment extends SherlockFragment
 		    		
 		    		while(foodMatcher.find() && nutritionLinkMatcher.find())
 		    		{
-		    			String a = foodMatcher.group();
 		    			foodList.add(new food(foodMatcher.group(),nutritionLinkMatcher.group()));
 		    		}	
 		    		listOfLists.add(new Pair<String,ArrayList<food>>(catNameMatcher.group(),foodList));	
@@ -186,7 +175,7 @@ public class MenuFragment extends SherlockFragment
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
-				// TODO Auto-generated method stub				    	
+		    	
 				String url ="http://129.116.62.55/foodpro/"+((food)(arg0.getItemAtPosition(arg2))).nutritionLink;  
 				Intent i = new Intent(Intent.ACTION_VIEW);  
 				i.setData(Uri.parse(url));  
@@ -197,8 +186,17 @@ public class MenuFragment extends SherlockFragment
 			lv.setPinnedHeaderView(getLayoutInflater(null).inflate(R.layout.menu_header_item_view, lv, false));
 			
 			lv.setVisibility(View.VISIBLE);	
-			m_pb_ll.setVisibility(View.GONE);	
-		}	
+			m_pb_ll.setVisibility(View.GONE);
+			metv.setVisibility(View.GONE);
+		}
+		@Override
+		protected void onCancelled()
+		{
+			metv.setText(errorMsg);
+			metv.setVisibility(View.VISIBLE);
+			lv.setVisibility(View.GONE);	
+			m_pb_ll.setVisibility(View.GONE);
+		}
 	
 	}
 	

@@ -19,21 +19,21 @@ Preferences moved around a bit to reflect new features
 Okay, at this point it might as well be a 1.5/2.0 release.
 ActionBar added along with all accompanying shiny features.
 
-Versioncode 2
+Versioncode 2 - 1.51
 
 Changed preferences to make the functions of some of them more clear.
 Button added to map to return to user's current location.
 Preference added to choose where to center map upon initial load.
 Times of operation added to dining menus.
 
-Versioncode 3
+Versioncode 3 - 1.6
 
 Fixed bug with Login button state when no internet connectivity is present
 Fixed bug causing a crash when no Location services are enabled
 Home button UI changed to better reflect its function
 Blackboard support!
 
-Versioncode 4
+Versioncode 4 - 1.61
 
 Some small UI changes
 Can now load last 6 months of transactions (not just the last 20)
@@ -41,3 +41,20 @@ All devices can now download attachments.
 Grade comments are now viewable.
 Crash reports will automatically be sent in the background to make it easier to diagnose problems.
 Minor bug fixes.
+
+Versioncode 5 - 1.62
+
+Fixed nullPointer bug when jsoup throws an exception
+Fixed bug causing a crash when students with summer exams went to view them
+
+Versioncode 6 - 1.63
+
+Hopefully fixed a strange crash in menus
+Hopefully fixed a crash related to cancelling login
+Fixed a bug causing a crash during logout (this might break some stuff, we'll see)
+Fixed a bug that could cause a crash in the campus map
+Removed some leftover layout files that could have caused issues with orientation lockers that put the app into landscape mode
+Blackboard is now much more accepting of unexpected data; an option has also been added if Blackboard still crashes because of malformed data
+Text in the Blackboard detailed grade view now wraps correctly
+Made the entire app much more robust when an inconsistent internet connection is present.
+Features are now more responsive when errors occur instead of just closing or crashing.

@@ -21,7 +21,12 @@
 	     android:textSize="19sp"
 	     android:visibility="gone"/>
 	 
-	 <include android:id="@+id/examschedule_progressbar_ll" layout="@layout/loading_content_layout"/>
+	 <include 
+	     android:id="@+id/examschedule_progressbar_ll" 
+	     layout="@layout/loading_content_layout"/>
+	 <include
+	     android:id="@+id/examschedule_error"
+	     layout="@layout/error_message_view"/>
 	 
 	 <ListView
 		 	android:paddingTop="5dp"
@@ -29,6 +34,7 @@
 			android:layout_width="fill_parent" 
 		    android:layout_height="fill_parent" 
 		    android:orientation="vertical" 
-		    android:scrollbars="none"/>
+		    android:scrollbars="none"
+		    android:cacheColorHint="@android:color/transparent"/>
 	 
 </LinearLayout>

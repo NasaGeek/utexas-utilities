@@ -12,14 +12,12 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.SlidingDrawer;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.ActionMode;
@@ -262,7 +260,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 	        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 	            mode.setTitle("Class Info");
 	            MenuInflater inflater = getSupportMenuInflater();
-	            inflater.inflate(R.layout.schedule_menu, menu);
+	            inflater.inflate(R.menu.schedule_menu, menu);
 	            return true;
 	        }
 

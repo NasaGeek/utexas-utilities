@@ -14,7 +14,7 @@
      limitations under the License.
 -->
 
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <style name="StyledIndicators" parent="@style/Theme.Sherlock.Light">
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
         <item name="vpiTabTextStyle">@style/CustomTabPageIndicator.Text</item>
@@ -27,4 +27,13 @@
     <style name="CustomTabPageIndicator.Text" parent="Widget.TabPageIndicator.Text">
         <item name="android:textColor">#FF555555</item>
     </style>
+    
+    <style name="Theme.UTilities" parent="@style/Theme.Sherlock.Light.ForceOverflow">
+        <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
+        <item name="vpiTabTextStyle">@style/CustomTabPageIndicator.Text</item>
+        <item name="android:windowBackground">@drawable/background_holo_light</item>
+        <item name="android:cacheColorHint">@android:color/transparent</item>
+    </style>
+    
+    
 </resources>

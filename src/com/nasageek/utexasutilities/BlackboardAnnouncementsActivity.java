@@ -1,4 +1,4 @@
-package com.nasageek.utexasutilities;
+ package com.nasageek.utexasutilities;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -42,7 +42,7 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	private LinearLayout a_pb_ll;
 	private ListView alv;
 	private TextView atv;
-	private ConnectionHelper ch;
+	private TextView etv;
 	private SharedPreferences settings;
 	private DefaultHttpClient httpclient;
 	private fetchAnnouncementsTask fetch;
@@ -57,7 +57,7 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 			a_pb_ll = (LinearLayout) findViewById(R.id.announcements_progressbar_ll);
 	    	alv = (ListView) findViewById(R.id.announcementsListView);
 	    	atv = (TextView) findViewById(R.id.no_announcements_textview);
-	    		
+	    	etv = (TextView) findViewById(R.id.announcements_error);
 	    	
 	    	actionbar = getSupportActionBar();
 	    	actionbar.setTitle(BlackboardActivity.currentBBCourseName+ " - Announcements");
@@ -67,8 +67,7 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 			if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
 	    		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
 			
-			
-			ch = new ConnectionHelper(this);
+		
 			settings = PreferenceManager.getDefaultSharedPreferences(this);
 			
 			httpclient = ConnectionHelper.getThreadSafeClient();
@@ -86,7 +85,7 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	public boolean onCreateOptionsMenu(Menu menu) {
 		
 		MenuInflater inflater = this.getSupportMenuInflater();
-        inflater.inflate(R.layout.blackboard_dlable_item_menu, menu);
+        inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
 		return true;
 		 
 	}
@@ -140,12 +139,13 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	private class fetchAnnouncementsTask extends AsyncTask<Object,Void,ArrayList<bbAnnouncement>>
 	{
 		private DefaultHttpClient client;
+		private String errorMsg;
 		
 		public fetchAnnouncementsTask(DefaultHttpClient client)
 		{
 			this.client = client;
 		}
-		
+
 		@Override
 		protected ArrayList<bbAnnouncement> doInBackground(Object... params)
 		{
@@ -158,8 +158,10 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 		    	pagedata = EntityUtils.toString(response.getEntity());
 			} catch (Exception e)
 			{
-				
+				errorMsg = "UTilities could not fetch this course's announcements";
 				e.printStackTrace();
+				cancel(true);
+				return null;
 			}
 	    	ArrayList<bbAnnouncement> data=new ArrayList<bbAnnouncement>();
 	//    	pagedata = pagedata.replaceAll("comments=\".*?\"", ""); //might include later, need to strip for now for grade recognition
@@ -178,19 +180,30 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 		{
 			if(!this.isCancelled())
 	    	{
+				a_pb_ll.setVisibility(View.GONE);
+				etv.setVisibility(View.GONE);
 				if(!result.isEmpty())
 				{
 					alv.setAdapter(new AnnouncementsAdapter(BlackboardAnnouncementsActivity.this,result));
 					alv.setVisibility(View.VISIBLE);
+					atv.setVisibility(View.GONE);
 				}
 				else
 				{	
 					atv.setVisibility(View.VISIBLE);
+					alv.setVisibility(View.GONE);
 				}
-				a_pb_ll.setVisibility(View.GONE);
-				
 	    	}
-		}	
+		}
+		@Override
+		protected void onCancelled()
+		{
+			etv.setText(errorMsg);
+			a_pb_ll.setVisibility(View.GONE);
+			alv.setVisibility(View.GONE);
+			atv.setVisibility(View.GONE);
+			etv.setVisibility(View.VISIBLE);
+		}
 	}
 
 	class AnnouncementsAdapter extends ArrayAdapter<bbAnnouncement> {
@@ -208,17 +221,17 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 		
 		}
 		public int getCount() {
-			// TODO Auto-generated method stub
+			
 			return items.size();
 		}
 	
 		public bbAnnouncement getItem(int position) {
-			// TODO Auto-generated method stub
+	
 			return items.get(position);
 		}
 	
 		public long getItemId(int position) {
-			// TODO Auto-generated method stub
+			
 			return 0;
 		}
 		@Override

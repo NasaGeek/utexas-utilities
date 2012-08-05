@@ -3,14 +3,21 @@
 		android:id="@+id/blackboard_courselist"
 		android:layout_width="fill_parent" 
 	    android:layout_height="fill_parent" 
-	    android:orientation="vertical">
+	    android:orientation="vertical"
+	    android:background="@drawable/background_holo_light" >
 	   	
-	    <include android:id="@+id/blackboard_progressbar_ll" layout="@layout/loading_content_layout"/>
+	    <include 
+	        android:id="@+id/blackboard_progressbar_ll" 
+	        layout="@layout/loading_content_layout"/>
+	    <include
+	        android:id="@+id/blackboard_error"
+	        layout="@layout/error_message_view"/>
 
 	   	 <com.foound.widget.AmazingListView
 		 	android:visibility="gone"
 			android:id="@+id/blackboard_class_listview"
 			android:clickable="true"
 			android:layout_width="fill_parent" 
-		    android:layout_height="fill_parent"/>			   	
+		    android:layout_height="fill_parent"
+		    android:cacheColorHint="@android:color/transparent"/>			   	
 </LinearLayout>

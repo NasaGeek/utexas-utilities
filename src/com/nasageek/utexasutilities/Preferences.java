@@ -1,43 +1,27 @@
 package com.nasageek.utexasutilities;
 
-import java.io.File;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
-import com.crittercism.app.Crittercism;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.os.AsyncTask;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Window;
-import android.widget.EditText;
 import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
 import android.preference.Preference;
-import android.preference.PreferenceGroup;
 import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.PreferenceManager;
+import android.view.Window;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.actionbarsherlock.view.MenuItem;
+import com.crittercism.app.Crittercism;
 
 public class Preferences extends SherlockPreferenceActivity{
 
@@ -75,6 +59,7 @@ public class Preferences extends SherlockPreferenceActivity{
        
     	setSupportProgressBarIndeterminateVisibility(false);
         addPreferencesFromResource(R.xml.preferences);
+        getListView().setCacheColorHint(Color.TRANSPARENT);
         ba = (BaseAdapter)getPreferenceScreen().getRootAdapter();
    //   PreferenceGroup loginfields = (PreferenceGroup) findPreference("loginfields");
         
@@ -125,7 +110,7 @@ public class Preferences extends SherlockPreferenceActivity{
                	  	passwordfield.setEnabled(true);    
             		ba.notifyDataSetChanged();
             	}
-            	ClassDatabase.getInstance(Preferences.this).deleteDb();
+            	ClassDatabase.getInstance(Preferences.this).deleteDb(Preferences.this, true);
             	return true;	
             }
         });
@@ -151,8 +136,7 @@ public class Preferences extends SherlockPreferenceActivity{
         { 
             public boolean onPreferenceClick(Preference preference)
             {
-                ClassDatabase.getInstance(Preferences.this).deleteDb();
-                Toast.makeText(getBaseContext(), "Data cleared", Toast.LENGTH_SHORT).show();
+                ClassDatabase.getInstance(Preferences.this).deleteDb(Preferences.this, false);
                 return true;
             }
         });

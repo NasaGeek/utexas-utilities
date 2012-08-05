@@ -1,59 +1,25 @@
 package com.nasageek.utexasutilities;
 
-import java.util.ArrayList;
-
-import com.nasageek.utexasutilities.PagerAdapter;
-
 import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
-import com.foound.widget.AmazingAdapter;
-import com.foound.widget.AmazingListView;
-import com.viewpagerindicator.TabPageIndicator;
-
-import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.util.Pair;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TabHost;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
+import com.viewpagerindicator.TabPageIndicator;
 
 public class MenuActivity extends SherlockFragmentActivity {
 	
@@ -163,9 +129,9 @@ public class MenuActivity extends SherlockFragmentActivity {
 	         			((TextView)findViewById(R.id.dinner_times)).setText("");
          			}
          			
-         			breakfast.updateView(restId);
-         			lunch.updateView(restId);
-         			dinner.updateView(restId);
+         			breakfast.updateView(restId,breakfast.getView());
+         			lunch.updateView(restId,lunch.getView());
+         			dinner.updateView(restId,dinner.getView());
          		}	
         		return false;
         	}

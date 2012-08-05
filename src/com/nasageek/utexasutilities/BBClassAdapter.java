@@ -1,20 +1,15 @@
 package com.nasageek.utexasutilities;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import com.foound.widget.AmazingAdapter;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.util.AttributeSet;
-import android.util.Log;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.foound.widget.AmazingAdapter;
 
 public class BBClassAdapter extends AmazingAdapter
 {
@@ -27,6 +22,7 @@ public class BBClassAdapter extends AmazingAdapter
 	{
 		all = objects;
 		li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);	
+		this.con = con;
 	}
 	@Override
 	public int getCount() {
@@ -84,19 +80,32 @@ public class BBClassAdapter extends AmazingAdapter
 		ViewGroup res = (ViewGroup) convertView;
 		if (res == null) res = (ViewGroup) li.inflate(R.layout.bbclass_item_view, null, false);
 		
-		BBClass bbclass = getItem(position);
-		
-		
-		String name = (bbclass.getName().contains("(")) ? bbclass.getName().substring(0,bbclass.getName().indexOf("(")-1)
-														: bbclass.getName();
-		String unique = bbclass.getCourseid().split("_")[2];
-		String id = bbclass.getCourseid().substring(bbclass.getCourseid().indexOf(unique)+6).replaceAll("_"," ");
-		
 		TextView nameview= (TextView) res.findViewById(R.id.bb_class_name);
 		TextView idview= (TextView) res.findViewById(R.id.bb_class_id);
 		
+		BBClass bbclass = getItem(position);
+		String name = "", unique = "", id = "";
+		
+		if(!PreferenceManager.getDefaultSharedPreferences(con).getBoolean("blackboard_class_longform", false))
+		{	
+			name = (bbclass.getName().contains("(") && bbclass.getName().charAt(0) != '(') 
+																? bbclass.getName().substring(0,bbclass.getName().indexOf("(")-1)
+																: bbclass.getName();
+			unique = bbclass.getCourseid().split("_")[2];
+			id = bbclass.getCourseid().substring(bbclass.getCourseid().indexOf(unique)+6).replaceAll("_"," ");
+			idview.setText(id+" - "+unique);
+		}
+		else
+		{	
+			name = bbclass.getName();
+			unique = bbclass.getCourseid();
+			//id not set because unique will contain ID and Unique number
+			idview.setText(unique);
+			
+		}
+
 		nameview.setText(name);
-		idview.setText(id+" - "+unique);
+		
 		return res;
 	}
 

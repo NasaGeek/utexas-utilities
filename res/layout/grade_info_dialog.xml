@@ -5,19 +5,20 @@
     android:padding="10dp" >
 
     <TextView
-        android:id="@+id/grade_info_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" />
-
-    <TextView
         android:id="@+id/grade_info_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true" />
+    
+     <TextView
+        android:id="@+id/grade_info_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_toLeftOf="@id/grade_info_value"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" />
     
      <ImageView 
@@ -27,9 +28,7 @@
 		android:layout_below="@id/grade_info_name"
 		android:src="#99AAAAAA"
 		android:layout_marginTop="10dp"
-		android:layout_centerHorizontal="true"
-		
-		/>
+		android:layout_centerHorizontal="true" />
 
     <ScrollView
         android:id="@+id/grade_comment_scrollview"

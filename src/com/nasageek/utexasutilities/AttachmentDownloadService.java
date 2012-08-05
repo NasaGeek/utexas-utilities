@@ -9,26 +9,21 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import com.crittercism.app.Crittercism;
-
 import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.IBinder;
-import android.os.ResultReceiver;
 import android.support.v4.app.NotificationCompat;
-import android.widget.AbsListView;
 import android.widget.Toast;
+
+import com.crittercism.app.Crittercism;
 
 @SuppressLint("NewApi")
 public class AttachmentDownloadService extends IntentService {

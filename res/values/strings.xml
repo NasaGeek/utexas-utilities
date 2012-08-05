@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">UTilities</string>
-    <string name="version"> 1.6</string>
+    <string name="version"> 1.63</string>
     <string name="login_button_text">Save</string>
     <string name="login_category">Persistent Login</string>
     <string name="edit_credentials">Edit login credentials</string>

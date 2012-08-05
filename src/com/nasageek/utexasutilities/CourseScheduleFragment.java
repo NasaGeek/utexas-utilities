@@ -1,7 +1,5 @@
 package com.nasageek.utexasutilities;
 
-import java.util.ArrayList;
-
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,7 +25,7 @@ import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
@@ -36,7 +33,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
 
-public class CourseScheduleFragment extends ActionModeFragment implements SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, AdapterView.OnItemClickListener {
+public class CourseScheduleFragment extends SherlockFragment implements ActionModeFragment, SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, AdapterView.OnItemClickListener {
 	
 	private GridView gv;
 	private WrappingSlidingDrawer sd ;
@@ -50,19 +47,20 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 	private ImageView ci_iv;
 	private TextView ci_tv;
 	private TextView nc_tv;
+	private TextView etv;
 	
 	private classtime current_clt;
 	public ActionMode mode;
-	private View vg;
+
 	private SherlockFragmentActivity parentAct;
 	String semId;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		vg =  inflater.inflate(R.layout.course_schedule_fragment_layout, container, false);
+		View vg =  inflater.inflate(R.layout.course_schedule_fragment_layout, container, false);
 		
-		updateView(semId);
+		updateView(semId, vg);
 
 		return vg;	
 	}
@@ -75,7 +73,7 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 		PreferenceManager.getDefaultSharedPreferences(parentAct.getBaseContext());
 		cdb = ClassDatabase.getInstance(parentAct);
 	}
-	public void updateView(String semId)
+	public void updateView(String semId, View vg)
 	{
 		this.semId = semId;
 		
@@ -84,7 +82,7 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 	    
 	    ci_iv = (ImageView) vg.findViewById(R.id.class_info_color);
 	    ci_tv = (TextView) vg.findViewById(R.id.class_info_text);
-
+	    etv = (TextView) vg.findViewById(R.id.schedule_error);
 	    
 	    pb_ll = (LinearLayout) vg.findViewById(R.id.schedule_progressbar_ll);
 	    nc_tv = (TextView) vg.findViewById(R.id.no_courses);
@@ -209,6 +207,7 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 	private class parseTask extends AsyncTask<Object,Void,Object[]>
 	{
 		private DefaultHttpClient client;
+		private String errorMsg;
 		
 		public parseTask(DefaultHttpClient client)
 		{
@@ -238,11 +237,10 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 		    	}
 		    	catch(Exception e)
 		    	{
-		    //		Log.d("JSOUP", "Jsoup could not connect to utexas.edu");
 		    		Log.d("JSOUP EXCEPTION",e.getMessage());
 		    		e.printStackTrace();
-//		    		Toast.makeText(parentAct, "Something messed up, give it another try?", Toast.LENGTH_SHORT).show();
-		    		parentAct.finish();
+		    		errorMsg = "UTilities could not fetch your class listing";
+		    		cancel(true);
 		    		return null;
 		    	}
 		
@@ -336,13 +334,23 @@ public class CourseScheduleFragment extends ActionModeFragment implements Slidin
 	        
 			
 		}
+		@Override
+		protected void onCancelled()
+		{
+			etv.setText(errorMsg);
+			etv.setVisibility(View.VISIBLE);
+			pb_ll.setVisibility(View.GONE);
+			daylist.setVisibility(View.GONE);
+			nc_tv.setVisibility(View.GONE);
+			gv.setVisibility(View.GONE);
+		}
 	}	
 	private final class ScheduleActionMode implements ActionMode.Callback {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.setTitle("Class Info");
             MenuInflater inflater = ((SherlockFragmentActivity)getActivity()).getSupportMenuInflater();
-            inflater.inflate(R.layout.schedule_menu, menu);
+            inflater.inflate(R.menu.schedule_menu, menu);
             return true;
         }
 

@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
 
@@ -33,9 +35,9 @@ public class BlackboardActivity extends SherlockActivity {
 	private ActionBar actionbar;
 	private DefaultHttpClient httpclient;
 	private SharedPreferences settings;
-	private ConnectionHelper ch;
 	private LinearLayout bb_pb_ll;
 	private LinearLayout blackboardlinlay;
+	private TextView bbtv;
 	private AmazingListView bblv;
 	private ArrayList<BBClass> classList;
 	private ArrayList<Pair<String,ArrayList<BBClass>>> classSectionList;
@@ -52,6 +54,7 @@ public class BlackboardActivity extends SherlockActivity {
     	bb_pb_ll = (LinearLayout) findViewById(R.id.blackboard_progressbar_ll);
     	bblv = (AmazingListView) findViewById(R.id.blackboard_class_listview);
     	blackboardlinlay = (LinearLayout) findViewById(R.id.blackboard_courselist);
+    	bbtv = (TextView) findViewById (R.id.blackboard_error);
     	
     	classList = new ArrayList<BBClass>();
     	classSectionList = new ArrayList<Pair<String,ArrayList<BBClass>>>();
@@ -64,7 +67,7 @@ public class BlackboardActivity extends SherlockActivity {
 		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
     		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
 		
-		ch = new ConnectionHelper(this);
+	
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
@@ -83,6 +86,7 @@ public class BlackboardActivity extends SherlockActivity {
 	private class fetchClassesTask extends AsyncTask<Object,Void,String>
 	{
 		private DefaultHttpClient client;
+		private String errorMsg;
 		
 		public fetchClassesTask(DefaultHttpClient client)
 		{
@@ -103,7 +107,10 @@ public class BlackboardActivity extends SherlockActivity {
 		    	pagedata = EntityUtils.toString(response.getEntity());
 			} catch (Exception e)
 			{
+				errorMsg = "UTilities could not fetch the Blackboard course list";
 				e.printStackTrace();
+				cancel(true);
+				return null;
 			}
 
 	    	Pattern class_pattern = Pattern.compile("bbid=\"(.*?)\" name=\"(.*?)\" courseid=\"(.*?)\"");
@@ -111,8 +118,7 @@ public class BlackboardActivity extends SherlockActivity {
 	    	
 	    	while(class_matcher.find())
 	    	{
-	    		classList.add(new BBClass(class_matcher.group(2),class_matcher.group(1).replace("&amp;","&"),class_matcher.group(3)));
-	    		
+	    		classList.add(new BBClass(class_matcher.group(2),class_matcher.group(1).replace("&amp;","&"),class_matcher.group(3)));	
 	    	}
 	    	
 			return pagedata;
@@ -120,7 +126,7 @@ public class BlackboardActivity extends SherlockActivity {
 		@Override
 		protected void onPostExecute(String result)
 		{
-			if(!this.isCancelled())
+			if(!this.isCancelled()) // not necessary
 	    	{
 	    		String currentCategory="";
 	    		ArrayList sectionList=null;
@@ -165,8 +171,17 @@ public class BlackboardActivity extends SherlockActivity {
 						BBClass bbclass = (BBClass)(parent.getItemAtPosition(position));
 						currentBBCourseId = bbclass.getBbid();
 						classLaunch.setData(Uri.parse((bbclass).getBbid()));
-						String unique = bbclass.getCourseid().split("_")[2];
-						String cid = bbclass.getCourseid().substring(bbclass.getCourseid().indexOf(unique)+6).replaceAll("_"," ");
+						String unique = "", cid = "";
+						try{
+							unique = bbclass.getCourseid().split("_")[2];
+							cid = bbclass.getCourseid().substring(bbclass.getCourseid().indexOf(unique)+6).replaceAll("_"," ");
+						}
+						catch(Exception e)
+						{
+							e.printStackTrace();
+							Crittercism.leaveBreadcrumb("BBUnique issue "+bbclass.getCourseid());
+							Toast.makeText(BlackboardActivity.this, "An error occurred, things might look a bit odd.", Toast.LENGTH_SHORT).show();
+						}
 						classLaunch.putExtra("folderName", cid);
 						currentBBCourseName = cid;
 						startActivity(classLaunch);
@@ -176,14 +191,23 @@ public class BlackboardActivity extends SherlockActivity {
 				
 				
 				bb_pb_ll.setVisibility(View.GONE);
+				bbtv.setVisibility(View.GONE);
 	    		bblv.setVisibility(View.VISIBLE);
-	    	}
-		}	
+	    	}	
+		}
+		@Override
+		protected void onCancelled()
+		{
+			bbtv.setText(errorMsg);
+			bb_pb_ll.setVisibility(View.GONE);
+			bbtv.setVisibility(View.VISIBLE);
+    		bblv.setVisibility(View.GONE);
+		}
 	}
 	@Override
-	public void onStop()
+	public void onDestroy()
 	{
-		super.onStop();
+		super.onDestroy();
 		if(fetch!=null)
 			fetch.cancel(true);
 	}

@@ -1,11 +1,10 @@
 package com.nasageek.utexasutilities;
 
-import android.app.Activity;
+import com.crittercism.app.Crittercism;
+
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
@@ -37,6 +36,7 @@ public class LoginWebViewClient extends WebViewClient {
 		{
 			ConnectionHelper.setAuthCookie(authCookie);
 			Toast.makeText(context, "You're now logged in to UTDirect, unfortunately temp login does not currently support Blackboard or PNA.", Toast.LENGTH_LONG).show();
+			Crittercism.leaveBreadcrumb("Logged in (temp)");
 			Intent main_intent = new Intent(context, UTilitiesActivity.class);
 	    	main_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			context.startActivity(main_intent);

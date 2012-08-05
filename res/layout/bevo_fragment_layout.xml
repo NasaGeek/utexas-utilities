@@ -8,12 +8,16 @@
     <include
         android:id="@+id/bevo_progressbar_ll"
         layout="@layout/loading_content_layout" />
-
+    <include
+        android:id="@+id/bevo_error"
+        layout="@layout/error_message_view"/>
+ 
     <com.foound.widget.AmazingListView
         android:id="@+id/btransactions_listview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
+        android:cacheColorHint="@android:color/transparent"
         android:paddingTop="10dp"
         android:scrollbars="none"
         android:visibility="gone" />

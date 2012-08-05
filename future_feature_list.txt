@@ -1,6 +1,6 @@
 making bus stops appear within a radius of the user rather than the current route list implementation
 longclick buildings for directions
-edit classes
+edit classes - probably not going to do this
 
 fix multiple schedules
 	current potential issues:
@@ -10,8 +10,19 @@ fix multiple schedules
 		OPTIONS
 			Always try to populate spinner from present db entries, then from web.  Remove duplicates.
 				best to have spinner web call in separate ast even if it's inefficient
-AccountManager stuff?
+				
+AccountManager stuff? - probably not for a while if ever
 onResume check login status
 spinner for multiple days worth of bandwidth graphs or dynamic loading of multiple days?
 remove certain blackboard "apps"/folders/whatever
-prompt for alternate location if external storage is not available (Data directory probably)  -  ?
+prompt for alternate location if external storage is not available (Data directory probably)  -  ? not sure if this is really necessary
+
+Look into httpclient use (do I really need threadsafe?)
+rewrite db.clear to re-copy the database? would certainly help with upgrades & troubleshooting
+redo temp login, prompt to redirect user to login page upon feature tap
+	overlayed icon to indicate logged in or logged out
+	log out button in feature? how else to log out...? Keep current logout button, should be clear enough
+screen to save schedules instead of automatically doing it, listdialog that would show if db is empty and be manually shown by a button on the
+actionbar overflow or maybe in settings.  Either way it should be text, clear explanation of what it does.
+
+remove annoying login failed toasts

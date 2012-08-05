@@ -23,6 +23,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -43,7 +44,7 @@ public class BlackboardGradesActivity extends SherlockActivity
 	private ActionBar actionbar;
 	private LinearLayout g_pb_ll;
 	private ListView glv;
-	private ConnectionHelper ch;
+	private TextView getv;
 	private DefaultHttpClient httpclient;
 	private fetchGradesTask fetch;
 	
@@ -60,6 +61,7 @@ public class BlackboardGradesActivity extends SherlockActivity
 			
 			g_pb_ll = (LinearLayout)findViewById(R.id.grades_progressbar_ll);
 			glv = (ListView) findViewById(R.id.gradesListView);
+			getv = (TextView) findViewById(R.id.grades_error);
 			
 			glv.setOnItemClickListener(new OnItemClickListener() {
 
@@ -68,7 +70,8 @@ public class BlackboardGradesActivity extends SherlockActivity
 						int arg2, long arg3) {
 					bbGrade grade = (bbGrade) arg0.getAdapter().getItem(arg2);
 					
-					Dialog dlg = new Dialog(BlackboardGradesActivity.this);
+					Dialog dlg = new Dialog(BlackboardGradesActivity.this,R.style.Theme_Sherlock_Light_Dialog);
+					dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
 					dlg.setContentView(R.layout.grade_info_dialog);
 					dlg.setTitle("Grade Info");
 					
@@ -90,14 +93,10 @@ public class BlackboardGradesActivity extends SherlockActivity
 					
 					dlg.setCanceledOnTouchOutside(true);
 					dlg.show();
-					
-							
-					
+					//TODO: DialogFragment or showDialog
 				}
 				
 			});
-			
-			ch = new ConnectionHelper(this);
 			
 			
 			httpclient = ConnectionHelper.getThreadSafeClient();
@@ -115,7 +114,7 @@ public class BlackboardGradesActivity extends SherlockActivity
 	public boolean onCreateOptionsMenu(Menu menu) {
 		
 		MenuInflater inflater = this.getSupportMenuInflater();
-        inflater.inflate(R.layout.blackboard_dlable_item_menu, menu);
+        inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
 		return true;
 		 
 	}
@@ -168,6 +167,7 @@ public class BlackboardGradesActivity extends SherlockActivity
 	private class fetchGradesTask extends AsyncTask<Object,Void,ArrayList<bbGrade>>
 	{
 		private DefaultHttpClient client;
+		private String errorMsg;
 		
 		public fetchGradesTask(DefaultHttpClient client)
 		{
@@ -186,8 +186,10 @@ public class BlackboardGradesActivity extends SherlockActivity
 		    	pagedata = EntityUtils.toString(response.getEntity());
 			} catch (Exception e)
 			{
-				
+				errorMsg = "UTilities could not fetch this course's grades";
+				cancel(true);
 				e.printStackTrace();
+				return null;
 			}
 	    	ArrayList<bbGrade> data=new ArrayList<bbGrade>();
 	    	
@@ -223,9 +225,19 @@ public class BlackboardGradesActivity extends SherlockActivity
 				glv.setAdapter(new GradesAdapter(BlackboardGradesActivity.this,result));
 				
 				g_pb_ll.setVisibility(View.GONE);
+				getv.setVisibility(View.GONE);
 	    		glv.setVisibility(View.VISIBLE);
 	    	}
 		}	
+		@Override
+		protected void onCancelled()
+		{
+			getv.setText(errorMsg);
+			
+			g_pb_ll.setVisibility(View.GONE);
+    		glv.setVisibility(View.GONE);
+    		getv.setVisibility(View.GONE);
+		}
 	}
 
 	class GradesAdapter extends ArrayAdapter<bbGrade> {
@@ -243,17 +255,17 @@ public class BlackboardGradesActivity extends SherlockActivity
 		
 		}
 		public int getCount() {
-			// TODO Auto-generated method stub
+
 			return items.size();
 		}
 	
 		public bbGrade getItem(int position) {
-			// TODO Auto-generated method stub
+
 			return items.get(position);
 		}
 	
 		public long getItemId(int position) {
-			// TODO Auto-generated method stub
+
 			return 0;
 		}
 		@Override

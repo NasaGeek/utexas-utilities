@@ -53,6 +53,13 @@
             android:summaryOn="Map currently centers on your location."
             android:title="Center on My Location" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="Blackboard">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="blackboard_class_longform"
+            android:summary="Check this if Blackboard crashes on launch, might fix it.  Makes list of classes a bit uglier."
+            android:title="Use raw class names"/>
+    </PreferenceCategory>
     <PreferenceCategory android:title="Data" >
         <Preference
             android:id="@+id/resetclassesbutton"

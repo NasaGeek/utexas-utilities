@@ -78,7 +78,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = this.getSupportMenuInflater();
-        inflater.inflate(R.layout.blackboard_dlable_item_menu, menu);
+        inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
 		return true;
 		 
 	}

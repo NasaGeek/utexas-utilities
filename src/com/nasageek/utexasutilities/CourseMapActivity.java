@@ -49,7 +49,6 @@ public class CourseMapActivity extends SherlockActivity {
 	private ActionBar actionbar;
 	private DefaultHttpClient httpclient;
 	private SharedPreferences settings;
-	private ConnectionHelper ch;
 	private LinearLayout cm_pb_ll;
 	private LinearLayout coursemaplinlay;
 	private ListView cmlv;
@@ -61,7 +60,7 @@ public class CourseMapActivity extends SherlockActivity {
 	private CourseMapSaxHandler courseMapSaxHandler;
 	private int itemNumber;
 	private ArrayList<Pair<courseMapItem, ArrayList>> mainList;
-	private View prior;
+	private TextView failure_view;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -106,6 +105,7 @@ public class CourseMapActivity extends SherlockActivity {
 			cm_pb_ll = (LinearLayout) findViewById(R.id.coursemap_progressbar_ll);
 			cmlv = (ListView) findViewById(R.id.coursemap_listview);
 			coursemaplinlay = (LinearLayout) findViewById(R.id.coursemap_linlay);
+			failure_view = (TextView) findViewById(R.id.coursemap_error);
 			
 			cmlv.setOnItemClickListener(new OnItemClickListener() {
 				
@@ -164,8 +164,6 @@ public class CourseMapActivity extends SherlockActivity {
 				}
 			});
 			
-
-			ch = new ConnectionHelper(this);
 			settings = PreferenceManager.getDefaultSharedPreferences(this);
 			
 			httpclient = ConnectionHelper.getThreadSafeClient();
@@ -189,17 +187,17 @@ public class CourseMapActivity extends SherlockActivity {
 			}		
 	}
 	@Override
-	public void onStop()
+	public void onDestroy()
 	{
-		super.onStop();
+		super.onDestroy();
 		if(fetch!=null)
 			fetch.cancel(true);
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// TODO Auto-generated method stub
+
 		MenuInflater inflater = this.getSupportMenuInflater();
-        inflater.inflate(R.layout.blackboard_dlable_item_menu, menu);
+        inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
 		return itemNumber!=-1; //return true only if not top-level
 		 
 	}
@@ -228,7 +226,7 @@ public class CourseMapActivity extends SherlockActivity {
 		{
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
+				
 				dialog.dismiss();
 				
 			}
@@ -238,7 +236,7 @@ public class CourseMapActivity extends SherlockActivity {
 		{
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
-				// TODO Auto-generated method stub
+				
 				Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),CourseMapActivity.this,BlackboardExternalItemActivity.class);
 	    		web.putExtra("itemName", getIntent().getStringExtra("folderName"));
 	    		startActivity(web);
@@ -250,6 +248,7 @@ public class CourseMapActivity extends SherlockActivity {
 	private class fetchCoursemapTask extends AsyncTask<Object,Void,ArrayList>
 	{
 		private DefaultHttpClient client;
+		private String failureMessage = "";
 		
 		public fetchCoursemapTask(DefaultHttpClient client)
 		{
@@ -268,10 +267,12 @@ public class CourseMapActivity extends SherlockActivity {
 		    	pagedata = EntityUtils.toString(response.getEntity());
 			} catch (Exception e)
 			{
-				// TODO Auto-generated catch block
+				failureMessage = "UTilities could not fetch your Blackboard course map";
 				e.printStackTrace();
+				cancel(true);
+				return null;
 			}
-	    	ArrayList data=new ArrayList();
+
 	    	 try{
 
 	             // create the factory
@@ -293,11 +294,13 @@ public class CourseMapActivity extends SherlockActivity {
 	             mainList = courseMapSaxHandler.getParsedData();
 	         }
 	         catch(Exception e){
-	     
+	        	 failureMessage = "UTilities could not parse the downloaded Blackboard data.";
+	        	 e.printStackTrace();
+	        	 cancel(true);
+	        	 return null;
+	        	 
 	         }	          	    
-	         	
-			// TODO Auto-generated method stub
-	    	
+
 			return mainList;
 		}
 		@Override
@@ -310,8 +313,17 @@ public class CourseMapActivity extends SherlockActivity {
 				
 				cm_pb_ll.setVisibility(View.GONE);
 	    		cmlv.setVisibility(View.VISIBLE);
+	    		failure_view.setVisibility(View.GONE);
 	    	}
-		}	
+		}
+		@Override
+		protected void onCancelled()
+		{
+			failure_view.setText(failureMessage);
+			cm_pb_ll.setVisibility(View.GONE);
+    		cmlv.setVisibility(View.GONE);
+			failure_view.setVisibility(View.VISIBLE); 
+		}
 	}
 
 }

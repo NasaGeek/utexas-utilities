@@ -1,6 +1,7 @@
 package com.nasageek.utexasutilities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,13 +28,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.crittercism.app.Crittercism;
 
-public class ExamScheduleFragment extends ActionModeFragment {
+public class ExamScheduleFragment extends SherlockFragment implements ActionModeFragment{
 
 	private boolean noExams;
 	private TextView login_first;
@@ -43,17 +46,18 @@ public class ExamScheduleFragment extends ActionModeFragment {
 	private ExamAdapter ea;
 	private LinearLayout pb_ll;
 	private SherlockFragmentActivity parentAct;
-	private View vg;
+//	private View vg;
 	public ActionMode mode;
 	private TextView netv;
+	private TextView eetv;
 	String semId;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{			
-		vg = inflater.inflate(R.layout.exam_schedule_fragment_layout, container, false);
+		View vg = inflater.inflate(R.layout.exam_schedule_fragment_layout, container, false);
 		
-		updateView(semId);
+		updateView(semId, vg);
 		
 		return vg;
 	}
@@ -63,7 +67,7 @@ public class ExamScheduleFragment extends ActionModeFragment {
 		parentAct = this.getSherlockActivity();
 		semId = getArguments().getString("semdId");
 	}
-	public void updateView(String semId)
+	public void updateView(String semId, View vg)
 	{
 		this.semId = semId;
 		
@@ -72,6 +76,7 @@ public class ExamScheduleFragment extends ActionModeFragment {
 		pb_ll = (LinearLayout) vg.findViewById(R.id.examschedule_progressbar_ll);
 		examlistview = (ListView) vg.findViewById(R.id.examschedule_listview);
 		netv = (TextView) vg.findViewById(R.id.no_exams);
+		eetv = (TextView) vg.findViewById(R.id.examschedule_error);
 		
 		if(!ConnectionHelper.cookieHasBeenSet())
 		{	
@@ -80,17 +85,11 @@ public class ExamScheduleFragment extends ActionModeFragment {
 		}
 		else
 		{
-			try
-			{
-				parser();
-			} catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			parser();
 		}
 		
 	}
-	public void parser() throws Exception
+	public void parser()
 	{
 
 		httpclient = ConnectionHelper.getThreadSafeClient();
@@ -109,6 +108,7 @@ public class ExamScheduleFragment extends ActionModeFragment {
 	private class fetchExamDataTask extends AsyncTask<Object,Void,Character>
 	{
 		private DefaultHttpClient client;
+		private String errorMsg;
 		
 		public fetchExamDataTask(DefaultHttpClient client)
 		{
@@ -151,7 +151,10 @@ public class ExamScheduleFragment extends ActionModeFragment {
 		    	pagedata = EntityUtils.toString(response.getEntity());
 			} catch (Exception e)
 			{
+				errorMsg = "UTilities could not fetch your exam schedule";
+				cancel(true);
 				e.printStackTrace();
+				return null;
 			}
 
 	    	if(pagedata.contains("will be available approximately three weeks"))// || !tempId.equals(semId))
@@ -216,6 +219,18 @@ public class ExamScheduleFragment extends ActionModeFragment {
 			pb_ll.setVisibility(View.GONE);
 			
 		}
+		@Override
+		protected void onCancelled()
+		{
+			eetv.setText(errorMsg);
+			
+			netv.setVisibility(View.GONE);
+			pb_ll.setVisibility(View.GONE);
+			examlistview.setVisibility(View.GONE);
+			login_first.setVisibility(View.GONE);
+			eetv.setVisibility(View.VISIBLE);
+			
+		}
 	}
 	
 	private class ExamAdapter extends ArrayAdapter<String> implements AdapterView.OnItemClickListener
@@ -257,34 +272,32 @@ public class ExamScheduleFragment extends ActionModeFragment {
 			{
 				String[] examdata = exams.get(position).split("\\^");
 				
-				boolean examRequested = !examdata[2].contains("The department");	
+				boolean examRequested = !examdata[2].contains("The department");
+				boolean summerSession = examdata[2].contains("Information on final exams is available for Nine-Week Summer Session(s) only.");	
+				String id="", name="", date="", location="";
 				
-
-				String id = examdata[1];
-				String name = examdata[2];
-				String date = "";
-				String location = "";
-				if(examRequested)
-				{	date = examdata[3];
-					location = examdata[4];
+				try
+				{	
+					id = examdata[1];
+					name = examdata[2];
+					date = "";
+					location = "";
+					if(examRequested && !summerSession && examdata.length >= 5)
+					{	date = examdata[3];
+						location = examdata[4];
+					}
+				}
+				catch(ArrayIndexOutOfBoundsException ex)
+				{
+					ex.printStackTrace();
+					Crittercism.leaveBreadcrumb("Exam parse error "+Arrays.toString(examdata));
 				}
 				String course = "";
 				ViewGroup vg = (ViewGroup)convertView;
 				vg =(ViewGroup)li.inflate(R.layout.exam_item_view,null,false);
 				TextView courseview = (TextView) vg.findViewById(R.id.exam_item_header_text);
 				
-			/*	if(exams.get(position).contains("not the season for exam"))
-				{
-					TextView tv = new TextView(ExamScheduleActivity.this);
-					tv.setTextSize(19);
-					tv.setText(exams.get(position));
-					vg.removeAllViews();
-					vg.addView(tv);
-					
-					return (View)vg;
-				}*/
-				
-				if(!examRequested)
+				if(!examRequested || summerSession)
 				{
 					course = id;
 					TextView left= (TextView) vg.findViewById(R.id.examdateview);
@@ -323,7 +336,7 @@ public class ExamScheduleFragment extends ActionModeFragment {
 		        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 		            mode.setTitle("Exam Info");
 		            MenuInflater inflater = getSherlockActivity().getSupportMenuInflater();
-		            inflater.inflate(R.layout.schedule_menu, menu);
+		            inflater.inflate(R.menu.schedule_menu, menu);
 		            return true;
 		        }
 

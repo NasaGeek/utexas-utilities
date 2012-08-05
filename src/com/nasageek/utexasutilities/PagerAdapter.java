@@ -3,13 +3,12 @@ package com.nasageek.utexasutilities;
 
 import java.util.List;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.viewpagerindicator.TitleProvider;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.view.ViewGroup;
+
+import com.actionbarsherlock.app.SherlockFragment;
+import com.viewpagerindicator.TitleProvider;
 
 /**
  * The <code>PagerAdapter</code> serves the fragments when paging.

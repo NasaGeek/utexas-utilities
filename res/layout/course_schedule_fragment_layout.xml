@@ -1,67 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout  xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="fill_parent"
-android:layout_height="fill_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
-<LinearLayout 
-    android:id="@+id/schedule_ll"
-	android:layout_width="fill_parent" 
-    android:layout_height="fill_parent" 
-    android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/schedule_ll"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
 
-	<LinearLayout 
-		android:id="@+id/daylist"
-		android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content" 
-	    android:gravity="center_horizontal"
-	    android:orientation="horizontal"
-	    android:weightSum="5">
-    	
-    	<TextView
-    	    android:layout_width="fill_parent"
-    	    android:layout_height="fill_parent"
-    	    android:layout_gravity="center_horizontal"
-    	    android:layout_weight="1"
-    	    android:gravity="center_horizontal"
-    	    android:text="Mon" />
+        <LinearLayout
+            android:id="@+id/daylist"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:weightSum="5" >
 
-    	<TextView
-    	    android:layout_width="fill_parent"
-    	    android:layout_height="fill_parent"
-    	    android:layout_gravity="center_horizontal"
-    	    android:layout_weight="1"
-    	    android:gravity="center_horizontal"
-    	    android:text="Tues" />
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Mon" />
 
-    	<TextView
-    	    android:layout_width="fill_parent"
-    	    android:layout_height="fill_parent"
-    	    android:layout_gravity="center_horizontal"
-    	    android:layout_weight="1"
-    	    android:gravity="center_horizontal"
-    	    android:text="Wed" />
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Tues" />
 
-    	<TextView
-    	    android:layout_width="fill_parent"
-    	    android:layout_height="fill_parent"
-    	    android:layout_gravity="center_horizontal"
-    	    android:layout_weight="1"
-    	    android:gravity="center_horizontal"
-    	    android:text="Thurs" />
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Wed" />
 
-    	<TextView
-    	    android:layout_width="fill_parent"
-    	    android:layout_height="fill_parent"
-    	    android:layout_gravity="center_horizontal"
-    	    android:layout_weight="1"
-    	    android:gravity="center_horizontal"
-    	    android:text="Fri" />
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Thurs" />
 
-    </LinearLayout>
-    
-    <include android:id="@+id/schedule_progressbar_ll" layout="@layout/loading_content_layout"/>
-    
-<!--	<LinearLayout
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Fri" />
+        </LinearLayout>
+
+        <include
+            android:id="@+id/schedule_progressbar_ll"
+            layout="@layout/loading_content_layout" />
+        <include
+            android:id="@+id/schedule_error"
+            layout="@layout/error_message_view" />
+
+        <!--
+    	<LinearLayout
 		android:orientation="horizontal"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content">
@@ -136,9 +141,10 @@ android:layout_height="fill_parent">
 				android:layout_height="39dp"
 				android:text="10:00"/> 
 		</LinearLayout> 
-	 </ScrollView> -->
-	 
-	    <GridView
+	 </ScrollView>
+        -->
+
+        <GridView
             android:id="@+id/scheduleview"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -153,47 +159,48 @@ android:layout_height="fill_parent">
             android:id="@+id/no_courses"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:textSize="19sp"
             android:gravity="center"
+            android:textSize="19sp"
             android:visibility="gone" />
-</LinearLayout>
+    </LinearLayout>
 
-	
-	<com.nasageek.utexasutilities.WrappingSlidingDrawer
-     android:id="@+id/drawer"
-     android:layout_width="fill_parent"
-     android:layout_height="wrap_content"
-     android:orientation="vertical"
-     android:layout_gravity="bottom"
-     android:handle="@+id/handle"
-     android:content="@+id/content">
+    <com.nasageek.utexasutilities.WrappingSlidingDrawer
+        android:id="@+id/drawer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:content="@+id/content"
+        android:handle="@+id/handle"
+        android:orientation="vertical" >
 
-     <ImageView
-         android:id="@id/handle"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:src="@drawable/ic_expand_half" />
+        <ImageView
+            android:id="@id/handle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_expand_half" />
 
-    <ScrollView 
-    	android:id="@id/content"
-    	android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-    
-	    <LinearLayout
-	         android:id="@+id/llsd"
-	         android:layout_width="fill_parent"
-	         android:layout_height="fill_parent"
-	         android:orientation="vertical">
+        <ScrollView
+            android:id="@id/content"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
 
-	        <ImageView
-		    	android:id="@+id/class_info_color"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"/>
-			<TextView  
-				android:id="@+id/class_info_text"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"/>
-	    </LinearLayout>
-	</ScrollView>
- </com.nasageek.utexasutilities.WrappingSlidingDrawer>
+            <LinearLayout
+                android:id="@+id/llsd"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
+
+                <ImageView
+                    android:id="@+id/class_info_color"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/class_info_text"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </ScrollView>
+    </com.nasageek.utexasutilities.WrappingSlidingDrawer>
+
 </FrameLayout>

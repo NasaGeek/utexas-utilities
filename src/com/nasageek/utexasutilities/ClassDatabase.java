@@ -1,16 +1,17 @@
 package com.nasageek.utexasutilities;
 
-import java.util.ArrayList;
+import com.crittercism.app.Crittercism;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 public class ClassDatabase extends SQLiteOpenHelper
 {
@@ -37,7 +38,7 @@ public class ClassDatabase extends SQLiteOpenHelper
 	
 	private static final String TABLE_NAME = "classes";
 	private static final String TABLE_CREATE =
-        "CREATE TABLE " + TABLE_NAME + " (" +
+        "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
         "_id INTEGER PRIMARY KEY AUTOINCREMENT, "+
         KEY_EID + " TEXT NOT NULL, " +		
         KEY_UNIQUEID + " TEXT NOT NULL, " +
@@ -54,7 +55,7 @@ public class ClassDatabase extends SQLiteOpenHelper
 	public static ClassDatabase getInstance(Context ctx) {
         /** 
          * use the application context as suggested by CommonsWare.
-         * this will ensure that you dont accidentally leak an Activitys
+         * this will ensure that you dont accidentally leak an Activity's
          * context (see this article for more information: 
          * http://developer.android.com/resources/articles/avoiding-memory-leaks.html)
          */
@@ -74,19 +75,19 @@ public class ClassDatabase extends SQLiteOpenHelper
 	@Override
 	public void onCreate(SQLiteDatabase db)
 	{
-		// TODO Auto-generated method stub
 		db.execSQL(TABLE_CREATE);
 		Log.d("DBCREATE", "new db created");
+		Crittercism.leaveBreadcrumb("Class DB created");
 	}
 	
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 	{
-		// TODO Auto-generated method stub
 		if(oldVersion == 1 && newVersion == 2)
 		{
 			db.execSQL("ALTER TABLE "+TABLE_NAME+" ADD "+KEY_SEMESTER+" TEXT;");
 			Log.d("Database","Upgraded database from version 1 to 2.");
+			Crittercism.leaveBreadcrumb("Class DB updated");
 		}
 
 	}
@@ -153,20 +154,23 @@ public class ClassDatabase extends SQLiteOpenHelper
 		
 		return size;
 	}
-	public void deleteDb()
+	public void deleteDb(Context con, boolean silent)
 	{
-		new Thread(new Runnable(){
-
-			@Override
-			public void run() {
-				SQLiteDatabase sqldb = getWritableDatabase();
-				
-				sqldb.execSQL("DROP TABLE "+TABLE_NAME);
-				sqldb.execSQL(TABLE_CREATE);
-				sqldb.close();
+		SQLiteDatabase sqldb = getWritableDatabase();
+		try{
+			sqldb.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
+			sqldb.execSQL(TABLE_CREATE);
+			if(!silent) Toast.makeText(con, "Data cleared", Toast.LENGTH_SHORT).show();
 			}
-			
-		}).start();
+		catch(SQLException ex)
+		{
+			ex.printStackTrace();
+			Toast.makeText(con, "Database operation failed.  You might need to re-install or clear UTilities' data in the system settings.", Toast.LENGTH_LONG).show();
+		}
+		finally
+		{
+			sqldb.close();
+		}
 
 	}
 

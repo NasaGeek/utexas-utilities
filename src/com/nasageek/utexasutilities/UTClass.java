@@ -2,8 +2,6 @@ package com.nasageek.utexasutilities;
 
 import java.util.ArrayList;
 
-import android.util.Log;
-
 public class UTClass {
 	
 	private String courseid, unique, name, professor, semId;

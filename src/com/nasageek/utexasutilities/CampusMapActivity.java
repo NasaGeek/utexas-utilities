@@ -1,11 +1,7 @@
 package com.nasageek.utexasutilities;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,50 +18,36 @@ import org.xml.sax.XMLReader;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
-import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-
-
-import android.util.Log;
-import android.view.Gravity;
-
-import com.actionbarsherlock.view.MenuInflater;
-
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockMapActivity;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
 import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
@@ -394,7 +376,8 @@ public class CampusMapActivity extends SherlockMapActivity  {
 	         //   	int lat = (int) (location.getLatitude() * 1E6);
 	    	//		int lng = (int) (location.getLongitude() * 1E6);
 	    	//		GeoPoint point = new GeoPoint(lat, lng);
-	    			lastKnownLocation.set(location);
+	    			if(lastKnownLocation != null)
+	    				lastKnownLocation.set(location);
 	            } 
 	
 	            public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -704,7 +687,7 @@ public class CampusMapActivity extends SherlockMapActivity  {
 	
     public boolean onCreateOptionsMenu(Menu menu) {
     	MenuInflater inflater = this.getSupportMenuInflater();
-        inflater.inflate(R.layout.map_menu, menu);
+        inflater.inflate(R.menu.map_menu, menu);
         return true;
     }
     @Override

@@ -1,52 +1,36 @@
 package com.nasageek.utexasutilities;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
-import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.Format;
-import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PointF;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
+import android.graphics.PointF;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-
-import android.text.format.DateFormat;
 import android.util.FloatMath;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -58,24 +42,25 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.androidplot.xy.LineAndPointFormatter;
-import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.series.XYSeries;
-import com.androidplot.xy.*;
+import com.androidplot.xy.BarFormatter;
+import com.androidplot.xy.BoundaryMode;
+import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYPlot;
+import com.androidplot.xy.XYStepMode;
 
 public class DataUsageActivity extends SherlockActivity implements OnTouchListener
 {
 	
 	private DefaultHttpClient httpclient;
 	private SharedPreferences settings;
-	private ConnectionHelper ch;
 	private Float[] updata,downdata,totaldata; 
 	private Long[] labels;
 	private XYPlot graph;
 	private ProgressBar mProgress;
 	private TextView dataUsedText;
+	private TextView detv;
 	private String usedText;
-	private ProgressDialog pd;
 	private LinearLayout d_pb_ll;
 	private ActionBar actionbar;
 	
@@ -104,7 +89,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 		d_pb_ll = (LinearLayout) findViewById(R.id.data_progressbar_ll);
 		dataUsedText = (TextView) findViewById(R.id.dataUsedText);
 		mProgress = (ProgressBar) findViewById(R.id.percentDataUsed);
-		
+		detv = (TextView) findViewById(R.id.data_error);
 //		mProgress.setBackgroundColor(Color.rgb(204,85,0));
 		
 		actionbar = getSupportActionBar();
@@ -120,7 +105,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 		graph.disableAllMarkup();
 
 		
-		ch = new ConnectionHelper(this);
+		
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		labels = new Long[288];//2017];
@@ -311,7 +296,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 			this.client = client;
 		}
 		
-		
+		@Override
 		protected Void doInBackground(Object... params)
 		{
 			HttpGet hget = new HttpGet("https://management.pna.utexas.edu/server/graph.cgi");
@@ -326,17 +311,10 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	
 			} catch (Exception e)
 			{
-				// TODO Auto-generated catch block
+				cancel(true);
 				e.printStackTrace();
 			}
-	    	
-	    	
 
-	        // Execute HTTP Post Request
-	        
-	    	
-	    	
-	    	
 			Pattern percentpattern = Pattern.compile("\\((.+?)%\\)");
 	    	Matcher percentmatcher = percentpattern.matcher(pagedata);
 	    	String found = "0.00";
@@ -346,25 +324,28 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 			
 			Pattern usedpattern = Pattern.compile("<b>(.*?)</b>");
 	    	Matcher usedmatcher = usedpattern.matcher(pagedata);
-			usedmatcher.find();
-			usedText = usedmatcher.group(1);
+	    	usedText="UTilities could not find your % data usage";
+			if(usedmatcher.find())
+				usedText = usedmatcher.group(1);
 			
 			return null;
 		}
-		
 		@Override
 		protected void onPostExecute(Void v)
 		{
 			dataUsedText.setText(usedText);
-			mProgress.setProgress((int)(percentused*10));
-			
+			mProgress.setProgress((int)(percentused*10));	
 		}
-		
+		@Override
+		protected void onCancelled()
+		{
+			dataUsedText.setText("UTilities could not fetch your % data usage");
+		}	
 	}
-
 	private class fetchDataTask extends AsyncTask<Object,Void,Character>
 	{
 		private DefaultHttpClient client;
+		private String errorMsg;
 		
 		public fetchDataTask(DefaultHttpClient client)
 		{
@@ -390,16 +371,16 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 		    	pagedata = EntityUtils.toString(response.getEntity());
 			} catch (Exception e)
 			{
-				// TODO Auto-generated catch block
+				cancel(true);
+				errorMsg = "UTilities could not fetch your data usage"; 
 				e.printStackTrace();
+				return ' ';
 			}
 	    	
 	    	
 	    	String[] lines = pagedata.split("\n");
 	    	Calendar date = Calendar.getInstance();
-	    	
-	    	
-	    	
+
 	    	for(int i = lines.length-288, x=0; i<lines.length; i++,x++)
 	    	{
 	    		String[] entry = lines[i].split(",");
@@ -416,7 +397,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    	
 	    	
 	   
-			// TODO Auto-generated method stub
+		
 	    	
 			return ' ';
 		}
@@ -426,8 +407,8 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 			XYSeries series = new SimpleXYSeries(Arrays.asList(labels), Arrays.asList(downdata),  "Downloaded");
 			XYSeries seriestotal = new SimpleXYSeries(Arrays.asList(labels), Arrays.asList(totaldata),  "Uploaded");
 			
-			LineAndPointFormatter downlineformatter = new LineAndPointFormatter(0xFFFFAD3B, 0xFFFFAD3B, 0xFFFFAD3B);
-			LineAndPointFormatter uplineformatter = new LineAndPointFormatter(0xFF388DFF, 0xFF388DFF, 0xFF388DFF);
+	//		LineAndPointFormatter downlineformatter = new LineAndPointFormatter(0xFFFFAD3B, 0xFFFFAD3B, 0xFFFFAD3B);
+	//		LineAndPointFormatter uplineformatter = new LineAndPointFormatter(0xFF388DFF, 0xFF388DFF, 0xFF388DFF);
 			
 			BarFormatter downbarformatter = new BarFormatter( 0xFF42D692/*FFAD3B/*Color.rgb(68,166,75)*/, Color.BLACK);
 			BarFormatter upbarformatter = new BarFormatter(0xFF388DFF/*Color.rgb(130,159,255)*/, Color.BLACK);
@@ -545,7 +526,14 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    	d_pb_ll.setVisibility(View.GONE);
 	    	
 	    	Toast.makeText(DataUsageActivity.this, "Swipe up and down to zoom in and out", Toast.LENGTH_SHORT).show();
-		}	
+		}
+		@Override
+		protected void onCancelled()
+		{
+			detv.setText(errorMsg);
+			d_pb_ll.setVisibility(View.GONE);
+			detv.setVisibility(View.VISIBLE);
+		}
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)

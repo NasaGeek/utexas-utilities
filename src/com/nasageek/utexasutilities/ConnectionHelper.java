@@ -1,13 +1,10 @@
 package com.nasageek.utexasutilities;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
@@ -18,26 +15,23 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.crittercism.app.Crittercism;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.crittercism.app.Crittercism;
 
 public class ConnectionHelper {
 	
 	private HttpPost httppost;
 	private DefaultHttpClient httpclient;
 	private static SharedPreferences settings;
-	private static Context mContext;
 	public static String authCookie;
 	public static String PNAAuthCookie;
 	public static String bbAuthCookie;
@@ -49,11 +43,7 @@ public class ConnectionHelper {
 	private static boolean loggedIn = false;
 	public static boolean logindone=false, pnalogindone=false, bbLoginDone=false;
 	public static boolean loggingIn=false;
-	
-	public ConnectionHelper(Context c)
-	{
-		mContext = c;
-	}
+
 	public static DefaultHttpClient getThreadSafeClient() {
 
 	    DefaultHttpClient client = new DefaultHttpClient();
@@ -127,7 +117,7 @@ public class ConnectionHelper {
 		Editor edit = settings.edit();
 		getThreadSafeClient().getCookieStore().clear();
 		resetCookies();
-		ClassDatabase.getInstance(con).deleteDb();
+		ClassDatabase.getInstance(con).deleteDb(con, true);
 		edit.putBoolean("loggedin", false);
 		
 		Utility.commit(edit);
@@ -160,7 +150,7 @@ public class ConnectionHelper {
 		    	
 		    	PNALoggedIn = false;
 		//    	Toast.makeText(con, "There was an error while connecting to UT PNA, please check your internet connection and try again", Toast.LENGTH_LONG).show();
-		//        Log.e("Error connecting to utexas.edu", ex.toString());// TODO Auto-generated catch block	
+		//        Log.e("Error connecting to utexas.edu", ex.toString());	
 		        return false;
 		    }
 		   PNALoggedIn = true; 
@@ -343,7 +333,7 @@ public class ConnectionHelper {
     		switch(progress[0])
 			{
     		case 1:
-    			Toast.makeText(context, "There was an error while connecting to UTDirect, please check your internet connection and try again", Toast.LENGTH_LONG).show();
+    			Toast.makeText(context, "There was an error while connecting to UT's web services, please check your internet connection and try again", Toast.LENGTH_LONG).show();
     			loggingIn=false;
     			((SherlockActivity)(context)).invalidateOptionsMenu();
     			cancelProgressBar();
@@ -357,7 +347,7 @@ public class ConnectionHelper {
 		{
 			logindone = b;
 			
-			if(logindone && pnalogindone && !isCancelled()) //&& bbLoginDone 
+			if(logindone && pnalogindone && bbLoginDone && !isCancelled())  
 			{
 				logindone = false;pnalogindone = false;bbLoginDone=false;
 				loggingIn=false;
@@ -406,7 +396,7 @@ public class ConnectionHelper {
     		switch(progress[0])
 			{
     			case 1:
-    				Toast.makeText(context, "There was an error while connecting to UT PNA, please check your internet connection and try again", Toast.LENGTH_LONG).show();
+    //				Toast.makeText(context, "There was an error while connecting to UT PNA, please check your internet connection and try again", Toast.LENGTH_LONG).show();
     				loggingIn=false;
     				((SherlockActivity)(context)).invalidateOptionsMenu();
     				cancelProgressBar();
@@ -427,7 +417,7 @@ public class ConnectionHelper {
 		{
 			pnalogindone = b;
 			
-			if(logindone && pnalogindone && !isCancelled()) //&& bbLoginDone 
+			if(logindone && pnalogindone && bbLoginDone && !isCancelled())
 			{
 				logindone = false;pnalogindone = false;bbLoginDone=false;
 				loggingIn=false;
@@ -451,8 +441,7 @@ public class ConnectionHelper {
 				((SherlockActivity)context).setSupportProgressBarIndeterminateVisibility(false);
 			else if(context.getClass().equals(Preferences.class))
 				((SherlockPreferenceActivity)context).setSupportProgressBarIndeterminateVisibility(false);
-		}
-		
+		}	
 	}
     public class bbLoginTask extends AsyncTask<Object,Integer,Boolean>
 	{
@@ -481,17 +470,16 @@ public class ConnectionHelper {
 		}
     	@Override
 		protected void onProgressUpdate(Integer... progress)
-		{
-			
+		{			
     		switch(progress[0])
 			{
     		case 1:
-    			Toast.makeText(context, "There was an error while connecting to Blackboard, please check your internet connection and try again", Toast.LENGTH_LONG).show();
+ //   			Toast.makeText(context, "There was an error while connecting to Blackboard, please check your internet connection and try again", Toast.LENGTH_LONG).show();
     			loggingIn=false;
     			((SherlockActivity)(context)).invalidateOptionsMenu();
     			cancelProgressBar();
-    			
 				break;
+				
     		case 0:break;
 			}
 		}

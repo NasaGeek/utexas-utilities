@@ -8,11 +8,10 @@ import java.util.Vector;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-
 import android.support.v4.view.ViewPager;
-import android.util.Log;
+import android.widget.TextView;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragment;
@@ -21,13 +20,10 @@ import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
 import com.viewpagerindicator.TabPageIndicator;
 
-import android.widget.TextView;
-
 
 
 public class BalanceActivity extends SherlockFragmentActivity
 {	
-	private ConnectionHelper ch;
 	
 	ArrayList<String> dtransactionlist, btransactionlist, balancelist;
 	String[] dtransactionarray, btransactionarray;
@@ -43,8 +39,6 @@ public class BalanceActivity extends SherlockFragmentActivity
 		setContentView(R.layout.balance_layout);
 		this.initialisePaging();
 		
-		
-		ch = new ConnectionHelper(this);
 	
 		actionbar = getSupportActionBar();
 		actionbar.setTitle("Transactions");
@@ -64,14 +58,6 @@ public class BalanceActivity extends SherlockFragmentActivity
 		            .setTabListener(new TabListener<BevoFragment>(
 		                    this, "bevo", BevoFragment.class, null)));*/
 		
-		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
-			public void uncaughtException(Thread thread, Throwable ex)
-			{
-				// TODO Auto-generated method stub
-				Log.e("UNCAUGHT",ex.getMessage(),ex);
-				finish();
-				return;
-			}});
 		Crittercism.leaveBreadcrumb("BalanceActivity entered");
 	}
 	
@@ -94,7 +80,7 @@ public class BalanceActivity extends SherlockFragmentActivity
 
 	        List<SherlockFragment> fragments = new Vector<SherlockFragment>();
 	        Bundle args = new Bundle(1);
-	        args.putString("title", "Dinein");
+	        args.putString("title", "Dine In");
 	        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, DineinFragment.class.getName(), args));
 	        args = new Bundle(1);
 	        args.putString("title", "Bevo Bucks");

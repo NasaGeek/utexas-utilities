@@ -41,6 +41,7 @@ public class BevoFragment extends SherlockFragment
 	int count;
 	private TransactionAdapter ta;
 	TextView tv3,tv4;
+	private TextView etv;
 	
 	private List<BasicNameValuePair> postdata;
 	private SherlockFragmentActivity parentAct;
@@ -61,6 +62,7 @@ public class BevoFragment extends SherlockFragment
 		blv = (AmazingListView) vg.findViewById(R.id.btransactions_listview);
 		bevolinlay = (LinearLayout) vg.findViewById(R.id.bevolinlay);
 		b_pb_ll = (LinearLayout) vg.findViewById(R.id.bevo_progressbar_ll);
+		etv = (TextView) vg.findViewById(R.id.bevo_error);
 		
 		blv.setLoadingView(getLayoutInflater(savedInstanceState).inflate(R.layout.loading_content_layout, null));
 		blv.setAdapter(ta);
@@ -68,16 +70,8 @@ public class BevoFragment extends SherlockFragment
 	    bevolinlay.addView(tv3,0);
 		bevolinlay.addView(tv4,1);
 		
-		try
-		{	
-			parser(false);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-			parentAct.finish();
-			return null;
-		}
+		parser(false);
+	
 		return vg;
 		}
 		else
@@ -112,7 +106,7 @@ public class BevoFragment extends SherlockFragment
 		    tv4.setTextColor(Color.DKGRAY);
 		    		
 	}
-	public void parser(boolean refresh) throws Exception
+	public void parser(boolean refresh)
     {
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
@@ -132,7 +126,7 @@ public class BevoFragment extends SherlockFragment
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) 
 	{
 		menu.removeItem(R.id.balance_refresh);
-		inflater.inflate(R.layout.balance_menu, menu);       
+		inflater.inflate(R.menu.balance_menu, menu);       
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -143,23 +137,18 @@ public class BevoFragment extends SherlockFragment
 	    		case R.id.balance_refresh:
 	    			
 	    			blv.setVisibility(View.GONE);
+	    			etv.setVisibility(View.GONE);
 					b_pb_ll.setVisibility(View.VISIBLE);
 					if(fetch!=null)
 					{	fetch.cancel(true);
 						fetch = null;
 					}
-		    		try
-					{
-						btransactionlist.clear();
-						bevobalance = "";
-						postdata.clear();
-						postdata.add(new BasicNameValuePair("sRequestSw","B"));
-						parser(true);		
-					}
-					catch(Exception e)
-					{
-						e.printStackTrace();
-					}
+					btransactionlist.clear();
+					bevobalance = "";
+					postdata.clear();
+					postdata.add(new BasicNameValuePair("sRequestSw","B"));
+					parser(true);		
+					
 		    		break;
 	    	}
 	    	ta.resetPage();
@@ -175,13 +164,13 @@ public class BevoFragment extends SherlockFragment
 	{
 		private DefaultHttpClient client;
 		private boolean refresh;
+		private String errorMsg;
 		
 		public fetchTransactionDataTask(DefaultHttpClient client, boolean refresh)
 		{
 			this.client = client;
 			this.refresh = refresh;
 		}
-		
 		@Override
 		protected Character doInBackground(Object... params)
 		{
@@ -196,6 +185,9 @@ public class BevoFragment extends SherlockFragment
 			} catch (Exception e)
 			{
 				e.printStackTrace();
+				errorMsg = "UTilities could not fetch transaction data.  Try refreshing.";
+				cancel(true);
+				return null;
 			}
 	    	
 	    	Pattern pattern3 = Pattern.compile("(?<=\"center\">\\s{1,10})\\S.*(?=\\s*<)");
@@ -266,9 +258,22 @@ public class BevoFragment extends SherlockFragment
 				tv4.setText(bevobalance);
 	    		
 				b_pb_ll.setVisibility(View.GONE);
+				etv.setVisibility(View.GONE);
 				blv.setVisibility(View.VISIBLE);
 	    		
 	    	} 	
-		}	
+		}
+		@Override
+		protected void onCancelled(Character nullIfError)
+		{
+			if(nullIfError == null)
+			{
+				//etv off center, not sure if worth hiding the balance stuff to get it centered
+				etv.setText(errorMsg);
+				b_pb_ll.setVisibility(View.GONE);
+				blv.setVisibility(View.GONE);
+				etv.setVisibility(View.VISIBLE);
+			}
+		}
 	}
 }

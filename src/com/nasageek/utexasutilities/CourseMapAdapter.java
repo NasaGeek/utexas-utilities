@@ -3,7 +3,6 @@ package com.nasageek.utexasutilities;
 import java.util.ArrayList;
 
 import android.content.Context;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,17 +25,17 @@ public class CourseMapAdapter extends ArrayAdapter<Pair<courseMapItem,ArrayList>
 	
 	}
 	public int getCount() {
-		// TODO Auto-generated method stub
+		
 		return items.size();
 	}
 
 	public Pair getItem(int position) {
-		// TODO Auto-generated method stub
+		
 		return items.get(position);
 	}
 
 	public long getItemId(int position) {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 	@Override
