@@ -15,6 +15,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class BuildingDatabase extends SQLiteOpenHelper {
 
@@ -44,25 +45,30 @@ public class BuildingDatabase extends SQLiteOpenHelper {
 	}
 
 	
-	public void createDataBase() throws IOException{
+	public void createDataBase(boolean upgrading) throws IOException{
 		 
-    	boolean dbExist = checkDataBase();
+    	boolean dbExist = !upgrading;
+    	if(dbExist)
+    		dbExist = checkDataBase();
  
     	if(dbExist){
+    		Log.d("Building DB","Building db already exists");
     		//do nothing - database already exist
     	}else{
  
     		//By calling this method and empty database will be created into the default system path
                //of your application so we are gonna be able to overwrite that database with our database.
-        	this.getReadableDatabase();
+    		if(!upgrading) //if you're upgrading the db clearly already exists
+        		this.getReadableDatabase();
  
         	try {
  
     			copyDataBase();
+    			Log.d("Building DB","New building DB copied");
  
     		} catch (IOException e) {
  
-        		throw new Error("Error copying database");
+        		throw new Error("Error copying building database");
  
         	}
     	}
@@ -146,7 +152,16 @@ public class BuildingDatabase extends SQLiteOpenHelper {
 	}
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO Auto-generated method stub
+	/*	if(newVersion > oldVersion)
+		{	
+			try {
+				createDataBase(true);
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+				throw new Error("Error copying building database");
+			}
+		}*/
 
 	}
 	private class openDbTask extends AsyncTask

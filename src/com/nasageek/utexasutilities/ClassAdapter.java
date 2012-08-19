@@ -49,9 +49,7 @@ public class ClassAdapter extends BaseAdapter{
 		
 		this.ci_iv = ci_iv;
 		this.ci_tv = ci_tv;
-		
-		
-		
+
 		updateTime();
 		
 		SQLiteDatabase sqldb = cdb.getReadableDatabase();
@@ -66,8 +64,7 @@ public class ClassAdapter extends BaseAdapter{
 		//	Log.d("cursor", cur.getString(0)+cur.getString(1)+cur.getString(2)+cur.getString(3));
 			cl.add(new classtime(cur.getString(0),cur.getString(1).charAt(0),cur.getString(2),cur.getString(3)));
 		}*/
-		//aw :( temp login makes this not work as I can no longer rely on the EID being stored in settings, oh well	
-		//cur = sqldb.query("classes",col,"eid = \""+sp.getString("eid", "no eid found")+"\"",null,null,null, null);
+		
 		cur = sqldb.query("classes",col,"semester = \""+semId+"\"",null,null,null,null, null);
 		cur.moveToFirst();
 		
@@ -106,10 +103,8 @@ public class ClassAdapter extends BaseAdapter{
 				case 'H':for(int a = 0; a<(endpos-startpos);a++){cllist.set(3+5*startpos+a*5, ct);if(a==0)firstlist.set(3+5*startpos+a*5, true);}break;
 				case 'F':for(int a = 0; a<(endpos-startpos);a++){cllist.set(4+5*startpos+a*5, ct);if(a==0)firstlist.set(4+5*startpos+a*5, true);}break;
 				}
-	//		}
-			
-		}
-		
+	//		}		
+		}	
 	}
 	public void updateTime()
 	{
@@ -252,18 +247,4 @@ public class ClassAdapter extends BaseAdapter{
 		else
 			return Color.BLACK;
 	}
-/*	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
-	{
-		onItemClick(parent,view,position,id);
-		Intent map = new Intent(currentContext.getString(R.string.building_intent), null, currentContext, CampusMapActivity.class);
-		
-		classtime clt = (classtime) parent.getItemAtPosition(position);
-		if(clt!=null)
-		{	map.setData(Uri.parse(clt.getBuilding().getId()));
-			currentContext.startActivity(map);
-		}
-		return true;
-	}*/
-	
-	
 }

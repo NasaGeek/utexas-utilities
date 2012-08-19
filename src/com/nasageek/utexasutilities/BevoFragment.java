@@ -64,8 +64,11 @@ public class BevoFragment extends SherlockFragment
 		b_pb_ll = (LinearLayout) vg.findViewById(R.id.bevo_progressbar_ll);
 		etv = (TextView) vg.findViewById(R.id.bevo_error);
 		
-		blv.setLoadingView(getLayoutInflater(savedInstanceState).inflate(R.layout.loading_content_layout, null));
+		
+		//must call setLoadingView before setAdapter
+		blv.setLoadingView(inflater.inflate(R.layout.loading_content_layout, null));
 		blv.setAdapter(ta);
+		ta.notifyDataSetChanged();
 
 	    bevolinlay.addView(tv3,0);
 		bevolinlay.addView(tv4,1);
@@ -165,6 +168,7 @@ public class BevoFragment extends SherlockFragment
 		private DefaultHttpClient client;
 		private boolean refresh;
 		private String errorMsg;
+		private ArrayList<String> tempTransactionList;
 		
 		public fetchTransactionDataTask(DefaultHttpClient client, boolean refresh)
 		{
@@ -176,7 +180,7 @@ public class BevoFragment extends SherlockFragment
 		{
 			HttpPost hpost = new HttpPost("https://utdirect.utexas.edu/hfis/transactions.WBX");
 	    	String pagedata="";
-	    	
+	    	tempTransactionList = new ArrayList<String>();
 	    	try
 			{
 				hpost.setEntity(new UrlEncodedFormEntity(postdata));
@@ -211,7 +215,7 @@ public class BevoFragment extends SherlockFragment
 	    		String transaction=datematcher.group()+" ";
 	    		transaction+=matcher3.group()+" ";
 	    		transaction+=matcher4.group().replaceAll("\\s","");
-	    		btransactionlist.add(transaction);
+	    		tempTransactionList.add(transaction);
 	    	}
 	    	if(pagedata.contains("<form name=\"next\"") && !this.isCancelled())
 	    	{
@@ -239,11 +243,12 @@ public class BevoFragment extends SherlockFragment
 		{
 			if (!this.isCancelled())
 	    	{
+				btransactionlist.addAll(tempTransactionList);
 				ta.updateHeaders();
+				ta.notifyDataSetChanged();
 				int index = blv.getFirstVisiblePosition();
 		    	View v = blv.getChildAt(0);
 		    	int top = (v == null) ? 0 : v.getTop();
-	    		ta.notifyDataSetChanged();
 	    		if(result == 'm')
 	    		{
 	    			ta.notifyMayHaveMorePages();

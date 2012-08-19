@@ -1,7 +1,11 @@
 package com.nasageek.utexasutilities;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -32,6 +36,7 @@ public class ConnectionHelper {
 	private HttpPost httppost;
 	private DefaultHttpClient httpclient;
 	private static SharedPreferences settings;
+	private static SecurePreferences sp;
 	public static String authCookie;
 	public static String PNAAuthCookie;
 	public static String bbAuthCookie;
@@ -59,6 +64,7 @@ public class ConnectionHelper {
 	public boolean bbLogin(Context con, DefaultHttpClient client)
 	{
 		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		sp = new SecurePreferences(con, "com.nasageek.utexasutilities.password","lalalawhatanicekey",false);
 		HttpPost httppost = new HttpPost("https://courses.utexas.edu/webapps/login/");
 		try {
 		       
@@ -66,7 +72,7 @@ public class ConnectionHelper {
 		    	List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 		
 		        nameValuePairs.add(new BasicNameValuePair("user_id", settings.getString("eid","error").trim()));
-		        nameValuePairs.add(new BasicNameValuePair("password", settings.getString("password","error")));
+		        nameValuePairs.add(new BasicNameValuePair("password", sp.getString("password")));
 		        
 		        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs,HTTP.ASCII));
 
@@ -86,6 +92,7 @@ public class ConnectionHelper {
 	public boolean Login(Context con, DefaultHttpClient client)
 	{
 		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		sp = new SecurePreferences(con, "com.nasageek.utexasutilities.password","lalalawhatanicekey",false);
 		HttpPost httppost = new HttpPost("https://utdirect.utexas.edu/security-443/logon_check.logonform");
 		try {
 		       
@@ -93,7 +100,7 @@ public class ConnectionHelper {
 		    	List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 		
 		        nameValuePairs.add(new BasicNameValuePair("LOGON", settings.getString("eid","error").trim()));
-		        nameValuePairs.add(new BasicNameValuePair("PASSWORDS", settings.getString("password","error")));
+		        nameValuePairs.add(new BasicNameValuePair("PASSWORDS", sp.getString("password")));
 		        
 		        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs,HTTP.ASCII));
 
@@ -132,6 +139,7 @@ public class ConnectionHelper {
 	public boolean PNALogin(Context con, DefaultHttpClient client)
 	{
 		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		sp = new SecurePreferences(con, "com.nasageek.utexasutilities.password","lalalawhatanicekey",false);
 		HttpPost httppost = new HttpPost("https://management.pna.utexas.edu/server/graph.cgi");
 		try {
 		       
@@ -139,7 +147,7 @@ public class ConnectionHelper {
 		    	List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 		
 		        nameValuePairs.add(new BasicNameValuePair("PNACLOGINusername", settings.getString("eid","error").trim()));
-		        nameValuePairs.add(new BasicNameValuePair("PNACLOGINpassword", settings.getString("password","error")));
+		        nameValuePairs.add(new BasicNameValuePair("PNACLOGINpassword", sp.getString("password")));
 		        
 		        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs,HTTP.ASCII));
 
@@ -178,6 +186,7 @@ public class ConnectionHelper {
 		    	
 	//	    	Log.e("CREDS", "Error authenticating credentials");
 				Toast.makeText(con, "Something went wrong during login, try checking your UT EID and Password and try again.", Toast.LENGTH_LONG).show();
+				PNALoggedIn = false;
 				Log.d("PNACOOKIE", "Login failed");
 				return "";
 		}
@@ -218,6 +227,7 @@ public class ConnectionHelper {
 		    	
 	//	    	Log.e("CREDS", "Error authenticating credentials");
 				Toast.makeText(con, "Something went wrong during login, try checking your UT EID and Password and try again.", Toast.LENGTH_LONG).show();
+				loggedIn = false;
 				Log.d("COOKIE", "Login failed");
 				return "";
 		}
@@ -245,6 +255,7 @@ public class ConnectionHelper {
 		    	
 	//	    	Log.e("CREDS", "Error authenticating credentials");
 				Toast.makeText(con, "Something went wrong during Blackboard login, try checking your UT EID and Password and try again.", Toast.LENGTH_LONG).show();
+				bbLoggedIn = false;
 				Log.d("BBCOOKIE", "Login failed");
 				return "";
 		}
@@ -269,6 +280,16 @@ public class ConnectionHelper {
 	{
 		authCookie = cookie;
 		cookieHasBeenSet = true;
+	}
+	public static void setPNAAuthCookie(String cookie)
+	{
+		PNAAuthCookie = cookie;
+		PNACookieHasBeenSet = true;
+	}
+	public static void setBBAuthCookie(String cookie)
+	{
+		bbAuthCookie = cookie;
+		bbCookieHasBeenSet = true;
 	}
 	public static void resetPNACookie()
 	{

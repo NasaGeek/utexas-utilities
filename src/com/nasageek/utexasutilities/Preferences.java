@@ -37,6 +37,7 @@ public class Preferences extends SherlockPreferenceActivity{
     BaseAdapter ba;
     ActionBar actionbar;
     OnPreferenceChangeListener listen;
+    private SecurePreferences sp;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) 
@@ -45,7 +46,7 @@ public class Preferences extends SherlockPreferenceActivity{
     	super.onCreate(savedInstanceState);
 
     	settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-       
+    	sp = new SecurePreferences(this,"com.nasageek.utexasutilities.password", "lalalawhatanicekey", false);
        
     	edit = settings.edit();
    		toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
@@ -54,9 +55,7 @@ public class Preferences extends SherlockPreferenceActivity{
     	actionbar.setTitle("Preferences");
     	actionbar.setHomeButtonEnabled(true);
 //  	actionbar.setDisplayHomeAsUpEnabled(true);
-    	if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
-			actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
-       
+    	
     	setSupportProgressBarIndeterminateVisibility(false);
         addPreferencesFromResource(R.xml.preferences);
         getListView().setCacheColorHint(Color.TRANSPARENT);
@@ -70,7 +69,14 @@ public class Preferences extends SherlockPreferenceActivity{
         autologin = (CheckBoxPreference) findPreference("autologin");
         loginfield = (Preference) findPreference("eid");
         passwordfield = (Preference) findPreference("password");
-        
+        passwordfield.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				sp.put(preference.getKey(), (String)newValue);
+				return false;
+			}
+		});
         final Preference logincheckbox = (Preference) findPreference("loginpref");
         
         logincheckbox.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -85,12 +91,12 @@ public class Preferences extends SherlockPreferenceActivity{
         logincheckbox.setOnPreferenceClickListener(new OnPreferenceClickListener() 
         {
         	public boolean onPreferenceClick(final Preference preference) 
-        	{
-            	if(((CheckBoxPreference)preference).isChecked())
+        	{        		
+        		if(((CheckBoxPreference)preference).isChecked())
             	{
             		AlertDialog.Builder nologin_builder = new AlertDialog.Builder(Preferences.this);
             		nologin_builder.setMessage("NOTE: This will save your UT credentials to your device!  If that makes you " +
-            				"uncomfortable just uncheck this setting and log in by tapping the \"Login\" button on the main screen.")
+            				"uncomfortable just uncheck this setting and log in by tapping one of the buttons on the main screen.")
 	            			.setCancelable(true)
 	            			.setNeutralButton("Okay", new DialogInterface.OnClickListener() 
 	            			{
@@ -104,17 +110,18 @@ public class Preferences extends SherlockPreferenceActivity{
 	            	nologin.show();     	
             	}
             	else
-            	{	
-            		ConnectionHelper.logout(Preferences.this);
+            	{	           		
             		loginfield.setEnabled(true);
                	  	passwordfield.setEnabled(true);    
             		ba.notifyDataSetChanged();
             	}
+        		ConnectionHelper.logout(Preferences.this);
             	ClassDatabase.getInstance(Preferences.this).deleteDb(Preferences.this, true);
             	return true;	
             }
         });
-        if(ConnectionHelper.cookieHasBeenSet())
+
+        if(ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet() && ConnectionHelper.bbCookieHasBeenSet())
         {
         	loginfield.setEnabled(false);
         	passwordfield.setEnabled(false);
@@ -150,10 +157,20 @@ public class Preferences extends SherlockPreferenceActivity{
 				return true;
 			}
 		});
+        final Preference about = (Preference)findPreference("about");
+        about.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				final Intent about_intent = new Intent(Preferences.this, AboutMeActivity.class);
+				startActivity(about_intent);
+				return true;
+			}
+		});
     }
     public void refreshPrefs()
     {
-    	if(ConnectionHelper.cookieHasBeenSet())
+    	if(ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet() && ConnectionHelper.bbCookieHasBeenSet())
         {
     		loginfield.setEnabled(false);
 			passwordfield.setEnabled(false);
@@ -184,7 +201,7 @@ public class Preferences extends SherlockPreferenceActivity{
     public void onResume()
     {
     	super.onResume();
-    	if(ConnectionHelper.cookieHasBeenSet())
+    	if(ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet() && ConnectionHelper.bbCookieHasBeenSet())
         {
 	        loginfield.setEnabled(false);
 	        passwordfield.setEnabled(false);

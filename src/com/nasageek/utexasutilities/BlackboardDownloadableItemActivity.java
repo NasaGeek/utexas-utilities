@@ -58,10 +58,9 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		actionbar = getSupportActionBar();
 		actionbar.setHomeButtonEnabled(true);
 		// actionbar.setDisplayHomeAsUpEnabled(true);
-		actionbar.setTitle(getIntent().getStringExtra("itemName")+" - details");
+		actionbar.setTitle("Details");
+		actionbar.setSubtitle(getIntent().getStringExtra("itemName"));
 		
-		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
-			actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
 		
 		dlableItems = (ListView) findViewById(R.id.dlable_item_list);
 		dlil_pb_ll = (LinearLayout) findViewById(R.id.blackboard_dl_items_progressbar_ll);

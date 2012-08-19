@@ -55,9 +55,8 @@ public class BlackboardGradesActivity extends SherlockActivity
 			setContentView(R.layout.blackboard_grades_layout);
 			actionbar = getSupportActionBar();
 			actionbar.setHomeButtonEnabled(true);
-			if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
-				actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
-			actionbar.setTitle(BlackboardActivity.currentBBCourseName+" - Grades");
+			actionbar.setSubtitle(BlackboardActivity.currentBBCourseName);
+			actionbar.setTitle("Grades");
 			
 			g_pb_ll = (LinearLayout)findViewById(R.id.grades_progressbar_ll);
 			glv = (ListView) findViewById(R.id.gradesListView);

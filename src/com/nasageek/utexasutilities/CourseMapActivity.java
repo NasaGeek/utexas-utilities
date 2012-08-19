@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -62,6 +63,9 @@ public class CourseMapActivity extends SherlockActivity {
 	private ArrayList<Pair<courseMapItem, ArrayList>> mainList;
 	private TextView failure_view;
 	
+	private TextView absTitle;
+	private TextView absSubtitle;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -72,6 +76,7 @@ public class CourseMapActivity extends SherlockActivity {
 			actionbar.setHomeButtonEnabled(true);
 			// actionbar.setDisplayHomeAsUpEnabled(true);
 			
+			//TODO: custom subtitle breadcrumbs?
 			TextView titleView = new TextView(this);
 			titleView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
 			titleView.setLines(1);
@@ -81,10 +86,12 @@ public class CourseMapActivity extends SherlockActivity {
 			titleView.setTextColor(Color.BLACK);
 			titleView.setTypeface(Typeface.DEFAULT);
 			titleView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
-			actionbar.setCustomView(titleView);
 			
-			if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
-				actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
+			//actionbar.setCustomView(titleView);
+			actionbar.setCustomView(getLayoutInflater().inflate(R.layout.action_bar_title_subtitle, null));
+			absTitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_title);
+			absSubtitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_subtitle);
+			
 			actionbar.setTitle("");
 			itemNumber=-1;
 			bbid="";
@@ -97,9 +104,12 @@ public class CourseMapActivity extends SherlockActivity {
 				mainList = (ArrayList<Pair<courseMapItem, ArrayList>>) getIntent().getSerializableExtra("mainList");
 				itemNumber = Integer.parseInt(getIntent().getDataString());		
 			}
+			
+			absTitle.setText("Course Map");
 			if(getIntent().getStringExtra("folderName")!=null)
-		//		actionbar.setTitle(getIntent().getStringExtra("folderName"));
-			{	((TextView)(actionbar.getCustomView())).setText(getIntent().getStringExtra("folderName"));}
+			{	
+				absSubtitle.setText(getIntent().getStringExtra("folderName"));
+			}
 			
 			
 			cm_pb_ll = (LinearLayout) findViewById(R.id.coursemap_progressbar_ll);
@@ -120,7 +130,7 @@ public class CourseMapActivity extends SherlockActivity {
 					{	
 						Intent courseMapLaunch = new Intent(getString(R.string.coursemap_nest_intent), Uri.parse(position+""), CourseMapActivity.this, CourseMapActivity.class);
 						courseMapLaunch.putExtra("mainList", mainList.get(position).second);
-						courseMapLaunch.putExtra("folderName", ((TextView)(actionbar.getCustomView())).getText() + "/" + mainList.get(position).first.getName());
+						courseMapLaunch.putExtra("folderName", absSubtitle.getText() + "/" + mainList.get(position).first.getName());
 						courseMapLaunch.putExtra("viewUri", mainList.get(position).first.getViewUrl());
 						startActivity(courseMapLaunch);
 					}
@@ -157,7 +167,7 @@ public class CourseMapActivity extends SherlockActivity {
 					{
 						Intent bbItemLaunch = new Intent(null, Uri.parse(url), CourseMapActivity.this, BlackboardExternalItemActivity.class);
 						bbItemLaunch.putExtra("mainList", mainList.get(position).second);
-						bbItemLaunch.putExtra("itemName", ((TextView)(actionbar.getCustomView())).getText() + "/" + mainList.get(position).first.getName());
+						bbItemLaunch.putExtra("itemName", absSubtitle.getText() + "/" + mainList.get(position).first.getName());
 						startActivity(bbItemLaunch);
 					}
 		
@@ -336,13 +346,12 @@ class courseMapItem implements Serializable
 	private String name,viewUrl,contentId,linkType;
 	private boolean blackboardItem;
 	
-	public courseMapItem(String name, String viewUrl, String contentId, String linkType)//, boolean blackboardItem)
+	public courseMapItem(String name, String viewUrl, String contentId, String linkType)
 	{
 		this.name = name;
 		this.viewUrl = viewUrl;
 		this.contentId = contentId;
 		this.linkType = linkType;
-	//	this.blackboardItem = blackboardItem;
 	}
 	public String getName()
 	{

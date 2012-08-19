@@ -74,5 +74,12 @@
             android:title="Auto-send crash reports"
             android:summary="Help me help you! No personal or identifying information will be sent." />
     </PreferenceCategory>
+	    <PreferenceCategory android:title="Miscellanious">
+	        <Preference
+	            android:id="@+id/about"
+	            android:key="about"
+	            android:title="About UTilities"
+	            />
+	    </PreferenceCategory>
     
 </PreferenceScreen>

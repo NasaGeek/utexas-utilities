@@ -45,8 +45,6 @@ public class BalanceActivity extends SherlockFragmentActivity
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionbar.setHomeButtonEnabled(true);
 		// actionbar.setDisplayHomeAsUpEnabled(true);
-		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
-    		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
 		
 	/*	 actionbar.addTab(actionbar.newTab()
 		            .setText("Dinein")

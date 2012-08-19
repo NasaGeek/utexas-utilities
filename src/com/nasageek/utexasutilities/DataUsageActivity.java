@@ -97,15 +97,12 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionbar.setHomeButtonEnabled(true);
 		// actionbar.setDisplayHomeAsUpEnabled(true);
-		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
-    		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
-		
+	
 		graph = (XYPlot) findViewById(R.id.mySimpleXYPlot);
 		graph.setOnTouchListener(this);
 		graph.disableAllMarkup();
 
-		
-		
+
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		labels = new Long[288];//2017];
@@ -113,29 +110,6 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	//	updata = new Float[2017];
 		totaldata = new Float[288];
 		
-		
-		
-	/*	if(ConnectionHelper.PNACookieHasBeenSet())
-		{
-			ConnectionHelper.resetPNACookie();
-		}
-		
-		
-		
-		if(settings.getBoolean("loginpref", true))
-		{
-			if(!ch.PNALogin(this, httpclient))	
-			{	
-				finish();
-				return;
-			}
-		}
-		
-		if(ConnectionHelper.getPNAAuthCookie(httpclient,this).equals(""))
-		{
-			finish();
-			return;
-		}*/
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
 		BasicClientCookie cookie = new BasicClientCookie("AUTHCOOKIE", ConnectionHelper.getPNAAuthCookie(this,httpclient));
@@ -365,8 +339,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    	String pagedata="";
 
 	    	try
-			{
-				
+			{				
 				HttpResponse response = client.execute(hget);
 		    	pagedata = EntityUtils.toString(response.getEntity());
 			} catch (Exception e)
@@ -394,12 +367,8 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    //		updata[x]=(Float.valueOf(entry[2]));
 	    		totaldata[x]=(Float.valueOf(entry[3]));
 	    	}
-	    	
-	    	
-	   
-		
-	    	
-			return ' ';
+
+	    	return ' ';
 		}
 		@Override
 		protected void onPostExecute(Character result)
@@ -565,8 +534,6 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
              Date date = new Date(timestamp);
              return dateFormat.format(date, toAppendTo, pos);
          }
-         
-        
          @Override
          public Object parseObject(String source, ParsePosition pos) {
              return null;
@@ -583,6 +550,5 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 			 this.x=x;
 			 this.y=y;
 		 }
-	 }
-	
+	 }	
 }

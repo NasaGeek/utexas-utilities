@@ -39,14 +39,14 @@ public class BuildingProvider extends ContentProvider {
 
 	@Override
 	public boolean onCreate() {
-		// TODO Auto-generated method stub
+		
 		bdb = new BuildingDatabase(this.getContext());
 		try
 		{
-			bdb.createDataBase();
+			bdb.createDataBase(false);
 		} catch (IOException e)
 		{
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		bdb.openDataBase();

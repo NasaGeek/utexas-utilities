@@ -3,6 +3,7 @@ package com.nasageek.utexasutilities;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.webkit.CookieManager;
 import android.webkit.WebView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -15,20 +16,31 @@ public class LoginActivity extends SherlockActivity {
     public void onCreate(Bundle savedInstanceState)
     {
     	super.onCreate(savedInstanceState);
+    	char service = getIntent().getCharExtra("service", 'z');
     	ActionBar actionbar = getSupportActionBar();
     	actionbar.setTitle("Login");
+    	
     	actionbar.setHomeButtonEnabled(true);
 	    // actionbar.setDisplayHomeAsUpEnabled(true);
-	    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
-			actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
-    	
+
     	WebView wv = new WebView(this);
+    	CookieManager.getInstance().removeAllCookie();
     	
-    	LoginWebViewClient wvlc = new LoginWebViewClient(this);
+    	LoginWebViewClient wvlc = new LoginWebViewClient(this,
+								    			getIntent().getStringExtra("activity"),
+								    			service);
     	
     	wv.setWebViewClient(wvlc);
+
     	
-    	wv.loadUrl("https://utdirect.utexas.edu");
+    	switch(service)
+    	{
+    	case 'u':wv.loadUrl("https://utdirect.utexas.edu");actionbar.setSubtitle("UTDirect");break;
+    	case 'b':wv.getSettings().setJavaScriptEnabled(true);
+    			 wv.loadUrl("https://courses.utexas.edu");
+    			 actionbar.setSubtitle("Blackboard");break;
+    	case 'p':wv.loadUrl("https://management.pna.utexas.edu/server/graph.cgi");actionbar.setSubtitle("UT PNA");break;
+    	}
     	setContentView(wv);
     }
     @Override
@@ -48,13 +60,7 @@ public class LoginActivity extends SherlockActivity {
     	}
     	return true;
     }
-    
-    
-    
-    
-    
-    
-    
+
     //Old login stuff, just keeping if I feel like using it in the future
     /*public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

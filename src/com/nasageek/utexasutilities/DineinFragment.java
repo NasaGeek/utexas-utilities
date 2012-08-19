@@ -64,7 +64,7 @@ public class DineinFragment extends SherlockFragment
 		d_pb_ll = (LinearLayout) vg.findViewById(R.id.dinein_progressbar_ll);
 		etv = (TextView) vg.findViewById(R.id.dinein_error);
 		
-		dlv.setLoadingView(getLayoutInflater(savedInstanceState).inflate(R.layout.loading_content_layout, null));
+		dlv.setLoadingView(inflater.inflate(R.layout.loading_content_layout, null));
 		dlv.setAdapter(ta);
 		
 	    dineinlinlay.addView(tv1,0);
@@ -158,13 +158,15 @@ public class DineinFragment extends SherlockFragment
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		fetch.cancel(true);
+		if(fetch!=null)
+			fetch.cancel(true);
 	}
 	private class fetchTransactionDataTask extends AsyncTask<Object,Void,Character>
 	{
 		private DefaultHttpClient client;
 		private boolean refresh;
 		private String errorMsg;
+		private ArrayList<String> tempTransactionList;
 		
 		public fetchTransactionDataTask(DefaultHttpClient client, boolean refresh)
 		{
@@ -176,7 +178,7 @@ public class DineinFragment extends SherlockFragment
 		{
 			HttpPost hpost = new HttpPost("https://utdirect.utexas.edu/hfis/transactions.WBX");
 	    	String pagedata="";
-
+	    	tempTransactionList = new ArrayList<String>();
 	    	try
 			{
 				hpost.setEntity(new UrlEncodedFormEntity(postdata));
@@ -211,7 +213,7 @@ public class DineinFragment extends SherlockFragment
 	    		String transaction=datematcher.group()+" ";
 	    		transaction+=matcher3.group()+" ";
 	    		transaction+=matcher4.group().replaceAll("\\s","");
-	    		dtransactionlist.add(transaction);
+	    		tempTransactionList.add(transaction);
 	    	}
 	    	if(pagedata.contains("<form name=\"next\"") && !this.isCancelled())
 	    	{
@@ -239,11 +241,13 @@ public class DineinFragment extends SherlockFragment
 		{
 			if (!this.isCancelled())
 	    	{
+				dtransactionlist.addAll(tempTransactionList);
+				ta.notifyDataSetChanged();
 				ta.updateHeaders();
+				ta.notifyDataSetChanged();
 				int index = dlv.getFirstVisiblePosition();
 		    	View v = dlv.getChildAt(0);
 		    	int top = (v == null) ? 0 : v.getTop();
-	    		ta.notifyDataSetChanged();
 	    		if(result == 'm')
 	    		{
 	    			ta.notifyMayHaveMorePages();

@@ -274,10 +274,11 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 				
 				boolean examRequested = !examdata[2].contains("The department");
 				boolean summerSession = examdata[2].contains("Information on final exams is available for Nine-Week Summer Session(s) only.");	
-				String id="", name="", date="", location="";
+				String id="", name="", date="", location="", unique="";
 				
 				try
 				{	
+					unique = examdata[0]; 
 					id = examdata[1];
 					name = examdata[2];
 					date = "";
@@ -299,7 +300,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 				
 				if(!examRequested || summerSession)
 				{
-					course = id;
+					course = id + " - " + unique;
 					TextView left= (TextView) vg.findViewById(R.id.examdateview);
 					left.setText(name);
 				}
@@ -321,8 +322,6 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 			{
 				mode = ExamScheduleFragment.this.parentAct.startActionMode(new ScheduleActionMode(position));
 			}
-			
-			
 			final class ScheduleActionMode implements ActionMode.Callback {
 		        
 				int position;
@@ -336,6 +335,16 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 		        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 		            mode.setTitle("Exam Info");
 		            MenuInflater inflater = getSherlockActivity().getSupportMenuInflater();
+		            String[] elements = exams.get(position).split("\\^");
+		            if(elements.length >= 3) //TODO: check this?
+		            {
+		            	if(elements[2].contains("The department") || elements[2].contains("Information on final exams is available for Nine-Week Summer Session(s) only."))
+	    				{
+	    					return true;
+	    				}
+		            }
+		            else
+		            	return true;
 		            inflater.inflate(R.menu.schedule_menu, menu);
 		            return true;
 		        }
@@ -351,20 +360,18 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 		            {
 		            	case R.id.locate_class:
 		            		Intent map = new Intent(con.getString(R.string.building_intent), null, con, CampusMapActivity.class);
-		    				
-		    				String[] elements = exams.get(position).split("\\^");
-		    				if(elements[2].contains("The department"))
-		    				{
-		    					Toast.makeText(con, "This exam does not exist and therefore has no location.", Toast.LENGTH_SHORT).show();
-		    					
-		    					return true;
-		    				}
-		    				else
+		            		
+		            		String[] elements = exams.get(position).split("\\^");
+		            		if(elements.length >= 5)
 		    				{	
 		    					map.setData(Uri.parse(elements[4].split(" ")[0]));
 		    					con.startActivity(map);
 		    					return true;
 		    				}
+		            		else
+		            		{
+		            			Toast.makeText(con, "Something unexpected occurred, and your exam's location could not be found", Toast.LENGTH_SHORT).show();
+		            		}
 		            }
 		            return true;
 		        }

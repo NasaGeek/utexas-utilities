@@ -24,7 +24,7 @@ public class UTClass {
 			buildings.add(new building(b[i], br[i]));
 		}
 		
-		for(int i = 0; i<d.length; i++)
+		for(int i = 0; i < d.length && i < t.length && i < buildings.size(); i++)
 		{
 			
 			String[] days = d[i].split("");

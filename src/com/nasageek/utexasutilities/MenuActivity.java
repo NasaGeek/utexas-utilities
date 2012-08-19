@@ -92,9 +92,7 @@ public class MenuActivity extends SherlockFragmentActivity {
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionbar.setHomeButtonEnabled(true);
 		// actionbar.setDisplayHomeAsUpEnabled(true);
-		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
-    		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
-		
+			
         final Spinner spinner = new Spinner(this);
         spinner.setPromptId(R.string.restaurantprompt);
 		final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(actionbar.getThemedContext(), android.R.layout.simple_spinner_item, Restaurant.values());

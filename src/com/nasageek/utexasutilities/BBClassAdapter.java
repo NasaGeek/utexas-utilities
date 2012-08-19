@@ -90,18 +90,35 @@ public class BBClassAdapter extends AmazingAdapter
 		{	
 			name = (bbclass.getName().contains("(") && bbclass.getName().charAt(0) != '(') 
 																? bbclass.getName().substring(0,bbclass.getName().indexOf("(")-1)
-																: bbclass.getName();
-			unique = bbclass.getCourseid().split("_")[2];
-			id = bbclass.getCourseid().substring(bbclass.getCourseid().indexOf(unique)+6).replaceAll("_"," ");
-			idview.setText(id+" - "+unique);
+																: bbclass.getName();															
+			if(bbclass.getCourseid().split("_").length>=3)	
+			{	
+				unique = bbclass.getCourseid().split("_")[2];
+				//assumes Course ID is directly after unique_ and is at the end of the string
+				//will fail if unique start is less than 6 characters from the end of the string.
+				try
+				{
+					id = bbclass.getCourseid().substring(bbclass.getCourseid().indexOf(unique)+6).replaceAll("_"," ");
+					idview.setText(id+" - "+unique);
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+					idview.setText(unique);
+				}
+			}
+			else
+			{
+				unique = bbclass.getCourseid();
+				idview.setText(unique);
+			}
 		}
-		else
+		else //probably not even necessary anymore, necessary checking is done in the if-statement
 		{	
 			name = bbclass.getName();
 			unique = bbclass.getCourseid();
 			//id not set because unique will contain ID and Unique number
-			idview.setText(unique);
-			
+			idview.setText(unique);		
 		}
 
 		nameview.setText(name);
@@ -151,6 +168,10 @@ public class BBClassAdapter extends AmazingAdapter
 			res[i] = all.get(i).first;
 		}
 		return res;
+	}
+	@Override
+	protected View getLoadingView(ViewGroup parent) {
+		return null;
 	}
 	
 }

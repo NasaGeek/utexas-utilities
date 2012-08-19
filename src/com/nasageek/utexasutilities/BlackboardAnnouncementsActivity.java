@@ -60,12 +60,11 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	    	etv = (TextView) findViewById(R.id.announcements_error);
 	    	
 	    	actionbar = getSupportActionBar();
-	    	actionbar.setTitle(BlackboardActivity.currentBBCourseName+ " - Announcements");
+	    	actionbar.setSubtitle(BlackboardActivity.currentBBCourseName);
+	    	actionbar.setTitle("Announcements");
 			actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 			actionbar.setHomeButtonEnabled(true);
 			// actionbar.setDisplayHomeAsUpEnabled(true);
-			if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)	
-	    		actionbar.setBackgroundDrawable(this.getResources().getDrawable(R.drawable.actionbar_bg));
 			
 		
 			settings = PreferenceManager.getDefaultSharedPreferences(this);

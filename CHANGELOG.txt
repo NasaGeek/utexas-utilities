@@ -41,6 +41,7 @@ All devices can now download attachments.
 Grade comments are now viewable.
 Crash reports will automatically be sent in the background to make it easier to diagnose problems.
 Minor bug fixes.
+Some small UI changes.
 
 Versioncode 5 - 1.62
 
@@ -58,3 +59,12 @@ Blackboard is now much more accepting of unexpected data; an option has also bee
 Text in the Blackboard detailed grade view now wraps correctly
 Made the entire app much more robust when an inconsistent internet connection is present.
 Features are now more responsive when errors occur instead of just closing or crashing.
+
+Versioncode 7 - 1.64/1.7
+
+Fixed crash when backing out of menus while they were still loading
+One more blackboard crash fix - the option to view raw data is probably obsolete at this point
+Locate exam button now hidden when there is no location available for an exam
+Password is encrypted
+New buildings added to database for campus map.  Users will HAVE to uninstall or clear data for this to take effect.
+Temporary login overhauled, now works with all services.

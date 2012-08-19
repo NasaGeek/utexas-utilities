@@ -2,11 +2,13 @@ package com.nasageek.utexasutilities;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +27,6 @@ public class TransactionAdapter extends AmazingAdapter
 	boolean isSectionHeader;
 	private List<BasicNameValuePair> postdata;
 	private SherlockFragment sf;
-	
 	
 	public TransactionAdapter(Context c, SherlockFragment sf, ArrayList<String> objects)
 	{
@@ -80,6 +81,9 @@ public class TransactionAdapter extends AmazingAdapter
 	@Override
 	public View getAmazingView(int position, View convertView, ViewGroup parent)
 	{
+		
+/*		if(position == transactions.size() - 1)
+			return new View(con);*/
 		String trans = transactions.get(position);
 		
 		String dateplace = trans.substring(0,trans.indexOf("$"));
@@ -129,18 +133,33 @@ public class TransactionAdapter extends AmazingAdapter
 				areHeaders.add(true);
 				currentDate=date;
 			}
+		}	
+	}
+	protected View getLoadingView(ViewGroup parent)
+	{
+		if (con != null) {
+		      LayoutInflater inflater=
+		          (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		      return inflater.inflate(R.layout.loading_content_layout, parent, false);
 		}
-		
+		else
+			return new View(con);
 	}
 	@Override
 	protected void onNextPageRequested(int page) {
-		nextPage();
-		try {
-			Method meth = sf.getClass().getMethod("parser",Boolean.TYPE);
-			meth.invoke(sf, new Object[] {false});	
-		} catch (Exception e) {
-			e.printStackTrace();
+		
+		if(super.automaticNextPageLoading)
+		{	
+			nextPage();
+			Log.d("TransactionAdapter","Page requested!");
+			try {
+				Method meth = sf.getClass().getMethod("parser",Boolean.TYPE);
+				meth.invoke(sf, new Object[] {false});	
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
+		super.automaticNextPageLoading = false;
 	}
 	@Override
 	protected void bindSectionHeader(View view, int position, boolean displaySectionHeader) {

@@ -55,7 +55,8 @@
         		 android:screenOrientation="portrait"></activity>
         
         <activity android:name=".LoginActivity"
-        		 android:screenOrientation="portrait"></activity>
+        		 android:screenOrientation="portrait"
+        		 android:noHistory="true"></activity>
        
         <activity android:name=".Preferences"
         		 android:screenOrientation="portrait"></activity>

@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,7 +72,6 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		super.onCreate(savedInstanceState);
 		parentAct = this.getSherlockActivity();
 		semId = "";
-		PreferenceManager.getDefaultSharedPreferences(parentAct.getBaseContext());
 		cdb = ClassDatabase.getInstance(parentAct);
 	}
 	public void updateView(String semId, View vg)
@@ -96,6 +97,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		
 		if (sizecheck.getCount()<1)
 		{	
+			//TODO: DIALOG STUFF
 			sizecheck.close();
 			client = ConnectionHelper.getThreadSafeClient();
 			new parseTask(client).execute();
@@ -103,19 +105,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		else
 		{
 			sizecheck.close();
-			ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv,this.semId);
-			ca.updateTime();
-			gv.setOnItemClickListener(this);
-		    gv.setAdapter(ca);
-		    
-//			parentAct.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		    pb_ll.setVisibility(GridView.GONE);
-		    
-			gv.setVisibility(GridView.VISIBLE);
-			daylist.setVisibility(View.VISIBLE);
-		    if(!parentAct.isFinishing())
-		    	Toast.makeText(parentAct, "Tap a class to see its information.", Toast.LENGTH_LONG).show();
-		    Crittercism.leaveBreadcrumb("Loaded schedule from db");
+			//lol hacky way for me to continue avoiding CursorAdapters.  Maybe one of these days...
+			new dbQueryTask().execute();
 		}
 		sd.setOnDrawerCloseListener(this);
 		sd.setOnDrawerOpenListener(this);
@@ -204,7 +195,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		}
 	}
 	
-	private class parseTask extends AsyncTask<Object,Void,Object[]>
+	private class parseTask extends AsyncTask<Object,Void,Integer>
 	{
 		private DefaultHttpClient client;
 		private String errorMsg;
@@ -224,14 +215,14 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		}
 		
 		@Override
-		protected Object[] doInBackground(Object... params)
+		protected Integer doInBackground(Object... params)
 		{
-			Object[] result = new Object[3];
+		//	Object[] result = new Object[3];
 			Document doc = null;
 
 		    	try
 		    	{
-		    		doc = Jsoup.connect("https://utdirect.utexas.edu/registration/classlist.WBX?sem="+semId)
+		    		doc = Jsoup.connect("https://utdirect.utexas.edu/registration/classlist.WBX?sem=20129") //"+semId)
 		    				.cookie("SC", ConnectionHelper.getAuthCookie(parentAct, client))
 		    				.get();
 		    	}
@@ -281,15 +272,14 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    		
 		    		cdb.addClass(new UTClass(uniqueid.ownText(),classid.ownText(), classname.ownText(),buildings, rooms, days, times, semId));
 		    	}
-	 //   	}
-	    	result[0] = classels.size();
+	 //   	} 
 	//    	result[1] = itemSelected;
 	//    	result[2] = semesters;
-	    	return result;
+	    	return Integer.valueOf(classels.size());
 			
 		}
 		@Override
-		protected void onPostExecute(Object[] result)
+		protected void onPostExecute(Integer result)
 		{
 //			ArrayList<String> semesters = (ArrayList<String>)result[2];
 			pb_ll.setVisibility(GridView.GONE);
@@ -308,31 +298,42 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			}
 			((ArrayAdapter)((ScheduleActivity)parentAct).spinner.getAdapter()).notifyDataSetChanged();
 			*/
-			if((Integer)result[0]==0)
+			if(result != null)
 			{	
-				daylist.setVisibility(View.GONE);
-				nc_tv.setText("You aren't enrolled for the current semester.");
-				nc_tv.setVisibility(View.VISIBLE);
-				
-				return;
+				if(result.intValue()==0)
+				{	
+					daylist.setVisibility(View.GONE);
+					nc_tv.setText("You aren't enrolled for the current semester.");
+					nc_tv.setVisibility(View.VISIBLE);
+					
+					return;
+				}
+				else
+				{	
+					ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv,semId);
+					ca.updateTime(); // not necessary
+	
+					gv.setOnItemClickListener(CourseScheduleFragment.this);
+				    gv.setAdapter(ca);
+	
+					gv.setVisibility(GridView.VISIBLE);
+					daylist.setVisibility(View.VISIBLE);
+					
+					if(!parentAct.isFinishing())
+				    	Toast.makeText(parentAct, "Tap a class to see its information.", Toast.LENGTH_SHORT).show();
+					Crittercism.leaveBreadcrumb("Loaded schedule from web");
+				}
 			}
 			else
-			{	
-				ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv,semId);
-				ca.updateTime();
-
-				gv.setOnItemClickListener(CourseScheduleFragment.this);
-			    gv.setAdapter(ca);
-
-				gv.setVisibility(GridView.VISIBLE);
-				daylist.setVisibility(View.VISIBLE);
-				
-				if(!parentAct.isFinishing())
-			    	Toast.makeText(parentAct, "Tap a class to see its information.", Toast.LENGTH_SHORT).show();
-				Crittercism.leaveBreadcrumb("Loaded schedule from web");
-			}
-	        
-			
+			{
+				errorMsg = "UTilities could not fetch your class listing";
+				etv.setText(errorMsg);
+				etv.setVisibility(View.VISIBLE);
+				pb_ll.setVisibility(View.GONE);
+				daylist.setVisibility(View.GONE);
+				nc_tv.setVisibility(View.GONE);
+				gv.setVisibility(View.GONE);
+			}	
 		}
 		@Override
 		protected void onCancelled()
@@ -345,6 +346,54 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			gv.setVisibility(View.GONE);
 		}
 	}	
+	private class dbQueryTask extends AsyncTask<Object,Void,Integer>
+	{
+		private DefaultHttpClient client;
+		private String errorMsg;
+
+		@Override
+		protected void onPreExecute()
+		{
+			pb_ll.setVisibility(GridView.VISIBLE);
+			gv.setVisibility(GridView.GONE);
+		}
+		
+		@Override
+		protected Integer doInBackground(Object... params)
+		{
+			ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv,semId);
+	    	return null;	
+		}
+		@Override
+		protected void onPostExecute(Integer result)
+		{
+
+			pb_ll.setVisibility(GridView.GONE);
+		
+			ca.updateTime(); // not necessary
+
+			gv.setOnItemClickListener(CourseScheduleFragment.this);
+		    gv.setAdapter(ca);
+
+			gv.setVisibility(GridView.VISIBLE);
+			daylist.setVisibility(View.VISIBLE);
+			
+			if(!parentAct.isFinishing())
+		    	Toast.makeText(parentAct, "Tap a class to see its information.", Toast.LENGTH_SHORT).show();
+			Crittercism.leaveBreadcrumb("Loaded schedule from web");
+		}
+		@Override
+		protected void onCancelled()
+		{
+			etv.setText(errorMsg);
+			etv.setVisibility(View.VISIBLE);
+			pb_ll.setVisibility(View.GONE);
+			daylist.setVisibility(View.GONE);
+			nc_tv.setVisibility(View.GONE);
+			gv.setVisibility(View.GONE);
+		}
+	}	
+
 	private final class ScheduleActionMode implements ActionMode.Callback {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {

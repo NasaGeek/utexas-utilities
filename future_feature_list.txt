@@ -25,4 +25,4 @@ redo temp login, prompt to redirect user to login page upon feature tap
 screen to save schedules instead of automatically doing it, listdialog that would show if db is empty and be manually shown by a button on the
 actionbar overflow or maybe in settings.  Either way it should be text, clear explanation of what it does.
 
-remove annoying login failed toasts
+blackboard "favorite courses" viewpager in main blackboard page maybe

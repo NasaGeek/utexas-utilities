@@ -6,7 +6,7 @@
 		    android:orientation="vertical">
 	<include
         android:id="@+id/exam_item_header_text"
-        layout="@android:layout/preference_category"/>
+        layout="@layout/header_view"/>
         
 	<LinearLayout 
 			android:id="@+id/exam_item_linlayout"

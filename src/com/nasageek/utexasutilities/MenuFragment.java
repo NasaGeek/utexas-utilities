@@ -89,7 +89,6 @@ public class MenuFragment extends SherlockFragment
 	}
 	private class fetchMenuTask extends AsyncTask<Object,Integer,String>
 	{
-		private AmazingListView lv;
 		private ArrayList<Pair<String,ArrayList<food>>> listOfLists;
 		private DefaultHttpClient client;
 		private String meal;
@@ -113,8 +112,7 @@ public class MenuFragment extends SherlockFragment
 			else
 				location = "http://129.116.62.55/foodpro/pickMenu.asp?locationNum="+params[0]+"&mealName="+meal;
 			
-			lv = (AmazingListView)params[2];
-			
+
 			HttpGet hget = new HttpGet(location);
 	    	String pagedata="";
 	    	
@@ -170,8 +168,8 @@ public class MenuFragment extends SherlockFragment
 		@Override
 		protected void onPostExecute(String result)
 		{
-			lv.setAdapter(new MenuAdapter(listOfLists));	
-			lv.setOnItemClickListener(new OnItemClickListener() {
+			mlv.setAdapter(new MenuAdapter(listOfLists));	
+			mlv.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
@@ -183,9 +181,9 @@ public class MenuFragment extends SherlockFragment
 		    	
 				}
 			});
-			lv.setPinnedHeaderView(getLayoutInflater(null).inflate(R.layout.menu_header_item_view, lv, false));
+			mlv.setPinnedHeaderView(getLayoutInflater(null).inflate(R.layout.menu_header_item_view, mlv, false));
 			
-			lv.setVisibility(View.VISIBLE);	
+			mlv.setVisibility(View.VISIBLE);	
 			m_pb_ll.setVisibility(View.GONE);
 			metv.setVisibility(View.GONE);
 		}
@@ -194,7 +192,7 @@ public class MenuFragment extends SherlockFragment
 		{
 			metv.setText(errorMsg);
 			metv.setVisibility(View.VISIBLE);
-			lv.setVisibility(View.GONE);	
+			mlv.setVisibility(View.GONE);	
 			m_pb_ll.setVisibility(View.GONE);
 		}
 	
@@ -327,6 +325,11 @@ public class MenuFragment extends SherlockFragment
 				res[i] = all.get(i).first;
 			}
 			return res;
+		}
+
+		@Override
+		protected View getLoadingView(ViewGroup parent) {
+			return null;
 		}
 		
 	}
