@@ -9,9 +9,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -61,6 +63,7 @@ public class MenuFragment extends SherlockFragment
 		restId = getArguments().getString("restId");
         httpclient = ConnectionHelper.getThreadSafeClient();      
 	}
+	@TargetApi(11)
 	public void updateView(String restId, View vg)
 	{
 		this.restId = restId;
@@ -72,7 +75,10 @@ public class MenuFragment extends SherlockFragment
 		m_pb_ll.setVisibility(View.VISIBLE);
 		mlv.setVisibility(View.GONE);
 		fetchMTask = new fetchMenuTask(httpclient);
-		fetchMTask.execute(restId,this.getArguments().getString("title"),mlv);
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			fetchMTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, restId,this.getArguments().getString("title"),mlv);
+		else
+			fetchMTask.execute(restId,this.getArguments().getString("title"),mlv);
 		
 		
 	}

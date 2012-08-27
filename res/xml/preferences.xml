@@ -57,7 +57,7 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="blackboard_class_longform"
-            android:summary="Check this if Blackboard crashes on launch, might fix it.  Makes list of classes a bit uglier."
+            android:summary="@string/preference_blackboard_class_longform_summary"
             android:title="Use raw class names"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="Data" >
@@ -72,9 +72,9 @@
             android:id="@+id/sendcrashes"
             android:key="sendcrashes"
             android:title="Auto-send crash reports"
-            android:summary="Help me help you! No personal or identifying information will be sent." />
+            android:summary="@string/preference_sendcrashes_summary"/>
     </PreferenceCategory>
-	    <PreferenceCategory android:title="Miscellanious">
+	    <PreferenceCategory android:title="Miscellaneous">
 	        <Preference
 	            android:id="@+id/about"
 	            android:key="about"

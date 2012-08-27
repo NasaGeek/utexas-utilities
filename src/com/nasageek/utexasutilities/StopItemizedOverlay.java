@@ -73,13 +73,13 @@ public class StopItemizedOverlay extends ItemizedOverlay{
 			String data="";
 			
 			HttpResponse response=null;
+			String request = "http://www.capmetro.org/planner/s_service.asp?tool=NB&stopid="+stops.get(i);
 			try
 			{
-				response = httpclient.execute(new HttpGet("http://capmetro.org/planner/s_service.asp?tool=NB&stopid="+stops.get(i)));
+				response = httpclient.execute(new HttpGet(request));
 				data = EntityUtils.toString(response.getEntity());
 			} catch (ClientProtocolException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e)
 			{

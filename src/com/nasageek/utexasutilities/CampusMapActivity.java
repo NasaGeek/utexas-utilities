@@ -145,7 +145,7 @@ public class CampusMapActivity extends SherlockMapActivity  {
 		actionbar.setTitle("Map and Bus Routes");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionbar.setHomeButtonEnabled(true);
-		// actionbar.setDisplayHomeAsUpEnabled(true);
+		actionbar.setDisplayHomeAsUpEnabled(true);
 		
         final Spinner spinner = new Spinner(this);
         spinner.setPromptId(R.string.routeprompt);
@@ -697,13 +697,13 @@ public class CampusMapActivity extends SherlockMapActivity  {
     	
 	    	case android.R.id.home:
 	            // app icon in action bar clicked; go home
-	            Intent home = new Intent(this, UTilitiesActivity.class);
-	            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	            startActivity(home);break;
+	            super.onBackPressed();
+	            break;
 	            
     		case R.id.search:
     			
-    			onSearchRequested();break;
+    			onSearchRequested();
+    			break;
     		case R.id.map_locate:
     			if(myLoc.getMyLocation()==null)
     			{	

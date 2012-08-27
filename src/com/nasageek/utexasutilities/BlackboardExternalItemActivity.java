@@ -19,7 +19,9 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class BlackboardExternalItemActivity extends SherlockActivity {
 	
-	ActionBar actionbar;
+	private ActionBar actionbar;
+	private TextView absTitle;
+	private TextView absSubtitle;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -28,9 +30,10 @@ public class BlackboardExternalItemActivity extends SherlockActivity {
 			
 			actionbar = getSupportActionBar();
 			actionbar.setDisplayShowCustomEnabled(true);
+			actionbar.setDisplayShowTitleEnabled(false);
 			actionbar.setHomeButtonEnabled(true);
-			// actionbar.setDisplayHomeAsUpEnabled(true);
-			actionbar.setTitle("");
+			actionbar.setDisplayHomeAsUpEnabled(true);
+	//		actionbar.setTitle(BlackboardActivity.currentBBCourseName);
 			
 			TextView titleView = new TextView(this);
 			titleView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
@@ -43,7 +46,14 @@ public class BlackboardExternalItemActivity extends SherlockActivity {
 			titleView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
 			
 			titleView.setText(getIntent().getStringExtra("itemName"));
-			actionbar.setCustomView(titleView);
+			
+			actionbar.setCustomView(getLayoutInflater().inflate(R.layout.action_bar_title_subtitle, null));
+			absTitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_title);
+			absSubtitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_subtitle);
+	//		actionbar.setCustomView(titleView);
+			
+			absTitle.setText(BlackboardActivity.currentBBCourseName);
+			absSubtitle.setText(getIntent().getStringExtra("itemName"));
 			
 			CookieSyncManager.createInstance(getApplicationContext());
 			CookieManager man = CookieManager.getInstance();
@@ -73,9 +83,8 @@ public class BlackboardExternalItemActivity extends SherlockActivity {
 	    	{
 		    	case android.R.id.home:
 		            // app icon in action bar clicked; go home
-		            Intent home = new Intent(this, UTilitiesActivity.class);
-		            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		            startActivity(home);break;
+		            super.onBackPressed();
+		            break;
 	    	}
 	    	return false;
 	}

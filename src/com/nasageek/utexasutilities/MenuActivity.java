@@ -91,7 +91,7 @@ public class MenuActivity extends SherlockFragmentActivity {
 		actionbar.setTitle("Menus");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionbar.setHomeButtonEnabled(true);
-		// actionbar.setDisplayHomeAsUpEnabled(true);
+		actionbar.setDisplayHomeAsUpEnabled(true);
 			
         final Spinner spinner = new Spinner(this);
         spinner.setPromptId(R.string.restaurantprompt);
@@ -174,9 +174,8 @@ public class MenuActivity extends SherlockFragmentActivity {
     	{
 	    	case android.R.id.home:
 	            // app icon in action bar clicked; go home
-	            Intent home = new Intent(this, UTilitiesActivity.class);
-	            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	            startActivity(home);break;			
+	            super.onBackPressed();
+	            break;			
     	}
     	return true;
     }

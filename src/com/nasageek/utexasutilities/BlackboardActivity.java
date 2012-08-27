@@ -63,7 +63,7 @@ public class BlackboardActivity extends SherlockActivity {
 		actionbar.setTitle("Blackboard");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionbar.setHomeButtonEnabled(true);
-		// actionbar.setDisplayHomeAsUpEnabled(true);
+		actionbar.setDisplayHomeAsUpEnabled(true);
 		
 	
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -114,7 +114,7 @@ public class BlackboardActivity extends SherlockActivity {
 	    	
 	    	while(class_matcher.find())
 	    	{
-	    		classList.add(new BBClass(class_matcher.group(2),class_matcher.group(1).replace("&amp;","&"),class_matcher.group(3)));	
+	    		classList.add(new BBClass(class_matcher.group(2).replace("&amp;","&"),class_matcher.group(1).replace("&amp;","&"),class_matcher.group(3)));	
 	    	}
 	    	
 			return pagedata;
@@ -178,7 +178,7 @@ public class BlackboardActivity extends SherlockActivity {
 							Crittercism.leaveBreadcrumb("BBUnique issue "+bbclass.getCourseid());
 							Toast.makeText(BlackboardActivity.this, "An error occurred, things might look a bit odd.", Toast.LENGTH_SHORT).show();
 						}
-						classLaunch.putExtra("folderName", cid);
+						classLaunch.putExtra("folderName", "Course Map");
 						currentBBCourseName = cid;
 						startActivity(classLaunch);
 
@@ -215,9 +215,8 @@ public class BlackboardActivity extends SherlockActivity {
 	    	{
 		    	case android.R.id.home:
 		            // app icon in action bar clicked; go home
-		            Intent home = new Intent(this, UTilitiesActivity.class);
-		            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		            startActivity(home);break;
+		            super.onBackPressed();
+		            break;
 	    	}
 	    	return false;
 	}

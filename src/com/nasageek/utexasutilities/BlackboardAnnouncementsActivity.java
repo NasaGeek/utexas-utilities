@@ -60,11 +60,11 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	    	etv = (TextView) findViewById(R.id.announcements_error);
 	    	
 	    	actionbar = getSupportActionBar();
-	    	actionbar.setSubtitle(BlackboardActivity.currentBBCourseName);
-	    	actionbar.setTitle("Announcements");
+	    	actionbar.setTitle(BlackboardActivity.currentBBCourseName);
+	    	actionbar.setSubtitle("Announcements");
 			actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 			actionbar.setHomeButtonEnabled(true);
-			// actionbar.setDisplayHomeAsUpEnabled(true);
+			actionbar.setDisplayHomeAsUpEnabled(true);
 			
 		
 			settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -97,9 +97,8 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	    	{
 		    	case android.R.id.home:
 		            // app icon in action bar clicked; go home
-		            Intent home = new Intent(this, UTilitiesActivity.class);
-		            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		            startActivity(home);break;
+		            super.onBackPressed();
+		            break;
 		    	case R.id.viewInWeb:
 		    		showAreYouSureDlg(BlackboardAnnouncementsActivity.this);
 		    		break;

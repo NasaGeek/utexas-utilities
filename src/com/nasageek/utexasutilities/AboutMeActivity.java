@@ -1,7 +1,5 @@
 package com.nasageek.utexasutilities;
 
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -21,7 +19,7 @@ public class AboutMeActivity extends SherlockActivity
 		actionbar.setTitle("About");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionbar.setHomeButtonEnabled(true);
-		// actionbar.setDisplayHomeAsUpEnabled(true);
+		actionbar.setDisplayHomeAsUpEnabled(true);
 		}
 	
 	@Override
@@ -32,9 +30,8 @@ public class AboutMeActivity extends SherlockActivity
 	    	{
 		    	case android.R.id.home:
 		            // app icon in action bar clicked; go home
-		            Intent home = new Intent(this, UTilitiesActivity.class);
-		            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		            startActivity(home);break;
+		            super.onBackPressed();
+		            break;
 	    	}
 	    	return false;
 	}

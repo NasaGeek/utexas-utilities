@@ -47,19 +47,17 @@ public class BuildingDatabase extends SQLiteOpenHelper {
 	
 	public void createDataBase(boolean upgrading) throws IOException{
 		 
-    	boolean dbExist = !upgrading;
-    	if(dbExist)
-    		dbExist = checkDataBase();
+    	
+		boolean dbExist = checkDataBase();
  
     	if(dbExist){
     		Log.d("Building DB","Building db already exists");
     		//do nothing - database already exist
     	}else{
  
-    		//By calling this method and empty database will be created into the default system path
+    			//By calling this method and empty database will be created into the default system path
                //of your application so we are gonna be able to overwrite that database with our database.
-    		if(!upgrading) //if you're upgrading the db clearly already exists
-        		this.getReadableDatabase();
+    			this.getReadableDatabase();
  
         	try {
  

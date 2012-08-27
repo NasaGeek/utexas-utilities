@@ -38,7 +38,7 @@ import javax.crypto.spec.SecretKeySpec;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Base64;
+import com.nasageek.utexasutilities.Base64;
 
 
 public class SecurePreferences {
@@ -161,7 +161,6 @@ public class SecurePreferences {
 		preferences.edit().putString(key, secureValueEncoded).commit();
 	}
 
-	@SuppressLint("NewApi")
 	protected String encrypt(String value, Cipher writer) throws SecurePreferencesException {
 		byte[] secureValue;
 		try {
@@ -174,7 +173,6 @@ public class SecurePreferences {
 		return secureValueEncoded;
 	}
 
-	@SuppressLint("NewApi")
 	protected String decrypt(String securedEncodedValue) {
 		byte[] securedValue = Base64.decode(securedEncodedValue, Base64.NO_WRAP);
 		byte[] value = convert(reader, securedValue);

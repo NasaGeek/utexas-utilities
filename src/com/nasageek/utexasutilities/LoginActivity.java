@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -21,8 +22,8 @@ public class LoginActivity extends SherlockActivity {
     	actionbar.setTitle("Login");
     	
     	actionbar.setHomeButtonEnabled(true);
-	    // actionbar.setDisplayHomeAsUpEnabled(true);
-
+	    actionbar.setDisplayHomeAsUpEnabled(true);
+    	CookieSyncManager.createInstance(this);
     	WebView wv = new WebView(this);
     	CookieManager.getInstance().removeAllCookie();
     	
@@ -36,8 +37,7 @@ public class LoginActivity extends SherlockActivity {
     	switch(service)
     	{
     	case 'u':wv.loadUrl("https://utdirect.utexas.edu");actionbar.setSubtitle("UTDirect");break;
-    	case 'b':wv.getSettings().setJavaScriptEnabled(true);
-    			 wv.loadUrl("https://courses.utexas.edu");
+    	case 'b':wv.loadUrl("https://courses.utexas.edu");
     			 actionbar.setSubtitle("Blackboard");break;
     	case 'p':wv.loadUrl("https://management.pna.utexas.edu/server/graph.cgi");actionbar.setSubtitle("UT PNA");break;
     	}
@@ -51,9 +51,8 @@ public class LoginActivity extends SherlockActivity {
     	{
     	case android.R.id.home:
             // app icon in action bar clicked; go home
-            Intent home = new Intent(this, UTilitiesActivity.class);
-            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(home);break;
+           super.onBackPressed();
+           break;
     	
     	
     	default: return super.onOptionsItemSelected(item);

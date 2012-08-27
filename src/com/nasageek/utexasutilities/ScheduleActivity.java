@@ -100,8 +100,8 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		actionbar.setTitle("Schedule");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 	    actionbar.setHomeButtonEnabled(true);
+	    actionbar.setDisplayHomeAsUpEnabled(true);
 	    Crittercism.leaveBreadcrumb("Entered ScheduleActivity");
-	    // actionbar.setDisplayHomeAsUpEnabled(true);
 		
 /*		spinner = new Spinner(this);
         spinner.setPromptId(R.string.semesterprompt);
@@ -181,9 +181,8 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 	    	{
 	    	case android.R.id.home:
 	            // app icon in action bar clicked; go home
-	            Intent home = new Intent(this, UTilitiesActivity.class);
-	            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	            startActivity(home);break;
+	            super.onBackPressed();
+	            break;
 	    	
 	    	default: return super.onOptionsItemSelected(item);
 	    	}

@@ -1,10 +1,13 @@
 package com.nasageek.utexasutilities;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.util.EntityUtils;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,9 +15,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -218,13 +218,20 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		protected Integer doInBackground(Object... params)
 		{
 		//	Object[] result = new Object[3];
-			Document doc = null;
+			client.getCookieStore().clear();
+				
+	    	BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(parentAct,client));
+	    	cookie.setDomain(".utexas.edu");
+	    	client.getCookieStore().addCookie(cookie);
+
+			HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId);
+	    	String pagedata="";
 
 		    	try
 		    	{
-		    		doc = Jsoup.connect("https://utdirect.utexas.edu/registration/classlist.WBX?sem=20129") //"+semId)
-		    				.cookie("SC", ConnectionHelper.getAuthCookie(parentAct, client))
-		    				.get();
+		    		HttpResponse res = client.execute(hget);
+		    		pagedata = EntityUtils.toString(res.getEntity());
+
 		    	}
 		    	catch(Exception e)
 		    	{
@@ -234,48 +241,65 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    		cancel(true);
 		    		return null;
 		    	}
-		
-	    	Elements classels  = doc.select("div[align]").get(0).select("tr[valign]");
-	//    	Elements semForm = doc.select("form[name=SelectSem]").select("option");
-	//    	ArrayList<String> semesters = new ArrayList<String>();
-	//    	int itemSelected=0;
-/*	    	for(int i = 0; i<semForm.size(); i++)
-	    	{
-	    		semesters.add(semForm.get(i).attr("value"));
-	    		if(semForm.get(i).attr("selected").equals("selected"))
-	    		{
-	    			itemSelected = i;
-	    		}
-	    	}*/
-	//    	if(!semId.equals(""))
-	//    	{
-		    	for(int i = 0; i<classels.size(); i++)
+		    	Pattern pattern3 = Pattern.compile("<table.*</table>",Pattern.DOTALL);
+		    	Matcher matcher3 = pattern3.matcher(pagedata);
+		    	
+		    	
+		    	if(matcher3.find())
+		    		pagedata = matcher3.group(0);
+		    	else
 		    	{
-		    		Element temp = classels.get(i);
-		    		Element uniqueid = temp.child(0);
-		    		Element classid = temp.child(1);
-		    		Element classname = temp.child(2);
-		    		
-		    		Element building = temp.child(3);
-		    		String[] buildings = building.text().split(" ");
-		    		
-		    		Element room = temp.child(4);
-		    		String[] rooms = room.text().split(" ");
-		    		
-		    		Element day = temp.child(5);
-		    		String[] days = day.text().split(" ");
-		    		for(int a = 0; a<days.length;a++) days[a] = days[a].replaceAll("TH", "H");
-		    		
-		    		Element time = temp.child(6);
-		    		String tempstr = time.text().replaceAll("- ","-");
-		    		String[] times = tempstr.split(" ");
-		    		
-		    		cdb.addClass(new UTClass(uniqueid.ownText(),classid.ownText(), classname.ownText(),buildings, rooms, days, times, semId));
+		    		//if no <table>, user probably isn't enrolled for semester
+		    		return 0;
 		    	}
+		    	Pattern classPattern = Pattern.compile("<tr  .*?</tr>",Pattern.DOTALL);
+		    	Matcher classMatcher = classPattern.matcher(pagedata);
+		    	int classCount = 0;
+		    	while(classMatcher.find())
+		    	{
+		    		String classContent = classMatcher.group();
+		    		String uniqueid="", classid="", classname="";
+		    		String [] buildings=null, rooms=null, days=null, times=null;
+		    		Pattern classAttPattern = Pattern.compile("<td >(.*?)</td>",Pattern.DOTALL);
+		    		Matcher classAttMatcher = classAttPattern.matcher(classContent);
+		    		if(classAttMatcher.find())
+		    			uniqueid = classAttMatcher.group(1);
+		    		if(classAttMatcher.find())
+		    			classid = classAttMatcher.group(1);
+		    		if(classAttMatcher.find())
+		    			classname =  classAttMatcher.group(1);
+		    		if(classAttMatcher.find())
+		    		{
+		    			buildings = classAttMatcher.group(1).split("<br />");
+		    			for(int i = 0; i<buildings.length; i++)
+		    				buildings[i] = buildings[i].replaceAll("<.*?>", "").trim();
+		    		}
+		    		if(classAttMatcher.find())
+		    		{
+		    			rooms = classAttMatcher.group(1).split("<br />");
+		    			for(int i = 0; i<rooms.length; i++)
+		    				rooms[i] = rooms[i].trim();
+		    		}
+		    		if(classAttMatcher.find())
+		    		{	
+		    			days = classAttMatcher.group(1).split("<br />");
+		    			for(int a = 0; a<days.length;a++) days[a] = days[a].replaceAll("TH", "H").trim();
+		    		}
+		    		if(classAttMatcher.find())
+		    		{
+		    			times = classAttMatcher.group(1).replaceAll("- ", "-").split("<br />");	
+		    			for(int i = 0; i<times.length; i++)
+		    				times[i] = times[i].trim();
+		    		}
+		    		cdb.addClass(new UTClass(uniqueid,classid,classname,buildings, rooms, days, times, semId));
+		    		classCount++;
+		    	}
+		    	
+	
 	 //   	} 
 	//    	result[1] = itemSelected;
 	//    	result[2] = semesters;
-	    	return Integer.valueOf(classels.size());
+	    	return Integer.valueOf(classCount);
 			
 		}
 		@Override

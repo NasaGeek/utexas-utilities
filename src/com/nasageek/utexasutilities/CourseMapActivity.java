@@ -73,10 +73,10 @@ public class CourseMapActivity extends SherlockActivity {
 			setContentView(R.layout.coursemap_layout);
 			actionbar = getSupportActionBar();
 			actionbar.setDisplayShowCustomEnabled(true);
+			actionbar.setDisplayShowTitleEnabled(false);
 			actionbar.setHomeButtonEnabled(true);
-			// actionbar.setDisplayHomeAsUpEnabled(true);
+			actionbar.setDisplayHomeAsUpEnabled(true);
 			
-			//TODO: custom subtitle breadcrumbs?
 			TextView titleView = new TextView(this);
 			titleView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
 			titleView.setLines(1);
@@ -92,7 +92,6 @@ public class CourseMapActivity extends SherlockActivity {
 			absTitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_title);
 			absSubtitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_subtitle);
 			
-			actionbar.setTitle("");
 			itemNumber=-1;
 			bbid="";
 			if(getString(R.string.coursemap_intent).equals(getIntent().getAction()))
@@ -105,10 +104,10 @@ public class CourseMapActivity extends SherlockActivity {
 				itemNumber = Integer.parseInt(getIntent().getDataString());		
 			}
 			
-			absTitle.setText("Course Map");
+			absSubtitle.setText(getIntent().getStringExtra("folderName"));
 			if(getIntent().getStringExtra("folderName")!=null)
 			{	
-				absSubtitle.setText(getIntent().getStringExtra("folderName"));
+				absTitle.setText(BlackboardActivity.currentBBCourseName);
 			}
 			
 			
@@ -130,7 +129,10 @@ public class CourseMapActivity extends SherlockActivity {
 					{	
 						Intent courseMapLaunch = new Intent(getString(R.string.coursemap_nest_intent), Uri.parse(position+""), CourseMapActivity.this, CourseMapActivity.class);
 						courseMapLaunch.putExtra("mainList", mainList.get(position).second);
-						courseMapLaunch.putExtra("folderName", absSubtitle.getText() + "/" + mainList.get(position).first.getName());
+						if(itemNumber == -1 )//top-level, don't copy "Course Map"
+							courseMapLaunch.putExtra("folderName", mainList.get(position).first.getName());
+						else
+							courseMapLaunch.putExtra("folderName", absSubtitle.getText() + "/" + mainList.get(position).first.getName());
 						courseMapLaunch.putExtra("viewUri", mainList.get(position).first.getViewUrl());
 						startActivity(courseMapLaunch);
 					}
@@ -167,7 +169,11 @@ public class CourseMapActivity extends SherlockActivity {
 					{
 						Intent bbItemLaunch = new Intent(null, Uri.parse(url), CourseMapActivity.this, BlackboardExternalItemActivity.class);
 						bbItemLaunch.putExtra("mainList", mainList.get(position).second);
-						bbItemLaunch.putExtra("itemName", absSubtitle.getText() + "/" + mainList.get(position).first.getName());
+						if(itemNumber == -1 )//top-level, don't copy "Course Map"
+							bbItemLaunch.putExtra("itemName", mainList.get(position).first.getName());
+						else
+							bbItemLaunch.putExtra("itemName", absSubtitle.getText() + "/" + mainList.get(position).first.getName());
+						
 						startActivity(bbItemLaunch);
 					}
 		
@@ -219,9 +225,8 @@ public class CourseMapActivity extends SherlockActivity {
 	    	{
 		    	case android.R.id.home:
 		            // app icon in action bar clicked; go home
-		            Intent home = new Intent(this, UTilitiesActivity.class);
-		            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		            startActivity(home);break;
+		            super.onBackPressed();
+		            break;
 		    	case R.id.viewInWeb:
 		    		showAreYouSureDlg(CourseMapActivity.this);
 		    		break;

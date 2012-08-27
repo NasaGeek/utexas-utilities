@@ -54,7 +54,7 @@ public class Preferences extends SherlockPreferenceActivity{
    		actionbar = getSupportActionBar();
     	actionbar.setTitle("Preferences");
     	actionbar.setHomeButtonEnabled(true);
-//  	actionbar.setDisplayHomeAsUpEnabled(true);
+    	actionbar.setDisplayHomeAsUpEnabled(true);
     	
     	setSupportProgressBarIndeterminateVisibility(false);
         addPreferencesFromResource(R.xml.preferences);
@@ -191,9 +191,8 @@ public class Preferences extends SherlockPreferenceActivity{
     	{
 	    	case android.R.id.home:
 	            // app icon in action bar clicked; go home
-	            Intent home = new Intent(this, UTilitiesActivity.class);
-	            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	            startActivity(home);break;
+	            super.onBackPressed();
+	            break;
     	}
     	return false;
 	}

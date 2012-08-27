@@ -96,7 +96,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 		actionbar.setTitle("Data Usage");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionbar.setHomeButtonEnabled(true);
-		// actionbar.setDisplayHomeAsUpEnabled(true);
+		actionbar.setDisplayHomeAsUpEnabled(true);
 	
 		graph = (XYPlot) findViewById(R.id.mySimpleXYPlot);
 		graph.setOnTouchListener(this);
@@ -511,9 +511,8 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 		{
 			case android.R.id.home:
 	            // app icon in action bar clicked; go home
-	            Intent home = new Intent(this, UTilitiesActivity.class);
-	            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	            startActivity(home);break;
+	            super.onBackPressed();
+	            break;
 		}
 		return true;
 	}

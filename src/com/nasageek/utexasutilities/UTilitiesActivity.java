@@ -7,6 +7,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -32,13 +36,13 @@ public class UTilitiesActivity extends SherlockActivity {
 	private Menu menu;
 	ActionBar actionbar;
 	Toast message;
+	private ImageView scheduleCheck, balanceCheck, dataCheck, blackboardCheck;
 //	 AnimationDrawable frameAnimation;
 	 ConnectionHelper.loginTask lt;
 	 ConnectionHelper.PNALoginTask plt;
 	 ConnectionHelper.bbLoginTask bblt;
 	
 	
-//	@TargetApi(9)
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +81,10 @@ public class UTilitiesActivity extends SherlockActivity {
     	actionbar.show();
     	message = Toast.makeText(this, R.string.login_first, Toast.LENGTH_SHORT);
     	
-    	
+    	scheduleCheck = (ImageView) findViewById(R.id.scheduleCheck);
+    	balanceCheck = (ImageView) findViewById(R.id.balanceCheck);
+    	dataCheck = (ImageView) findViewById(R.id.dataCheck);
+    	blackboardCheck = (ImageView) findViewById(R.id.blackboardCheck);
     	
   
    // 	BitmapDrawable bmd = (BitmapDrawable) getResources().getDrawable(R.drawable.main_background);
@@ -86,7 +93,25 @@ public class UTilitiesActivity extends SherlockActivity {
   /*    TableLayout tl = (TableLayout) findViewById(R.id.button_table);
         tl.setBackgroundDrawable(bmd);
         */
-        if(!settings.contains("firstRun"))
+    	
+    	
+    	 
+    	if(!settings.contains("encryptedpassword") && settings.contains("firstRun") && settings.contains("password"))
+         {
+         	Utility.commit(settings.edit().remove("password"));
+         	Utility.commit(settings.edit().putBoolean("encryptedpassword", true));
+         	Utility.commit(settings.edit().putBoolean("autologin", false));
+         	ClassDatabase.getInstance(this).deleteDb(this, true);
+         	AlertDialog.Builder passwordcleared_builder = new AlertDialog.Builder(this);
+         	passwordcleared_builder.setMessage("With this update to UTilities, your stored password will be encrypted. Your currently stored password "+
+         	"has been wiped for security purposes and you will need to re-enter it.")
+        			.setCancelable(true)
+        			.setPositiveButton("Ok", null);
+        	AlertDialog passwordcleared = passwordcleared_builder.create();
+        	passwordcleared.show();
+         }
+    	
+    	if(!settings.contains("firstRun"))
         {
         	AlertDialog.Builder nologin_builder = new AlertDialog.Builder(this);
         	nologin_builder.setMessage("This is your first time running UTilities; why don't you try logging in to get the most use out of the app?")
@@ -106,8 +131,7 @@ public class UTilitiesActivity extends SherlockActivity {
         	Utility.commit(settings.edit().putBoolean("firstRun", false));
         	Utility.id(this);
         }
-    	
-    	
+
    /* 	if(!ConnectionHelper.cookieHasBeenSet() && (!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
         {
         	AlertDialog.Builder nologin_builder = new AlertDialog.Builder(this);
@@ -132,6 +156,7 @@ public class UTilitiesActivity extends SherlockActivity {
         }
         
         final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
+        
     //    schedulebutton.setBackgroundResource(R.drawable.schedule_button_anim);
     //    AlphaAnimation aa = new AlphaAnimation(0.0f,1.0f);
         
@@ -161,7 +186,7 @@ public class UTilitiesActivity extends SherlockActivity {
             	}
             	else
             	{
-            		if(!ConnectionHelper.cookieHasBeenSet() && ClassDatabase.getInstance(UTilitiesActivity.this).size()==0)
+            		if(!ConnectionHelper.cookieHasBeenSet())
 	            	{
             			Intent login_intent = new Intent(UTilitiesActivity.this, LoginActivity.class);
             			login_intent.putExtra("activity", schedule.getComponent().getClassName());
@@ -415,6 +440,7 @@ public class UTilitiesActivity extends SherlockActivity {
     public void logout()
     {
     	ConnectionHelper.logout(this);
+    	resetChecks();
     	message.setText("You have been successfully logged out");
     	message.show();
     }
@@ -424,12 +450,57 @@ public class UTilitiesActivity extends SherlockActivity {
     	invalidateOptionsMenu();
     	if(pd!=null)
     		pd.dismiss();
+    	resetChecks();
+    	
     }
     public void onStart()
     {
     	super.onStart();
     	if(pd!=null)
     		pd.dismiss();
+    }
+    private void resetChecks()
+    {
+    	if(settings.getBoolean("loginpref", false))
+    	{	
+    		scheduleCheck.setVisibility(View.GONE);
+    		balanceCheck.setVisibility(View.GONE);
+    		dataCheck.setVisibility(View.GONE);
+    		blackboardCheck.setVisibility(View.GONE);
+    	}
+        else
+        {
+        	if(!ConnectionHelper.cookieHasBeenSet())
+        	{	
+        		scheduleCheck.setImageResource(R.drawable.ic_done_translucent);
+        		balanceCheck.setImageResource(R.drawable.ic_done_translucent);
+        	}
+        	else
+    		{
+        		scheduleCheck.setImageResource(R.drawable.ic_done);
+        		balanceCheck.setImageResource(R.drawable.ic_done);
+    		}
+        	if(!ConnectionHelper.bbCookieHasBeenSet())
+        	{	
+        		blackboardCheck.setImageResource(R.drawable.ic_done_translucent);
+        	}
+        	else
+    		{
+        		blackboardCheck.setImageResource(R.drawable.ic_done);
+    		}
+        	if(!ConnectionHelper.PNACookieHasBeenSet())
+        	{	
+        		dataCheck.setImageResource(R.drawable.ic_done_translucent);
+        	}
+        	else
+    		{
+        		dataCheck.setImageResource(R.drawable.ic_done);
+        	}
+        	scheduleCheck.setVisibility(View.VISIBLE);
+        	balanceCheck.setVisibility(View.VISIBLE);
+    		dataCheck.setVisibility(View.VISIBLE);
+    		blackboardCheck.setVisibility(View.VISIBLE);
+        }
     }
 
 }

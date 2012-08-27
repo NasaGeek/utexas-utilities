@@ -19,10 +19,10 @@ public class ClassDatabase extends SQLiteOpenHelper
 	
 	private Context context;
 //	private String[] colors = {"00b060","ff4500","ff9200","793a8c","06799f","ff5d40","a6b900"};
-	private String[] colors = {"ffe45e","ff866e","b56eb3","488ab0","00b060","94c6ff","81b941"};
+	private String[] colors = {"ffe45e","ff866e","b56eb3","ffad46","488ab0","00b060","94c6ff","81b941"};
 	private double oldH=0; 
 	private int count;
-	public static ClassDatabase cdbInstance = null;
+	private static ClassDatabase cdbInstance = null;
 	private SQLiteDatabase sqldb;
 	private static final String KEY_EID = "eid";
 	private static final String KEY_UNIQUEID = "uniqueid";

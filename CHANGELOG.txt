@@ -68,3 +68,5 @@ Locate exam button now hidden when there is no location available for an exam
 Password is encrypted
 New buildings added to database for campus map.  Users will HAVE to uninstall or clear data for this to take effect.
 Temporary login overhauled, now works with all services.
+Slight tweak to list header layout.
+Bus stop times now get fetched correctly.

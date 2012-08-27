@@ -55,8 +55,9 @@ public class BlackboardGradesActivity extends SherlockActivity
 			setContentView(R.layout.blackboard_grades_layout);
 			actionbar = getSupportActionBar();
 			actionbar.setHomeButtonEnabled(true);
-			actionbar.setSubtitle(BlackboardActivity.currentBBCourseName);
-			actionbar.setTitle("Grades");
+			actionbar.setDisplayHomeAsUpEnabled(true);
+			actionbar.setTitle(BlackboardActivity.currentBBCourseName);
+			actionbar.setSubtitle("Grades");
 			
 			g_pb_ll = (LinearLayout)findViewById(R.id.grades_progressbar_ll);
 			glv = (ListView) findViewById(R.id.gradesListView);
@@ -126,9 +127,8 @@ public class BlackboardGradesActivity extends SherlockActivity
 	    	{
 		    	case android.R.id.home:
 		            // app icon in action bar clicked; go home
-		            Intent home = new Intent(this, UTilitiesActivity.class);
-		            home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		            startActivity(home);break;
+		           super.onBackPressed();
+		           break;
 		    	case R.id.viewInWeb:
 		    		showAreYouSureDlg(BlackboardGradesActivity.this);
 		    		break;

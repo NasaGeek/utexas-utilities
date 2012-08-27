@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 
 public class BuildingProvider extends ContentProvider {
 
@@ -40,6 +41,11 @@ public class BuildingProvider extends ContentProvider {
 	@Override
 	public boolean onCreate() {
 		
+		if(PreferenceManager.getDefaultSharedPreferences(this.getContext()).getInt("buildingdbversion",1) != 2)
+    	{
+    		if(this.getContext().deleteDatabase("buildings"))
+    			Utility.commit(PreferenceManager.getDefaultSharedPreferences(this.getContext()).edit().putInt("buildingdbversion", 2));
+    	}
 		bdb = new BuildingDatabase(this.getContext());
 		try
 		{

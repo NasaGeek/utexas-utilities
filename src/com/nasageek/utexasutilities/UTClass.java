@@ -2,6 +2,8 @@ package com.nasageek.utexasutilities;
 
 import java.util.ArrayList;
 
+import android.util.Log;
+
 public class UTClass {
 	
 	private String courseid, unique, name, professor, semId;
@@ -24,6 +26,8 @@ public class UTClass {
 			buildings.add(new building(b[i], br[i]));
 		}
 		
+		if(!(d.length == t.length && d.length == buildings.size() && buildings.size() == t.length))
+			Log.d("UTClass creation", "building/day/time size inconsistency: b"+buildings.size()+" d"+d.length+" t"+t.length);
 		for(int i = 0; i < d.length && i < t.length && i < buildings.size(); i++)
 		{
 			

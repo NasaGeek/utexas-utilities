@@ -82,9 +82,9 @@ public class ClassAdapter extends BaseAdapter{
 		classlist = new ArrayList<UTClass>();
 		
 		cllist = new ArrayList<classtime>();
-		cllist.ensureCapacity(145);
-		firstlist.ensureCapacity(145);
-		for(int x = 0; x<145; x++){	cllist.add(null);firstlist.add(false);}
+		cllist.ensureCapacity(160);
+		firstlist.ensureCapacity(160);
+		for(int x = 0; x<160; x++){	cllist.add(null);firstlist.add(false);}
 		
 		for(int i =0; i<cl.size(); i++)
 		{

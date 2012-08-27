@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">UTilities</string>
-    <string name="version"> 1.63</string>
+    <string name="version"> 1.64</string>
     <string name="login_button_text">Save</string>
     <string name="login_category">Persistent Login</string>
     <string name="edit_credentials">Edit login credentials</string>
@@ -20,6 +20,8 @@
     <string name="login_first">Please log in before using this feature</string>
     <string name="login_bb_first">Please log in before using this feature</string>
     <string name="login_pna_first">Please log in before using this feature</string>
+    <string name="preference_blackboard_class_longform_summary">Check this if Blackboard crashes on launch, might fix it.</string>
+    <string name="preference_sendcrashes_summary">Help me help you! No personal information will be sent.</string>
     
       <string-array name="routes_array">
 			<item>Crossing Place</item>
@@ -53,3 +55,4 @@
     	<item>stripehalf</item>
     </string-array>
 </resources>
+

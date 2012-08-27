@@ -18,7 +18,8 @@
                   android:layout_height="wrap_content"
                   android:layout_gravity="center_vertical|left"
                   android:orientation="vertical"
-                  android:enabled="false">
+                  android:enabled="false"
+                  android:paddingRight="12dp">
         <TextView android:id="@+id/abs__action_bar_title"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
