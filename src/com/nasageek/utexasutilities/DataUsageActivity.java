@@ -31,6 +31,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.FloatMath;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -278,8 +279,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    	String pagedata="";
 
 	    	try
-			{
-				
+			{	
 				HttpResponse response = client.execute(hget);
 		    	pagedata = EntityUtils.toString(response.getEntity());
 	
@@ -330,11 +330,18 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 		protected Character doInBackground(Object... params)
 		{
 	//		DefaultHttpClient httpclient = ch.getThreadSafeClient();
-
+			HttpGet hget = null;
 			Pattern authidpattern = Pattern.compile("(?<=%20)\\d+");
 	    	Matcher authidmatcher = authidpattern.matcher(client.getCookieStore().getCookies().get(0).getValue());
-			authidmatcher.find();
-			HttpGet hget = new HttpGet("https://management.pna.utexas.edu/server/get-bw-graph-data.cgi?authid="+authidmatcher.group());
+			if(authidmatcher.find())
+				hget = new HttpGet("https://management.pna.utexas.edu/server/get-bw-graph-data.cgi?authid="+authidmatcher.group());
+			else
+			{
+				cancel(true);
+				errorMsg = "UTilities could not fetch your data usage"; 
+				Log.d(DataUsageActivity.class.getSimpleName(), "No authid found");
+				return ' ';
+			}
 			
 	    	String pagedata="";
 
@@ -359,6 +366,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    		String[] entry = lines[i].split(",");
 	    		date.clear();
 	    		
+	    		//TODO: this crashes sometimes on the [2] access, not sure why
 	    		date.set(Integer.parseInt(entry[0].split("/")[0]),Integer.parseInt(entry[0].split("/")[1])-1,Integer.parseInt(entry[0].split("/| ")[2]),Integer.parseInt(entry[0].split(" |:")[1]),Integer.parseInt(entry[0].split(" |:")[2]));
 	    		labels[x]=date.getTimeInMillis();
 	    	
@@ -452,8 +460,10 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 			minXY = new PointD(graph.getCalculatedMinX().doubleValue(),
 					graph.getCalculatedMinY().doubleValue()); //initial minimum data point
 			absMinX = minXY.x; //absolute minimum data point
+			//TODO: this crashes with a NPE sometimes.  ??
 			//absolute minimum value for the domain boundary maximum
-			minNoError = Math.round(series.getX(1).doubleValue() + 2);
+			Number temp = series.getX(1);
+			minNoError = Math.round(temp.doubleValue() + 2);
 			maxXY = new PointD(graph.getCalculatedMaxX().doubleValue(),
 					graph.getCalculatedMaxY().doubleValue()); //initial maximum data point
 			

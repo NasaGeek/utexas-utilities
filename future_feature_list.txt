@@ -26,3 +26,5 @@ screen to save schedules instead of automatically doing it, listdialog that woul
 actionbar overflow or maybe in settings.  Either way it should be text, clear explanation of what it does.
 
 blackboard "favorite courses" viewpager in main blackboard page maybe
+address course overlap (try splitting down the middle with 2 colors) need to address possible selection issue
+Use mitmproxy to sniff more bb API

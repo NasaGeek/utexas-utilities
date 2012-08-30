@@ -27,13 +27,12 @@ public class MenuActivity extends SherlockFragmentActivity {
 	public enum Restaurant {
 		No_Overlay("0","No Restaurant"),
 		JesterCityLimits("01","Jester City Limits",new String[][]{{"9am - 11pm"},{"7am - 11pm"},{"7am - 11pm"},{"7am - 11pm"},{"7am - 11pm"},{"7am - 11pm"},{"7am - 9pm"},{"9am - 8pm"}},true),
-		JesterCityMarket("05","Jester City Market",new String[][]{{"2pm - 11pm"},{"7am - 11pm"},{"7am - 11pm"},{"7am - 11pm"},{"7am - 11pm"},{"7am - 11pm"},{"7am - 9pm"},{"2pm - 8pm"}},true),
+		JesterCityMarket("05","Jester City Market",new String[][]{{"2pm - 11pm"},{"7am - 12am"},{"7am - 12am"},{"7am - 12am"},{"7am - 12am"},{"7am - 12am"},{"7am - 9pm"},{"2pm - 8pm"}},true),
 		J2("12","Jester 2nd Floor Dining",new String[][]{{"","",""},{"","11:30am - 2pm","4:30pm - 7:30pm"},{"","11:30am - 2pm","4:30pm - 7:30pm"},{"","11:30am - 2pm","4:30pm - 7:30pm"},{"","11:30am - 2pm","4:30pm - 7:30pm"},{"","11:30am - 2pm","4:30pm - 7:30pm"},{"","11:30am - 2pm","4:30pm - 7:30pm"},{"","",""}},false),
 		Kinsolving("03", "Kinsolving Dining Hall",new String[][]{{"","11am - 2pm",""},{"7am - 9:30am","10:30am - 2pm","4:30pm - 7pm"},{"7am - 9:30am","10:30am - 2pm","4:30pm - 7pm"},{"7am - 9:30am","10:30am - 2pm","4:30pm - 7pm"},{"7am - 9:30am","10:30am - 2pm","4:30pm - 7pm"},{"7am - 9:30am","10:30am - 2pm","4:30pm - 7pm"},{"7am - 9:30am","10:30am - 2pm","4:30pm - 7pm"},{"","11am - 2pm","4:30pm - 7pm"}},false),
 		KinsMarket("14","Kin's Market",new String[][]{{"4pm - 11pm"},{"7am - 11pm"},{"7am - 11pm"},{"7am - 11pm"},{"7am - 11pm"},{"7am - 11pm"},{"7am - 3pm"},{"3pm - 7pm"}},true),
 		CypressBend("08","Cypress Bend",new String[][]{{"12pm - 7pm"},{"7am - 9pm"},{"7am - 9pm"},{"7am - 9pm"},{"7am - 9pm"},{"7am - 9pm"},{"7am - 2pm"},{"12pm - 7pm"}},true),
-		Littlefield("19", "Littlefield Patio Cafe",new String[][]{{"4pm - 8pm"},{"7am - 8pm"},{"7am - 8pm"},{"7am - 8pm"},{"7am - 8pm"},{"7am - 8pm"},{"7am - 4pm"},{""}},true),
-		FortyAcresBakery("21","40 Acres Bakery",new String[][]{{""},{"7am - 2pm"},{"7am - 2pm"},{"7am - 2pm"},{"7am - 2pm"},{"7am - 2pm"},{"7am - 2pm"},{""}},true),
+		Littlefield("19", "Littlefield Patio Cafe",new String[][]{{"2pm - 8pm"},{"7am - 8pm"},{"7am - 8pm"},{"7am - 8pm"},{"7am - 8pm"},{"7am - 8pm"},{"7am - 4pm"},{""}},true),
 		JestAPizza("26","Jest A' Pizza",new String[][]{{"5pm - 12am"},{"11am - 12am"},{"11am - 12am"},{"11am - 12am"},{"11am - 12am"},{"11am - 12am"},{"11am - 2pm"},{""}},true);
 		
 	    private String code;

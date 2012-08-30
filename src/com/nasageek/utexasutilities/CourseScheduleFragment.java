@@ -92,7 +92,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		
 		cdb.resetColorCount();
 		
-		Cursor sizecheck = cdb.getReadableDatabase().query("classes", null, "semester = \""+this.semId+"\"" , null, null, null, null);
+		Cursor sizecheck = cdb.getWritableDatabase().query("classes", null, "semester = \""+this.semId+"\"" , null, null, null, null);
 //		Cursor sizecheck = cdb.getReadableDatabase().query("classes", null, null , null, null, null, null);
 		
 		if (sizecheck.getCount()<1)
@@ -199,6 +199,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	{
 		private DefaultHttpClient client;
 		private String errorMsg;
+		private boolean classParseIssue = false;
 		
 		public parseTask(DefaultHttpClient client)
 		{
@@ -264,15 +265,31 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    		Matcher classAttMatcher = classAttPattern.matcher(classContent);
 		    		if(classAttMatcher.find())
 		    			uniqueid = classAttMatcher.group(1);
+		    		else
+		    		{	classParseIssue = true;
+		    			continue;
+		    		}
 		    		if(classAttMatcher.find())
 		    			classid = classAttMatcher.group(1);
+		    		else
+		    		{	classParseIssue = true;
+		    			continue;
+		    		}
 		    		if(classAttMatcher.find())
 		    			classname =  classAttMatcher.group(1);
+		    		else
+		    		{	classParseIssue = true;
+		    			continue;
+		    		}
 		    		if(classAttMatcher.find())
 		    		{
 		    			buildings = classAttMatcher.group(1).split("<br />");
 		    			for(int i = 0; i<buildings.length; i++)
 		    				buildings[i] = buildings[i].replaceAll("<.*?>", "").trim();
+		    		}
+		    		else
+		    		{	classParseIssue = true;
+		    			continue;
 		    		}
 		    		if(classAttMatcher.find())
 		    		{
@@ -280,16 +297,28 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    			for(int i = 0; i<rooms.length; i++)
 		    				rooms[i] = rooms[i].trim();
 		    		}
+		    		else
+		    		{	classParseIssue = true;
+		    			continue;
+		    		}
 		    		if(classAttMatcher.find())
 		    		{	
 		    			days = classAttMatcher.group(1).split("<br />");
 		    			for(int a = 0; a<days.length;a++) days[a] = days[a].replaceAll("TH", "H").trim();
+		    		}
+		    		else
+		    		{	classParseIssue = true;
+		    			continue;
 		    		}
 		    		if(classAttMatcher.find())
 		    		{
 		    			times = classAttMatcher.group(1).replaceAll("- ", "-").split("<br />");	
 		    			for(int i = 0; i<times.length; i++)
 		    				times[i] = times[i].trim();
+		    		}
+		    		else
+		    		{	classParseIssue = true;
+		    			continue;
 		    		}
 		    		cdb.addClass(new UTClass(uniqueid,classid,classname,buildings, rooms, days, times, semId));
 		    		classCount++;
@@ -358,6 +387,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 				nc_tv.setVisibility(View.GONE);
 				gv.setVisibility(View.GONE);
 			}	
+			if(classParseIssue)
+				Toast.makeText(parentAct, "One or more classes could not be parsed correctly, try emailing the dev ;)", Toast.LENGTH_SHORT).show();
 		}
 		@Override
 		protected void onCancelled()

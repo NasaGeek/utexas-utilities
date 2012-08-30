@@ -187,7 +187,7 @@ public class MenuFragment extends SherlockFragment
 		    	
 				}
 			});
-			mlv.setPinnedHeaderView(getLayoutInflater(null).inflate(R.layout.menu_header_item_view, mlv, false));
+			mlv.setPinnedHeaderView(getActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, mlv, false));
 			
 			mlv.setVisibility(View.VISIBLE);	
 			m_pb_ll.setVisibility(View.GONE);
@@ -279,7 +279,7 @@ public class MenuFragment extends SherlockFragment
 		@Override
 		public View getAmazingView(int position, View convertView, ViewGroup parent) {
 			View res = convertView;
-			if (res == null) res = getLayoutInflater(null).inflate(R.layout.menu_item_view, null);
+			if (res == null) res = getActivity().getLayoutInflater().inflate(R.layout.menu_item_view, null);
 			
 			TextView lName = (TextView) res.findViewById(R.id.lName);
 			

@@ -271,13 +271,16 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 			public View getView(int position, View convertView, ViewGroup parent)
 			{
 				String[] examdata = exams.get(position).split("\\^");
-				
-				boolean examRequested = !examdata[2].contains("The department");
-				boolean summerSession = examdata[2].contains("Information on final exams is available for Nine-Week Summer Session(s) only.");	
+				boolean examRequested = false, summerSession = false;
 				String id="", name="", date="", location="", unique="";
 				
+				
+				//TODO: I hate doing these try/catches, find a better solution so I know when stuff goes wrong? ACRA?
 				try
-				{	
+				{
+					examRequested = !examdata[2].contains("The department");
+					summerSession = examdata[2].contains("Information on final exams is available for Nine-Week Summer Session(s) only.");	
+				
 					unique = examdata[0]; 
 					id = examdata[1];
 					name = examdata[2];
@@ -292,6 +295,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 				{
 					ex.printStackTrace();
 					Crittercism.leaveBreadcrumb("Exam parse error "+Arrays.toString(examdata));
+					
 				}
 				String course = "";
 				ViewGroup vg = (ViewGroup)convertView;

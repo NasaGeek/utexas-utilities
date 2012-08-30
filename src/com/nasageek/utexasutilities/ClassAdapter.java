@@ -52,7 +52,7 @@ public class ClassAdapter extends BaseAdapter{
 
 		updateTime();
 		
-		SQLiteDatabase sqldb = cdb.getReadableDatabase();
+		
 		Cursor cur = null;
 		String[] col = {"uniqueid","day","start","end","building"};
 		ArrayList<classtime> cl = new ArrayList<classtime>(50);
@@ -64,7 +64,7 @@ public class ClassAdapter extends BaseAdapter{
 		//	Log.d("cursor", cur.getString(0)+cur.getString(1)+cur.getString(2)+cur.getString(3));
 			cl.add(new classtime(cur.getString(0),cur.getString(1).charAt(0),cur.getString(2),cur.getString(3)));
 		}*/
-		
+		SQLiteDatabase sqldb = cdb.getReadableDatabase();
 		cur = sqldb.query("classes",col,"semester = \""+semId+"\"",null,null,null,null, null);
 		cur.moveToFirst();
 		

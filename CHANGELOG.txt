@@ -51,7 +51,7 @@ Fixed bug causing a crash when students with summer exams went to view them
 Versioncode 6 - 1.63
 
 Hopefully fixed a strange crash in menus
-Hopefully fixed a crash related to cancelling login
+Hopefully fixed a crash related to canceling login
 Fixed a bug causing a crash during logout (this might break some stuff, we'll see)
 Fixed a bug that could cause a crash in the campus map
 Removed some leftover layout files that could have caused issues with orientation lockers that put the app into landscape mode
@@ -66,7 +66,14 @@ Fixed crash when backing out of menus while they were still loading
 One more blackboard crash fix - the option to view raw data is probably obsolete at this point
 Locate exam button now hidden when there is no location available for an exam
 Password is encrypted
-New buildings added to database for campus map.  Users will HAVE to uninstall or clear data for this to take effect.
+New buildings added to database for campus map.
 Temporary login overhauled, now works with all services.
 Slight tweak to list header layout.
 Bus stop times now get fetched correctly.
+
+Versioncode 8 - 1.65
+
+Fixed crash when viewing Carothers Dormitory on map
+Removed 40 Acres Bakery from Menus, and changed the hours for a few locations to match their updated hours which can be found at http://www.utexas.edu/student/housing/index.php?site=18&scode=0&id=2222 
+
+
