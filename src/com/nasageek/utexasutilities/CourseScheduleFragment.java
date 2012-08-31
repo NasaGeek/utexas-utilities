@@ -388,7 +388,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 				gv.setVisibility(View.GONE);
 			}	
 			if(classParseIssue)
-				Toast.makeText(parentAct, "One or more classes could not be parsed correctly, try emailing the dev ;)", Toast.LENGTH_SHORT).show();
+				Toast.makeText(parentAct, "One or more classes could not be parsed correctly, try emailing the dev ;)", Toast.LENGTH_LONG).show();
 		}
 		@Override
 		protected void onCancelled()

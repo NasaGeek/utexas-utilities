@@ -80,8 +80,40 @@
         
         <activity android:name=".MenuActivity"
         		 android:screenOrientation="portrait"></activity>
-         	
         
+        <activity
+            android:name=".WelcomeScreen"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".searchInputScreen"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".displaySearchResults"
+            android:screenOrientation="portrait" />
+        <activity android:name=".showLibraryTimings2"
+            android:screenOrientation="portrait" />
+        <activity android:name=".settings"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".reserveStudyRoom"
+            android:screenOrientation="portrait" />
+        <activity android:name=".displayRoomResults" 
+            android:screenOrientation="portrait"/>
+        <activity android:name=".renewBooks"
+            android:screenOrientation="portrait" />
+        <activity android:name=".saveBooks"
+            android:screenOrientation="portrait" />
+        <activity android:name=".libraryMaps"
+            android:screenOrientation="portrait" />
+        <activity android:name=".finalizeRoomReservation" 
+            android:screenOrientation="portrait"/>
+        <activity android:name=".searchInputScreen_advanced"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".libraryMapsShowImages"
+            android:screenOrientation="portrait" />
+         	
         <provider android:name=".BuildingProvider"
          			 android:authorities="com.nasageek.utexasutilities.buildingprovider"/>
      

@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, This app will be a UT library application</string>
+    <string name="app_name">UTLibraries</string>
+    <string name="LocationPrompt">Please Specify a Location</string>
+    <string name="YearRange">Year Range</string>
+    <string name="to">to</string>
+    <string name="FieldPrompt">Enter Field Type</string>
+    <string name="MaterialPrompt">Enter Material Type</string>
+    <string name="SearchString">Search String</string>
+    <string name="yearstart">Year From</string>
+    <string name="yearend">Year to</string>
+    <string name="publisher">Publisher</string>
+    <string name="searchandsort">Search and Sort</string>
+    <string name="limitavailable">Limit to Available Items</string>
+    <string name="go">Go</string>
+
+    <string-array name="reserveRoomBuildingNames">
+        <item>Any Building</item>
+        <item>Fine Arts Library (Group Study and AV Viewing Rooms)</item>
+        <item>Perry-Castañeda Library (Group Study Rooms)</item>
+        <item>Perry-Castañeda Library (Presentation Practice Rooms)</item>
+    </string-array>
+    <string-array name="searchHeader">
+        <item>Simple</item>
+        <item>Advanced Search</item>
+    </string-array>
+    <string-array name="timeHour">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+    <string-array name="timeMinute">
+        <item>00</item>
+        <item>15</item>
+        <item>30</item>
+        <item>45</item>
+    </string-array>
+    <string-array name="PM">
+        <item>PM</item>
+        <item>AM</item>
+    </string-array>
+    <string-array name="reserveRoomNumberOfPeople">
+        <item>Any Number</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9+</item>
+    </string-array>
+    <string-array name="reserveRoomRoomRequirements">
+        <item>Wireless Internet</item>
+        <item>Ethernet Jacks</item>
+        <item>Power Outlets</item>
+        <item>Whiteboard</item>
+    </string-array>
+    <string-array name="FieldTypeTable">
+        <item>Any Field:</item>
+        <item>Author:</item>
+        <item>Title:</item>
+        <item>Subject:</item>
+        <item>Note:</item>
+    </string-array>
+    <string-array name="LanguageTable">
+        <item>ANY Language</item>
+        <item>Arabic</item>
+        <item>Chinese</item>
+        <item>English</item>
+        <item>French</item>
+        <item>German</item>
+        <item>Hindi</item>
+        <item>Italian</item>
+        <item>Japanese</item>
+        <item>Latin</item>
+        <item>Portuguese</item>
+        <item>Russian</item>
+        <item>Spanish</item>
+        <item>---------</item>
+        <item>Afrikaans</item>
+        <item>Armenian</item>
+        <item>Assamese</item>
+        <item>Azerbaijani</item>
+        <item>Bengali</item>
+        <item>Bhojpuri</item>
+        <item>Braj</item>
+        <item>Bulgarian</item>
+        <item>Byelorussian</item>
+        <item>Catalan</item>
+        <item>Church Slavic</item>
+        <item>Creoles/Pidgins</item>
+        <item>Czech</item>
+        <item>Danish</item>
+        <item>Dogri</item>
+        <item>Dutch</item>
+        <item>Egyptian</item>
+        <item>English, Middle</item>
+        <item>English, Old</item>
+        <item>Finnish</item>
+        <item>French, Middle</item>
+        <item>French, Old</item>
+        <item>Galician</item>
+        <item>German, Middle High</item>
+        <item>Greek, Ancient</item>
+        <item>Greek, Modern</item>
+        <item>Gujarati</item>
+        <item>Hebrew</item>
+        <item>Hungarian</item>
+        <item>Icelandic</item>
+        <item>Indic</item>
+        <item>Indonesian</item>
+        <item>Irish</item>
+        <item>Kannada</item>
+        <item>Korean</item>
+        <item>Maithili</item>
+        <item>Malay</item>
+        <item>Malayalam</item>
+        <item>Manipuri</item>
+        <item>Marathi</item>
+        <item>Mayan</item>
+        <item>Nepali</item>
+        <item>Newari</item>
+        <item>Norwegian</item>
+        <item>Oriya</item>
+        <item>Pali</item>
+        <item>Panjabi</item>
+        <item>Persian</item>
+        <item>Polish</item>
+        <item>Prakrit</item>
+        <item>Pushto</item>
+        <item>Quechua</item>
+        <item>Rajasthani</item>
+        <item>Romance</item>
+        <item>Romanian</item>
+        <item>Sanskrit</item>
+        <item>Scottish Gaelic</item>
+        <item>Serbo-Croatian Cyrillic</item>
+        <item>Serbo-Croatian Roman</item>
+        <item>Sindhi</item>
+        <item>Sinhalese</item>
+        <item>Slovak</item>
+        <item>Slovenian</item>
+        <item>South American Indian</item>
+        <item>Swahili</item>
+        <item>Swedish</item>
+        <item>Tamil</item>
+        <item>Telugu</item>
+        <item>Turkish</item>
+        <item>Turkish Ottoman</item>
+        <item>Ukranian</item>
+        <item>Urdu</item>
+        <item>Welsh</item>
+        <item>Yiddish</item>
+    </string-array>
+    <string-array name="MaterialTypeTable">
+        <item>ANY Material Type</item>
+        <item>Books &amp; Printed Materials</item>
+        <item>EBooks</item>
+        <item>DVDs</item>
+        <item>Videocassettes</item>
+        <item>Compact Discs</item>
+        <item>Records(LPs)</item>
+        <item>Audio Cassettes</item>
+        <item>Other Recorded Formats</item>
+        <item>Non-Music Recordings</item>
+        <item>Music Scores (Printed)</item>
+        <item>Music Scores (Manuscripts)</item>
+        <item>Maps &amp; Atlases</item>
+        <item>Maps (Manuscripts)</item>
+        <item>CD-ROMs, Computer Files</item>
+        <item>Archival Collections (Mixed)</item>
+        <item>Archival Collections (Manuscripts)</item>
+        <item>Films, Slides, etc.</item>
+        <item>Graphics, Charts, Art</item>
+        <item>Artifacts, Models, Realia</item>
+        <item>Kits</item>
+    </string-array>
+    <string-array name="hoursLocations">
+        <item> PCL (Perry Castaneda Library)</item>
+        <item> Architecture and Planning Library</item>
+        <item> Benson Latin American Collection</item>
+        <item> Briscoe Center for American History</item>
+        <item> Chemistry Library</item>
+        <item> Classics Library</item>
+        <item> Collections Deposit Library</item>
+        <item> Engineering (McKinney) Library</item>
+        <item> Fine Arts Library</item>
+        <item> Geology (Walter) Library</item>
+        <item> Harry Ransom Center</item>
+        <item> Life Science Library</item>
+        <item> Marine Science Library</item>
+        <item> Physics-Math-Astronomy Library</item>
+    </string-array>
+    <string-array name="hoursLocationsURLs">
+        <item>http://lib.utexas.edu/m/hours/byunit.php?loc=pcl</item>
+        <item>http://lib.utexas.edu/m/hours/byunit.php?loc=apl</item>
+        <item>http://lib.utexas.edu/m/hours/byunit.php?loc=blac</item>
+        <item>http://lib.utexas.edu/m/hours/byunit.php?loc=cah</item>
+        <item>http://lib.utexas.edu/m/hours/byunit.php?loc=chem</item>
+        <item>http://lib.utexas.edu/m/hours/byunit.php?loc=class</item>
+        <item>http://lib.utexas.edu/m/hours/byunit.php?loc=cdl</item>
+        <item>http://lib.utexas.edu/m/hours/byunit.php?loc=engin</item>
+        <item>http://lib.utexas.edu/m/hours/byunit.php?loc=fal</item>
+        <item>http://lib.utexas.edu/m/hours/byunit.php?loc=geo</item>
+        <item>http://www.hrc.utexas.edu/visit/</item>
+        <item>http://lib.utexas.edu/m/hours/byunit.php?loc=life</item>
+        <item>http://www.lib.utexas.edu/msl/about/hours_staff</item>
+        <item>http://lib.utexas.edu/m/hours/byunit.php?loc=pma</item>
+    </string-array>
+    <string-array name="LocationTable">
+        <item> ALL Locations</item>
+        <item>-- Dissertations/Theses</item>
+        <item>-- Electronic resources</item>
+        <item> -- Journals</item>
+        <item> -- Microforms</item>
+        <item> Architecture Library</item>
+        <item> Benson Latin American Collection</item>
+        <item> Benson Rare Books</item>
+        <item> Briscoe Center for American History</item>
+        <item> Chemistry Library</item>
+        <item> Classics Library</item>
+        <item> Collections Deposit Library</item>
+        <item> Engineering Library</item>
+        <item> Fine Arts Library</item>
+        <item> Geology Library</item>
+        <item> Harry Ransom Center</item>
+        <item> K-12 Textbooks and Curriculum</item>
+        <item> Life Science Library</item>
+        <item> Marine Science Library</item>
+        <item> PCL (Perry Castaneda Library)</item>
+        <item> PCL Reference</item>
+        <item> Peridier and McDonald Libraries</item>
+        <item> Physics-Math-Astronomy Library</item>
+        <item> Stark Center</item>
+        <item> Tarlton Law Library</item>
+        <item> Wildflower Center</item>
+        <item> Youth Collections</item>
+    </string-array>
+    <string-array name="searchandsorttable">
+        <item> Sort by relevance </item>
+        <item> Sort by date </item>
+        <item> Sort by title </item>
+    </string-array>
+    <string-array name="searchandsortvalues">
+        <item>D</item>
+        <item>DX</item>
+        <item>AX</item>
+    </string-array>
+    <string-array name="numberTypeTable">
+        <item>Library of Congress Call Number</item>
+        <item>Other Call Number</item>
+        <item>Dewey Call Number</item>
+        <item>US Document Number</item>
+        <item>ISBN/ISSN/Music Publisher Number/Library of Congress Control Number</item>
+        <item>OCLC Number</item>
+    </string-array>
+    <string-array name="langValues">
+        <item></item>
+        <item>ara</item>
+        <item>chi</item>
+        <item>eng</item>
+        <item>fre</item>
+        <item>ger</item>
+        <item>hin</item>
+        <item>ita</item>
+        <item>jpn</item>
+        <item>lat</item>
+        <item>por</item>
+        <item>rus</item>
+        <item>spa</item>
+        <item></item>
+        <item>afr</item>
+        <item>arm</item>
+        <item>asm</item>
+        <item>aze</item>
+        <item>ben</item>
+        <item>bho</item>
+        <item>bra</item>
+        <item>bul</item>
+        <item>bel</item>
+        <item>cat</item>
+        <item>chu</item>
+        <item>crp</item>
+        <item>cze</item>
+        <item>dan</item>
+        <item>doi</item>
+        <item>dut</item>
+        <item>egy</item>
+        <item>enm</item>
+        <item>ang</item>
+        <item>fin</item>
+        <item>frm</item>
+        <item>fro</item>
+        <item>glg</item>
+        <item>gmh</item>
+        <item>grc</item>
+        <item>gre</item>
+        <item>guj</item>
+        <item>heb</item>
+        <item>hun</item>
+        <item>ice</item>
+        <item>inc</item>
+        <item>ind</item>
+        <item>gle</item>
+        <item>kan</item>
+        <item>kor</item>
+        <item>mai</item>
+        <item>may</item>
+        <item>mal</item>
+        <item>mni</item>
+        <item>mar</item>
+        <item>myn</item>
+        <item>nep</item>
+        <item>new</item>
+        <item>nor</item>
+        <item>ori</item>
+        <item>pli</item>
+        <item>pan</item>
+        <item>per</item>
+        <item>pol</item>
+        <item>pra</item>
+        <item>pus</item>
+        <item>que</item>
+        <item>raj</item>
+        <item>roa</item>
+        <item>rum</item>
+        <item>san</item>
+        <item>gla</item>
+        <item>scc</item>
+        <item>scr</item>
+        <item>snd</item>
+        <item>sin</item>
+        <item>slo</item>
+        <item>slv</item>
+        <item>sai</item>
+        <item>swa</item>
+        <item>swe</item>
+        <item>tam</item>
+        <item>tel</item>
+        <item>tur</item>
+        <item>ota</item>
+        <item>ukr</item>
+        <item>urd</item>
+        <item>wel</item>
+        <item>yid</item>
+    </string-array>
+    <string-array name="materialtypeValues">
+        <item></item>
+        <item>a</item>
+        <item>z</item>
+        <item>l</item>
+        <item>2</item>
+        <item>h</item>
+        <item>1</item>
+        <item>3</item>
+        <item>j</item>
+        <item>i</item>
+        <item>c</item>
+        <item>d</item>
+        <item>e</item>
+        <item>f</item>
+        <item>m</item>
+        <item>p</item>
+        <item>t</item>
+        <item>g</item>
+        <item>k</item>
+        <item>r</item>
+        <item>o</item>
+    </string-array>
+    <string-array name="searchscopeValues">
+        <item>29</item>
+        <item>2</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>8</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>20</item>
+        <item>28</item>
+    </string-array>
+    <string-array name="fieldtypeValues">
+        <item></item>
+        <item>a:</item>
+        <item>t:</item>
+        <item>d:</item>
+        <item>N:</item>
+    </string-array>
+
+    <string name="searchTopText">Please enter any relevant fields</string>
+    <string name="usefield">Use Field</string>
+    <string name="searchresults">Results</string>
+    <string name="loadmoreresultsbutton">More</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+    <string name="previous">Prev</string>
+    <string name="home">Home</string>
+    <string name="refresh">Refresh</string>
+    <string name="autologin">Auto Login</string>
+    <string name="savelogininfo">Save Login Info</string>
+    <string name="uteid">UTEID</string>
+    <string name="password">Password</string>
+    <string name="empty"></string>
+    <string name="input">input</string>
+    <string name="set">set</string>
+    <string name="store">store</string>
+    <string name="reserve_room_header">Please Enter Room Preferences</string>
+    <string name="date">Date</string>
+    <string name="starttime">Start Time</string>
+    <string name="endtime">End Time</string>
+    <string name="building">Building</string>
+    <string name="numberofpeople">Number of People</string>
+    <string name="roomrequirements">Room Requirements</string>
+    <string name="enter">Enter</string>
+    <string name="anybuilding">Any Building</string>
+    <string name="finearts">Fine Arts Library (Group Study and AV Viewing Rooms)</string>
+    <string name="pclgroup">PCL Group Study Rooms</string>
+    <string name="pclpresentation">PCL Presentation Practice Rooms</string>
+    <string name="peoplepromp">Pleae Enter Number of People</string>
+    <string name="checkedoutbooksheader">Checked Out Books</string>
+    <string name="renewall">Renew All</string>
+    <string name="renewmarked">Renew Marked</string>
+    <string name="renew">Renew</string>
+    <string name="title">Title</string>
+    <string name="savebook">Save Book</string>
+    <string name="savedbooks">Saved Books</string>
+    <string name="Floorup">Floor Up</string>
+    <string name="floordown">Floor Down</string>
+    <string name="floor">Floor</string>
+    <string name="choosematerialtype">Chooose Material Type</string>
+    <string name="chooselanguage">Choose Language</string>
+    <string name="reserve">Reserve</string>
+    <string name="finalizeroomreservation">Finalize Room Reservation</string>
+    <string name="location">location</string>
+    <string name="room">Room</string>
+    <string name="location1">Location</string>
+    <string name="longstringtest">asaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</string>
+    <string name="available">AVAILABLE</string>
+    <string name="about">About</string>
+    <string name="autologinsummary">The app will login everytime you open it</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="Ok">OK</string>
+    <string name="uteidsummary">Don\'t worry, your data will stay on your device</string>
+    <string name="login">Login Details</string>
+    <string name="uteidprompt">Please enter your UTEID</string>
+    <string name="passwordprompt">Please enter your password</string>
+    <string name="logininfo">Login Info</string>
+    <string name="data">Data</string>
+    <string name="miscellaneous">Miscellaneous</string>
+    <string name="abouttext">"This app was developed by Nikhil Garg, an ECE and Plan II student at UT Austin, part of the Class of 2015. "</string>
+    <string name="deletedata">Delete All Data</string>
+    <string name="uteidlower">uteid</string>
+    <string name="passwordlower">password</string>
+    <string name="deletedatakey">deletedata</string>
+    <string name="call_no">call No</string>
+    <string name="group_name">Group Name</string>
+    <string name="large_text">Large Text</string>
+    <string name="medium_text">Medium Text</string>
+    <string name="small_text">Small Text</string>
+    <string name="featurecomingsoon">Feature coming soon. Thank you for your patience.</string>
+
+</resources>
