@@ -361,6 +361,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    	String[] lines = pagedata.split("\n");
 	    	Calendar date = Calendar.getInstance();
 
+	    	//TODO: make more robust, don't hardcore 288
 	    	for(int i = lines.length-288, x=0; i<lines.length; i++,x++)
 	    	{
 	    		String[] entry = lines[i].split(",");
