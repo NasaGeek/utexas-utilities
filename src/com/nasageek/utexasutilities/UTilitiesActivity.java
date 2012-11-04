@@ -41,6 +41,8 @@ public class UTilitiesActivity extends SherlockActivity {
 	 ConnectionHelper.loginTask lt;
 	 ConnectionHelper.PNALoginTask plt;
 	 ConnectionHelper.bbLoginTask bblt;
+	 
+	 AlertDialog nologin;
 	
 	
 	@Override
@@ -69,13 +71,17 @@ public class UTilitiesActivity extends SherlockActivity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         
         setContentView(R.layout.main);
-        setSupportProgressBarIndeterminateVisibility(false);
+        if(ConnectionHelper.isLoggingIn())
+        	setSupportProgressBarIndeterminateVisibility(true);
+        else
+        	setSupportProgressBarIndeterminateVisibility(false);
         final Intent schedule = new Intent(getBaseContext(), ScheduleActivity.class);
     	final Intent balance = new Intent(getBaseContext(), BalanceActivity.class);
     	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
     	final Intent data = new Intent(getBaseContext(), DataUsageActivity.class);
     	final Intent menu = new Intent(getBaseContext(), MenuActivity.class);
     	final Intent blackboard = new Intent(getBaseContext(), BlackboardActivity.class);
+    	final Intent libraries = new Intent(getBaseContext(), WelcomeScreen.class);
     	
     	actionbar = getSupportActionBar();
     	actionbar.show();
@@ -101,7 +107,6 @@ public class UTilitiesActivity extends SherlockActivity {
          	Utility.commit(settings.edit().remove("password"));
          	Utility.commit(settings.edit().putBoolean("encryptedpassword", true));
          	Utility.commit(settings.edit().putBoolean("autologin", false));
-         	ClassDatabase.getInstance(this).deleteDb(this, true);
          	AlertDialog.Builder passwordcleared_builder = new AlertDialog.Builder(this);
          	passwordcleared_builder.setMessage("With this update to UTilities, your stored password will be encrypted. Your currently stored password "+
          	"has been wiped for security purposes and you will need to re-enter it.")
@@ -126,7 +131,7 @@ public class UTilitiesActivity extends SherlockActivity {
                      dialog.cancel();
                 }
             });
-        	AlertDialog nologin = nologin_builder.create();
+        	nologin = nologin_builder.create();
         	nologin.show();
         	Utility.commit(settings.edit().putBoolean("firstRun", false));
         	Utility.id(this);
@@ -173,7 +178,7 @@ public class UTilitiesActivity extends SherlockActivity {
           //  	frameAnimation.start();
             	if(settings.getBoolean("loginpref", false))
             	{
-            		if((!ConnectionHelper.cookieHasBeenSet() && ClassDatabase.getInstance(UTilitiesActivity.this).size()==0) || ConnectionHelper.isLoggingIn())
+            		if(!ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.isLoggingIn())
 	            	{
 	            		message.setText(R.string.login_first);
 	                	message.setDuration(Toast.LENGTH_SHORT);
@@ -309,7 +314,36 @@ public class UTilitiesActivity extends SherlockActivity {
             }
             
     });
- 
+        final ImageButton librariesbutton = (ImageButton) findViewById(R.id.libraries_button);
+        librariesbutton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+            	if(settings.getBoolean("loginpref", false))
+            	{
+            		if(!ConnectionHelper.cookieHasBeenSet() || 
+        			ConnectionHelper.isLoggingIn() ) 
+	            	{
+	            		message.setText(R.string.login_first);
+	                	message.setDuration(Toast.LENGTH_SHORT);
+	            		message.show();
+	            	}
+	            	else
+	            		startActivity(libraries);
+            	}
+            	else
+            	{
+            		if(!ConnectionHelper.cookieHasBeenSet()) 
+	            	{
+            			Intent login_intent = new Intent(UTilitiesActivity.this, LoginActivity.class);
+            			login_intent.putExtra("activity", balance.getComponent().getClassName());
+            			login_intent.putExtra("service", 'u');
+            	    	startActivity(login_intent);
+	            	}
+	            	else
+	            		startActivity(balance);
+            	} 
+            }
+    });
+        
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -458,6 +492,13 @@ public class UTilitiesActivity extends SherlockActivity {
     	super.onStart();
     	if(pd!=null)
     		pd.dismiss();
+    }
+    public void onPause()
+    {
+    	super.onPause();
+    	if(nologin != null)
+    		if(nologin.isShowing())
+    			nologin.dismiss();	
     }
     private void resetChecks()
     {

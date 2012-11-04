@@ -21,7 +21,7 @@ import android.widget.TextView;
 
 public class ClassAdapter extends BaseAdapter{
 
-	static ClassDatabase cdb;
+//	static ClassDatabase cdb;
 	private int height;
 	private ArrayList<classtime> cllist;
 	private ArrayList<UTClass> classlist;
@@ -37,15 +37,20 @@ public class ClassAdapter extends BaseAdapter{
 	
 	private ImageView ci_iv;
 	private TextView ci_tv;
+	private Resources res;
 	
-	public ClassAdapter(Context c, WrappingSlidingDrawer wsd, LinearLayout llsd, ImageView ci_iv, TextView ci_tv, String semId)
+	private String empty_cell_pref;
+	
+	public ClassAdapter(Context c, WrappingSlidingDrawer wsd, LinearLayout llsd, ImageView ci_iv, TextView ci_tv, String semId, ArrayList<UTClass> classList)
 	{
 		
 		sdll = llsd;
 		sd = wsd;
 		sp = PreferenceManager.getDefaultSharedPreferences(c);
-		cdb  = ClassDatabase.getInstance(c);
+		empty_cell_pref = sp.getString("schedule_background_style", "checkhour");
+//		cdb  = ClassDatabase.getInstance(c);
 		currentContext = c;
+		res = currentContext.getResources();
 		
 		this.ci_iv = ci_iv;
 		this.ci_tv = ci_tv;
@@ -53,8 +58,8 @@ public class ClassAdapter extends BaseAdapter{
 		updateTime();
 		
 		
-		Cursor cur = null;
-		String[] col = {"uniqueid","day","start","end","building"};
+//		Cursor cur = null;
+//		String[] col = {"uniqueid","day","start","end","building"};
 		ArrayList<classtime> cl = new ArrayList<classtime>(50);
 	/*	for(int i = 0; i<cdb.size(); i++)
 		{
@@ -64,18 +69,18 @@ public class ClassAdapter extends BaseAdapter{
 		//	Log.d("cursor", cur.getString(0)+cur.getString(1)+cur.getString(2)+cur.getString(3));
 			cl.add(new classtime(cur.getString(0),cur.getString(1).charAt(0),cur.getString(2),cur.getString(3)));
 		}*/
-		SQLiteDatabase sqldb = cdb.getReadableDatabase();
-		cur = sqldb.query("classes",col,"semester = \""+semId+"\"",null,null,null,null, null);
-		cur.moveToFirst();
+	//	SQLiteDatabase sqldb = cdb.getReadableDatabase();
+	//	cur = sqldb.query("classes",col,"semester = \""+semId+"\"",null,null,null,null, null);
+	//	cur.moveToFirst();
 		
-		while(!cur.isAfterLast())
+		for(UTClass clz : classList)
 		{
-			cl.add(new classtime(cur.getString(0),cur.getString(1).charAt(0),cur.getString(2),cur.getString(3),cur.getString(4)));
-			cur.moveToNext();
+			for(classtime clzt : clz.getClassTimes())
+				cl.add(clzt);
 		}
-		cur.close();
-		sqldb.close();
-		cdb.close();
+
+	//	sqldb.close();
+	//	cdb.close();
 		
 		firstlist = new ArrayList<Boolean>();
 		
@@ -145,7 +150,7 @@ public class ClassAdapter extends BaseAdapter{
 	public View getView(int position, View convertView, ViewGroup parent) 
 	{
 	//	Log.d("POSITIONS", position+":"+currentTimePos);
-		// TODO Auto-generated method stub
+		
 		//Log.d("ClassAdapter", "getView");
 		TextView iv;
 		
@@ -159,7 +164,6 @@ public class ClassAdapter extends BaseAdapter{
 		}
 		
 	//	iv = new TextView(currentContext);
-		Resources res = currentContext.getResources();
             iv.setTextColor(Color.BLACK); 
             iv.setTextSize((float)13); //11.75 for full
             if(cllist.get(position)==null)
@@ -176,13 +180,13 @@ public class ClassAdapter extends BaseAdapter{
             	{	
             		iv.setBackgroundColor(getEmptyCellColor(position));
             		
-            	iv.setText("");
+            		iv.setText("");
             	}
             }
             else
             {	
             	classtime cl = cllist.get(position);
-            	String color = "#"+cdb.getColor(cl.getUnique(),cl.getStartTime(), cl.getDay()+"");
+            	String color = "#"+cl.getColor();
 
             	if(position == currentTimePos)
             	{	
@@ -190,7 +194,7 @@ public class ClassAdapter extends BaseAdapter{
 	            	back.setColor(Color.parseColor(color));
             		iv.setBackgroundDrawable(back);
             //		Log.d("TIME", "Time Match: "+position);
-            		}
+            	}
             	else
             		iv.setBackgroundColor(Color.parseColor(color));
             	
@@ -221,7 +225,7 @@ public class ClassAdapter extends BaseAdapter{
 		int darkgray = 0xFFcecece;
 		int lightgray = 0xFFdcdcdc;
 		
-		if(sp.getString("schedule_background_style", "checkhour").equals("checkhour"))
+		if(empty_cell_pref.equals("checkhour"))
 		{
     		if((position/10)%2==0)
     		{
@@ -238,11 +242,11 @@ public class ClassAdapter extends BaseAdapter{
     				return position%2==0?lightgray:darkgray;
     		}
 		}	
-		else if(sp.getString("schedule_background_style", "checkhour").equals("checkhalf"))
+		else if(empty_cell_pref.equals("checkhalf"))
 			return position%2==0 && (position%10)%2==0?lightgray:darkgray;
-		else if(sp.getString("schedule_background_style", "checkhour").equals("stripehour"))
+		else if(empty_cell_pref.equals("stripehour"))
 			return position/10%2==0?lightgray:darkgray;
-		else if(sp.getString("schedule_background_style", "checkhour").equals("stripehalf"))
+		else if(empty_cell_pref.equals("stripehalf"))
 			return position/5%2==0?lightgray:darkgray;
 		else
 			return Color.BLACK;

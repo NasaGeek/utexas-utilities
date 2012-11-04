@@ -29,7 +29,6 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -68,8 +67,8 @@ public class CampusMapActivity extends SherlockMapActivity  {
 	StopItemizedOverlay bgItemizedOverlay;
 	BuildingItemizedOverlay bio;
 	AssetManager am;
-	List stops_al;
-	List kml_al;
+	List<String> stops_al;
+	List<String> kml_al;
 	String routeid;
 	String buildingId;
 	NavigationDataSet buildingDataSet;
@@ -125,13 +124,14 @@ public class CampusMapActivity extends SherlockMapActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_layout);
         
+
+        settings = PreferenceManager.getDefaultSharedPreferences(this);
         this.savedInstanceState= savedInstanceState;
-        routeid = "0";
+        
         buildingId="";
         if (savedInstanceState != null) {
             buildingId= (String) savedInstanceState.getString("buildingId");
         }
-        settings = PreferenceManager.getDefaultSharedPreferences(this);
         
         mapView = (MapView) findViewById(R.id.campusmapview);
         mapView.setSatellite(false);
@@ -162,11 +162,11 @@ public class CampusMapActivity extends SherlockMapActivity  {
         		return false;
         	}
         });
+       
      // Acquire a reference to the system Location Manager
         
         locationSetup();
 
-        
         String[] stopsa=null;
         String[] kml = null;
 		try
@@ -175,19 +175,17 @@ public class CampusMapActivity extends SherlockMapActivity  {
 			stopsa = am.list("stops");
 		} catch (IOException e1)
 		{
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
         stops_al = Arrays.asList(stopsa);
         kml_al = Arrays.asList(kml);
         
-        
-        
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
      //   spinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
+        routeid = ((Route) spinner.getAdapter().getItem(Integer.parseInt(settings.getString("default_bus_route", "0")))).getCode();
         
-        
+        actionbar.setSelectedNavigationItem(Integer.parseInt(settings.getString("default_bus_route", "0")));
         try{
 
             // create the factory
@@ -530,7 +528,7 @@ public class CampusMapActivity extends SherlockMapActivity  {
 	
 	    }
 
-	    public void onNothingSelected(AdapterView parent) {
+	    public void onNothingSelected(AdapterView<?> parent) {
 	      // Do nothing.
 	    }
 	}
@@ -589,7 +587,6 @@ public class CampusMapActivity extends SherlockMapActivity  {
 
 	@Override
 	protected boolean isRouteDisplayed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	@Override

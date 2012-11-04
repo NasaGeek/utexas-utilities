@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ListView
+        android:id="@+id/checkedOutListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/renewMarkedButton"
+        android:cacheColorHint="@color/snow2">
+
+    </ListView>
+
+    
+    <Button
+        android:id="@+id/renewallButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/actionbar"
+        android:onClick="renewAllBooks"
+        android:text="@string/renewall" />
+
+    <Button
+        android:id="@+id/renewMarkedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/actionbar"
+        android:onClick="renewMarkedBooks"
+        android:text="@string/renewmarked" />
+
+</RelativeLayout>

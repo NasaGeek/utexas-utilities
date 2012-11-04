@@ -99,6 +99,7 @@ public class StopItemizedOverlay extends ItemizedOverlay{
 					String a = matcher2.group(1);
 					if(matcher2.group(1).equals(routeid))
 					{
+						//interesting, I load the times statically.  Perhaps better to grab from capmetro?
 						times = mOverlays.get(i).getTitle()+":\n";
 						
 						Pattern pattern3 = Pattern.compile("<span.*?>(.*?)</span>");

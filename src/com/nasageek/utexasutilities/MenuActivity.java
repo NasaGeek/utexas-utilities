@@ -7,8 +7,10 @@ import java.util.Vector;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -70,7 +72,8 @@ public class MenuActivity extends SherlockFragmentActivity {
 	ViewPager pager;
 	ActionBar actionbar;
 	private  DefaultHttpClient httpclient;
-
+	private SharedPreferences settings;
+	
 	private PagerAdapter mPagerAdapter;
 	TabPageIndicator tabIndicator;
 	MenuFragment breakfast,lunch,dinner;
@@ -81,6 +84,7 @@ public class MenuActivity extends SherlockFragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.menu_layout);
 		
+		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		breakfast = new MenuFragment();
 		lunch = new MenuFragment();
 		dinner=  new MenuFragment();
@@ -98,9 +102,8 @@ public class MenuActivity extends SherlockFragmentActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
        
-        httpclient = ConnectionHelper.getThreadSafeClient();
         
-       
+        httpclient = ConnectionHelper.getThreadSafeClient();
         
         actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() 
         {
@@ -133,6 +136,7 @@ public class MenuActivity extends SherlockFragmentActivity {
         		return false;
         	}
         });
+        actionbar.setSelectedNavigationItem(Integer.parseInt(settings.getString("default_restaurant", "0")));
        
 	}
 	private void initialisePaging(String restId) {

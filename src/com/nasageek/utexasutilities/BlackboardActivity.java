@@ -50,7 +50,7 @@ public class BlackboardActivity extends SherlockActivity {
 	{
 		super.onCreate(savedInstanceState);
     	setContentView(R.layout.blackboard_layout);
-    	
+
     	bb_pb_ll = (LinearLayout) findViewById(R.id.blackboard_progressbar_ll);
     	bblv = (AmazingListView) findViewById(R.id.blackboard_class_listview);
     	blackboardlinlay = (LinearLayout) findViewById(R.id.blackboard_courselist);
@@ -162,20 +162,20 @@ public class BlackboardActivity extends SherlockActivity {
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view, int position,
 							long id) {
-
+						//TODO: figure out course id stuff here
 						Intent classLaunch = new Intent(getString(R.string.coursemap_intent), null, BlackboardActivity.this, CourseMapActivity.class);
 						BBClass bbclass = (BBClass)(parent.getItemAtPosition(position));
 						currentBBCourseId = bbclass.getBbid();
 						classLaunch.setData(Uri.parse((bbclass).getBbid()));
 						String unique = "", cid = "";
 						try{
-							unique = bbclass.getCourseid().split("_")[2];
-							cid = bbclass.getCourseid().substring(bbclass.getCourseid().indexOf(unique)+6).replaceAll("_"," ");
+							unique = bbclass.getUnique();
+							cid = bbclass.getFullCourseid().substring(bbclass.getFullCourseid().indexOf(unique)+6).replaceAll("_"," ");
 						}
 						catch(Exception e)
 						{
 							e.printStackTrace();
-							Crittercism.leaveBreadcrumb("BBUnique issue "+bbclass.getCourseid());
+							Crittercism.leaveBreadcrumb("BBUnique issue "+bbclass.getFullCourseid());
 							Toast.makeText(BlackboardActivity.this, "An error occurred, things might look a bit odd.", Toast.LENGTH_SHORT).show();
 						}
 						classLaunch.putExtra("folderName", "Course Map");

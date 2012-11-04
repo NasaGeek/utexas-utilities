@@ -52,6 +52,22 @@
             android:summaryOff="Map currently centers on UT Tower."
             android:summaryOn="Map currently centers on your location."
             android:title="Center on My Location" />
+        <ListPreference 
+            android:id="@+id/default_map_bus_route"
+            android:defaultValue="0"
+            android:entries="@array/routes_array"
+            android:entryValues="@array/routes_value_array"
+            android:key="default_bus_route"
+            android:title="Default Bus Route"/>"
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Menu">
+        <ListPreference
+            android:id="@+id/default_menu_restaurant"
+            android:defaultValue="0"
+            android:entries="@array/restaurants_array"
+            android:entryValues="@array/restaurants_value_array"
+            android:key="default_restaurant"
+            android:title="Default Restaurant" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Blackboard">
         <CheckBoxPreference
@@ -59,12 +75,6 @@
             android:key="blackboard_class_longform"
             android:summary="@string/preference_blackboard_class_longform_summary"
             android:title="Use raw class names"/>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="Data" >
-        <Preference
-            android:id="@+id/resetclassesbutton"
-            android:key="resetclassesbutton"
-            android:title="Clear temporary data." />
     </PreferenceCategory>
 	<PreferenceCategory android:title="Privacy" >
         <CheckBoxPreference

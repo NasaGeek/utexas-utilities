@@ -17,11 +17,13 @@ public class BBClassAdapter extends AmazingAdapter
 	private ArrayList<BBClass> classes;
 	private ArrayList<Pair<String,ArrayList<BBClass>>> all;
 	private LayoutInflater li;
+	private Boolean longform;
 	
 	public BBClassAdapter(Context con, ArrayList<Pair<String,ArrayList<BBClass>>> objects)
 	{
 		all = objects;
 		li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);	
+		longform = PreferenceManager.getDefaultSharedPreferences(con).getBoolean("blackboard_class_longform", false);
 		this.con = con;
 	}
 	@Override
@@ -77,53 +79,56 @@ public class BBClassAdapter extends AmazingAdapter
 
 	@Override
 	public View getAmazingView(int position, View convertView, ViewGroup parent) {
+		ViewHolder holder;
 		ViewGroup res = (ViewGroup) convertView;
-		if (res == null) res = (ViewGroup) li.inflate(R.layout.bbclass_item_view, null, false);
-		
-		TextView nameview= (TextView) res.findViewById(R.id.bb_class_name);
-		TextView idview= (TextView) res.findViewById(R.id.bb_class_id);
+
+		if (res == null) 
+		{	
+			res = (ViewGroup) li.inflate(R.layout.bbclass_item_view, null, false);
+			holder = new ViewHolder();
+			holder.idview = (TextView) res.findViewById(R.id.bb_class_id);
+			holder.nameview= (TextView) res.findViewById(R.id.bb_class_name);
+			res.setTag(holder);
+		}
+		else
+			holder = (ViewHolder) res.getTag();
 		
 		BBClass bbclass = getItem(position);
 		String name = "", unique = "", id = "";
 		
-		if(!PreferenceManager.getDefaultSharedPreferences(con).getBoolean("blackboard_class_longform", false))
-		{	
-			name = (bbclass.getName().contains("(") && bbclass.getName().charAt(0) != '(') 
-																? bbclass.getName().substring(0,bbclass.getName().indexOf("(")-1)
-																: bbclass.getName();															
-			if(bbclass.getCourseid().split("_").length>=3)	
+		if(!longform)
+		{														
+			if(!bbclass.isFullCourseIdTooShort())	
 			{	
-				unique = bbclass.getCourseid().split("_")[2];
-				//assumes Course ID is directly after unique_ and is at the end of the string
-				//will fail if unique start is less than 6 characters from the end of the string.
-				try
+				if(bbclass.isCourseIdAvailable())
 				{
-					id = bbclass.getCourseid().substring(bbclass.getCourseid().indexOf(unique)+6).replaceAll("_"," ");
-					idview.setText(id+" - "+unique);
+					holder.idview.setText(bbclass.getCourseId()+" - "+bbclass.getUnique());
 				}
-				catch(Exception e)
-				{
-					e.printStackTrace();
-					idview.setText(unique);
-				}
+				else
+					holder.idview.setText(bbclass.getUnique());
+				
 			}
 			else
 			{
-				unique = bbclass.getCourseid();
-				idview.setText(unique);
+				holder.idview.setText(bbclass.getCourseId());
 			}
 		}
 		else //probably not even necessary anymore, necessary checking is done in the if-statement
 		{	
-			name = bbclass.getName();
-			unique = bbclass.getCourseid();
+			unique = bbclass.getFullCourseid();
 			//id not set because unique will contain ID and Unique number
-			idview.setText(unique);		
+			holder.idview.setText(unique);		
 		}
 
-		nameview.setText(name);
+		holder.nameview.setText(bbclass.getName());
 		
 		return res;
+	}
+	
+	class ViewHolder
+	{
+		TextView nameview;
+		TextView idview;
 	}
 
 	@Override

@@ -28,3 +28,5 @@ actionbar overflow or maybe in settings.  Either way it should be text, clear ex
 blackboard "favorite courses" viewpager in main blackboard page maybe
 address course overlap (try splitting down the middle with 2 colors) need to address possible selection issue
 Use mitmproxy to sniff more bb API
+show all class buildings on map (button in schedule)
+first time use guides (overlays?)

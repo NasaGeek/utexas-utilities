@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TableRow
+        android:id="@+id/row1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/titleList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="@string/large_text"
+            android:textAppearance="?android:attr/textAppearanceMedium" >
+        </TextView>
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/row2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/row1"
+        android:baselineAligned="false" >
+
+        <TextView
+            android:id="@+id/publicationList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_weight="1"
+            android:text="@string/longstringtest"
+            android:textAppearance="?android:attr/textAppearanceSmall" >
+        </TextView>
+
+        <ImageButton
+            android:id="@+id/saveBookButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_gravity="right"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:minWidth="120dp"
+            android:maxWidth="240dp"
+            android:text="@string/savebook"
+            android:src="@null"
+            >
+        </ImageButton>
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/row3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/row2" >
+
+        <TextView
+            android:id="@+id/otherInfoList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/small_text"
+            android:textAppearance="?android:attr/textAppearanceSmall" >
+        </TextView>
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/row4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/row3" >
+
+        <TableLayout
+            android:id="@+id/copiesTable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:stretchColumns="true" >
+        </TableLayout>
+    </TableRow>
+
+</RelativeLayout>

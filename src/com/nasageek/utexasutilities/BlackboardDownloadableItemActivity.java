@@ -217,7 +217,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 							@TargetApi(11)
 							public void onClick(DialogInterface dialog, int which) {
 		
-								if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
+								if (true)//Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
 								{	 
 									Intent downloadAttachment = new Intent(BlackboardDownloadableItemActivity.this, AttachmentDownloadService.class);
 									downloadAttachment.putExtra("fileName", item.getName());
@@ -233,7 +233,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 									 DownloadManager.Request request = new DownloadManager.Request(uri);
 									 
 									 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-							    	 request.setDescription("Downloading to the UTilities folder.");
+							    	 request.setDescription("Downloading to the Download folder.");
 							    	 request.setTitle(item.getName());
 							    	 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getName());
 							    	 

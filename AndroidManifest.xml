@@ -16,7 +16,6 @@
         
         <activity android:name=".UTilitiesActivity"
                   android:label="@string/app_name"
-        		  android:screenOrientation="portrait"
                   android:clearTaskOnLaunch="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,45 +28,45 @@
         <activity android:name="com.crittercism.NotificationActivity"/>
         
         <activity android:name=".DataUsageActivity"
-        		 android:screenOrientation="portrait"></activity>
+        		 android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
         <activity android:name=".BlackboardAnnouncementsActivity"
-            	 android:screenOrientation="portrait"></activity>
+            	  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
         <activity android:name=".BlackboardGradesActivity"
-            	 android:screenOrientation="portrait"></activity>
+            	  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
         <activity android:name=".BlackboardAssignmentActivity"
-            	 android:screenOrientation="portrait"></activity>
+            	  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
         <activity android:name=".BlackboardExternalItemActivity"
-            	 android:screenOrientation="portrait"></activity>
+            	  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
         <activity android:name=".BlackboardDownloadableItemActivity"
-            	 android:screenOrientation="portrait"></activity>
+            	  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
         <activity android:name=".BlackboardActivity"
-        		 android:screenOrientation="portrait"></activity>
+        		  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
         <activity android:name=".CourseMapActivity"
-            	android:screenOrientation="portrait"></activity>
+            	 android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
          
         <activity android:name=".AboutMeActivity"
-        		 android:screenOrientation="portrait"></activity>
+        		  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
         <activity android:name=".LoginActivity"
-        		 android:screenOrientation="portrait"
+        		  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"
         		 android:noHistory="true"></activity>
        
         <activity android:name=".Preferences"
-        		 android:screenOrientation="portrait"></activity>
+        		  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
         <activity android:name=".ScheduleActivity"
-        		 android:screenOrientation="portrait"></activity>
+        		  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
         <activity android:name=".CampusMapActivity"
         		  android:launchMode="singleTop"
-        		 android:screenOrientation="portrait">
+        		  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout">
         	<intent-filter>
 	            <action android:name="android.intent.action.SEARCH" />
 	        </intent-filter>
@@ -76,12 +75,44 @@
         		</activity>
         		
         <activity android:name=".BalanceActivity" 
-        		 android:screenOrientation="portrait"></activity>
+        		  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
         <activity android:name=".MenuActivity"
-        		 android:screenOrientation="portrait"></activity>
-         	
+        		 android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
+        <activity
+            android:name=".WelcomeScreen"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".searchInputScreen"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".displaySearchResults"
+            android:screenOrientation="portrait" />
+        <activity android:name=".showLibraryTimings2"
+            android:screenOrientation="portrait" />
+        <activity android:name=".settings"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".reserveStudyRoom"
+            android:screenOrientation="portrait" />
+        <activity android:name=".displayRoomResults" 
+            android:screenOrientation="portrait"/>
+        <activity android:name=".renewBooks"
+            android:screenOrientation="portrait" />
+        <activity android:name=".saveBooks"
+            android:screenOrientation="portrait" />
+        <activity android:name=".libraryMaps"
+            android:screenOrientation="portrait" />
+        <activity android:name=".finalizeRoomReservation" 
+            android:screenOrientation="portrait"/>
+        <activity android:name=".searchInputScreen_advanced"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".libraryMapsShowImages"
+            android:screenOrientation="portrait" />
+         	
         <provider android:name=".BuildingProvider"
          			 android:authorities="com.nasageek.utexasutilities.buildingprovider"/>
      
