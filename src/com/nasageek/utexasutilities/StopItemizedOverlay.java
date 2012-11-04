@@ -83,30 +83,30 @@ public class StopItemizedOverlay extends ItemizedOverlay{
 				e.printStackTrace();
 			} catch (IOException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			Pattern pattern = Pattern.compile("<b>.*?(?=</p>)", Pattern.DOTALL);
+			Pattern pattern = Pattern.compile("<b>\\d+</b>-(.*?) <span.*?</div>", Pattern.DOTALL);
 			Matcher matcher = pattern.matcher(data);
 		//	ArrayList<String> times = new ArrayList();
 			while(matcher.find())
 			{
-				Pattern pattern2 = Pattern.compile("(?<=<b>)\\d+(?=</b>)");
+				Pattern pattern2 = Pattern.compile("<b>(\\d+)</b>");
 			//	Log.d("ROUTE", matcher.group());
-				Matcher matcher2 = pattern2.matcher(matcher.group());
+				Matcher matcher2 = pattern2.matcher(matcher.group(0));
 
 				if(matcher2.find())
 				{	
-					String a = matcher2.group();
-					if(matcher2.group().equals(routeid))
+					String a = matcher2.group(1);
+					if(matcher2.group(1).equals(routeid))
 					{
 						times = mOverlays.get(i).getTitle()+":\n";
 						
-						Pattern pattern3 = Pattern.compile("<span.*?>(.*?)(?=</span>)");
-						Matcher matcher3 = pattern3.matcher(matcher.group());
+						Pattern pattern3 = Pattern.compile("<span.*?>(.*?)</span>");
+						Matcher matcher3 = pattern3.matcher(matcher.group(0));
 						while(matcher3.find())
 						{
-							times+=matcher3.group(1)+"\n";
+							if(!matcher3.group(1).equals("[PDF]"))
+								times+=matcher3.group(1)+"\n";
 						}
 						break;
 					}

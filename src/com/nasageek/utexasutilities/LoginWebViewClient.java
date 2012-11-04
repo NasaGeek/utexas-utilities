@@ -63,7 +63,7 @@ public class LoginWebViewClient extends WebViewClient {
 				{	
 					cookies = CookieManager.getInstance().getCookie("https://courses.utexas.edu");
 					
-					if(url.equals("https://courses.utexas.edu/webapps/portal/frameset.jsp"))
+					if(url.equals("https://courses.utexas.edu/webapps/portal/frameset.jsp") && cookies != null)
 					{
 						for(String s : cookies.split("; "))
 						{
@@ -107,16 +107,17 @@ public class LoginWebViewClient extends WebViewClient {
 	}
 	private void continueToActivity(String service)
 	{
-		Toast.makeText(context, "You're now logged in to "+service, Toast.LENGTH_SHORT).show();
-		Crittercism.leaveBreadcrumb("Logged in (temp)");
 		Intent intent=null;
 		try {
 			intent = new Intent(context, Class.forName(nextActivity));
+			Toast.makeText(context, "You're now logged in to "+service, Toast.LENGTH_SHORT).show();
+			Crittercism.leaveBreadcrumb("Logged in (temp)");
 		} catch (ClassNotFoundException e) {
 			
 			e.printStackTrace();
 			intent = new Intent(context, UTilitiesActivity.class);
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			Toast.makeText(context, "Your attempt to log in went terribly wrong", Toast.LENGTH_SHORT).show();
 		}
 		context.startActivity(intent);
     	CookieManager.getInstance().removeAllCookie();
