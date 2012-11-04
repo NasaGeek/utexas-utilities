@@ -6,13 +6,14 @@ import android.util.Log;
 
 public class UTClass {
 	
-	private String courseid, unique, name, professor, semId;
+	private String courseid, unique, name, professor, semId, color;
 
 	private ArrayList<building> buildings;
 	private ArrayList<classtime> classtimes;
+
 	
 	
-	public UTClass(String u, String ci, String n, String[] b, String[] br, String[] d, String[] t, String semId)
+	public UTClass(String u, String ci, String n, String[] b, String[] br, String[] d, String[] t, String semId, String c)
 	{
 		this.semId = semId;
 		classtimes = new ArrayList<classtime>();
@@ -21,6 +22,7 @@ public class UTClass {
 		courseid = ci;
 		name = n;
 		unique = u;
+		color = c;
 		for(int i = 0; i<b.length; i++)
 		{
 			buildings.add(new building(b[i], br[i]));
@@ -30,12 +32,11 @@ public class UTClass {
 			Log.d("UTClass creation", "building/day/time size inconsistency: b"+buildings.size()+" d"+d.length+" t"+t.length);
 		for(int i = 0; i < d.length && i < t.length && i < buildings.size(); i++)
 		{
-			
 			String[] days = d[i].split("");
 			
 			for(int k = 1; k<days.length; k++)
 			{
-				classtimes.add(new classtime(days[k],t[i],buildings.get(i),unique));
+				classtimes.add(new classtime(days[k],t[i],buildings.get(i),c,this));
 				//Log.d("DAYTIME", days[k]+" "+t[i]);
 			}
 			
@@ -76,19 +77,26 @@ public class UTClass {
 	{
 		return semId;
 	}
+	public String getColor()
+	{
+		return color;
+	}
 }
 
 class classtime
 {
 	char day;
 	String starttime, endtime;
+	UTClass utclass;
 	building buil;
 	String unique;
-	public classtime(String d, String t, building b, String u)
+	String color;
+	
+	public classtime(String d, String t, building b, String c, UTClass clz)
 	{
-		unique = u;
+		color = c;
+		utclass = clz;
 		starttime = t.split("-")[0];
-		
 		endtime = t.split("-")[1];
 	
 		if(endtime.charAt(endtime.length()-1)=='P' && 
@@ -98,9 +106,8 @@ class classtime
 			
 		day = d.charAt(0); buil = b;
 	}
-	public classtime(String u,char d,String s, String e, String bid)
+	public classtime(char d,String s, String e, String bid)
 	{
-		unique = u;
 		starttime = s;
 		endtime = e;
 		day = d;
@@ -109,10 +116,6 @@ class classtime
 	public char getDay()
 	{
 		return day;
-	}
-	public String getUnique()
-	{
-		return unique;
 	}
 	public String getStartTime()
 	{
@@ -125,6 +128,14 @@ class classtime
 	public building getBuilding()
 	{
 		return buil;
+	}
+	public String getColor()
+	{
+		return color;
+	}
+	public UTClass getUTClass()
+	{
+		return utclass;
 	}
 }
 class building

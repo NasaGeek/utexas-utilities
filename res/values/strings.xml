@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">UTilities</string>
-    <string name="version"> 1.64</string>
+    <string name="version"> 1.65</string>
     <string name="login_button_text">Save</string>
     <string name="login_category">Persistent Login</string>
     <string name="edit_credentials">Edit login credentials</string>
@@ -23,7 +23,8 @@
     <string name="preference_blackboard_class_longform_summary">Check this if Blackboard crashes on launch, might fix it.</string>
     <string name="preference_sendcrashes_summary">Help me help you! No personal information will be sent.</string>
     
-      <string-array name="routes_array">
+      <string-array name="routes_array">	
+			<item>No Bus Route</item>
 			<item>Crossing Place</item>
 			<item>Cameron Rd</item>
 			<item>East Campus</item>
@@ -41,7 +42,51 @@
 			<item>West Campus</item>
 			<item>Wickersham Lane</item>
 			<item>Wickersham/Crossing Pl</item>
+    </string-array>   
+    <string-array name="routes_value_array">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item> 
     </string-array>
+    <string-array name="restaurants_array">	
+		<item>No Restaurant</item>
+		<item>Jester City Limits</item>
+		<item>Jester City Market</item>
+		<item>Jester 2nd Floor Dining</item>
+		<item>Kinsolving Dining Hall</item>
+		<item>Kin\'s Market</item>
+		<item>Cypress Bend</item>
+		<item>Littlefield Patio Cafe</item>
+		<item>Jest A\' Pizza</item>
+    </string-array>
+    <string-array name="restaurants_value_array">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+    
+   
     <string-array name="schedule_background_array">
     	<item>Checkerboard (1 hour)</item>
     	<item>Checkerboard (&#189; hour)</item>

@@ -360,8 +360,9 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    	
 	    	String[] lines = pagedata.split("\n");
 	    	Calendar date = Calendar.getInstance();
-
-	    	for(int i = lines.length-288, x=0; i<lines.length; i++,x++)
+	    	
+	    	//if there's more than a week of data, show just the last week, otherwise show it all
+	    	for(int i = lines.length >= 288 ? lines.length-288 : 0, x=0; i<lines.length; i++,x++) 
 	    	{
 	    		String[] entry = lines[i].split(",");
 	    		date.clear();
@@ -374,7 +375,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    		
 	    //		updata[x]=(Float.valueOf(entry[2]));
 	    		totaldata[x]=(Float.valueOf(entry[3]));
-	    	}
+	    	}	    	
 
 	    	return ' ';
 		}

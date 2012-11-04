@@ -162,4 +162,57 @@
 		
 	 	
 	</TableRow> 
+	
+	<TableRow	    
+	    android:layout_gravity="center"
+	    android:gravity="center"
+	    android:layout_weight="1"
+		android:layout_width="wrap_content" 
+		android:baselineAligned="true"> <!-- android:paddingTop="47dp"-->
+		
+		<RelativeLayout
+		    android:layout_weight="1"
+		    android:layout_height="fill_parent"
+		    android:layout_width="fill_parent"
+		    android:layout_gravity="center">
+		<ImageButton
+			
+			android:id="@+id/map_button"
+			android:layout_height="wrap_content"
+		    android:layout_width="wrap_content"
+			android:src="@drawable/map_image_button"
+			android:layout_centerInParent="true"
+			android:background="#00000000"
+			/>
+		<ImageView 
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:src="@null"
+		    android:layout_alignBottom="@+id/map_button"
+		    android:layout_alignRight="@+id/map_button"/>
+		</RelativeLayout>
+	    
+		<RelativeLayout
+		    android:layout_weight="1"
+		    android:layout_height="fill_parent"
+		    android:layout_width="fill_parent"
+		    android:layout_gravity="center">
+		<ImageButton
+			android:id="@+id/libraries_button"
+			android:layout_height="wrap_content"
+		    android:layout_width="wrap_content"
+			android:src="@drawable/libraries_image_button"
+			android:layout_centerInParent="true"
+			android:background="#00000000"
+			/>
+		<ImageView 
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:src="@null"
+		    android:layout_alignBottom="@+id/menu_button"
+		    android:layout_alignRight="@+id/menu_button"/>
+		</RelativeLayout>
+		
+	 	
+	</TableRow> 
 </TableLayout>

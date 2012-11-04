@@ -7,14 +7,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.viewpagerindicator.TitleProvider;
+import com.actionbarsherlock.app.SherlockFragment;;
 
 /**
  * The <code>PagerAdapter</code> serves the fragments when paging.
  * @author mwho
  */
-public class PagerAdapter extends FragmentPagerAdapter implements TitleProvider {
+public class PagerAdapter extends FragmentPagerAdapter {
 
 	
 	int pos;
@@ -43,7 +42,7 @@ public class PagerAdapter extends FragmentPagerAdapter implements TitleProvider 
 		return this.fragments.size();
 	}
 	@Override
-	public String getTitle(int position) {
+	public String getPageTitle(int position) {
 		// TODO Auto-generated method stub
 		return this.fragments.get(position).getArguments().getString("title");
 	}

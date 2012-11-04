@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="burnt_orange">#CC5500</color>
+    <color name="cool_gray3">#C8C9C7</color>
+    <color name="cool_gray6">#A7A8AA</color>
+    <color name="cool_gray10">#63666A</color>
+    <color name="snow2">#eee9e9</color>
+    <color name="black">#000000</color>
+    <color name="actionbar_separator">@color/cool_gray3</color>
+    <color name="actionbar_background_start">@color/burnt_orange</color>
+    <color name="actionbar_background_end">@color/burnt_orange</color>
+    <color name="transparent">#00000000</color>
+
+</resources>

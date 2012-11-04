@@ -1,5 +1,6 @@
 package com.nasageek.utexasutilities;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,9 +41,10 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	private GridView gv;
 	private WrappingSlidingDrawer sd ;
 	private LinearLayout sdll;
-	private ClassDatabase cdb;
+//	private ClassDatabase cdb;
 	private ClassAdapter ca;
 	private DefaultHttpClient client;
+	private String[] colors = {"488ab0","00b060","b56eb3","94c6ff","81b941","ff866e","ffad46","ffe45e"};
 	
 	private LinearLayout pb_ll;
 	private LinearLayout daylist;
@@ -51,6 +53,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	private TextView nc_tv;
 	private TextView etv;
 	
+	private ArrayList<UTClass> classList;
 	private classtime current_clt;
 	public ActionMode mode;
 
@@ -71,8 +74,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	{
 		super.onCreate(savedInstanceState);
 		parentAct = this.getSherlockActivity();
-		semId = "";
-		cdb = ClassDatabase.getInstance(parentAct);
+		semId = getArguments().getString("semId");
+//		cdb = ClassDatabase.getInstance(parentAct);
 	}
 	public void updateView(String semId, View vg)
 	{
@@ -90,24 +93,13 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    gv = (GridView) vg.findViewById(R.id.scheduleview);
 		daylist = (LinearLayout) vg.findViewById(R.id.daylist);
 		
-		cdb.resetColorCount();
+//		cdb.resetColorCount();
+
 		
-		Cursor sizecheck = cdb.getWritableDatabase().query("classes", null, "semester = \""+this.semId+"\"" , null, null, null, null);
-//		Cursor sizecheck = cdb.getReadableDatabase().query("classes", null, null , null, null, null, null);
+	
+		client = ConnectionHelper.getThreadSafeClient();
+		new parseTask(client).execute();
 		
-		if (sizecheck.getCount()<1)
-		{	
-			//TODO: DIALOG STUFF
-			sizecheck.close();
-			client = ConnectionHelper.getThreadSafeClient();
-			new parseTask(client).execute();
-		}
-		else
-		{
-			sizecheck.close();
-			//lol hacky way for me to continue avoiding CursorAdapters.  Maybe one of these days...
-			new dbQueryTask().execute();
-		}
 		sd.setOnDrawerCloseListener(this);
 		sd.setOnDrawerOpenListener(this);
 	    sd.setVisibility(View.INVISIBLE);
@@ -145,34 +137,34 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
 			sd.setVisibility(View.VISIBLE);
 			//Cursor cur = cdb.getReadableDatabase().query("classes", null, "eid = \"" + sp.getString("eid", "eid not found")+"\" AND day = \""+ clt.getDay()+"\" AND start = \""+ clt.getStartTime()+"\"", null,null,null,null);
-			Cursor cur = cdb.getReadableDatabase().query("classes", null, "day = \""+ current_clt.getDay()+"\" AND start = \""+ current_clt.getStartTime()+"\"", null,null,null,null);
-		    cur.moveToFirst();
-		    while(!cur.isAfterLast())
+//			Cursor cur = cdb.getReadableDatabase().query("classes", null, "day = \""+ current_clt.getDay()+"\" AND start = \""+ current_clt.getStartTime()+"\"", null,null,null,null);
+//		    cur.moveToFirst();
+//		    while(!cur.isAfterLast())
 		    {
 		    	String text = " ";
-		    	text+=cur.getString(3)+" - "+cur.getString(4)+" ";
-		    	String unique = cur.getString(2);
-		    	while(!cur.isAfterLast() && unique.equals(cur.getString(2)))
-		    	{
+		    	text+=current_clt.getUTClass().getId()+" - "+current_clt.getUTClass().getName()+" ";
+		    	String unique = current_clt.getUTClass().getUnique();
+		  //  	while(!cur.isAfterLast() && unique.equals(cur.getString(2)))
+		  //  	{
 		    		String daytext = "\n\t";
-		    		String building = cur.getString(5)+" "+cur.getString(6);
-		    		String checktext = cur.getString(8)+building;
-		    		String time = cur.getString(8);
-		    		String end = cur.getString(9);
-		    		while(!cur.isAfterLast() && checktext.equals(cur.getString(8)+cur.getString(5)+" "+cur.getString(6)) )
-		    		{
-		    			if(cur.getString(7).equals("H"))
+		    		String building = current_clt.getBuilding().getId()+" "+current_clt.getBuilding().getRoom();
+		    		String checktext = current_clt.getStartTime()+building;
+		    		String time = current_clt.getStartTime();
+		    		String end = current_clt.getEndTime();
+		   // 		while(!cur.isAfterLast() && checktext.equals(cur.getString(8)+cur.getString(5)+" "+cur.getString(6)) )
+		   // 		{
+		    			if(current_clt.getDay()=='H')
 		    				daytext+="TH";
 		    			else
-		    				daytext+=cur.getString(7);
-		    			cur.moveToNext();
-		    		}
+		    				daytext+=current_clt.getDay();
+		 //   			cur.moveToNext();
+		//    		}
 		    		
 		    		text+=(daytext+" from " + time + "-"+end + " in "+building);
 		
-		    	}
+	//	    	}
 		    	text+="\n";
-		    	ci_iv.setBackgroundColor(Color.parseColor("#"+cdb.getColor(current_clt.getUnique(),current_clt.getStartTime(), current_clt.getDay()+"")));
+		    	ci_iv.setBackgroundColor(Color.parseColor("#"+current_clt.getColor()));
 		    	ci_iv.setMinimumHeight(10);
 		    	ci_iv.setMinimumWidth(10);
 		    	
@@ -182,7 +174,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    		ci_tv.setText(text);
 
 	    	}
-		    cur.close();
+//		    cur.close();
 		    sd.open();    
 		}
 		else
@@ -195,7 +187,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		}
 	}
 	
-	private class parseTask extends AsyncTask<Object,Void,Integer>
+	private class parseTask extends AsyncTask<Object,String,Integer>
 	{
 		private DefaultHttpClient client;
 		private String errorMsg;
@@ -213,18 +205,30 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 //			((ScheduleActivity)parentAct).spinner.setActivated(false);
 			pb_ll.setVisibility(GridView.VISIBLE);
 			gv.setVisibility(GridView.GONE);
+			
+			client.getCookieStore().clear();
+			
+	    	BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(parentAct,client));
+	    	cookie.setDomain(".utexas.edu");
+	    	client.getCookieStore().addCookie(cookie);
+			
+		}
+		@Override
+		protected void onProgressUpdate(String...params)
+		{
+			Bundle args = new Bundle(2);
+	        args.putString("title", params[0].trim());
+	        args.putString("semId", params[1]);
+			((ScheduleActivity)getActivity()).fragments.add((SherlockFragment)SherlockFragment.instantiate(getActivity(), CourseScheduleFragment.class.getName(),args));
+			((ScheduleActivity)getActivity()).mPagerAdapter.notifyDataSetChanged();
+			((ScheduleActivity)getActivity()).titleIndicator.notifyDataSetChanged();
 		}
 		
 		@Override
 		protected Integer doInBackground(Object... params)
 		{
 		//	Object[] result = new Object[3];
-			client.getCookieStore().clear();
-				
-	    	BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(parentAct,client));
-	    	cookie.setDomain(".utexas.edu");
-	    	client.getCookieStore().addCookie(cookie);
-
+			
 			HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId);
 	    	String pagedata="";
 
@@ -242,6 +246,25 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    		cancel(true);
 		    		return null;
 		    	}
+		    	Pattern semSelectPattern = Pattern.compile("<select  name=\"sem\">.*</select>", Pattern.DOTALL);
+		    	Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
+		    	
+		    	if(semSelectMatcher.find() && ((ScheduleActivity)getActivity()).fragments.size()<3)
+		    	{
+		    		Pattern semesterPattern = Pattern.compile("<option.*?value=\"(\\d*)\"\\s*>([\\w\\s]*?)</option>", Pattern.DOTALL);
+		    		Matcher semesterMatcher = semesterPattern.matcher(semSelectMatcher.group());
+		    		while(semesterMatcher.find())
+		    		{
+		    			if(semesterMatcher.group(0).contains("selected=\"selected\""))
+		    				continue;
+		    			else
+		    			{	
+		    				publishProgress(semesterMatcher.group(2), semesterMatcher.group(1));
+		    			}
+		    		}
+		    		
+		    	}
+		    	
 		    	Pattern pattern3 = Pattern.compile("<table.*</table>",Pattern.DOTALL);
 		    	Matcher matcher3 = pattern3.matcher(pagedata);
 		    	
@@ -255,7 +278,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    	}
 		    	Pattern classPattern = Pattern.compile("<tr  .*?</tr>",Pattern.DOTALL);
 		    	Matcher classMatcher = classPattern.matcher(pagedata);
-		    	int classCount = 0;
+		    	int classCount = 0, colorCount = 0;
+		    	classList = new ArrayList<UTClass>();
 		    	while(classMatcher.find())
 		    	{
 		    		String classContent = classMatcher.group();
@@ -320,7 +344,9 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    		{	classParseIssue = true;
 		    			continue;
 		    		}
-		    		cdb.addClass(new UTClass(uniqueid,classid,classname,buildings, rooms, days, times, semId));
+		    		classList.add(new UTClass(uniqueid,classid,classname,buildings, rooms, days, times, semId, colors[colorCount]));
+		  //  		cdb.addClass(new UTClass(uniqueid,classid,classname,buildings, rooms, days, times, semId));
+		    		colorCount = (colorCount == colors.length-1) ? 0 : colorCount+1;
 		    		classCount++;
 		    	}
 		    	
@@ -363,8 +389,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 				}
 				else
 				{	
-					ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv,semId);
-					ca.updateTime(); // not necessary
+					ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv,semId, classList);
+					ca.updateTime(); // not really necessary
 	
 					gv.setOnItemClickListener(CourseScheduleFragment.this);
 				    gv.setAdapter(ca);
@@ -416,7 +442,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		@Override
 		protected Integer doInBackground(Object... params)
 		{
-			ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv,semId);
+			ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv,semId,classList);
 	    	return null;	
 		}
 		@Override
@@ -457,7 +483,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             inflater.inflate(R.menu.schedule_menu, menu);
             return true;
         }
-
+        
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             return false;
@@ -477,6 +503,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
+        	
         }
     }
 	

@@ -12,12 +12,14 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.SlidingDrawer;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.ActionMode;
@@ -26,11 +28,11 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
 import com.viewpagerindicator.TabPageIndicator;
+import com.viewpagerindicator.TitlePageIndicator;
 
-public class ScheduleActivity extends SherlockFragmentActivity implements SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, AdapterView.OnItemClickListener, ViewPager.OnPageChangeListener{
+public class ScheduleActivity extends SherlockFragmentActivity implements SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, ViewPager.OnPageChangeListener{
 	
 	private WrappingSlidingDrawer sd ;
-	private ClassDatabase cdb;
 	
 	private ImageView ci_iv;
 	private TextView ci_tv;
@@ -38,8 +40,9 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 	private ActionBar actionbar;
 	private classtime current_clt;
 	private ActionMode mode;
-	private PagerAdapter mPagerAdapter;
-	private List<SherlockFragment> fragments;
+	protected PagerAdapter mPagerAdapter;
+	protected List<SherlockFragment> fragments;
+	protected TitlePageIndicator titleIndicator;
 	String semId ="";
 	int selection;
 	Spinner spinner;
@@ -133,13 +136,13 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
         		}
         		 
          			
-         		((CourseScheduleFragment)(fragments.get(0))).updateView(semId);
-         		((ExamScheduleFragment)(fragments.get(1))).updateView(semId);
+         		((CourseScheduleFragment)(fragments.get(0))).updateView(semId,fragments.get(0).getView());
+         		((ExamScheduleFragment)(fragments.get(1))).updateView(semId,fragments.get(1).getView());
 
         		return true;
         	}
-        });
-        */
+        });*/
+        
 		
 		}
 		private void initialisePaging() 
@@ -147,25 +150,28 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 			
 			fragments = new Vector<SherlockFragment>();
 			
-	        Bundle args = new Bundle(2);
-	        args.putString("title", "Course Schedule");
+			Bundle args = new Bundle(2);
+		    args.putString("title", "Exam Schedule");
+		    args.putString("semId", semId);
+		    fragments.add((SherlockFragment)SherlockFragment.instantiate(this, ExamScheduleFragment.class.getName(), args));
+		
+			
+			args = new Bundle(2);
+	        args.putString("title", "Current Schedule");
 	        args.putString("semId", semId);
 	        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, CourseScheduleFragment.class.getName(), args));
-	        
-	        args = new Bundle(2);
-	        args.putString("title", "Exam Schedule");
-	        args.putString("semId", semId);
-	        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, ExamScheduleFragment.class.getName(), args));
-	
 	      
 	        this.mPagerAdapter  = new PagerAdapter(getSupportFragmentManager(), fragments);	
 	        ViewPager pager = (ViewPager)findViewById(R.id.viewpager);
 	        pager.setPageMargin(2);
+	        pager.setOffscreenPageLimit(2);
 	        pager.setAdapter(this.mPagerAdapter);
-	        TabPageIndicator tabIndicator = (TabPageIndicator)findViewById(R.id.titles);
-			tabIndicator.setViewPager(pager);
+	        
+	        titleIndicator = (TitlePageIndicator)findViewById(R.id.titles);
+			titleIndicator.setViewPager(pager);
 			
-			tabIndicator.setOnPageChangeListener(this);
+			titleIndicator.setOnPageChangeListener(this);
+			pager.setCurrentItem(1,false);
 						
 	   }
 		@Override
@@ -196,64 +202,6 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		{
 			((ImageView)(sd.getHandle())).setImageResource(R.drawable.ic_collapse_half);
 		}
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-		{
-			sd.close();
-		//	sdll.removeAllViews();
-			current_clt = (classtime) parent.getItemAtPosition(position);
-			if(current_clt!=null)
-			{
-				mode = startActionMode(new ScheduleActionMode());
-	
-				sd.setVisibility(View.VISIBLE);
-				//Cursor cur = cdb.getReadableDatabase().query("classes", null, "eid = \"" + sp.getString("eid", "eid not found")+"\" AND day = \""+ clt.getDay()+"\" AND start = \""+ clt.getStartTime()+"\"", null,null,null,null);
-				Cursor cur = cdb.getReadableDatabase().query("classes", null, "day = \""+ current_clt.getDay()+"\" AND start = \""+ current_clt.getStartTime()+"\"", null,null,null,null);
-			    cur.moveToFirst();
-			    while(!cur.isAfterLast())
-			    {
-			    	String text = " ";
-			    	text+=cur.getString(3)+" - "+cur.getString(4)+" ";
-			    	String unique = cur.getString(2);
-			    	while(!cur.isAfterLast() && unique.equals(cur.getString(2)))
-			    	{
-			    		String daytext = "\n\t";
-			    		String building = cur.getString(5)+" "+cur.getString(6);
-			    		String checktext = cur.getString(8)+building;
-			    		String time = cur.getString(8);
-			    		String end = cur.getString(9);
-			    		while(!cur.isAfterLast() && checktext.equals(cur.getString(8)+cur.getString(5)+" "+cur.getString(6)) )
-			    		{
-			    			if(cur.getString(7).equals("H"))
-			    				daytext+="TH";
-			    			else
-			    				daytext+=cur.getString(7);
-			    			cur.moveToNext();
-			    		}
-			    		
-			    		text+=(daytext+" from " + time + "-"+end + " in "+building);
-			
-			    	}
-			    	text+="\n";
-			    	ci_iv.setBackgroundColor(Color.parseColor("#"+cdb.getColor(current_clt.getUnique(),current_clt.getStartTime(), current_clt.getDay()+"")));
-			    	ci_iv.setMinimumHeight(10);
-			    	ci_iv.setMinimumWidth(10);
-			    	
-		    		ci_tv.setTextColor(Color.BLACK);
-		    		ci_tv.setTextSize((float) 14);
-		    		ci_tv.setBackgroundColor(0x99F0F0F0);
-		    		ci_tv.setText(text);
-
-		    	}
-			    sd.open();    
-			}
-			else
-			{	if(mode!=null)
-					mode.finish();
-				//menu.removeItem(R.id.locate_class);
-				sd.setVisibility(View.INVISIBLE);
-				this.invalidateOptionsMenu();}
-		//	Log.d("CLICKY", position+"");
-		}
 		private final class ScheduleActionMode extends ViewPager.SimpleOnPageChangeListener implements ActionMode.Callback {
 	        @Override
 	        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -282,6 +230,8 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 
 	        @Override
 	        public void onDestroyActionMode(ActionMode mode) {
+	        	if(sd!=null)
+	        		sd.close();
 	        }
 		}
 		
@@ -293,8 +243,6 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		public void onPageScrolled(int arg0, float arg1, int arg2) {
 			
 		}
-
-		// TODO not sure if I want this yet, maybe a more elegant solution?
 		@Override
 		public void onPageSelected(int location) {
 

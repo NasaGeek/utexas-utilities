@@ -76,4 +76,9 @@ Versioncode 8 - 1.65
 Fixed crash when viewing Carothers Dormitory on map
 Removed 40 Acres Bakery from Menus, and changed the hours for a few locations to match their updated hours which can be found at http://www.utexas.edu/student/housing/index.php?site=18&scode=0&id=2222 
 
+Versioncode 9 - 1.66
+
+Fixed crash in Data Usage
+Fixed crash in Temp Login
+
 

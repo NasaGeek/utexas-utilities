@@ -116,7 +116,6 @@ public class Preferences extends SherlockPreferenceActivity{
             		ba.notifyDataSetChanged();
             	}
         		ConnectionHelper.logout(Preferences.this);
-            	ClassDatabase.getInstance(Preferences.this).deleteDb(Preferences.this, true);
             	return true;	
             }
         });
@@ -138,15 +137,6 @@ public class Preferences extends SherlockPreferenceActivity{
 				return false;
 			}
       	};
-        Preference resetclassesbutton = (Preference) findPreference("resetclassesbutton");
-        resetclassesbutton.setOnPreferenceClickListener(new OnPreferenceClickListener() 
-        { 
-            public boolean onPreferenceClick(Preference preference)
-            {
-                ClassDatabase.getInstance(Preferences.this).deleteDb(Preferences.this, false);
-                return true;
-            }
-        });
         final CheckBoxPreference sendcrashes = (CheckBoxPreference)findPreference("sendcrashes");
         sendcrashes.setOnPreferenceChangeListener(new OnPreferenceChangeListener() 
         {	

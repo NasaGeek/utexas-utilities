@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, This app will be a UT library application</string>
     <string name="app_name">UTLibraries</string>
     <string name="LocationPrompt">Please Specify a Location</string>
     <string name="YearRange">Year Range</string>
     <string name="to">to</string>
     <string name="FieldPrompt">Enter Field Type</string>
     <string name="MaterialPrompt">Enter Material Type</string>
-    <string name="SearchString">Search String</string>
+    <string name="SearchString">Search Term</string>
     <string name="yearstart">Year From</string>
     <string name="yearend">Year to</string>
     <string name="publisher">Publisher</string>

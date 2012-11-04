@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+	<RelativeLayout
+	    android:id="@+id/relativeLayout1"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent" 
+	    android:padding="10dp">
+	
+	    <Spinner
+	        android:id="@+id/fieldtypeInput"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:entries="@array/FieldTypeTable"
+	        android:prompt="@string/FieldPrompt" />
+	
+	    <EditText
+	        android:id="@+id/searchstringInput"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:layout_toRightOf="@+id/fieldtypeInput"
+	        android:hint="@string/SearchString"
+	        android:inputType="textWebEditText" >
+	
+	        <requestFocus />
+	    </EditText>
+	
+	    <Spinner
+	        android:id="@+id/locationInput"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentRight="true"
+	        android:layout_below="@+id/fieldtypeInput"
+	        android:entries="@array/LocationTable"
+	        android:prompt="@string/LocationPrompt" />
+	
+	    <EditText
+	        android:id="@+id/yearstartInput"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/materialtypebutton"
+	        android:layout_centerVertical="true"
+	        android:layout_toLeftOf="@+id/goButton"
+	        android:hint="@string/yearstart"
+	        android:inputType="number" />
+	
+	    <EditText
+	        android:id="@+id/yearendInput"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignRight="@+id/yearstartInput"
+	        android:layout_below="@+id/yearstartInput"
+	        android:hint="@string/yearend"
+	        android:inputType="number" />
+	
+	    <EditText
+	        android:id="@+id/publisherInput"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignRight="@+id/yearendInput"
+	        android:layout_below="@+id/yearendInput"
+	        android:hint="@string/publisher" />
+	
+	    <Spinner
+	        android:id="@+id/searchandsortInput"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentRight="true"
+	        android:layout_below="@+id/publisherInput"
+	        android:entries="@array/searchandsorttable"
+	        android:prompt="@string/searchandsort" />
+	
+	    <CheckBox
+	        android:id="@+id/onlyavailablebox"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/searchandsortInput"
+	        android:text="@string/limitavailable" />
+	
+	    <Button
+	        android:id="@+id/goButton"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:layout_alignTop="@+id/onlyavailablebox"
+	        android:layout_marginLeft="18dp"
+	        android:layout_toRightOf="@+id/onlyavailablebox"
+	        android:onClick="onGoButtonClicked"
+	        android:text="@string/go" />
+	
+	    <CheckBox
+	        android:id="@+id/yearstartbox"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_above="@+id/yearendInput"
+	        android:layout_toRightOf="@+id/yearstartInput"
+	        android:text="@string/usefield" />
+	
+	    <CheckBox
+	        android:id="@+id/yearendbox"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/yearstartInput"
+	        android:layout_toRightOf="@+id/yearstartInput"
+	        android:text="@string/usefield" />
+	
+	    <CheckBox
+	        android:id="@+id/publisherbox"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_above="@+id/searchandsortInput"
+	        android:layout_toRightOf="@+id/publisherInput"
+	        android:text="@string/usefield" />
+	    
+	    <Button
+	        android:id="@+id/chooselanguagebutton"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_centerHorizontal="true"
+	        android:layout_below="@+id/locationInput"
+	        android:onClick="chooseLanguage"
+	        android:text="@string/chooselanguage" />
+	
+	    <Button
+	        android:id="@+id/materialtypebutton"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_centerHorizontal="true"
+	        android:layout_below="@+id/chooselanguagebutton"
+	        android:onClick="chooseMaterialType"
+	        android:text="@string/choosematerialtype" />
+	
+	
+	</RelativeLayout>
+</ScrollView>
