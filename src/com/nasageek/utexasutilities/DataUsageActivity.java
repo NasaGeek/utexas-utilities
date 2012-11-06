@@ -359,6 +359,12 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    	
 	    	
 	    	String[] lines = pagedata.split("\n");
+	    	if(!lines[0].equals("Date,MB In,MB Out,MB Total"))
+	    	{
+				cancel(true);
+				errorMsg = "UTilities could not fetch your data usage"; 
+				return ' ';
+			}	
 	    	Calendar date = Calendar.getInstance();
 	    	
 	    	//if there's more than a week of data, show just the last week, otherwise show it all
@@ -366,13 +372,26 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    	{
 	    		String[] entry = lines[i].split(",");
 	    		date.clear();
-	    		
+	    		try{
 	    		//TODO: this crashes sometimes on the [2] access, not sure why
-	    		date.set(Integer.parseInt(entry[0].split("/")[0]),Integer.parseInt(entry[0].split("/")[1])-1,Integer.parseInt(entry[0].split("/| ")[2]),Integer.parseInt(entry[0].split(" |:")[1]),Integer.parseInt(entry[0].split(" |:")[2]));
+	    		date.set(Integer.parseInt(entry[0].split("/")[0]),
+	    				Integer.parseInt(entry[0].split("/")[1])-1,
+	    				Integer.parseInt(entry[0].split("/| ")[2]),
+	    				Integer.parseInt(entry[0].split(" |:")[1]),
+	    				Integer.parseInt(entry[0].split(" |:")[2]));
+	    		}
+	    		catch(NumberFormatException nfe)
+	    		{
+	    			cancel(true);
+					errorMsg = "UTilities could not fetch your data usage"; 
+					nfe.printStackTrace();
+					return ' ';
+	    		}
 	    		labels[x]=date.getTimeInMillis();
 	    	
 	    		downdata[x]=(Float.valueOf(entry[1])); 
 	    		
+	    		//psh who needs updata when you can just overlay downdata on top of totaldata?
 	    //		updata[x]=(Float.valueOf(entry[2]));
 	    		totaldata[x]=(Float.valueOf(entry[3]));
 	    	}	    	
@@ -549,8 +568,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
              return null;
 
          }
-
-         
+   
  }
 	 private class PointD
 	 {
