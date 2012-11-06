@@ -80,5 +80,10 @@ Versioncode 9 - 1.66
 
 Fixed crash in Data Usage
 Fixed crash in Temp Login
+Updated bus time parsing
+
+Versioncode 10 - 1.7
+
+
 
 

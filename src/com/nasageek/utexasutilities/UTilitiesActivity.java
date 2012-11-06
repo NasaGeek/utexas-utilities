@@ -81,7 +81,7 @@ public class UTilitiesActivity extends SherlockActivity {
     	final Intent data = new Intent(getBaseContext(), DataUsageActivity.class);
     	final Intent menu = new Intent(getBaseContext(), MenuActivity.class);
     	final Intent blackboard = new Intent(getBaseContext(), BlackboardActivity.class);
-    	final Intent libraries = new Intent(getBaseContext(), WelcomeScreen.class);
+ //   	final Intent libraries = new Intent(getBaseContext(), WelcomeScreen.class);
     	
     	actionbar = getSupportActionBar();
     	actionbar.show();
@@ -314,7 +314,7 @@ public class UTilitiesActivity extends SherlockActivity {
             }
             
     });
-        final ImageButton librariesbutton = (ImageButton) findViewById(R.id.libraries_button);
+/*        final ImageButton librariesbutton = (ImageButton) findViewById(R.id.libraries_button);
         librariesbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	if(settings.getBoolean("loginpref", false))
@@ -342,7 +342,7 @@ public class UTilitiesActivity extends SherlockActivity {
 	            		startActivity(balance);
             	} 
             }
-    });
+    });*/
         
     }
     @Override
