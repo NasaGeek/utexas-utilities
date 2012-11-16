@@ -41,10 +41,14 @@ public class BuildingProvider extends ContentProvider {
 	@Override
 	public boolean onCreate() {
 		
-		if(PreferenceManager.getDefaultSharedPreferences(this.getContext()).getInt("buildingdbversion",1) != 2)
+		//V1 Initial building list
+		//V2 Added all garages, Belo, a few dorms I missed.  Should be the entire official building list now
+		//V3 CLA - Liberal Arts Building
+		
+		if(PreferenceManager.getDefaultSharedPreferences(this.getContext()).getInt("buildingdbversion",1) < 3)
     	{
     		if(this.getContext().deleteDatabase("buildings"))
-    			Utility.commit(PreferenceManager.getDefaultSharedPreferences(this.getContext()).edit().putInt("buildingdbversion", 2));
+    			Utility.commit(PreferenceManager.getDefaultSharedPreferences(this.getContext()).edit().putInt("buildingdbversion", 3));
     	}
 		bdb = new BuildingDatabase(this.getContext());
 		try

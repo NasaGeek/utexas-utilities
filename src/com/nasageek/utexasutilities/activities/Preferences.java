@@ -1,4 +1,4 @@
-package com.nasageek.utexasutilities;
+package com.nasageek.utexasutilities.activities;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -22,6 +22,10 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
+import com.nasageek.utexasutilities.ConnectionHelper;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.SecurePreferences;
+import com.nasageek.utexasutilities.R.xml;
 
 public class Preferences extends SherlockPreferenceActivity{
 

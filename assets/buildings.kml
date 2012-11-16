@@ -622,6 +622,20 @@
     </Point>
   </Placemark>
   
+  <Placemark id="CLA">
+    <name>Liberal Arts Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.735545,30.284771</coordinates>
+    </Point>
+  </Placemark>
+  
   <Placemark id="CMA">
     <name>Jesse H. Jones Communication Center - Building A</name>
     <visibility>0</visibility> 

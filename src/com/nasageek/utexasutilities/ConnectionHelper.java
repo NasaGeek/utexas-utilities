@@ -30,6 +30,8 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.crittercism.app.Crittercism;
+import com.nasageek.utexasutilities.activities.Preferences;
+import com.nasageek.utexasutilities.activities.UTilitiesActivity;
 
 public class ConnectionHelper {
 	

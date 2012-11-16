@@ -1,6 +1,8 @@
 package com.nasageek.utexasutilities;
 
 import com.crittercism.app.Crittercism;
+import com.nasageek.utexasutilities.activities.LoginActivity;
+import com.nasageek.utexasutilities.activities.UTilitiesActivity;
 
 import android.content.Context;
 import android.content.Intent;

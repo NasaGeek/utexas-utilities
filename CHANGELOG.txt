@@ -84,6 +84,10 @@ Updated bus time parsing
 
 Versioncode 10 - 1.7
 
-
+Enabled move to SD card
+Rotation enabled
+View multiple schedules
+Fixed crash in data usage
+Added CLA to building db
 
 

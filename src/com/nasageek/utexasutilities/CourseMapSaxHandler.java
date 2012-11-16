@@ -70,7 +70,7 @@ public class CourseMapSaxHandler extends DefaultHandler {
 	        	   {
 	        		   host="https://courses.utexas.edu";
 	        	   }
-	        	   content.add(new Pair(new courseMapItem(atts.getValue("name"),host+atts.getValue("viewurl").replace("&amp;","&"),atts.getValue("contentid"),atts.getValue("linktype")),new ArrayList()));
+	        	   content.add(new Pair(new CourseMapItem(atts.getValue("name"),host+atts.getValue("viewurl").replace("&amp;","&"),atts.getValue("contentid"),atts.getValue("linktype")),new ArrayList()));
 	           }
 	           folderDepth++;
 	           
