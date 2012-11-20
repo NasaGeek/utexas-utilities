@@ -22,11 +22,11 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.PagerAdapter;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.R.id;
 import com.nasageek.utexasutilities.R.layout;
 import com.nasageek.utexasutilities.R.string;
+import com.nasageek.utexasutilities.adapters.PagerAdapter;
 import com.nasageek.utexasutilities.fragments.MenuFragment;
 import com.viewpagerindicator.TabPageIndicator;
 

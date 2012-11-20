@@ -487,6 +487,14 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 			//TODO: this crashes with a NPE sometimes.  ??
 			//absolute minimum value for the domain boundary maximum
 			Number temp = series.getX(1);
+			if(temp == null)
+			{
+				errorMsg = "There was an error fetching or displaying your data usage.";
+				detv.setText(errorMsg);
+				d_pb_ll.setVisibility(View.GONE);
+				detv.setVisibility(View.VISIBLE);
+				return;
+			}
 			minNoError = Math.round(temp.doubleValue() + 2);
 			maxXY = new PointD(graph.getCalculatedMaxX().doubleValue(),
 					graph.getCalculatedMaxY().doubleValue()); //initial maximum data point

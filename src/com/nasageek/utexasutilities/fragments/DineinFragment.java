@@ -30,9 +30,6 @@ import com.actionbarsherlock.view.MenuItem;
 import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
-import com.nasageek.utexasutilities.R.menu;
 import com.nasageek.utexasutilities.adapters.TransactionAdapter;
 
 

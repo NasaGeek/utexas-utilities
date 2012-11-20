@@ -11,7 +11,6 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -40,11 +39,6 @@ import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.UTClass;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.Classtime;
-import com.nasageek.utexasutilities.R.drawable;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
-import com.nasageek.utexasutilities.R.menu;
-import com.nasageek.utexasutilities.R.string;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
 import com.nasageek.utexasutilities.activities.ScheduleActivity;
 import com.nasageek.utexasutilities.adapters.ClassAdapter;
@@ -88,7 +82,6 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		super.onCreate(savedInstanceState);
 		parentAct = this.getSherlockActivity();
 		semId = getArguments().getString("semId");
-//		cdb = ClassDatabase.getInstance(parentAct);
 	}
 	public void updateView(String semId, View vg)
 	{
@@ -105,10 +98,6 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    nc_tv = (TextView) vg.findViewById(R.id.no_courses);
 	    gv = (GridView) vg.findViewById(R.id.scheduleview);
 		daylist = (LinearLayout) vg.findViewById(R.id.daylist);
-		
-//		cdb.resetColorCount();
-
-		
 	
 		client = ConnectionHelper.getThreadSafeClient();
 		new parseTask(client).execute();
@@ -213,9 +202,6 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		@Override
 		protected void onPreExecute()
 		{
-			////figure this shit out
-//			((ScheduleActivity)parentAct).spinner.setClickable(false);
-//			((ScheduleActivity)parentAct).spinner.setActivated(false);
 			pb_ll.setVisibility(GridView.VISIBLE);
 			gv.setVisibility(GridView.GONE);
 			
@@ -275,8 +261,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    			{	
 		    				publishProgress(semesterMatcher.group(2), semesterMatcher.group(1));
 		    			}
-		    		}
-		    		
+		    		}	
 		    	}
 		    	
 		    	Pattern pattern3 = Pattern.compile("<table.*</table>",Pattern.DOTALL);
@@ -359,7 +344,6 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    			continue;
 		    		}
 		    		classList.add(new UTClass(uniqueid,classid,classname,buildings, rooms, days, times, semId, colors[colorCount]));
-		  //  		cdb.addClass(new UTClass(uniqueid,classid,classname,buildings, rooms, days, times, semId));
 		    		colorCount = (colorCount == colors.length-1) ? 0 : colorCount+1;
 		    		classCount++;
 		    	}
@@ -440,71 +424,24 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			nc_tv.setVisibility(View.GONE);
 			gv.setVisibility(View.GONE);
 		}
-	}	
-	private class dbQueryTask extends AsyncTask<Object,Void,Integer>
-	{
-		private DefaultHttpClient client;
-		private String errorMsg;
-
-		@Override
-		protected void onPreExecute()
-		{
-			pb_ll.setVisibility(GridView.VISIBLE);
-			gv.setVisibility(GridView.GONE);
-		}
-		
-		@Override
-		protected Integer doInBackground(Object... params)
-		{
-			ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv,semId,classList);
-	    	return null;	
-		}
-		@Override
-		protected void onPostExecute(Integer result)
-		{
-
-			pb_ll.setVisibility(GridView.GONE);
-		
-			ca.updateTime(); // not necessary
-
-			gv.setOnItemClickListener(CourseScheduleFragment.this);
-		    gv.setAdapter(ca);
-
-			gv.setVisibility(GridView.VISIBLE);
-			daylist.setVisibility(View.VISIBLE);
-			
-			if(!parentAct.isFinishing())
-		    	Toast.makeText(parentAct, "Tap a class to see its information.", Toast.LENGTH_SHORT).show();
-			Crittercism.leaveBreadcrumb("Loaded schedule from web");
-		}
-		@Override
-		protected void onCancelled()
-		{
-			etv.setText(errorMsg);
-			etv.setVisibility(View.VISIBLE);
-			pb_ll.setVisibility(View.GONE);
-			daylist.setVisibility(View.GONE);
-			nc_tv.setVisibility(View.GONE);
-			gv.setVisibility(View.GONE);
-		}
-	}	
-
+	}
 	private final class ScheduleActionMode implements ActionMode.Callback {
         @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) 
+        {
             mode.setTitle("Class Info");
             MenuInflater inflater = ((SherlockFragmentActivity)getActivity()).getSupportMenuInflater();
             inflater.inflate(R.menu.schedule_menu, menu);
             return true;
         }
-        
         @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu)
+        {
             return false;
         }
-
         @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item)
+        {
             switch(item.getItemId())
             {
             	case R.id.locate_class:
@@ -514,11 +451,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             }
             return true;
         }
-
         @Override
-        public void onDestroyActionMode(ActionMode mode) {
-        	
-        }
+        public void onDestroyActionMode(ActionMode mode) { }
     }
 	
 }

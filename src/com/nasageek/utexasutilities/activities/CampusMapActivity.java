@@ -271,7 +271,6 @@ public class CampusMapActivity extends SherlockMapActivity  {
 			locationSetup();
 		}
 	}
-	
 	public void loadBuildingOverlay()
 	{
 		Collection overlaysToAddAgain = new ArrayList();
@@ -463,7 +462,6 @@ public class CampusMapActivity extends SherlockMapActivity  {
 	    }
 	    loadBuildingOverlay();
 	}
-
 	public void search(String q)
 	{
 		buildingId = q;
@@ -608,12 +606,18 @@ public class CampusMapActivity extends SherlockMapActivity  {
 		super.onResume();
 		myLoc.enableMyLocation();
 		myLoc.enableCompass();
+		if(locationManager != null && locProvider != null  && locationListener != null)
+			locationManager.requestLocationUpdates(locProvider, 0, 0, locationListener);
 	}
 	public void onPause()
 	{
 		super.onPause();
-		myLoc.disableCompass();
-		myLoc.disableMyLocation();
+		if(myLoc != null)
+		{	myLoc.disableCompass();
+			myLoc.disableMyLocation();
+		}
+		if(locationManager != null)
+			locationManager.removeUpdates(locationListener);
 		if(bgItemizedOverlay != null && bgItemizedOverlay.stoptimes != null)
 			bgItemizedOverlay.stoptimes.cancel();
 		if(bio != null && bio.buildingName != null)

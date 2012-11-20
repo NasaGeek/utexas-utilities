@@ -90,4 +90,9 @@ View multiple schedules
 Fixed crash in data usage
 Added CLA to building db
 
+Versioncode 11 - 1.71
+
+Hardware acceleration turned back on SMOOTH SCROLLING AWWW YEAAAHH
+GPS Searching now stops when the Campus Map is not in view
+
 

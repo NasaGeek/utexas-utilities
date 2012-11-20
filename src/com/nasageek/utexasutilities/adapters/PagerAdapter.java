@@ -1,5 +1,5 @@
 
-package com.nasageek.utexasutilities;
+package com.nasageek.utexasutilities.adapters;
 
 import java.util.List;
 

@@ -7,13 +7,10 @@ import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.UTClass;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.Classtime;
-import com.nasageek.utexasutilities.R.drawable;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.preference.PreferenceManager;
@@ -127,8 +124,7 @@ public class ClassAdapter extends BaseAdapter{
 		{
 			currentTimePos = day+5*timeToPos(time);
 		}
-		//currentTimePos = day+5*timeToPos(time);	
-//		Log.d("CURRENTIME",time);
+		//currentTimePos = day+5*timeToPos(time);
 	}
 	private int timeToPos(String time)
 	{
