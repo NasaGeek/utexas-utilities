@@ -94,5 +94,7 @@ Versioncode 11 - 1.71
 
 Hardware acceleration turned back on SMOOTH SCROLLING AWWW YEAAAHH
 GPS Searching now stops when the Campus Map is not in view
-
+Rewrote regex for transactions
+Exam schedule class names now truncate instead of going to multiple lines
+Reverted dashboard buttons
 

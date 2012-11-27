@@ -107,7 +107,7 @@ public class BBClassAdapter extends AmazingAdapter
 			{	
 				if(bbclass.isCourseIdAvailable())
 				{
-					holder.idview.setText(bbclass.getCourseId()+" - "+bbclass.getUnique());
+					holder.idview.setText(bbclass.getCourseId() + " - " + bbclass.getUnique() + " ");
 				}
 				else
 					holder.idview.setText(bbclass.getUnique());

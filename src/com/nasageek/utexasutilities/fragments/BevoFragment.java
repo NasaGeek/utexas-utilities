@@ -196,28 +196,35 @@ public class BevoFragment extends SherlockFragment
 				cancel(true);
 				return null;
 			}
+	    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>"))
+	    	{
+				errorMsg = "You've been logged out of UTDirect, back out and log in again.";
+				ConnectionHelper.logout(getActivity());
+				cancel(true);
+				return null;
+	    	}
 	    	
-	    	Pattern pattern3 = Pattern.compile("(?<=\"center\">\\s{1,10})\\S.*(?=\\s*<)");
+	    	Pattern pattern3 = Pattern.compile("\"center\">\\s+(.*?)\\s*<");
 	    	Matcher matcher3 = pattern3.matcher(pagedata);
 	    	
-	    	Pattern pattern4 = Pattern.compile("(?<=\"right\">\\s).*(?=</td>\\s*<td)");
+	    	Pattern pattern4 = Pattern.compile("\"right\">\\s*(.*)</td>\\s*<td");
 	    	Matcher matcher4 = pattern4.matcher(pagedata);
 	    	
-	    	Pattern datepattern = Pattern.compile("(?<=\"left\">\\s{1,10})\\S+");
+	    	Pattern datepattern = Pattern.compile("\"left\">\\s*?(\\S+)");
 	    	Matcher datematcher = datepattern.matcher(pagedata);
 	    	
-	    	Pattern balancepattern = Pattern.compile("(?<=\"right\">\\s).*(?=</td>\\s*</tr)");
+	    	Pattern balancepattern = Pattern.compile("\"right\">\\s*(.*)</td>\\s*</tr");
 	    	Matcher balancematcher = balancepattern.matcher(pagedata);
 	    	
 	    	if(balancematcher.find() && ta.page == 1)
 	    	{	
-	    		bevobalance = balancematcher.group();	
+	    		bevobalance = balancematcher.group(1);	
 	    	}
 	    	while(matcher3.find() && matcher4.find() && datematcher.find() && !this.isCancelled())
 	    	{
-	    		String transaction=datematcher.group()+" ";
-	    		transaction+=matcher3.group()+" ";
-	    		transaction+=matcher4.group().replaceAll("\\s","");
+	    		String transaction=datematcher.group(1)+" ";
+	    		transaction+=matcher3.group(1).trim()+" ";
+	    		transaction+=matcher4.group(1).replaceAll("\\s","");
 	    		tempTransactionList.add(transaction);
 	    	}
 	    	if(pagedata.contains("<form name=\"next\"") && !this.isCancelled())
@@ -247,6 +254,7 @@ public class BevoFragment extends SherlockFragment
 			if (!this.isCancelled())
 	    	{
 				btransactionlist.addAll(tempTransactionList);
+				ta.notifyDataSetChanged();
 				ta.updateHeaders();
 				ta.notifyDataSetChanged();
 				int index = blv.getFirstVisiblePosition();

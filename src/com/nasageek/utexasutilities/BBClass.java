@@ -7,7 +7,7 @@ public class BBClass {
 	private String name;
 	private String bbid;
 	private String fullcourseid;
-	private String semester;
+	private String 	semester;
 	private String unique;
 	private String courseid;
 	
@@ -29,12 +29,11 @@ public class BBClass {
 		if(!name.matches("^\\d{2}[A-Z]{1,2} .*?\\(\\d+?\\)$"))
 			Log.d("BBClass check", "Class Name malformed");
 		
-		this.name = (name.contains("(") && name.charAt(0) != '(') 
-																? name.substring(0,name.indexOf("(")-1)
-																: name;	
-		
-		//this should never fail.  If no space, indexOf returns -1 and you get the whole string
-//		this.name = name.substring(name.indexOf(" ")+1);
+		//filter out the year and semester at the beginning and the unique at the end
+		//year/semester should never fail.  If no space, indexOf returns -1 and you get the whole string
+		this.name = (name.contains("(") && name.charAt(0) != '(' && name.indexOf(" ")+1 <= name.indexOf("(")-1) 
+																? name.substring(name.indexOf(" ")+1,name.indexOf("(")-1)
+																: name.substring(name.indexOf(" ")+1);
 		
 		this.bbid = bbid;
 		this.fullcourseid = fullcourseid;

@@ -136,8 +136,7 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 		});
 		alertBuilder.setTitle("View on Blackboard");
 		alertBuilder.show();
-	}
-	
+	}	
 	
 	private class fetchAnnouncementsTask extends AsyncTask<Object,Void,ArrayList<bbAnnouncement>>
 	{

@@ -245,11 +245,19 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    		cancel(true);
 		    		return null;
 		    	}
+		    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>"))
+		    	{
+					errorMsg = "You've been logged out of UTDirect, back out and log in again.";
+					if(getActivity() != null)
+						ConnectionHelper.logout(getActivity());
+					cancel(true);
+					return null;
+		    	}
 		    	Pattern semSelectPattern = Pattern.compile("<select  name=\"sem\">.*</select>", Pattern.DOTALL);
 		    	Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
 		    	
 		    	//TODO: un-hardcode this eventually! Shouldn't be too hard to figure out the dropdown size
-		    	if(semSelectMatcher.find() && ((ScheduleActivity)getActivity()).getFragments().size()<3)
+		    	if(semSelectMatcher.find() && getActivity() != null && ((ScheduleActivity)getActivity()).getFragments().size()<3)
 		    	{
 		    		Pattern semesterPattern = Pattern.compile("<option.*?value=\"(\\d*)\"\\s*>([\\w\\s]*?)</option>", Pattern.DOTALL);
 		    		Matcher semesterMatcher = semesterPattern.matcher(semSelectMatcher.group());

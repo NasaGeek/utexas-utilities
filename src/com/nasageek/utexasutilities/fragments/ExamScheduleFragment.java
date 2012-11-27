@@ -130,24 +130,6 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 			HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registrar/exam_schedule.WBX");
 	    	String pagedata="";
 
-/*	    	String tempId="";
-	    	switch (Calendar.getInstance().get(Calendar.MONTH))
-			{
-				case 7:
-				case 8:
-				case 9:
-				case 10:
-				case 11:tempId="20129";break;
-				case 0:
-				case 1:
-				case 2:
-				case 3:
-				case 4:tempId="20122";break;
-				case 5:
-				case 6:tempId="20126";break;
-			}*/
-	    	
-	    	
 	    	try
 			{
 				HttpResponse response = client.execute(hget);
@@ -159,6 +141,14 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 				e.printStackTrace();
 				return null;
 			}
+	    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>"))
+	    	{
+				errorMsg = "You've been logged out of UTDirect, back out and log in again.";
+				if(getActivity() != null)
+					ConnectionHelper.logout(getActivity());
+				cancel(true);
+				return null;
+	    	}
 
 	    	if(pagedata.contains("will be available approximately three weeks"))// || !tempId.equals(semId))
 	    	{	

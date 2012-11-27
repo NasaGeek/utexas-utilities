@@ -616,7 +616,7 @@ public class CampusMapActivity extends SherlockMapActivity  {
 		{	myLoc.disableCompass();
 			myLoc.disableMyLocation();
 		}
-		if(locationManager != null)
+		if(locationManager != null && locationListener != null)
 			locationManager.removeUpdates(locationListener);
 		if(bgItemizedOverlay != null && bgItemizedOverlay.stoptimes != null)
 			bgItemizedOverlay.stoptimes.cancel();
