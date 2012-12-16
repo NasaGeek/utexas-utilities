@@ -1,5 +1,6 @@
 package com.nasageek.utexasutilities.activities;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
@@ -28,6 +29,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTClass;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.Classtime;
 import com.nasageek.utexasutilities.R.drawable;
@@ -53,6 +55,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 	private Classtime current_clt;
 	private ActionMode mode;
 	protected PagerAdapter mPagerAdapter;
+	private ViewPager pager;
 	protected List<SherlockFragment> fragments;
 	protected TitlePageIndicator titleIndicator;
 	String semId ="";
@@ -158,8 +161,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		
 		}
 		private void initialisePaging() 
-		{
-			
+		{		
 			fragments = new Vector<SherlockFragment>();
 			
 			Bundle args = new Bundle(2);
@@ -174,7 +176,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 	        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, CourseScheduleFragment.class.getName(), args));
 	      
 	        this.mPagerAdapter  = new PagerAdapter(getSupportFragmentManager(), fragments);	
-	        ViewPager pager = (ViewPager)findViewById(R.id.viewpager);
+	        pager = (ViewPager)findViewById(R.id.viewpager);
 	        pager.setPageMargin(2);
 	        pager.setOffscreenPageLimit(2);
 	        pager.setAdapter(this.mPagerAdapter);
@@ -191,12 +193,32 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		{
 			super.onPause();
 		}
-		
+		@Override
 		public boolean onOptionsItemSelected(MenuItem item)
 	    {
 	    	int id = item.getItemId();
 	    	switch(id)
 	    	{
+	    	case R.id.map_all_classes:
+	    		//populate an array with the buildings IDs of all of the user's classtimes
+	    		ArrayList<String> buildings = new ArrayList<String>();
+	    		//we don't want to mess with ExamSchedule buildings for now, just Course Schedule
+	    		if(mPagerAdapter.getItem(pager.getCurrentItem()) instanceof CourseScheduleFragment)
+	    		{
+	    			ArrayList<UTClass> classList = ((CourseScheduleFragment)mPagerAdapter.getItem(pager.getCurrentItem())).getClassList();
+	    			for(UTClass clz : classList)
+	    			{
+	    				for(Classtime clt : clz.getClassTimes())
+		    				if(!buildings.contains(clt.getBuilding().getId()))
+		    					buildings.add(clt.getBuilding().getId());
+	    			}
+	    		}
+	    		Intent map = new Intent(getString(R.string.building_intent), null, ScheduleActivity.this, CampusMapActivity.class);
+		//		map.setData(Uri.parse(current_clt.getBuilding().getId()));
+				map.putStringArrayListExtra("buildings", buildings);
+				startActivity(map);
+				break;
+	    		
 	    	case android.R.id.home:
 	            // app icon in action bar clicked; go home
 	            super.onBackPressed();
@@ -227,11 +249,14 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 			((ImageView)(sd.getHandle())).setImageResource(R.drawable.ic_collapse_half);
 		}
 		private final class ScheduleActionMode extends ViewPager.SimpleOnPageChangeListener implements ActionMode.Callback {
-	        @Override
+	    
+			//TODO: wtf is this ActionMode stuff?? Is it necessary? CourseScheduleFragment has it too.  This has some sort of functionality apparently, 
+			//as the ViewPager stuff apparently is called
+			@Override
 	        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 	            mode.setTitle("Class Info");
 	            MenuInflater inflater = getSupportMenuInflater();
-	            inflater.inflate(R.menu.schedule_menu, menu);
+	            inflater.inflate(R.menu.schedule_action_mode, menu);
 	            return true;
 	        }
 

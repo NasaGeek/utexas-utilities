@@ -26,22 +26,22 @@
       <string-array name="routes_array">	
 			<item>No Bus Route</item>
 			<item>Crossing Place</item>
-			<item>Cameron Rd</item>
+			<item>Cameron Road</item>
 			<item>East Campus</item>
 			<item>Forty Acres</item>
 			<item>Far West</item>
 			<item>Intramural Fields</item>
-			<item>Intramural Fields/Far West</item>
-			<item>Lake Austin Blvd</item>
+			<item>Intramural Field/Far West</item>
+			<item>Lake Austin</item>
 			<item>Lakeshore</item>
 			<item>North Riverside</item>
 			<item>North Riverside/Lakeshore</item>
 			<item>Pickle Research Campus</item>
 			<item>Red River</item>
-			<item>Red River/Cameron Rd</item>
+			<item>Red River/Cameron Road</item>
 			<item>West Campus</item>
 			<item>Wickersham Lane</item>
-			<item>Wickersham/Crossing Pl</item>
+			<item>Wickersham/Crossing Place</item>
     </string-array>   
     <string-array name="routes_value_array">
         <item>0</item>

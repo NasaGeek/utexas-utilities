@@ -53,6 +53,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	private DefaultHttpClient client;
 	private String[] colors = {"488ab0","00b060","b56eb3","94c6ff","81b941","ff866e","ffad46","ffe45e"};
 	
+	private Menu mMenu;
 	private LinearLayout pb_ll;
 	private LinearLayout daylist;
 	private ImageView ci_iv;
@@ -80,6 +81,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 		parentAct = this.getSherlockActivity();
 		semId = getArguments().getString("semId");
 	}
@@ -115,19 +117,72 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		if(gv != null)
 			gv.invalidateViews(); 		
 	}
-
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) 
+	{
+		this.mMenu = menu;
+		menu.removeItem(R.id.map_all_classes);
+	    inflater.inflate(R.menu.schedule_menu, menu);
+	   
+	}
+	@Override
+	public void onPrepareOptionsMenu(Menu menu)
+	{
+		if(classList == null || classList.size() == 0)
+		{
+			menu.findItem(R.id.map_all_classes).setEnabled(false);
+		}
+		else
+			menu.findItem(R.id.map_all_classes).setEnabled(true);
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+    {
+    	int id = item.getItemId();
+    	switch(id)
+    	{
+    	case R.id.map_all_classes:
+    		//check to see if we're done loading the schedules (the ClassAdapter is initialized in onPostExecute)
+    		if(ca != null)
+    		{
+    			//populate an array with the buildings IDs of all of the user's classtimes
+	    		ArrayList<String> buildings = new ArrayList<String>();
+	    		
+				for(UTClass clz : classList)
+				{
+					for(Classtime clt : clz.getClassTimes())
+	    				if(!buildings.contains(clt.getBuilding().getId()))
+	    					buildings.add(clt.getBuilding().getId());
+				}
+	    		
+	    		Intent map = new Intent(getString(R.string.building_intent), null, parentAct, CampusMapActivity.class);
+		//		map.setData(Uri.parse(current_clt.getBuilding().getId()));
+				map.putStringArrayListExtra("buildings", buildings);
+				startActivity(map);
+				break;
+    		}
+    	
+    	
+    	default: return super.onOptionsItemSelected(item);
+    	}
+    	return true;
+    }
+	@Override
 	public ActionMode getActionMode()
 	{
 		return mode;
 	}
+	@Override
 	public void onDrawerClosed()
 	{
 		((ImageView)(sd.getHandle())).setImageResource(R.drawable.ic_expand_half);
 	}
+	@Override
 	public void onDrawerOpened()
 	{
 		((ImageView)(sd.getHandle())).setImageResource(R.drawable.ic_collapse_half);
 	}
+	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	{
 		sd.close();
@@ -248,8 +303,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>"))
 		    	{
 					errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-					if(getActivity() != null)
-						ConnectionHelper.logout(getActivity());
+					if(parentAct != null)
+						ConnectionHelper.logout(parentAct);
 					cancel(true);
 					return null;
 		    	}
@@ -257,7 +312,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    	Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
 		    	
 		    	//TODO: un-hardcode this eventually! Shouldn't be too hard to figure out the dropdown size
-		    	if(semSelectMatcher.find() && getActivity() != null && ((ScheduleActivity)getActivity()).getFragments().size()<3)
+		    	if(semSelectMatcher.find() && parentAct != null && ((ScheduleActivity)getActivity()).getFragments().size()<3)
 		    	{
 		    		Pattern semesterPattern = Pattern.compile("<option.*?value=\"(\\d*)\"\\s*>([\\w\\s]*?)</option>", Pattern.DOTALL);
 		    		Matcher semesterMatcher = semesterPattern.matcher(semSelectMatcher.group());
@@ -390,6 +445,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 					daylist.setVisibility(View.GONE);
 					nc_tv.setText("You aren't enrolled for the current semester.");
 					nc_tv.setVisibility(View.VISIBLE);
+					if(mMenu != null)
+						mMenu.findItem(R.id.map_all_classes).setEnabled(false);
 					
 					return;
 				}
@@ -403,7 +460,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	
 					gv.setVisibility(GridView.VISIBLE);
 					daylist.setVisibility(View.VISIBLE);
-					
+					if(mMenu != null)
+						mMenu.findItem(R.id.map_all_classes).setEnabled(true);
 					if(!parentAct.isFinishing())
 				    	Toast.makeText(parentAct, "Tap a class to see its information.", Toast.LENGTH_SHORT).show();
 					Crittercism.leaveBreadcrumb("Loaded schedule from web");
@@ -418,6 +476,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 				daylist.setVisibility(View.GONE);
 				nc_tv.setVisibility(View.GONE);
 				gv.setVisibility(View.GONE);
+				if(mMenu != null)
+					mMenu.findItem(R.id.map_all_classes).setEnabled(false);
 			}	
 			if(classParseIssue)
 				Toast.makeText(parentAct, "One or more classes could not be parsed correctly, try emailing the dev ;)", Toast.LENGTH_LONG).show();
@@ -433,13 +493,17 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			gv.setVisibility(View.GONE);
 		}
 	}
+	public ArrayList<UTClass> getClassList()
+	{
+		return classList;
+	}
 	private final class ScheduleActionMode implements ActionMode.Callback {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) 
         {
             mode.setTitle("Class Info");
-            MenuInflater inflater = ((SherlockFragmentActivity)getActivity()).getSupportMenuInflater();
-            inflater.inflate(R.menu.schedule_menu, menu);
+            MenuInflater inflater = parentAct.getSupportMenuInflater();
+            inflater.inflate(R.menu.schedule_action_mode, menu);
             return true;
         }
         @Override
@@ -453,9 +517,13 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             switch(item.getItemId())
             {
             	case R.id.locate_class:
+            		ArrayList<String> building = new ArrayList<String>();
             		Intent map = new Intent(getString(R.string.building_intent), null, parentAct, CampusMapActivity.class);
-    				map.setData(Uri.parse(current_clt.getBuilding().getId()));
-    				startActivity(map);break;
+            		building.add(current_clt.getBuilding().getId());
+            		map.putStringArrayListExtra("buildings", building);
+    			//	map.setData(Uri.parse(current_clt.getBuilding().getId()));
+    				startActivity(map);
+    				break;
             }
             return true;
         }

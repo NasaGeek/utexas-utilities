@@ -31,5 +31,9 @@ public String getAddress() {
 public void setAddress(String address) {
     this.address = address;
 }
+public String toString() {
+	return title+" : "+description+ "("+coordinates+")";
+}
+
 
 }

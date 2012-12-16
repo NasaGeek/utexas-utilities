@@ -1,1337 +1,433 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<kml xmlns="http://earth.google.com/kml/2.0">
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
 <Document>
-  <name>661-FW FAR WEST/UT</name>
-  <open>1</open>
-  <description><![CDATA[Exported from 661-FW FAR WEST/UT on 12/10/2007]]></description>
-  <Style id="FEATURES">
-    <LineStyle>
-      <color>FF0098E6</color>
-      <width>4</width>
-    </LineStyle>
-  </Style>
-  <Folder>
-    <name>Features</name>
-    <open>0</open>
-       <Placemark>
-         <name>1</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7507927359745,30.3583555641661,0
-               -97.7524143092927,30.3582314371191,0
-               -97.754027502516,30.3589542286747,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>2</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7531341577601,30.3534127050141,0
-               -97.7506995010253,30.3573663109854,0
-               -97.7507927359745,30.3583555641661,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>3</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.751059543172,30.3524128098776,0
-               -97.7511497737659,30.3525120437493,0
-               -97.7514825148286,30.3526704793802,0
-               -97.7517107395884,30.3527800002151,0
-               -97.75300426289,30.3534375128773,0
-               -97.7531341577601,30.3534127050141,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>4</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.751059543172,30.3524128098776,0
-               -97.7512432624529,30.3524090006528,0
-               -97.7530900839055,30.3533128609574,0
-               -97.7531341577601,30.3534127050141,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>5</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7496163754519,30.3519110667371,0
-               -97.749722869886,30.3519902769437,0
-               -97.750300107077,30.3521371120052,0
-               -97.750537570843,30.3522224523629,0
-               -97.7507232945404,30.3523048806686,0
-               -97.7509216815539,30.3523987843453,0
-               -97.751059543172,30.3524128098776,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>6</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7496163754519,30.3519110667371,0
-               -97.749755159905,30.3518799237878,0
-               -97.7502950648105,30.3520021063975,0
-               -97.7504300178403,30.3520441820524,0
-               -97.7506246439578,30.3521174099433,0
-               -97.7508146288632,30.3522017935926,0
-               -97.7509873884916,30.3522839604461,0
-               -97.751059543172,30.3524128098776,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>7</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7483656451454,30.3515848093521,0
-               -97.7486300469096,30.351658897228,0
-               -97.7487944039064,30.3517089655755,0
-               -97.748830221293,30.3517190934529,0
-               -97.7490768839991,30.3517889175478,0
-               -97.7490847010153,30.3517906974853,0
-               -97.7496163754519,30.3519110667371,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>8</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7499422980063,30.3504056829637,0
-               -97.7497267071251,30.3514444649049,0
-               -97.7496163754519,30.3519110667371,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>9</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.750001308021,30.3501466338646,0
-               -97.7499422980063,30.3504056829637,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>10</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7496128495027,30.348734781354,0
-               -97.7493580234039,30.3491522931937,0
-               -97.7491802401926,30.3494496813885,0
-               -97.749038662333,30.349773405702,0
-               -97.7488881547493,30.3501545961848,0
-               -97.7486270100258,30.3509165711633,0
-               -97.7483656451454,30.3515848093521,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>11</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7506193235035,30.3472693987426,0
-               -97.7504250789303,30.3479058510455,0
-               -97.7501153854773,30.3492700018451,0
-               -97.7500050562951,30.3498219476288,0
-               -97.750001308021,30.3501466338646,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>12</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7538138782921,30.3407614683851,0
-               -97.7506193235035,30.3472693987426,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>13</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7579256806572,30.3529708024809,0
-               -97.7566392933355,30.3551092657595,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>14</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7570139162979,30.3520653652804,0
-               -97.7572597269251,30.3525615151498,0
-               -97.7572928133448,30.3526383365894,0
-               -97.7573527160566,30.3526966644546,0
-               -97.7574083460558,30.3527510832424,0
-               -97.7574820114718,30.3527868329455,0
-               -97.7579256806572,30.3529708024809,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>15</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7554503673896,30.3498599327263,0
-               -97.755742187838,30.3501243315434,0
-               -97.7570139162979,30.3520653652804,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>16</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.755436301625,30.3323307054248,0
-               -97.7554363240507,30.3343459385782,0
-               -97.7554180270913,30.335126806122,0
-               -97.7553886999189,30.3356499928801,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>17</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7556065295461,30.3260223909823,0
-               -97.7554751574236,30.3307175022679,0
-               -97.7554749965771,30.3307235221682,0
-               -97.755436301625,30.3323307054248,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>18</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7559741456154,30.3257539221721,0
-               -97.7559068760826,30.3309211533278,0
-               -97.7559065002256,30.3309494739012,0
-               -97.7558775818097,30.3320675405888,0
-               -97.7558271579466,30.3328251269455,0
-               -97.7558284893364,30.3334529474988,0
-               -97.7558532390332,30.3341073941232,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>19</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7542908376059,30.3084824326704,0
-               -97.7546234452682,30.3085798852618,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>20</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7526140031268,30.308096640402,0
-               -97.7542908376059,30.3084824326704,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>21</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7516012192993,30.3078012115848,0
-               -97.7526140031268,30.308096640402,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>22</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7511655695185,30.3074678966481,0
-               -97.7516012192993,30.3078012115848,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>23</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7486477884469,30.3072961374292,0
-               -97.7488571420612,30.3072954083854,0
-               -97.7490503544398,30.30726415399,0
-               -97.7492231199669,30.3072412894605,0
-               -97.7494425540958,30.307175413252,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>24</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.750777410841,30.3071960435419,0
-               -97.7511655695185,30.3074678966481,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>25</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7475058700467,30.3070888340621,0
-               -97.7480913798792,30.3072409114376,0
-               -97.7486477884469,30.3072961374292,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>26</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7494425540958,30.307175413252,0
-               -97.7497127319824,30.3071061876069,0
-               -97.7499922240699,30.3070678973233,0
-               -97.750256274796,30.3070380696455,0
-               -97.750468907285,30.307037981554,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>27</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.750468907285,30.307037981554,0
-               -97.750777410841,30.3071960435419,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>28</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7463781042094,30.3067085336802,0
-               -97.7475058700467,30.3070888340621,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>29</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7457046327754,30.3064089046376,0
-               -97.7463781042094,30.3067085336802,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>30</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7441477288143,30.3057201324051,0
-               -97.7457046327754,30.3064089046376,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>31</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7430491730728,30.3051973743958,0
-               -97.7441477288143,30.3057201324051,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>32</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7414311624373,30.3044248232796,0
-               -97.7430491730728,30.3051973743958,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>33</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7397842096423,30.303580157604,0
-               -97.7414311624373,30.3044248232796,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>34</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7392576264375,30.3033302208781,0
-               -97.7397842096423,30.303580157604,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>35</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7381466427127,30.3027411600499,0
-               -97.7392576264375,30.3033302208781,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>36</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.738587459199,30.3019662343976,0
-               -97.7381466427127,30.3027411600499,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>37</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7389098871604,30.3015272043842,0
-               -97.738587459199,30.3019662343976,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>38</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7391017003465,30.3012010445494,0
-               -97.7389098871604,30.3015272043842,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>39</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7396486136718,30.3003402519537,0
-               -97.7391017003465,30.3012010445494,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>40</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.739894632674,30.2999134252236,0
-               -97.7396486136718,30.3003402519537,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>41</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7399811331446,30.2997611561929,0
-               -97.739894632674,30.2999134252236,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>42</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7404270344533,30.2990908417408,0
-               -97.7399811331446,30.2997611561929,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>43</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7405557498854,30.298900920651,0
-               -97.7404270344533,30.2990908417408,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>44</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7409404204192,30.2982678707579,0
-               -97.7405557498854,30.298900920651,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>45</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7411979193272,30.2978852794702,0
-               -97.7409404204192,30.2982678707579,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>46</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7419651733282,30.2966961416803,0
-               -97.7411979193272,30.2978852794702,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>47</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7421002907534,30.2965035991902,0
-               -97.7419651733282,30.2966961416803,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>48</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7428169094308,30.2954289474413,0
-               -97.7421002907534,30.2965035991902,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>49</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7424824919432,30.2946630927641,0
-               -97.7428169094308,30.2954289474413,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>50</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7422858912042,30.2943125745217,0
-               -97.7424824919432,30.2946630927641,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>51</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7417710124815,30.2933037888866,0
-               -97.7422858912042,30.2943125745217,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>52</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7411562972454,30.2921774665868,0
-               -97.7417710124815,30.2933037888866,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>53</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7411535460583,30.291984887046,0
-               -97.7411562972454,30.2921774665868,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>54</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7403427164927,30.2919657346736,0
-               -97.7411535460583,30.291984887046,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>55</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7400554252128,30.2919241674657,0
-               -97.7403427164927,30.2919657346736,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>56</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7389266643926,30.2918243125117,0
-               -97.7400554252128,30.2919241674657,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>57</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7377687323933,30.2917486107917,0
-               -97.7389266643926,30.2918243125117,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>58</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7412468999954,30.2908643309375,0
-               -97.7411535460583,30.291984887046,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>59</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7412798207482,30.2904692490255,0
-               -97.7412468999954,30.2908643309375,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>60</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7413544801628,30.2898134265944,0
-               -97.7412798207482,30.2904692490255,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>61</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7402499739745,30.289755329393,0
-               -97.7413544801628,30.2898134265944,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>62</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7390776319745,30.2896270909644,0
-               -97.7402499739745,30.289755329393,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>63</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7379923571084,30.2895611124954,0
-               -97.7377687323933,30.2917486107917,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>64</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7379923571084,30.2895611124954,0
-               -97.7390776319745,30.2896270909644,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>65</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7567825704259,30.3148408606137,0
-               -97.7565760782249,30.3166082876938,0
-               -97.7563301772174,30.3185287221795,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>66</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7574261254738,30.3109539751559,0
-               -97.7572039555641,30.312618390198,0
-               -97.7571661813708,30.312850639902,0
-               -97.7571080895044,30.3131030537602,0
-               -97.7570546876222,30.3133281685856,0
-               -97.7570306514594,30.3134887452933,0
-               -97.7567825704259,30.3148408606137,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>67</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7569256788567,30.3104675865379,0
-               -97.7567360946983,30.3120949478564,0
-               -97.7566667519108,30.3127686532047,0
-               -97.7559321855142,30.3186500972266,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>68</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7577046056641,30.3095477115168,0
-               -97.7574261254738,30.3109539751559,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>69</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7563316144638,30.3088315135359,0
-               -97.7570090747202,30.3089372682439,0
-               -97.7570405157201,30.308942162808,0
-               -97.7571796378253,30.3089684196737,0
-               -97.7572024415681,30.3089727002728,0
-               -97.7575801866004,30.3090252322466,0
-               -97.7576359810197,30.3090357313836,0
-               -97.7578083477081,30.309068211264,0
-               -97.7579040716701,30.309086251222,0
-               -97.7579136281849,30.3090880385624,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>70</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7558872546355,30.3087345688028,0
-               -97.7563316144638,30.3088315135359,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>71</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7555068135984,30.30867741264,0
-               -97.7558872546355,30.3087345688028,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>72</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7549433551726,30.3085890708134,0
-               -97.7555068135984,30.30867741264,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>73</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7579126498977,30.3085569282406,0
-               -97.7578083477081,30.309068211264,0
-               -97.757791354936,30.3091514247917,0
-               -97.7577046056641,30.3095477115168,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>74</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7558872546355,30.3087345688028,0
-               -97.7559448648391,30.308593974795,0
-               -97.7559604355548,30.3085462670826,0
-               -97.7559788303549,30.3085055470326,0
-               -97.7560191282979,30.3084755251817,0
-               -97.7560753870103,30.3084389492852,0
-               -97.7561385741608,30.308404080029,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>75</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7561385741608,30.308404080029,0
-               -97.7562239996199,30.3083459777001,0
-               -97.7563198562751,30.3083067878449,0
-               -97.7564469018491,30.3082819206389,0
-               -97.7565769251475,30.3082808763142,0
-               -97.7567289068342,30.3083169353468,0
-               -97.7568042766422,30.3083576425758,0
-               -97.7568857837234,30.3084106853961,0
-               -97.7569356445993,30.3084665291279,0
-               -97.7569657677381,30.3085219490679,0
-               -97.7569958912286,30.3085773960777,0
-               -97.7570100224679,30.3086393704305,0
-               -97.7570158665311,30.3086994998699,0
-               -97.7570097754071,30.308927656154,0
-               -97.7570090747202,30.3089372682439,0
-               -97.7569727571743,30.3094439209959,0
-               -97.7569463447582,30.3096935334854,0
-               -97.7569256883726,30.3098747505262,0
-               -97.7569256788567,30.3104675865379,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>76</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7579136281849,30.3090880385624,0
-               -97.7582940173758,30.3090973579162,0
-               -97.7583976501079,30.3090945995152,0
-               -97.7585108322241,30.3090808384071,0
-               -97.7585835393004,30.3090598287333,0
-               -97.75861727585,30.309042848457,0
-               -97.7587110633924,30.3089920914671,0
-               -97.7587708692298,30.3089591607184,0
-               -97.7588401364429,30.3089066722426,0
-               -97.7589060074852,30.3087842301535,0
-               -97.7589373954023,30.308647343836,0
-               -97.7589211877677,30.3085122519741,0
-               -97.7588532046304,30.308387120695,0
-               -97.7587433025359,30.3082886516882,0
-               -97.7586040073924,30.3082225962062,0
-               -97.7584469051906,30.3082001882212,0
-               -97.7582888505522,30.3082135152532,0
-               -97.7581484842923,30.3082767034598,0
-               -97.7580649491701,30.3083281622886,0
-               -97.7580108410631,30.3084112627181,0
-               -97.7579126498977,30.3085569282406,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>77</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7566392933355,30.3551092657595,0
-               -97.7565212184213,30.3552494987813,0
-               -97.7549609853795,30.3569569929606,0
-               -97.7547549824666,30.3573977751394,0
-               -97.754027502516,30.3589542286747,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>78</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7554503673896,30.3498599327263,0
-               -97.7549188640134,30.3504653257493,0
-               -97.7547681578764,30.350750393891,0
-               -97.7545188832294,30.3512218791463,0
-               -97.7531341577601,30.3534127050141,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>79</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7558532390332,30.3341073941232,0
-               -97.7557704272023,30.3347230723139,0
-               -97.7557723171622,30.335329973428,0
-               -97.7557460645748,30.3357405673031,0
-               -97.7557022862075,30.3360796023233,0
-               -97.7556653001977,30.3362878304678,0
-               -97.7556393046124,30.3364703985651,0
-               -97.7555036969473,30.3370136707394,0
-               -97.7553676882057,30.337462735606,0
-               -97.7551974341721,30.3378939221926,0
-               -97.754791951953,30.3387421163134,0
-               -97.7543313549975,30.3396720413129,0
-               -97.7538138782921,30.3407614683851,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>80</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7553886999189,30.3356499928801,0
-               -97.7553768221398,30.3358073481801,0
-               -97.7553569205954,30.3359778273468,0
-               -97.7553305803174,30.3361970226607,0
-               -97.7553057215309,30.3363607735493,0
-               -97.7552423864462,30.336768311812,0
-               -97.7551476303781,30.3371579727153,0
-               -97.7550179415968,30.337555540404,0
-               -97.754842826053,30.3379823110925,0
-               -97.7525059664882,30.3424448224945,0
-               -97.7516075673678,30.3443157595307,0
-               -97.7507951339444,30.3461238714642,0
-               -97.750507930107,30.3467420587784,0
-               -97.7496128495027,30.348734781354,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>81</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7559321855142,30.3186500972266,0
-               -97.755807288548,30.3197131234609,0
-               -97.7557097262947,30.3213609005747,0
-               -97.7557074710137,30.3213990296996,0
-               -97.7557060819511,30.3214605270401,0
-               -97.7556901249631,30.3221598937376,0
-               -97.7556292159908,30.3248326355357,0
-               -97.7556065295461,30.3260223909823,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>82</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7563301772174,30.3185287221795,0
-               -97.7561779753427,30.3197383157716,0
-               -97.7561288142494,30.3209949489665,0
-               -97.7561372384223,30.3213786261447,0
-               -97.7561381029781,30.3214186885445,0
-               -97.7561368602245,30.3214675921359,0
-               -97.7561191892747,30.3221600214557,0
-               -97.7559905431003,30.3250130889534,0
-               -97.7559741456154,30.3257539221721,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-       <Placemark>
-         <name>83</name>
-         <description><![CDATA[]]></description>
-         <styleUrl>#FEATURES</styleUrl>
-           <LineString>
-             <extrude>0</extrude>
-             <tessellate>1</tessellate>
-             <altitudeMode>clampedToGround</altitudeMode>
-             <coordinates>
-               -97.7546234452682,30.3085798852618,0
-               -97.7548034186043,30.3085850459485,0
-               -97.7549433551726,30.3085890708134,0
-             </coordinates>
-           </LineString>
-       </Placemark>
-  </Folder>
+<name><![CDATA[661]]></name>
+<open>1</open>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<description><![CDATA[Exported from 661 on 8/22/2011]]></description>
+<Style id="FEATURES">
+<LineStyle>
+<color>FF1134FA</color>
+<width>2</width>
+</LineStyle>
+<BalloonStyle>
+<text>
+<![CDATA[]]>
+</text>
+</BalloonStyle>
+</Style>
+<Folder>
+<name>Features</name>
+<open>0</open>
+<Placemark>
+<name><![CDATA[1]]></name>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<styleUrl>#FEATURES</styleUrl>
+<LineString>
+<extrude>0</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>clampedToGround</altitudeMode>
+<coordinates>
+-97.741154,30.291985,0
+-97.741156,30.292177,0
+-97.741771,30.293304,0
+-97.742286,30.294313,0
+-97.742482,30.294663,0
+-97.742817,30.295429,0
+-97.742100,30.296504,0
+-97.741965,30.296696,0
+-97.741198,30.297885,0
+-97.740940,30.298268,0
+-97.740556,30.298901,0
+-97.740427,30.299091,0
+-97.739981,30.299761,0
+-97.739895,30.299913,0
+-97.739649,30.300340,0
+-97.739102,30.301201,0
+-97.738910,30.301527,0
+-97.738587,30.301966,0
+-97.738147,30.302741,0
+-97.739258,30.303330,0
+-97.739784,30.303580,0
+-97.741431,30.304425,0
+-97.743049,30.305197,0
+-97.744148,30.305720,0
+-97.745705,30.306409,0
+-97.746378,30.306709,0
+-97.747506,30.307089,0
+-97.748091,30.307241,0
+-97.748648,30.307296,0
+-97.748857,30.307295,0
+-97.749050,30.307264,0
+-97.749223,30.307241,0
+-97.749443,30.307175,0
+-97.749713,30.307106,0
+-97.749992,30.307068,0
+-97.750256,30.307038,0
+-97.750469,30.307038,0
+-97.750777,30.307196,0
+-97.751166,30.307468,0
+-97.751601,30.307801,0
+-97.752614,30.308097,0
+-97.754291,30.308482,0
+-97.754623,30.308580,0
+-97.754803,30.308585,0
+-97.754943,30.308589,0
+-97.755507,30.308677,0
+-97.755887,30.308735,0
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<name><![CDATA[1]]></name>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<styleUrl>#FEATURES</styleUrl>
+<LineString>
+<extrude>0</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>clampedToGround</altitudeMode>
+<coordinates>
+-97.741154,30.291985,0
+-97.741247,30.290864,0
+-97.741280,30.290469,0
+-97.741354,30.289813,0
+-97.740250,30.289755,0
+-97.739078,30.289627,0
+-97.737992,30.289561,0
+-97.737769,30.291749,0
+-97.738927,30.291824,0
+-97.740055,30.291924,0
+-97.740343,30.291966,0
+-97.741154,30.291985,0
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<name><![CDATA[1]]></name>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<styleUrl>#FEATURES</styleUrl>
+<LineString>
+<extrude>0</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>clampedToGround</altitudeMode>
+<coordinates>
+-97.755887,30.308735,0
+-97.755945,30.308594,0
+-97.755960,30.308546,0
+-97.755979,30.308506,0
+-97.756019,30.308476,0
+-97.756075,30.308439,0
+-97.756139,30.308404,0
+-97.756224,30.308346,0
+-97.756320,30.308307,0
+-97.756447,30.308282,0
+-97.756577,30.308281,0
+-97.756729,30.308317,0
+-97.756804,30.308358,0
+-97.756886,30.308411,0
+-97.756936,30.308467,0
+-97.756966,30.308522,0
+-97.756996,30.308577,0
+-97.757010,30.308639,0
+-97.757016,30.308699,0
+-97.757010,30.308928,0
+-97.757009,30.308937,0
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<name><![CDATA[1]]></name>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<styleUrl>#FEATURES</styleUrl>
+<LineString>
+<extrude>0</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>clampedToGround</altitudeMode>
+<coordinates>
+-97.755887,30.308735,0
+-97.756332,30.308832,0
+-97.757009,30.308937,0
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<name><![CDATA[1]]></name>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<styleUrl>#FEATURES</styleUrl>
+<LineString>
+<extrude>0</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>clampedToGround</altitudeMode>
+<coordinates>
+-97.757009,30.308937,0
+-97.757041,30.308942,0
+-97.757180,30.308968,0
+-97.757202,30.308973,0
+-97.757580,30.309025,0
+-97.757636,30.309036,0
+-97.757808,30.309068,0
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<name><![CDATA[1]]></name>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<styleUrl>#FEATURES</styleUrl>
+<LineString>
+<extrude>0</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>clampedToGround</altitudeMode>
+<coordinates>
+-97.757009,30.308937,0
+-97.756973,30.309444,0
+-97.756946,30.309694,0
+-97.756926,30.309875,0
+-97.756926,30.310468,0
+-97.756736,30.312095,0
+-97.756667,30.312769,0
+-97.755932,30.318650,0
+-97.755807,30.319713,0
+-97.755710,30.321361,0
+-97.755707,30.321399,0
+-97.755706,30.321461,0
+-97.755690,30.322160,0
+-97.755629,30.324833,0
+-97.755607,30.326022,0
+-97.755475,30.330718,0
+-97.755475,30.330724,0
+-97.755436,30.332331,0
+-97.755436,30.334346,0
+-97.755418,30.335127,0
+-97.755389,30.335650,0
+-97.755377,30.335807,0
+-97.755357,30.335978,0
+-97.755331,30.336197,0
+-97.755306,30.336361,0
+-97.755242,30.336768,0
+-97.755148,30.337158,0
+-97.755018,30.337556,0
+-97.754843,30.337982,0
+-97.752506,30.342445,0
+-97.751608,30.344316,0
+-97.750795,30.346124,0
+-97.750508,30.346742,0
+-97.749613,30.348735,0
+-97.749358,30.349152,0
+-97.749180,30.349450,0
+-97.749039,30.349773,0
+-97.748888,30.350155,0
+-97.748627,30.350917,0
+-97.748366,30.351585,0
+-97.748630,30.351659,0
+-97.748794,30.351709,0
+-97.748830,30.351719,0
+-97.749077,30.351789,0
+-97.749085,30.351791,0
+-97.749616,30.351911,0
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<name><![CDATA[1]]></name>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<styleUrl>#FEATURES</styleUrl>
+<LineString>
+<extrude>0</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>clampedToGround</altitudeMode>
+<coordinates>
+-97.757808,30.309068,0
+-97.757904,30.309086,0
+-97.757914,30.309088,0
+-97.758294,30.309097,0
+-97.758398,30.309095,0
+-97.758511,30.309081,0
+-97.758584,30.309060,0
+-97.758617,30.309043,0
+-97.758711,30.308992,0
+-97.758771,30.308959,0
+-97.758840,30.308907,0
+-97.758906,30.308784,0
+-97.758937,30.308647,0
+-97.758921,30.308512,0
+-97.758853,30.308387,0
+-97.758743,30.308289,0
+-97.758604,30.308223,0
+-97.758447,30.308200,0
+-97.758289,30.308214,0
+-97.758148,30.308277,0
+-97.758065,30.308328,0
+-97.758011,30.308411,0
+-97.757913,30.308557,0
+-97.757808,30.309068,0
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<name><![CDATA[1]]></name>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<styleUrl>#FEATURES</styleUrl>
+<LineString>
+<extrude>0</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>clampedToGround</altitudeMode>
+<coordinates>
+-97.757808,30.309068,0
+-97.757791,30.309151,0
+-97.757705,30.309548,0
+-97.757426,30.310954,0
+-97.757204,30.312618,0
+-97.757166,30.312851,0
+-97.757108,30.313103,0
+-97.757055,30.313328,0
+-97.757031,30.313489,0
+-97.756783,30.314841,0
+-97.756576,30.316608,0
+-97.756330,30.318529,0
+-97.756178,30.319738,0
+-97.756129,30.320995,0
+-97.756137,30.321379,0
+-97.756138,30.321419,0
+-97.756137,30.321468,0
+-97.756119,30.322160,0
+-97.755991,30.325013,0
+-97.755974,30.325754,0
+-97.755907,30.330921,0
+-97.755907,30.330949,0
+-97.755878,30.332068,0
+-97.755827,30.332825,0
+-97.755828,30.333453,0
+-97.755853,30.334107,0
+-97.755770,30.334723,0
+-97.755772,30.335330,0
+-97.755746,30.335741,0
+-97.755702,30.336080,0
+-97.755665,30.336288,0
+-97.755639,30.336470,0
+-97.755504,30.337014,0
+-97.755368,30.337463,0
+-97.755197,30.337894,0
+-97.754792,30.338742,0
+-97.754331,30.339672,0
+-97.753814,30.340761,0
+-97.750619,30.347269,0
+-97.750425,30.347906,0
+-97.750115,30.349270,0
+-97.750005,30.349822,0
+-97.750001,30.350147,0
+-97.749942,30.350406,0
+-97.749727,30.351444,0
+-97.749616,30.351911,0
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<name><![CDATA[1]]></name>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<styleUrl>#FEATURES</styleUrl>
+<LineString>
+<extrude>0</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>clampedToGround</altitudeMode>
+<coordinates>
+-97.749616,30.351911,0
+-97.749755,30.351880,0
+-97.750295,30.352002,0
+-97.750430,30.352044,0
+-97.750625,30.352117,0
+-97.750815,30.352202,0
+-97.750987,30.352284,0
+-97.751060,30.352413,0
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<name><![CDATA[1]]></name>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<styleUrl>#FEATURES</styleUrl>
+<LineString>
+<extrude>0</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>clampedToGround</altitudeMode>
+<coordinates>
+-97.749616,30.351911,0
+-97.749723,30.351990,0
+-97.750300,30.352137,0
+-97.750538,30.352222,0
+-97.750723,30.352305,0
+-97.750922,30.352399,0
+-97.751060,30.352413,0
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<name><![CDATA[1]]></name>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<styleUrl>#FEATURES</styleUrl>
+<LineString>
+<extrude>0</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>clampedToGround</altitudeMode>
+<coordinates>
+-97.751060,30.352413,0
+-97.751243,30.352409,0
+-97.753090,30.353313,0
+-97.753134,30.353413,0
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<name><![CDATA[1]]></name>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<styleUrl>#FEATURES</styleUrl>
+<LineString>
+<extrude>0</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>clampedToGround</altitudeMode>
+<coordinates>
+-97.751060,30.352413,0
+-97.751150,30.352512,0
+-97.751483,30.352670,0
+-97.751711,30.352780,0
+-97.753004,30.353438,0
+-97.753134,30.353413,0
+</coordinates>
+</LineString>
+</Placemark>
+<Placemark>
+<name><![CDATA[1]]></name>
+<Snippet maxLines="0"><![CDATA[]]></Snippet>
+<styleUrl>#FEATURES</styleUrl>
+<LineString>
+<extrude>0</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>clampedToGround</altitudeMode>
+<coordinates>
+-97.753134,30.353413,0
+-97.750700,30.357366,0
+-97.750793,30.358356,0
+-97.752414,30.358231,0
+-97.754028,30.358954,0
+-97.754755,30.357398,0
+-97.754961,30.356957,0
+-97.756521,30.355249,0
+-97.756639,30.355109,0
+-97.757926,30.352971,0
+-97.757482,30.352787,0
+-97.757408,30.352751,0
+-97.757353,30.352697,0
+-97.757293,30.352638,0
+-97.757260,30.352562,0
+-97.757014,30.352065,0
+-97.755742,30.350124,0
+-97.755450,30.349860,0
+-97.754919,30.350465,0
+-97.754768,30.350750,0
+-97.754519,30.351222,0
+-97.753134,30.353413,0
+</coordinates>
+</LineString>
+</Placemark>
+</Folder>
 </Document>
 </kml>

@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/map_framelayout"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:orientation="vertical">
+<?xml version="1.0" encoding="utf-8"?>	
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/map"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  class="com.google.android.gms.maps.SupportMapFragment"/>
 	
-	<com.google.android.maps.MapView  
+<!--	<com.google.android.maps.MapView  
 		android:id="@+id/campusmapview"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:apiKey="0QimFugzhdFbLa_nwEY-9UWSsske-Op80RMjuSA"
-		android:clickable="true"/>
+		android:clickable="true"/>   -->
 <!-- 	<Button
 	    android:id="@+id/mylocation_button"
 	    android:layout_width="wrap_content"
@@ -20,7 +20,6 @@
 	    android:onClick="locate" 
 	    android:text="Locate"
 	   /> -->
-	
-</RelativeLayout>
+
 
 <!-- debug "0QimFugzhdFYSbDa4DCFoCvT_PyH7VToIIDbBbw" -->

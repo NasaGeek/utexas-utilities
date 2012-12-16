@@ -342,7 +342,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 		            }
 		            else
 		            	return true;
-		            inflater.inflate(R.menu.schedule_menu, menu);
+		            inflater.inflate(R.menu.schedule_action_mode, menu);
 		            return true;
 		        }
 
@@ -356,18 +356,21 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 		            switch(item.getItemId())
 		            {
 		            	case R.id.locate_class:
+		            		ArrayList<String> building = new ArrayList<String>();
 		            		Intent map = new Intent(con.getString(R.string.building_intent), null, con, CampusMapActivity.class);
 		            		
 		            		String[] elements = exams.get(position).split("\\^");
 		            		if(elements.length >= 5)
 		    				{	
-		    					map.setData(Uri.parse(elements[4].split(" ")[0]));
+		    					building.add(elements[4].split(" ")[0]);
+		    					map.putStringArrayListExtra("buildings",building);
+		            	//		map.setData(Uri.parse(elements[4].split(" ")[0]));
 		    					con.startActivity(map);
 		    					return true;
 		    				}
 		            		else
 		            		{
-		            			Toast.makeText(con, "Something unexpected occurred, and your exam's location could not be found", Toast.LENGTH_SHORT).show();
+		            			Toast.makeText(con, "Your exam's location could not be found", Toast.LENGTH_SHORT).show();
 		            		}
 		            }
 		            return true;

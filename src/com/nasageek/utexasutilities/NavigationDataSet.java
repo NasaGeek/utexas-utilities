@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 
-public class NavigationDataSet implements Iterable{ 
+public class NavigationDataSet implements Iterable<Placemark>{ 
 
 private ArrayList<Placemark> placemarks = new ArrayList<Placemark>();
 private Placemark currentPlacemark;
@@ -47,8 +47,7 @@ public void setRoutePlacemark(Placemark routePlacemark) {
     this.routePlacemark = routePlacemark;
 }
 
-public Iterator iterator() {
-	// TODO Auto-generated method stub
+public Iterator<Placemark> iterator() {
 	return placemarks.iterator();
 }
 }
