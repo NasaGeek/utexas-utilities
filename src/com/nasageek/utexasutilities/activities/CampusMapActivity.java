@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -69,7 +68,6 @@ import com.nasageek.utexasutilities.NavigationSaxHandler;
 import com.nasageek.utexasutilities.Placemark;
 import com.nasageek.utexasutilities.R;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -198,6 +196,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
         {
         	mapView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 				@SuppressLint("NewApi")
+				@SuppressWarnings("deprecation")
 				@Override
 				public void onGlobalLayout() 
 				{				
@@ -205,7 +204,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	                   mapView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 					else 
 	                   mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-					if(CampusMapActivity.this.mSetCameraToBounds)
+					if(mSetCameraToBounds)
 					{
 						mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 100));
 						mSetCameraToBounds = false;
@@ -371,14 +370,12 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
        if(buildingIdList.size() > 1)
        {
     	   mSetCameraToBounds = true;
-    	   //TODO: might cause IllegalStateException, will see if I need to mitigate
-   // 	   mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 10));
        }
 //       if(!buildingId.equals("") && !buildingFound) Toast.makeText(this, "That building could not be found", Toast.LENGTH_SHORT).show();
        
         if(foundCount != buildingIdList.size()) Toast.makeText(this, "One or more buildings could not be found", Toast.LENGTH_SHORT).show();
        buildingIdList.clear(); 
-       
+      
        //Why send them back to where they are? They can tap the locate button for that
  /* 		else
   		{

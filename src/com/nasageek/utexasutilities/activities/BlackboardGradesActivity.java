@@ -241,7 +241,7 @@ public class BlackboardGradesActivity extends SherlockActivity
 			
 			g_pb_ll.setVisibility(View.GONE);
     		glv.setVisibility(View.GONE);
-    		getv.setVisibility(View.GONE);
+    		getv.setVisibility(View.VISIBLE);
 		}
 	}
 

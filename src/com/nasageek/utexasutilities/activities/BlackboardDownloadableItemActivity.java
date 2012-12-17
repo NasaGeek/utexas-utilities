@@ -53,6 +53,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	private ListView dlableItems;
 	private TextView contentDescription;
 	private LinearLayout dlil_pb_ll;
+	private TextView dlil_etv;
 	private ActionBar actionbar;
 	
 	@Override
@@ -70,6 +71,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		
 		dlableItems = (ListView) findViewById(R.id.dlable_item_list);
 		dlil_pb_ll = (LinearLayout) findViewById(R.id.blackboard_dl_items_progressbar_ll);
+		dlil_etv = (TextView) findViewById(R.id.blackboard_dl_error);
 		contentDescription = (TextView) findViewById(R.id.content_description);
 		
 		DefaultHttpClient client = ConnectionHelper.getThreadSafeClient();
@@ -87,7 +89,6 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		return true;
 		 
 	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -128,10 +129,10 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		alertBuilder.setTitle("View on Blackboard");
 		alertBuilder.show();
 	}
-	
-	private class fetchData extends AsyncTask<String, Void, Object[]>
+	private class fetchData extends AsyncTask<String, Object, Object[]>
 	{
 		private DefaultHttpClient client;
+		private String errorMsg;
 		
 		public fetchData(DefaultHttpClient client)
 		{
@@ -152,7 +153,10 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		    	pagedata = EntityUtils.toString(response.getEntity());
 			} catch (Exception e)
 			{
+				errorMsg = "UTilities could not fetch this download";
+				cancel(true);
 				e.printStackTrace();
+				return null;	
 			}
 	    	Object[] result = new Object[2];
 	    	ArrayList<bbFile> data=new ArrayList<bbFile>();
@@ -197,9 +201,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 				String content = Html.fromHtml(Html.fromHtml(((String) result[0]).replaceAll("<!--.*?-->", "")).toString()).toString();
 				ArrayList<bbFile> data = (ArrayList<bbFile>) result[1];
 				
-				
-				contentDescription.setText(content);
-				
+				contentDescription.setText(content);			
 				
 				dlableItems.setAdapter(new dlableItemAdapter(BlackboardDownloadableItemActivity.this,data));
 				dlableItems.setOnItemClickListener(new OnItemClickListener() {
@@ -306,8 +308,17 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	    		dlableItems.setVisibility(View.VISIBLE);
 	    	}
 		}		
+		@Override
+		protected void onCancelled(Object... o)
+		{
+			dlil_etv.setText(errorMsg);
+			
+			dlil_etv.setVisibility(View.VISIBLE);
+			dlil_pb_ll.setVisibility(View.GONE);
+			contentDescription.setVisibility(View.GONE);
+    		dlableItems.setVisibility(View.GONE);
+		}
 	}
-	
 	private class dlableItemAdapter extends ArrayAdapter<bbFile>
 	{
 		private Context con;

@@ -98,10 +98,6 @@
         <activity android:name=".activities.MenuActivity"
         		 android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
-        <activity android:name=".activities.MapTestActivity"
-            	  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
-        
-       
                  	
         <provider android:name=".BuildingProvider"
          			 android:authorities="com.nasageek.utexasutilities.buildingprovider"/>

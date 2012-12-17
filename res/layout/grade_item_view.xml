@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:padding="7dp">
+    android:padding="9dp">
     	     
      <View android:id="@+id/strut"
         android:layout_width="0dp"
@@ -45,6 +45,5 @@
          android:layout_below="@+id/grade_value"
          android:layout_alignRight="@+id/grade_value"
          android:src="@drawable/ic_action_comment"/>
-     
-     
+
 </RelativeLayout>
