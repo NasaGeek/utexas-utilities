@@ -37,6 +37,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,6 +51,8 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,6 +75,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -317,6 +321,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	{
 		mMap.setMyLocationEnabled(true);
 		mMap.setInfoWindowAdapter(new StopInfoAdapter());
+		mMap.setOnInfoWindowClickListener(new InfoClickListener());
 	}
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -329,8 +334,9 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	/**
 	 * Loads the buildings specified in buildingIdList or shows the user an error if any of the buildingId's are invalid
 	 * 
-	 * @param autoZoom - true to autozoom to 16 when animating to the building, false to just animate to building
-	 * should only be true when you are entering the map from an entry point other than the dashboard
+	 * @param autoZoom - true to autozoom to 16 when moving (will not animate!) to the building, 
+	 * false to just animate to building should only be true when you are entering the map from 
+	 * an entry point other than the dashboard
 	 **/
 	public void loadBuildingOverlay(boolean autoZoom)
 	{
@@ -341,7 +347,8 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
         {
         	if(buildingIdList.contains(pm.getTitle()))//	buildingId.equalsIgnoreCase(pm.getTitle()))
         	{
-        		LatLng buildingLatLng = new LatLng(Double.valueOf(pm.getCoordinates().split(",")[1].trim()), Double.valueOf(pm.getCoordinates().split(",")[0].trim()));
+        		LatLng buildingLatLng = new LatLng(Double.valueOf(pm.getCoordinates().split(",")[1].trim()), 
+        										   Double.valueOf(pm.getCoordinates().split(",")[0].trim()));
         		
         		Marker buildingMarker = mMap.addMarker(new MarkerOptions()
         		.position(buildingLatLng)
@@ -414,15 +421,15 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
         	{
         		AlertDialog.Builder noproviders_builder = new AlertDialog.Builder(this);
         		noproviders_builder.setMessage("You don't have any location services enabled. If you want to see your " +
-        				"location you'll need to enable at least one in the Location menu of your device's Settings.  Would you like to do that now?")
+        				"location you'll need to enable at least one in the Location menu of your device's Settings.  " +
+        				"Would you like to do that now?")
             			.setCancelable(true)
             			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 							
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-								startActivityForResult(intent,0);
-								
+								startActivityForResult(intent,0);								
 							}
 						})
             			.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -430,11 +437,9 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     		                       dialog.cancel(); 
     		                    }
     	            			});	
-        		
         		AlertDialog noproviders = noproviders_builder.create();
             	noproviders.show();   
-        	}
-        	
+        	}	
         }
         if(locProvider!=null)
         {
@@ -600,20 +605,6 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	     startSearch(null, false, appData, false);
 	     return true;
 	 }
-	public class MyOnItemSelectedListener implements OnItemSelectedListener {
-
-	    public void onItemSelected(AdapterView<?> parent,
-	        View view, int pos, long id) {
-	    	if(!"0".equals(((Route) parent.getAdapter().getItem(pos)).getCode()))
-	    		loadRoute(((Route) parent.getAdapter().getItem(pos)).getCode());
-	
-	    }
-
-	    public void onNothingSelected(AdapterView<?> parent) {
-	      // Do nothing.
-	    }
-	}
-	
     @Override
 	public void onResume()
 	{
@@ -636,8 +627,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 			mMap.getUiSettings().setMyLocationButtonEnabled(false);
 		}
 		if(locationManager != null && locationListener != null)
-			locationManager.removeUpdates(locationListener);
-		
+			locationManager.removeUpdates(locationListener);		
 	}
 	/**
      * When the map is not ready the CameraUpdateFactory cannot be used. This should be called on
@@ -704,8 +694,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     {
     	int id = item.getItemId();
     	switch(id)
-    	{
-    	
+    	{  	
 	    	case android.R.id.home:
 	            // app icon in action bar clicked; go home
 	            super.onBackPressed();
@@ -748,14 +737,19 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     	return true;
     }
     
-    class StopInfoAdapter implements InfoWindowAdapter {
-
-    	private TextView infoView;
+    class StopInfoAdapter implements InfoWindowAdapter 
+    {
+    	private LinearLayout infoLayout;
+    	private TextView infoText;
+    	private ImageView tapMeIndicator;
+    	
     	
     	public StopInfoAdapter()
     	{
-    		infoView = new TextView(CampusMapActivity.this);
-    	}
+    		infoLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.info_window_layout, null);
+    		infoText = (TextView) infoLayout.findViewById(R.id.iw_text);
+    		tapMeIndicator = (ImageView) infoLayout.findViewById(R.id.iw_tap_me_indicator);
+       	}
     	/**
     	 * Super hacky way to support different types of InfoWindows.  I don't feel like finding a better way
     	 */
@@ -764,22 +758,28 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     		
     		if(marker.getTitle().charAt(0) == '^') //^ for building
     		{
-    			marker.setTitle(marker.getTitle().substring(1));
-    			return null;
+    			infoText.setGravity(Gravity.CENTER);	
+    			
+    			//Span for bolding the title
+    			SpannableString title = new SpannableString(marker.getTitle().substring(1)+"\n"+marker.getSnippet());
+    			title.setSpan(new StyleSpan(Typeface.BOLD), 0, marker.getTitle().substring(1).length(), 0);
+    			infoText.setText(title);
+	    		
+    			return infoLayout;
     		}
     		else if(marker.getTitle().charAt(0) == '*') //* for stop
     		{
-    			infoView.setGravity(Gravity.CENTER);
-	    		if(infoView.getText().equals("") || !(infoView.getText()+"").contains(marker.getTitle().substring(1)))
+    			infoText.setGravity(Gravity.CENTER);
+	    		if(infoText.getText().equals("") || !(infoText.getText()+"").contains(marker.getTitle().substring(1)))
 	    		{	
 	    			//Span for bolding the title
 	    			SpannableString title = new SpannableString(marker.getTitle().substring(1)+"\nLoading...");
 	    			title.setSpan(new StyleSpan(Typeface.BOLD), 0, marker.getTitle().substring(1).length(), 0);
-	    			infoView.setText(title);
+	    			infoText.setText(title);
 	    			
 		    		new checkStopTask().execute(Integer.parseInt(marker.getSnippet()), marker);
 	    		}
-	    		return infoView;
+	    		return infoLayout;
     		}
     		else return null;
     	}
@@ -846,18 +846,64 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     		}
     		protected void onPostExecute(String times)
     		{
-    			if((infoView.getText()+"").contains("Loading"))
+    			if((infoText.getText()+"").contains("Loading"))
     			{	
     				//Span for bolding the title
     				SpannableString str = new SpannableString(stopMarker.getTitle().substring(1) + "\n" + times.substring(0,times.length()-1));
     				str.setSpan(new StyleSpan(Typeface.BOLD), 0, stopMarker.getTitle().substring(1).length(), 0);
     				
-    				infoView.setText(str);
+    				infoText.setText(str);
     				stopMarker.showInfoWindow();
     			}
     		}
-    	}
+    	}	
+    }
+    
+    class InfoClickListener implements OnInfoWindowClickListener
+    {
+		@Override
+		public void onInfoWindowClick(final Marker marker) 
+		{
+			String markerType = "location";
+			if(marker.getTitle().charAt(0) == '^')
+				markerType = "building";
+			else if(marker.getTitle().charAt(0) == '*')
+				markerType = "stop";
+					
+			
+			AlertDialog.Builder opendirections_builder = new AlertDialog.Builder(CampusMapActivity.this);
+			opendirections_builder.setMessage("Would you like to open Google Maps for directions to this " + markerType + "?")
+        			.setCancelable(true)
+        			.setTitle("Get directions")
+        			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+								
+							LatLng myLocation = null;
+							if(mMap.getMyLocation() != null)
+								myLocation = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
+							else if(lastKnownLocation != null)
+								myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+							
+							if(myLocation != null)
+							{	
+								Intent intent = new Intent(android.content.Intent.ACTION_VIEW, 
+								Uri.parse("http://maps.google.com/maps?saddr="+myLocation.latitude+","+myLocation.longitude+ "&daddr=" +marker.getPosition().latitude+","+marker.getPosition().longitude));
+								startActivity(intent);
+							}
+							else
+								Toast.makeText(CampusMapActivity.this, "Your location must be known to get directions", Toast.LENGTH_SHORT).show();
+						}
+					})
+        			.setNegativeButton("No", new DialogInterface.OnClickListener() {
+	                    public void onClick(DialogInterface dialog, int id) {               
+		                       dialog.cancel(); 
+		                    }
+	            			});	
+    		AlertDialog opendirections = opendirections_builder.create();
+        	opendirections.show();   
+		}
     	
     }
-
 }

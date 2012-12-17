@@ -1,11 +1,7 @@
 package com.nasageek.utexasutilities;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -109,7 +105,6 @@ public class ConnectionHelper {
 		        // Execute HTTP Post Request
 		        HttpResponse response = client.execute(httppost);
 
-		   
 		    } catch (Exception ex) {
 		    	
 		    	loggedIn = false;
@@ -119,23 +114,6 @@ public class ConnectionHelper {
 		   loggedIn = true; 
 		   return true;
 		
-	}
-	public static void logout(Context con)
-	{
-		settings = PreferenceManager.getDefaultSharedPreferences(con);
-		Editor edit = settings.edit();
-		getThreadSafeClient().getCookieStore().clear();
-		resetCookies();
-		edit.putBoolean("loggedin", false);
-		
-		Utility.commit(edit);
-		loggingIn = false;
-		Crittercism.leaveBreadcrumb("Logged out");
-		
-	}
-	public static boolean isLoggingIn()
-	{
-		return loggingIn;
 	}
 	public boolean PNALogin(Context con, DefaultHttpClient client)
 	{
@@ -165,53 +143,74 @@ public class ConnectionHelper {
 		   PNALoggedIn = true; 
 		   return true;
 	}
+	public static void logout(Context con)
+	{
+		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		Editor edit = settings.edit();
+		getThreadSafeClient().getCookieStore().clear();
+		resetCookies(con);
+		edit.putBoolean("loggedin", false);
+		
+		Utility.commit(edit);
+		loggingIn = false;
+		Crittercism.leaveBreadcrumb("Logged out");
+		
+	}
+	public static boolean isLoggingIn()
+	{
+		return loggingIn;
+	}
 	public static String getPNAAuthCookie(Context con, DefaultHttpClient client)
 	{
 		settings = PreferenceManager.getDefaultSharedPreferences(con);
 		
-
-		if(!PNACookieHasBeenSet)
-		{
-			List<Cookie> cooklist = client.getCookieStore().getCookies();
-		    	
-		    	for(int i = 0; i<cooklist.size(); i++)
-		    	{
-		    	//	Log.d("COOKIE", cooklist.get(i).getValue()+"");
-		    		if(cooklist.get(i).getName().equals("AUTHCOOKIE"))
-		    		{	
-		    			PNAAuthCookie = cooklist.get(i).getValue();
-		    			PNACookieHasBeenSet = true;
-		    			return PNAAuthCookie;
-		    		}
-		    	}
-		    	
-	//	    	Log.e("CREDS", "Error authenticating credentials");
-				Toast.makeText(con, "Something went wrong during login, try checking your UT EID and Password and try again.", Toast.LENGTH_LONG).show();
-				PNALoggedIn = false;
-				Log.d("PNACOOKIE", "Login failed");
-				return "";
-		}
-		else
+		if(PNACookieHasBeenSet)
 		{
 			return PNAAuthCookie;
 		}
-	}
-	public static void PNASetAuthCookie(String cookie)
-	{
-		PNAAuthCookie = cookie;
-		PNACookieHasBeenSet = true;
-	}
-	public static void bbSetAuthCookie(String cookie)
-	{
-		bbAuthCookie = cookie;
-		bbCookieHasBeenSet = true;
+		else if(settings.contains("pna_auth_cookie"))
+		{
+			PNACookieHasBeenSet = true;
+			PNAAuthCookie = settings.getString("pna_auth_cookie", "");
+			return PNAAuthCookie;
+		}
+		else
+		{
+			List<Cookie> cooklist = client.getCookieStore().getCookies();
+		    	
+	    	for(int i = 0; i<cooklist.size(); i++)
+	    	{
+	    	//	Log.d("COOKIE", cooklist.get(i).getValue()+"");
+	    		if(cooklist.get(i).getName().equals("AUTHCOOKIE"))
+	    		{	
+	    			PNAAuthCookie = cooklist.get(i).getValue();
+	    			Utility.commit(settings.edit().putString("pna_auth_cookie", PNAAuthCookie));
+	    			PNACookieHasBeenSet = true;
+	    			return PNAAuthCookie;
+	    		}
+	    	}
+//	    	Log.e("CREDS", "Error authenticating credentials");
+			Toast.makeText(con, "Something went wrong during login, try checking your UT EID and Password and try again.", Toast.LENGTH_LONG).show();
+			PNALoggedIn = false;
+			Log.d("PNACOOKIE", "Login failed");
+			return "";
+		}
 	}
 	public static String getAuthCookie(Context con, DefaultHttpClient client )
 	{
-		//settings = PreferenceManager.getDefaultSharedPreferences(con);
+		settings = PreferenceManager.getDefaultSharedPreferences(con);
 	
-
-		if(!cookieHasBeenSet)
+		if(cookieHasBeenSet)
+		{
+			return authCookie;
+		}
+		else if(settings.contains("utd_auth_cookie"))
+		{
+			cookieHasBeenSet = true;
+			authCookie = settings.getString("utd_auth_cookie", "");
+			return authCookie;
+		}
+		else
 		{
 			List<Cookie> cooklist = client.getCookieStore().getCookies();
 		    	
@@ -221,6 +220,7 @@ public class ConnectionHelper {
 		    		if(cooklist.get(i).getName().equals("SC") && !cooklist.get(i).getValue().equals("NONE"))
 		    		{	
 		    			authCookie = cooklist.get(i).getValue();
+		    			Utility.commit(settings.edit().putString("utd_auth_cookie", authCookie));
 		    			cookieHasBeenSet = true;
 		    			return authCookie;
 		    		}
@@ -232,84 +232,94 @@ public class ConnectionHelper {
 				Log.d("COOKIE", "Login failed");
 				return "";
 		}
-		else
-		{
-			return authCookie;
-		}
 	}
 	public static String getBBAuthCookie(Context con, DefaultHttpClient client )
 	{
-		if(!bbCookieHasBeenSet)
-		{
-			List<Cookie> cooklist = client.getCookieStore().getCookies();
-		    	
-		    	for(int i = 0; i<cooklist.size(); i++)
-		    	{
-		    	//	Log.d("COOKIE", cooklist.get(i).getValue()+"");
-		    		if(cooklist.get(i).getName().equals("s_session_id"))
-		    		{	
-		    			bbAuthCookie = cooklist.get(i).getValue();
-		    			bbCookieHasBeenSet = true;
-		    			return bbAuthCookie;
-		    		}
-		    	}
-		    	
-	//	    	Log.e("CREDS", "Error authenticating credentials");
-				Toast.makeText(con, "Something went wrong during Blackboard login, try checking your UT EID and Password and try again.", Toast.LENGTH_LONG).show();
-				bbLoggedIn = false;
-				Log.d("BBCOOKIE", "Login failed");
-				return "";
-		}
-		else
+		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		
+		if(bbCookieHasBeenSet)
 		{
 			return bbAuthCookie;
 		}
+		else if(settings.contains("bb_auth_cookie"))
+		{
+			bbCookieHasBeenSet = true;
+			bbAuthCookie = settings.getString("bb_auth_cookie", "");
+			return bbAuthCookie;
+		}
+		else
+		{
+			List<Cookie> cooklist = client.getCookieStore().getCookies();
+		    	
+	    	for(int i = 0; i<cooklist.size(); i++)
+	    	{
+	    	//	Log.d("COOKIE", cooklist.get(i).getValue()+"");
+	    		if(cooklist.get(i).getName().equals("s_session_id"))
+	    		{	
+	    			bbAuthCookie = cooklist.get(i).getValue();
+	    			Utility.commit(settings.edit().putString("bb_auth_cookie", bbAuthCookie));
+	    			bbCookieHasBeenSet = true;
+	    			return bbAuthCookie;
+	    		}
+	    	}
+	    	
+//	    	Log.e("CREDS", "Error authenticating credentials");
+			Toast.makeText(con, "Something went wrong during Blackboard login, try checking your UT EID and Password and try again.", Toast.LENGTH_LONG).show();
+			bbLoggedIn = false;
+			Log.d("BBCOOKIE", "Login failed");
+			return "";
+		}
 	}
-	public static void resetCookie()
+	public static void resetCookie(Context con)
 	{
+		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		Utility.commit(settings.edit().remove("utd_auth_cookie"));
 		authCookie = "";
 		loggedIn = false;
 		cookieHasBeenSet = false;
 	}
-	public static void resetBBCookie()
+	public static void resetPNACookie(Context con)
 	{
+		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		Utility.commit(settings.edit().remove("pna_auth_cookie"));
+		PNAAuthCookie = "";
+		PNACookieHasBeenSet = false;
+		PNALoggedIn = false;
+	}
+	public static void resetBBCookie(Context con)
+	{
+		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		Utility.commit(settings.edit().remove("bb_auth_cookie"));
 		bbAuthCookie = "";
 		bbLoggedIn = false;
 		bbCookieHasBeenSet = false;
 	}
-	public static void setAuthCookie(String cookie)
+	public static void resetCookies(Context con)
 	{
+		resetCookie(con);
+		resetPNACookie(con);
+		resetBBCookie(con);
+	}
+	public static void setAuthCookie(String cookie, Context con)
+	{
+		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		Utility.commit(settings.edit().putString("utd_auth_cookie", cookie));
 		authCookie = cookie;
 		cookieHasBeenSet = true;
 	}
-	public static void setPNAAuthCookie(String cookie)
+	public static void setPNAAuthCookie(String cookie, Context con)
 	{
+		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		Utility.commit(settings.edit().putString("pna_auth_cookie", cookie));
 		PNAAuthCookie = cookie;
 		PNACookieHasBeenSet = true;
 	}
-	public static void setBBAuthCookie(String cookie)
+	public static void setBBAuthCookie(String cookie, Context con)
 	{
+		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		Utility.commit(settings.edit().putString("bb_auth_cookie", cookie));
 		bbAuthCookie = cookie;
 		bbCookieHasBeenSet = true;
-	}
-	public static void resetPNACookie()
-	{
-		PNAAuthCookie = "";
-		PNACookieHasBeenSet = false;
-		PNALoggedIn = false;
-	}
-	public static void resetCookies()
-	{
-		authCookie = "";
-		PNAAuthCookie = "";
-		bbAuthCookie="";
-		bbCookieHasBeenSet = false;
-		PNACookieHasBeenSet = false;
-		cookieHasBeenSet = false;
-		PNALoggedIn = false;
-		loggedIn = false;
-		bbLoggedIn = false;
-		
 	}
 	public static boolean cookieHasBeenSet()
 	{
@@ -324,8 +334,7 @@ public class ConnectionHelper {
 		return bbCookieHasBeenSet;
 	}
 	public class loginTask extends AsyncTask<Object,Integer,Boolean>
-	{
-		
+	{	
 		DefaultHttpClient pnahttpclient;
 		DefaultHttpClient httpclient;
 		Editor edit;
@@ -334,11 +343,10 @@ public class ConnectionHelper {
     	public loginTask(Context con, DefaultHttpClient httpclient, DefaultHttpClient pnahttpclient)
 		{
     		settings = PreferenceManager.getDefaultSharedPreferences(con);
+    		edit = settings.edit();
     		this.httpclient = httpclient;
 			this.pnahttpclient = pnahttpclient;
-			edit = settings.edit();
-			this.context = con;
-			
+			this.context = con;	
 		}
     	@Override
     	protected Boolean doInBackground(Object... params)
@@ -375,13 +383,13 @@ public class ConnectionHelper {
 				loggingIn=false;
 				
 				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals("") && !ConnectionHelper.getBBAuthCookie(context, httpclient).equals(""))
-				 {
+				{
 					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
 					
 					edit.putBoolean("loggedin", true);
 					Utility.commit(edit);
 					
-				 }
+				}
 				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
 				Crittercism.leaveBreadcrumb("Logged in (persistent)");
@@ -397,8 +405,7 @@ public class ConnectionHelper {
 		
 	}
     public class PNALoginTask extends AsyncTask<Object,Integer,Boolean>
-	{
-    	
+	{   	
 		DefaultHttpClient pnahttpclient;
 		DefaultHttpClient httpclient;
 		Editor edit;
@@ -467,7 +474,6 @@ public class ConnectionHelper {
 	}
     public class bbLoginTask extends AsyncTask<Object,Integer,Boolean>
 	{
-		
 		DefaultHttpClient pnahttpclient;
 		DefaultHttpClient httpclient;
 		Editor edit;
@@ -476,11 +482,10 @@ public class ConnectionHelper {
     	public bbLoginTask(Context con, DefaultHttpClient httpclient, DefaultHttpClient pnahttpclient)
 		{
     		settings = PreferenceManager.getDefaultSharedPreferences(con);
+    		edit = settings.edit();
     		this.httpclient = httpclient;
 			this.pnahttpclient = pnahttpclient;
-			edit = settings.edit();
-			this.context = con;
-			
+			this.context = con;		
 		}
     	@Override
     	protected Boolean doInBackground(Object... params)

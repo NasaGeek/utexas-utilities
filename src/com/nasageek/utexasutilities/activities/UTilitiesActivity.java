@@ -404,7 +404,6 @@ public class UTilitiesActivity extends SherlockActivity {
         }
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -451,7 +450,7 @@ public class UTilitiesActivity extends SherlockActivity {
       			DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
       			DefaultHttpClient pnahttpclient = ConnectionHelper.getThreadSafeClient();
 
-      			ConnectionHelper.resetPNACookie();
+      			ConnectionHelper.resetPNACookie(this);
 
       	//		ch.new loginTask(this,httpclient,pnahttpclient).execute(ch);
       	//		ch.new PNALoginTask(this,httpclient,pnahttpclient).execute(ch);

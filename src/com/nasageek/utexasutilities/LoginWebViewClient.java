@@ -53,7 +53,7 @@ public class LoginWebViewClient extends WebViewClient {
 						}
 					if(!authCookie.equals(""))
 					{
-						ConnectionHelper.setPNAAuthCookie(authCookie);
+						ConnectionHelper.setPNAAuthCookie(authCookie,context);
 						continueToActivity("UT PNA");
 						return;
 					}
@@ -77,7 +77,7 @@ public class LoginWebViewClient extends WebViewClient {
 					}
 					if(!authCookie.equals(""))
 					{
-						ConnectionHelper.setBBAuthCookie(authCookie);
+						ConnectionHelper.setBBAuthCookie(authCookie,context);
 						continueToActivity("Blackboard");
 				    	return;
 					}
@@ -99,7 +99,7 @@ public class LoginWebViewClient extends WebViewClient {
 					}
 					if(!authCookie.equals("") && !authCookie.equals("NONE") && url.equals("https://utdirect.utexas.edu/security-443/logon_check.logonform"))
 					{
-						ConnectionHelper.setAuthCookie(authCookie);
+						ConnectionHelper.setAuthCookie(authCookie,context);
 						continueToActivity("UTDirect");
 				    	return;
 					}
