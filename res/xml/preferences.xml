@@ -37,13 +37,14 @@
             android:title="Auto Login" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Schedule" >
-        <ListPreference
+        <com.nasageek.utexasutilities.FixedListPreference
             android:id="@+id/schedule_background_style"
             android:defaultValue="checkhour"
             android:entries="@array/schedule_background_array"
             android:entryValues="@array/schedule_background_value_array"
             android:key="schedule_background_style"
-            android:title="Background Style" />
+            android:title="Background Style"
+            android:summary="%s" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Campus Map" >
         <CheckBoxPreference
@@ -52,22 +53,24 @@
             android:summaryOff="Map currently centers on UT Tower."
             android:summaryOn="Map currently centers on your location."
             android:title="Center on My Location" />
-        <ListPreference 
+        <com.nasageek.utexasutilities.FixedListPreference 
             android:id="@+id/default_map_bus_route"
             android:defaultValue="0"
             android:entries="@array/routes_array"
             android:entryValues="@array/routes_value_array"
             android:key="default_bus_route"
-            android:title="Default Bus Route"/>"
+            android:title="Default Bus Route"
+            android:summary="%s"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="Menu">
-        <ListPreference
+        <com.nasageek.utexasutilities.FixedListPreference
             android:id="@+id/default_menu_restaurant"
             android:defaultValue="0"
             android:entries="@array/restaurants_array"
             android:entryValues="@array/restaurants_value_array"
             android:key="default_restaurant"
-            android:title="Default Restaurant" />
+            android:title="Default Restaurant" 
+            android:summary="%s"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="Blackboard">
         <CheckBoxPreference

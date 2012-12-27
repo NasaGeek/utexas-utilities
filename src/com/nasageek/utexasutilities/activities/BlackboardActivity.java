@@ -50,8 +50,8 @@ public class BlackboardActivity extends SherlockActivity {
 	private ArrayList<BBClass> classList;
 	private ArrayList<Pair<String,ArrayList<BBClass>>> classSectionList;
 	private fetchClassesTask fetch;
-	public static String currentBBCourseId;
-	public static String currentBBCourseName;
+//	public static String currentBBCourseId;
+//	public static String currentBBCourseName;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -130,20 +130,25 @@ public class BlackboardActivity extends SherlockActivity {
 		@Override
 		protected void onPostExecute(String result)
 		{
+			//build the list of courses here
 			if(!this.isCancelled()) // not necessary
 	    	{
 	    		String currentCategory="";
 	    		ArrayList sectionList=null;
 				for(int i = 0; i<classList.size(); i++)
 	    		{
-	    			if(i==0)
+	    			//first course is always in a new category (the first category)
+					if(i==0)
 	    			{	
 	    				currentCategory = classList.get(i).getSemester();
 	    				sectionList = new ArrayList();
 	    				sectionList.add(classList.get(i));
 	    			}
+					//if the current course is not part of the current category or we're on the last course
+					//weird stuff going on here depending on if we're at the end of the course list
 	    			else if(!classList.get(i).getSemester().equals(currentCategory) || i == classList.size()-1)
 	    			{
+	    				
 	    				if(i == classList.size()-1)
 	    					sectionList.add(classList.get(i));
 	    					
@@ -155,6 +160,7 @@ public class BlackboardActivity extends SherlockActivity {
 	    				if(i != classList.size()-1)
 	    					sectionList.add(classList.get(i));
 	    			}
+					//otherwise just add to the current category
 	    			else
 	    			{
 	    				sectionList.add(classList.get(i));
@@ -173,7 +179,8 @@ public class BlackboardActivity extends SherlockActivity {
 						//TODO: figure out course id stuff here
 						Intent classLaunch = new Intent(getString(R.string.coursemap_intent), null, BlackboardActivity.this, CourseMapActivity.class);
 						BBClass bbclass = (BBClass)(parent.getItemAtPosition(position));
-						currentBBCourseId = bbclass.getBbid();
+						classLaunch.putExtra("courseid", bbclass.getBbid());
+					//	currentBBCourseId = bbclass.getBbid();
 						classLaunch.setData(Uri.parse((bbclass).getBbid()));
 						String unique = "", cid = "";
 						try{
@@ -187,7 +194,8 @@ public class BlackboardActivity extends SherlockActivity {
 							Toast.makeText(BlackboardActivity.this, "An error occurred, things might look a bit odd.", Toast.LENGTH_SHORT).show();
 						}
 						classLaunch.putExtra("folderName", "Course Map");
-						currentBBCourseName = cid;
+						classLaunch.putExtra("coursename", cid);
+					//	currentBBCourseName = cid;
 						startActivity(classLaunch);
 
 					}

@@ -16,9 +16,11 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.ViewAnimator;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -42,6 +44,9 @@ import com.nasageek.utexasutilities.R.string;
 
 
 public class UTilitiesActivity extends SherlockActivity {
+	
+	private final static int LOGOUT_MENU_ID = 11;
+	private final static int CANCEL_LOGIN_MENU_ID = 12;
     
 	ProgressDialog pd; 
 	SharedPreferences settings;
@@ -176,6 +181,11 @@ public class UTilitiesActivity extends SherlockActivity {
         
     //    schedulebutton.setBackgroundResource(R.drawable.schedule_button_anim);
     //    AlphaAnimation aa = new AlphaAnimation(0.0f,1.0f);
+/*        ViewAnimator va = (ViewAnimator) findViewById(R.id.schedule_button_animator);
+        AlphaAnimation ia = new AlphaAnimation(0.0f,1.0f);
+        AlphaAnimation oa = new AlphaAnimation(1.0f,0.0f);
+        va.setInAnimation(ia);
+        va.setOutAnimation(oa);*/
         
     //    Transformation tran = new Transformation();
         
@@ -188,6 +198,8 @@ public class UTilitiesActivity extends SherlockActivity {
         schedulebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
           //  	frameAnimation.start();
+            //	va.removeAllViews();
+           // 	va.addView(child)
             	if(settings.getBoolean("loginpref", false))
             	{
             		if(!ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.isLoggingIn())
@@ -385,8 +397,8 @@ public class UTilitiesActivity extends SherlockActivity {
 	    	else if(ConnectionHelper.isLoggingIn())
 	    	{
 	    		menu.removeGroup(R.id.log);
-	    		menu.add(R.id.log, 12, Menu.NONE, "Cancel");
-	    		MenuItem item = menu.findItem(12);
+	    		menu.add(R.id.log, CANCEL_LOGIN_MENU_ID, Menu.NONE, "Cancel");
+	    		MenuItem item = menu.findItem(CANCEL_LOGIN_MENU_ID);
 	    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 	    	}
         }
@@ -395,8 +407,8 @@ public class UTilitiesActivity extends SherlockActivity {
         	if(ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.bbCookieHasBeenSet() || ConnectionHelper.PNACookieHasBeenSet())
 	    	{
 	    		menu.removeGroup(R.id.log);
-	    		menu.add(R.id.log, 11, Menu.NONE, "Log out");
-	    		MenuItem item = menu.findItem(11);
+	    		menu.add(R.id.log, LOGOUT_MENU_ID, Menu.NONE, "Log out");
+	    		MenuItem item = menu.findItem(LOGOUT_MENU_ID);
 	    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 	    	}
         	else
@@ -412,8 +424,8 @@ public class UTilitiesActivity extends SherlockActivity {
     	{
     		case R.id.login:login();invalidateOptionsMenu();break;
     		case R.id.settings:loadSettings();break;
-    		case 11:logout();invalidateOptionsMenu();break;
-    		case 12:cancelLogin();invalidateOptionsMenu();break;
+    		case LOGOUT_MENU_ID:logout();invalidateOptionsMenu();break;
+    		case CANCEL_LOGIN_MENU_ID:cancelLogin();invalidateOptionsMenu();break;
     	}
     	return true;
     }
@@ -422,7 +434,6 @@ public class UTilitiesActivity extends SherlockActivity {
     	Intent pref_intent = new Intent(this, Preferences.class);
     	startActivity(pref_intent);
     }
-    
     public void login()
     {
     	SecurePreferences sp = new SecurePreferences(UTilitiesActivity.this,"com.nasageek.utexasutilities.password","lalalawhatanicekey", false);
@@ -449,16 +460,17 @@ public class UTilitiesActivity extends SherlockActivity {
            		ConnectionHelper ch = new ConnectionHelper();
       			DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
       			DefaultHttpClient pnahttpclient = ConnectionHelper.getThreadSafeClient();
+      			DefaultHttpClient bbhttpclient = ConnectionHelper.getThreadSafeClient();
 
-      			ConnectionHelper.resetPNACookie(this);
+      			ConnectionHelper.resetCookies(this);
 
       	//		ch.new loginTask(this,httpclient,pnahttpclient).execute(ch);
       	//		ch.new PNALoginTask(this,httpclient,pnahttpclient).execute(ch);
-      			bblt = ch.new bbLoginTask(this, httpclient, pnahttpclient);
+      			bblt = ch.new bbLoginTask(this, httpclient, pnahttpclient, bbhttpclient);
       			bblt.execute(ch);
-      			lt = ch.new loginTask(this,httpclient,pnahttpclient);
+      			lt = ch.new loginTask(this,httpclient, pnahttpclient, bbhttpclient);
       			lt.execute(ch);
-      			plt = ch.new PNALoginTask(this,httpclient,pnahttpclient);
+      			plt = ch.new PNALoginTask(this, httpclient, pnahttpclient, bbhttpclient);
       			plt.execute(ch);
            	}
   		

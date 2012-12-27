@@ -111,9 +111,10 @@ public class CourseMapActivity extends SherlockActivity {
 		}
 		
 		absSubtitle.setText(getIntent().getStringExtra("folderName"));
+		
 		if(getIntent().getStringExtra("folderName")!=null)
 		{	
-			absTitle.setText(BlackboardActivity.currentBBCourseName);
+			absTitle.setText(getIntent().getStringExtra("coursename"));
 		}
 		
 		cm_pb_ll = (LinearLayout) findViewById(R.id.coursemap_progressbar_ll);
@@ -135,25 +136,34 @@ public class CourseMapActivity extends SherlockActivity {
 					courseMapLaunch.putExtra("mainList", mainList.get(position).second);
 					if(itemNumber == -1 )//top-level, don't copy "Course Map"
 						courseMapLaunch.putExtra("folderName", mainList.get(position).first.getName());
-					else
+					else //chain onto the current folder name for "breadcrumbs"
 						courseMapLaunch.putExtra("folderName", absSubtitle.getText() + "/" + mainList.get(position).first.getName());
 					courseMapLaunch.putExtra("viewUri", mainList.get(position).first.getViewUrl());
+					courseMapLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
+					courseMapLaunch.putExtra("coursename", getIntent().getStringExtra("coursename"));
 					startActivity(courseMapLaunch);
 				}
 				else if(linkType.equals("resource/x-bb-file") || linkType.equals("resource/x-bb-document"))
 				{
-					
 					String contentid = mainList.get(position).first.getContentId();
 					Intent bbItemLaunch = new Intent(null, null, CourseMapActivity.this, BlackboardDownloadableItemActivity.class);
 					bbItemLaunch.putExtra("contentid", contentid);
-					bbItemLaunch.putExtra("itemName", mainList.get(position).first.getName());
+					if(itemNumber == -1 )//top-level, don't copy "Course Map"
+						bbItemLaunch.putExtra("itemName", mainList.get(position).first.getName()); //will be used as Subtitle
+					else
+						bbItemLaunch.putExtra("itemName", absSubtitle.getText() + "/" + mainList.get(position).first.getName()); //Subtitle
 					bbItemLaunch.putExtra("viewUri", url);
+					bbItemLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
+					bbItemLaunch.putExtra("coursename", getIntent().getStringExtra("coursename"));
 					startActivity(bbItemLaunch);
 				}
 				else if(linkType.equals("resource/x-bb-externallink"))
 				{
 					//((TextView)(actionbar.getCustomView())).setText((((TextView) actionbar.getCustomView()).getText()) + "/" + mainList.get(position).first.split("\\^")[0]);	
-											Intent exItemLaunch = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
+					Intent exItemLaunch = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
+
+					exItemLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
+					exItemLaunch.putExtra("coursename", getIntent().getStringExtra("coursename"));
 					startActivity(exItemLaunch);
 					//actionbar.setTitle(actionbar.getTitle()+"/"+mainList.get(position).first.split("\\^")[0]);
 				}
@@ -161,23 +171,28 @@ public class CourseMapActivity extends SherlockActivity {
 				{
 					Intent gradesLaunch = new Intent(null, null, CourseMapActivity.this, BlackboardGradesActivity.class);
 					gradesLaunch.putExtra("viewUri", url);
+					gradesLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
+					gradesLaunch.putExtra("coursename", getIntent().getStringExtra("coursename"));
 					startActivity(gradesLaunch);
 				}
 				else if(linkType.equals("announcements"))
 				{
 					Intent announcementsLaunch = new Intent(null, null, CourseMapActivity.this, BlackboardAnnouncementsActivity.class);
 					announcementsLaunch.putExtra("viewUri", url);
+					announcementsLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
+					announcementsLaunch.putExtra("coursename", getIntent().getStringExtra("coursename"));
 					startActivity(announcementsLaunch);
 				}
-				else
+				else //default to webview
 				{
 					Intent bbItemLaunch = new Intent(null, Uri.parse(url), CourseMapActivity.this, BlackboardExternalItemActivity.class);
 					bbItemLaunch.putExtra("mainList", mainList.get(position).second);
 					if(itemNumber == -1 )//top-level, don't copy "Course Map"
-						bbItemLaunch.putExtra("itemName", mainList.get(position).first.getName());
+						bbItemLaunch.putExtra("itemName", mainList.get(position).first.getName()); //will be used as Subtitle
 					else
-						bbItemLaunch.putExtra("itemName", absSubtitle.getText() + "/" + mainList.get(position).first.getName());
-					
+						bbItemLaunch.putExtra("itemName", absSubtitle.getText() + "/" + mainList.get(position).first.getName()); //Subtitle
+					bbItemLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
+					bbItemLaunch.putExtra("coursename", getIntent().getStringExtra("coursename")); //will be used at Title
 					startActivity(bbItemLaunch);
 				}
 			}
@@ -216,7 +231,9 @@ public class CourseMapActivity extends SherlockActivity {
 
 		MenuInflater inflater = this.getSupportMenuInflater();
         inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
-		return itemNumber!=-1; //return true only if not top-level
+        //return true only if not top-level
+        //there is no "nice" page for the coursemap viewable in a browser
+        return itemNumber != -1; 
 		 
 	}
 	@Override
@@ -234,6 +251,12 @@ public class CourseMapActivity extends SherlockActivity {
 	    		break;
     	}
     	return false;
+	}
+	@Override
+	protected void onSaveInstanceState(Bundle icicle) 
+	{
+		icicle.putString("courseid", getIntent().getStringExtra("courseid"));
+		icicle.putString("coursename", getIntent().getStringExtra("coursename"));
 	}
 	private void showAreYouSureDlg(Context con)
 	{
@@ -254,7 +277,8 @@ public class CourseMapActivity extends SherlockActivity {
 			public void onClick(DialogInterface arg0, int arg1) {
 				
 				Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),CourseMapActivity.this,BlackboardExternalItemActivity.class);
-	    		web.putExtra("itemName", getIntent().getStringExtra("folderName"));
+	    		web.putExtra("itemName", getIntent().getStringExtra("folderName")); //will be used as SubTitle
+	    		web.putExtra("coursename", getIntent().getStringExtra("coursename")); //will be used as Title
 	    		startActivity(web);
 			}		
 		});

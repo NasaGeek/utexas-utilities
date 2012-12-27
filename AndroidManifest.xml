@@ -102,7 +102,5 @@
         <provider android:name=".BuildingProvider"
          			 android:authorities="com.nasageek.utexasutilities.buildingprovider"/>
      
-        <uses-library android:name="com.google.android.maps"/>
-        
     </application>
 </manifest>

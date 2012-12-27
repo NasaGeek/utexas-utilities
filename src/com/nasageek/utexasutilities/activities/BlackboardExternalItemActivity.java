@@ -39,7 +39,7 @@ public class BlackboardExternalItemActivity extends SherlockActivity {
 			actionbar.setDisplayHomeAsUpEnabled(true);
 	//		actionbar.setTitle(BlackboardActivity.currentBBCourseName);
 			
-			TextView titleView = new TextView(this);
+	/*		TextView titleView = new TextView(this);
 			titleView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
 			titleView.setLines(1);
 			titleView.setTextSize(18);
@@ -49,14 +49,14 @@ public class BlackboardExternalItemActivity extends SherlockActivity {
 			titleView.setTypeface(Typeface.DEFAULT);
 			titleView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
 			
-			titleView.setText(getIntent().getStringExtra("itemName"));
+			titleView.setText(getIntent().getStringExtra("itemName"));*/
 			
 			actionbar.setCustomView(getLayoutInflater().inflate(R.layout.action_bar_title_subtitle, null));
 			absTitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_title);
 			absSubtitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_subtitle);
 	//		actionbar.setCustomView(titleView);
 			
-			absTitle.setText(BlackboardActivity.currentBBCourseName);
+			absTitle.setText(getIntent().getStringExtra("coursename"));
 			absSubtitle.setText(getIntent().getStringExtra("itemName"));
 			
 			CookieSyncManager.createInstance(getApplicationContext());

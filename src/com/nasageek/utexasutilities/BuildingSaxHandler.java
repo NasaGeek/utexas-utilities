@@ -133,7 +133,9 @@ public void characters(char ch[], int start, int length) {
     if(this.in_nametag)
     { 
         if (navigationDataSet.getCurrentPlacemark()==null) navigationDataSet.setCurrentPlacemark(new Placemark());
-        navigationDataSet.getCurrentPlacemark().setDescription(new String(ch, start, length));            
+        String description = (navigationDataSet.getCurrentPlacemark().getDescription() == null) ? "" 
+        																						: navigationDataSet.getCurrentPlacemark().getDescription();
+        navigationDataSet.getCurrentPlacemark().setDescription(description.concat(new String(ch, start, length)));            
     } else 
  /*   if(this.in_descriptiontag && BuildingId==null){ 
         if (navigationDataSet.getCurrentPlacemark()==null) navigationDataSet.setCurrentPlacemark(new Placemark());

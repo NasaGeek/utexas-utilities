@@ -25,9 +25,9 @@ public class BBClass {
 		
 		
 		if(!fullcourseid.matches("^\\d{4}_[a-z]+?_\\d{5}_[A-Za-z]+?_\\w+$"))
-			Log.d("BBClass check", "Class Course ID malformed");
+			Log.d("BBClass check", "Class Course ID malformed: " + fullcourseid);
 		if(!name.matches("^\\d{2}[A-Z]{1,2} .*?\\(\\d+?\\)$"))
-			Log.d("BBClass check", "Class Name malformed");
+			Log.d("BBClass check", "Class Name malformed: " + name);
 		
 		//filter out the year and semester at the beginning and the unique at the end
 		//year/semester should never fail.  If no space, indexOf returns -1 and you get the whole string

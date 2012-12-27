@@ -1,5 +1,5 @@
 making bus stops appear within a radius of the user rather than the current route list implementation
-longclick buildings for directions
+longclick buildings for directions -- DONE
 edit classes - probably not going to do this
 
 fix multiple schedules -- DONE/CANNED
@@ -32,5 +32,5 @@ actionbar overflow or maybe in settings.  Either way it should be text, clear ex
 blackboard "favorite courses" viewpager in main blackboard page maybe
 address course overlap (try splitting down the middle with 2 colors) need to address possible selection issue
 Use mitmproxy to sniff more bb API
-show all class buildings on map (button in schedule)
+show all class buildings on map (button in schedule) -- DONE
 first time use guides (overlays?)

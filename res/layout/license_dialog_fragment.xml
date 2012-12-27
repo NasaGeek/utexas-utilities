@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+    
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="11dp"
+        android:layout_above="@+id/license_dismiss_button">
+	    <TextView
+	        android:id="@+id/license_text"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/licenses" 
+	        android:autoLink="all"/>
+	</ScrollView>
+    <Button 
+        android:id="@+id/license_dismiss_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" 
+        android:text="Ok"/>
+
+</RelativeLayout>

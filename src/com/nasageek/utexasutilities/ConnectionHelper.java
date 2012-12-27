@@ -337,16 +337,18 @@ public class ConnectionHelper {
 	{	
 		DefaultHttpClient pnahttpclient;
 		DefaultHttpClient httpclient;
+		DefaultHttpClient bbhttpclient;
 		Editor edit;
 		Context context;
     	
-    	public loginTask(Context con, DefaultHttpClient httpclient, DefaultHttpClient pnahttpclient)
+    	public loginTask(Context con, DefaultHttpClient httpclient, DefaultHttpClient pnahttpclient, DefaultHttpClient bbhttpclient)
 		{
     		settings = PreferenceManager.getDefaultSharedPreferences(con);
     		edit = settings.edit();
     		this.httpclient = httpclient;
 			this.pnahttpclient = pnahttpclient;
-			this.context = con;	
+			this.bbhttpclient = bbhttpclient;
+			this.context = con;		
 		}
     	@Override
     	protected Boolean doInBackground(Object... params)
@@ -382,7 +384,7 @@ public class ConnectionHelper {
 				logindone = false;pnalogindone = false;bbLoginDone=false;
 				loggingIn=false;
 				
-				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals("") && !ConnectionHelper.getBBAuthCookie(context, httpclient).equals(""))
+				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals("") && !ConnectionHelper.getBBAuthCookie(context, bbhttpclient).equals(""))
 				{
 					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
 					
@@ -406,18 +408,20 @@ public class ConnectionHelper {
 	}
     public class PNALoginTask extends AsyncTask<Object,Integer,Boolean>
 	{   	
-		DefaultHttpClient pnahttpclient;
+    	DefaultHttpClient pnahttpclient;
 		DefaultHttpClient httpclient;
+		DefaultHttpClient bbhttpclient;
 		Editor edit;
 		Context context;
     	
-    	public PNALoginTask(Context con, DefaultHttpClient httpclient, DefaultHttpClient pnahttpclient)
+    	public PNALoginTask(Context con, DefaultHttpClient httpclient, DefaultHttpClient pnahttpclient, DefaultHttpClient bbhttpclient)
 		{
     		settings = PreferenceManager.getDefaultSharedPreferences(con);
+    		edit = settings.edit();
     		this.httpclient = httpclient;
 			this.pnahttpclient = pnahttpclient;
-			this.context = con;
-			edit = settings.edit();
+			this.bbhttpclient = bbhttpclient;
+			this.context = con;		
 		}
 		@Override
 		protected void onProgressUpdate(Integer... progress)
@@ -451,14 +455,14 @@ public class ConnectionHelper {
 				logindone = false;pnalogindone = false;bbLoginDone=false;
 				loggingIn=false;
 				
-				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals("") && !ConnectionHelper.getBBAuthCookie(context, httpclient).equals(""))
-				 {
+				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals("") && !ConnectionHelper.getBBAuthCookie(context, bbhttpclient).equals(""))
+				{
 					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
 					
 					edit.putBoolean("loggedin", true);
 					Utility.commit(edit);
 					
-				 }
+				}
 				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
 				Crittercism.leaveBreadcrumb("Logged in (persistent)");
@@ -476,22 +480,24 @@ public class ConnectionHelper {
 	{
 		DefaultHttpClient pnahttpclient;
 		DefaultHttpClient httpclient;
+		DefaultHttpClient bbhttpclient;
 		Editor edit;
 		Context context;
     	
-    	public bbLoginTask(Context con, DefaultHttpClient httpclient, DefaultHttpClient pnahttpclient)
+    	public bbLoginTask(Context con, DefaultHttpClient httpclient, DefaultHttpClient pnahttpclient, DefaultHttpClient bbhttpclient)
 		{
     		settings = PreferenceManager.getDefaultSharedPreferences(con);
     		edit = settings.edit();
     		this.httpclient = httpclient;
 			this.pnahttpclient = pnahttpclient;
+			this.bbhttpclient = bbhttpclient;
 			this.context = con;		
 		}
     	@Override
     	protected Boolean doInBackground(Object... params)
 		{
 			loggingIn=true;
-    		boolean loginStatus = ((ConnectionHelper)params[0]).bbLogin(context, (DefaultHttpClient)httpclient);
+    		boolean loginStatus = ((ConnectionHelper)params[0]).bbLogin(context, (DefaultHttpClient)bbhttpclient);
 			publishProgress(loginStatus?0:1);
 			return loginStatus;		
 		}
@@ -520,14 +526,14 @@ public class ConnectionHelper {
 				logindone = false;pnalogindone = false;bbLoginDone=false;
 				loggingIn=false;
 				
-				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals("") && !ConnectionHelper.getBBAuthCookie(context, httpclient).equals(""))
-				 {
+				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals("") && !ConnectionHelper.getBBAuthCookie(context, bbhttpclient).equals(""))
+				{
 					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
 					
 					edit.putBoolean("loggedin", true);
 					Utility.commit(edit);
 					
-				 }
+				}
 				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
 				Crittercism.leaveBreadcrumb("Logged in (persistent)");

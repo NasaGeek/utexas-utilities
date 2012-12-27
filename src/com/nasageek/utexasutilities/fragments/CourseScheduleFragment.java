@@ -294,7 +294,6 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    	}
 		    	catch(Exception e)
 		    	{
-		    		Log.d("JSOUP EXCEPTION",e.getMessage());
 		    		e.printStackTrace();
 		    		errorMsg = "UTilities could not fetch your class listing";
 		    		cancel(true);

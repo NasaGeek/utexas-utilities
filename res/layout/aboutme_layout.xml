@@ -1,76 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:orientation="vertical"
     android:background="@drawable/background_holo_light" >
-
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal" >
-
-        <TextView
-            android:id="@+id/appname"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/app_name"
-            android:textSize="35sp" />
-
-        <TextView
-            android:id="@+id/version"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/version"
-            android:textSize="30sp" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/developer"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:paddingTop="20dp"
-        android:text="@string/developer" />
-
-    <TextView
-        android:id="@+id/classinfo"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="@string/classinfo" />
-
-    <TextView
-        android:id="@+id/contact"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:paddingTop="50dp"
-        android:text="@string/contact" >
-    </TextView>
-
-    <TextView
-        android:id="@+id/email"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:autoLink="email"
-        android:gravity="center_horizontal"
-        android:paddingTop="5dp"
-        android:text="@string/email" >
-    </TextView>
-
-    <TextView
-        android:id="@+id/thankskevin"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="center_horizontal"
-        android:paddingTop="100dp"
-        android:text="Also, a huge thanks to fellow UT student, Kevin Lin, for providing all of the graphical assets for this application.  It would be an ugly jumble of gray buttons if not for him." />
-
-</LinearLayout>
+    
+	<LinearLayout 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:paddingLeft="10dp"
+	    android:paddingRight="10dp"
+	    android:orientation="vertical" >
+	
+	    <LinearLayout
+	        xmlns:android="http://schemas.android.com/apk/res/android"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center_horizontal" >
+	
+	        <TextView
+	            android:id="@+id/appname"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:gravity="center_horizontal"
+	            android:text="@string/app_name"
+	            android:textSize="35sp" />
+	
+	        <TextView
+	            android:id="@+id/version"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:gravity="center_horizontal"
+	            android:text="@string/version"
+	            android:textSize="30sp" />
+	    </LinearLayout>
+	
+	    <TextView
+	        android:id="@+id/developer"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center_horizontal"
+	        android:paddingTop="20dp"
+	        android:text="@string/developer" />
+	
+	    <TextView
+	        android:id="@+id/classinfo"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center_horizontal"
+	        android:text="@string/classinfo" />
+	
+	    <TextView
+	        android:id="@+id/contact"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center_horizontal"
+	        android:paddingTop="50dp"
+	        android:text="@string/contact" >
+	    </TextView>
+	
+	    <!-- Yes, let's make the legit link black so I don't have to figure out how to make the fake link blue -->
+	    <TextView
+	        android:id="@+id/email"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:autoLink="email"
+	        android:gravity="center_horizontal"
+	        android:paddingTop="5dp"
+	        android:textColorLink="#FF000000"
+	        android:text="@string/email" >
+	    </TextView>
+	
+	    <TextView
+	        android:id="@+id/thankskevin"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="bottom"
+	        android:gravity="center_horizontal"
+	        android:paddingTop="70dp"
+	        android:text="@string/thankskevin" />
+	
+	    <TextView
+	        android:id="@+id/library_license_link"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center"
+	        android:layout_gravity="bottom" 
+	        android:clickable="true"
+	        android:text="@string/library_license_link"
+	        android:paddingTop="20dp"
+	        android:paddingBottom="15dp" />
+	</LinearLayout>
+</ScrollView>

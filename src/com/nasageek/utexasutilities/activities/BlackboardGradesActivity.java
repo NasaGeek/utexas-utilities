@@ -62,7 +62,7 @@ public class BlackboardGradesActivity extends SherlockActivity
 			actionbar = getSupportActionBar();
 			actionbar.setHomeButtonEnabled(true);
 			actionbar.setDisplayHomeAsUpEnabled(true);
-			actionbar.setTitle(BlackboardActivity.currentBBCourseName);
+			actionbar.setTitle(getIntent().getStringExtra("coursename"));
 			actionbar.setSubtitle("Grades");
 			
 			g_pb_ll = (LinearLayout)findViewById(R.id.grades_progressbar_ll);
@@ -161,14 +161,14 @@ public class BlackboardGradesActivity extends SherlockActivity
 			public void onClick(DialogInterface arg0, int arg1) {
 	
 				Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardGradesActivity.this,BlackboardExternalItemActivity.class);
-	    		web.putExtra("itemName", actionbar.getTitle());
+	    		web.putExtra("itemName", "Grades");
+	    		web.putExtra("coursename", getIntent().getStringExtra("coursename"));
 	    		startActivity(web);
 			}		
 		});
 		alertBuilder.setTitle("View on Blackboard");
 		alertBuilder.show();
 	}
-	
 	private class fetchGradesTask extends AsyncTask<Object,Void,ArrayList<bbGrade>>
 	{
 		private DefaultHttpClient client;
@@ -182,7 +182,7 @@ public class BlackboardGradesActivity extends SherlockActivity
 		@Override
 		protected ArrayList<bbGrade> doInBackground(Object... params)
 		{
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=GRADES&course_id="+BlackboardActivity.currentBBCourseId);
+			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=GRADES&course_id="+getIntent().getStringExtra("courseid"));
 	    	String pagedata="";
 
 	    	try

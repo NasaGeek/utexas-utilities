@@ -65,7 +65,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		actionbar = getSupportActionBar();
 		actionbar.setHomeButtonEnabled(true);
 		actionbar.setDisplayHomeAsUpEnabled(true);
-		actionbar.setTitle(BlackboardActivity.currentBBCourseName);
+		actionbar.setTitle(getIntent().getStringExtra("coursename"));
 		actionbar.setSubtitle(getIntent().getStringExtra("itemName"));
 		
 		
@@ -121,8 +121,10 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		{
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
+				
 				Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardDownloadableItemActivity.this,BlackboardExternalItemActivity.class);
 	    		web.putExtra("itemName", getIntent().getStringExtra("itemName"));
+	    		web.putExtra("coursename", getIntent().getStringExtra("coursename"));
 	    		startActivity(web);
 			}		
 		});
@@ -144,7 +146,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		{
 			String contentid = params[0];
 			
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/contentDetail?content_id="+contentid+"&course_id="+BlackboardActivity.currentBBCourseId);
+			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/contentDetail?content_id="+contentid+"&course_id="+getIntent().getStringExtra("courseid"));
 	    	String pagedata="";
 
 	    	try

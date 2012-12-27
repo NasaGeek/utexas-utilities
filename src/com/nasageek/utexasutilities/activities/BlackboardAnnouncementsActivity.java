@@ -65,7 +65,7 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	    	etv = (TextView) findViewById(R.id.announcements_error);
 	    	
 	    	actionbar = getSupportActionBar();
-	    	actionbar.setTitle(BlackboardActivity.currentBBCourseName);
+	    	actionbar.setTitle(getIntent().getStringExtra("coursename"));
 	    	actionbar.setSubtitle("Announcements");
 			actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 			actionbar.setHomeButtonEnabled(true);
@@ -130,14 +130,14 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 			public void onClick(DialogInterface arg0, int arg1) {
 	
 				Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardAnnouncementsActivity.this,BlackboardExternalItemActivity.class);
-	    		web.putExtra("itemName", actionbar.getTitle());
+	    		web.putExtra("itemName", "Announcements");
+	    		web.putExtra("coursename", getIntent().getStringExtra("coursename"));
 	    		startActivity(web);
 			}		
 		});
 		alertBuilder.setTitle("View on Blackboard");
 		alertBuilder.show();
 	}	
-	
 	private class fetchAnnouncementsTask extends AsyncTask<Object,Void,ArrayList<bbAnnouncement>>
 	{
 		private DefaultHttpClient client;
@@ -151,7 +151,7 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 		@Override
 		protected ArrayList<bbAnnouncement> doInBackground(Object... params)
 		{
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=ANNOUNCEMENTS&course_id="+BlackboardActivity.currentBBCourseId);
+			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=ANNOUNCEMENTS&course_id="+getIntent().getStringExtra("courseid"));
 	    	String pagedata="";
 
 	    	try

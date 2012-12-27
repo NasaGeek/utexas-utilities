@@ -53,6 +53,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -610,9 +611,11 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	{
 		super.onResume();
 		setupMapIfNeeded();
-		
-		mMap.getUiSettings().setCompassEnabled(true);
-		mMap.getUiSettings().setMyLocationButtonEnabled(true);
+		if(mMap != null)
+		{
+			mMap.getUiSettings().setCompassEnabled(true);
+			mMap.getUiSettings().setMyLocationButtonEnabled(true);
+		}
 		if(locationManager != null && locProvider != null  && locationListener != null)
 			locationManager.requestLocationUpdates(locProvider, 0, 0, locationListener);
 	}
@@ -724,7 +727,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	    		        		.position(new LatLng(Double.valueOf(pm.getCoordinates().split(",")[1].trim()), Double.valueOf(pm.getCoordinates().split(",")[0].trim())))
 	    						.draggable(false)
 	    						.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_building2))
-	    						.title(pm.getTitle())
+	    						.title("^"+pm.getTitle())
 	    						.snippet(pm.getDescription())
 	    						.visible(true));
 	    					
@@ -740,14 +743,15 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     class StopInfoAdapter implements InfoWindowAdapter 
     {
     	private LinearLayout infoLayout;
-    	private TextView infoText;
+    	private TextView infoTitle, infoSnippet;
     	private ImageView tapMeIndicator;
     	
     	
     	public StopInfoAdapter()
     	{
     		infoLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.info_window_layout, null);
-    		infoText = (TextView) infoLayout.findViewById(R.id.iw_text);
+    		infoTitle = (TextView) infoLayout.findViewById(R.id.iw_title);
+    		infoSnippet = (TextView) infoLayout.findViewById(R.id.iw_snippet);
     		tapMeIndicator = (ImageView) infoLayout.findViewById(R.id.iw_tap_me_indicator);
        	}
     	/**
@@ -756,32 +760,38 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     	@Override
     	public View getInfoContents(Marker marker) {
     		
-    		if(marker.getTitle().charAt(0) == '^') //^ for building
+    		switch(marker.getTitle().charAt(0))
     		{
-    			infoText.setGravity(Gravity.CENTER);	
-    			
-    			//Span for bolding the title
-    			SpannableString title = new SpannableString(marker.getTitle().substring(1)+"\n"+marker.getSnippet());
-    			title.setSpan(new StyleSpan(Typeface.BOLD), 0, marker.getTitle().substring(1).length(), 0);
-    			infoText.setText(title);
-	    		
-    			return infoLayout;
-    		}
-    		else if(marker.getTitle().charAt(0) == '*') //* for stop
-    		{
-    			infoText.setGravity(Gravity.CENTER);
-	    		if(infoText.getText().equals("") || !(infoText.getText()+"").contains(marker.getTitle().substring(1)))
+    		case '*': //'*' for stop
+    			if(infoTitle.getText().equals("") || !(infoTitle.getText()+"").contains(marker.getTitle().substring(1)))
 	    		{	
 	    			//Span for bolding the title
-	    			SpannableString title = new SpannableString(marker.getTitle().substring(1)+"\nLoading...");
+	    			SpannableString title = new SpannableString(marker.getTitle().substring(1));
 	    			title.setSpan(new StyleSpan(Typeface.BOLD), 0, marker.getTitle().substring(1).length(), 0);
-	    			infoText.setText(title);
+	    			
+	    			String snippet = "Loading...";
+	    			
+	    			infoTitle.setText(title);
+	    			infoSnippet.setText(snippet);
 	    			
 		    		new checkStopTask().execute(Integer.parseInt(marker.getSnippet()), marker);
 	    		}
-	    		return infoLayout;
+    			break;
+    		case '^': //'^' for building
+    		default: //Will need to change this if default behavior ever differs from building behavior
+    			
+    			//Span for bolding the title
+    			SpannableString title = new SpannableString(marker.getTitle().substring(1));
+    			title.setSpan(new StyleSpan(Typeface.BOLD), 0, marker.getTitle().substring(1).length(), 0);
+    			
+    			String snippet = marker.getSnippet();
+    			
+    			infoTitle.setText(title);
+    			infoSnippet.setText(snippet);
+    			break;
+
     		}
-    		else return null;
+    		return infoLayout;
     	}
 
     	@Override
@@ -808,13 +818,12 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     			{
     				response = httpclient.execute(new HttpGet(request));
     				data = EntityUtils.toString(response.getEntity());
-    			} catch (ClientProtocolException e)
+    			} catch (Exception e)
     			{
+    				times = "CapMetro.org could not be reached;\ntry checking your internet connection ";
     				e.printStackTrace();
-    			} catch (IOException e)
-    			{
-    				e.printStackTrace();
-    			}
+    				return times;
+    			} 
     			Pattern pattern = Pattern.compile("<b>\\d+</b>-(.*?) <span.*?</div>", Pattern.DOTALL);
     			Matcher matcher = pattern.matcher(data);
     		//	ArrayList<String> times = new ArrayList();
@@ -846,13 +855,9 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     		}
     		protected void onPostExecute(String times)
     		{
-    			if((infoText.getText()+"").contains("Loading"))
+    			if((infoSnippet.getText()+"").contains("Loading"))
     			{	
-    				//Span for bolding the title
-    				SpannableString str = new SpannableString(stopMarker.getTitle().substring(1) + "\n" + times.substring(0,times.length()-1));
-    				str.setSpan(new StyleSpan(Typeface.BOLD), 0, stopMarker.getTitle().substring(1).length(), 0);
-    				
-    				infoText.setText(str);
+    				infoSnippet.setText(times.substring(0,times.length()-1));
     				stopMarker.showInfoWindow();
     			}
     		}
