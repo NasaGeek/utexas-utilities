@@ -197,7 +197,7 @@ public class DineinFragment extends SherlockFragment
 	    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>"))
 	    	{
 				errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-				ConnectionHelper.logout(getActivity());
+				ConnectionHelper.logout(parentAct);
 				cancel(true);
 				return null;
 	    	}

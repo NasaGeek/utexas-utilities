@@ -273,9 +273,9 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			Bundle args = new Bundle(2);
 	        args.putString("title", params[0].trim());
 	        args.putString("semId", params[1]);
-			((ScheduleActivity)getActivity()).getFragments().add((SherlockFragment)SherlockFragment.instantiate(getActivity(), CourseScheduleFragment.class.getName(),args));
-			((ScheduleActivity)getActivity()).getAdapter().notifyDataSetChanged();
-			((ScheduleActivity)getActivity()).getIndicator().notifyDataSetChanged();
+			((ScheduleActivity)parentAct).getFragments().add((SherlockFragment)SherlockFragment.instantiate(parentAct, CourseScheduleFragment.class.getName(),args));
+			((ScheduleActivity)parentAct).getAdapter().notifyDataSetChanged();
+			((ScheduleActivity)parentAct).getIndicator().notifyDataSetChanged();
 		}
 		
 		@Override
@@ -311,7 +311,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    	Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
 		    	
 		    	//TODO: un-hardcode this eventually! Shouldn't be too hard to figure out the dropdown size
-		    	if(semSelectMatcher.find() && parentAct != null && ((ScheduleActivity)getActivity()).getFragments().size()<3)
+		    	if(semSelectMatcher.find() && parentAct != null && ((ScheduleActivity)parentAct).getFragments().size()<3)
 		    	{
 		    		Pattern semesterPattern = Pattern.compile("<option.*?value=\"(\\d*)\"\\s*>([\\w\\s]*?)</option>", Pattern.DOTALL);
 		    		Matcher semesterMatcher = semesterPattern.matcher(semSelectMatcher.group());
@@ -442,7 +442,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 				if(result.intValue()==0)
 				{	
 					daylist.setVisibility(View.GONE);
-					nc_tv.setText("You aren't enrolled for the current semester.");
+					nc_tv.setText("You aren't enrolled for this semester.");
 					nc_tv.setVisibility(View.VISIBLE);
 					if(mMenu != null)
 						mMenu.findItem(R.id.map_all_classes).setEnabled(false);
