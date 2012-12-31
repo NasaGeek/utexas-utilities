@@ -13,7 +13,7 @@
     <string name="coursemap_intent">COURSE_BBID</string>
     <string name="coursemap_nest_intent">COURSEMAP_ITEM</string>
     <string name="developer">Developer: Chris Roberts</string>
-    <string name="classinfo">Electrical Engineering Class of 2015</string>
+    <string name="classinfo">Electrical Engineering Class of 2015\nComputer Science Class of 2015</string>
     <string name="contact">Love the app?  Hate it?  Suggestions? Snide remarks?</string>
     <string name="email">Chris_Roberts@utexas.edu</string>
     <string name="loading_content">Loading content…</string>
@@ -24,6 +24,7 @@
     <string name="preference_sendcrashes_summary">Help me help you! No personal information will be sent.</string>
     <string name="thankskevin">Also, a huge thanks to fellow UT student, Kevin Lin, for providing many of the graphical assets for this application.  It would be an ugly jumble of gray buttons if not for him.</string>
     <string name="library_license_link">Open Source Licenses and Legal Notices</string>
+    <string name="privacy_policy_link">Privacy Policy</string>
     <string name="licenses">ActionBarSherlock: \n\n
         
         Copyright 2012 Jake Wharton\n
@@ -129,9 +130,19 @@ If the Work includes a "NOTICE" text file as part of its distribution, then any 
 \n9. Accepting Warranty or Additional Liability. While redistributing the Work or Derivative Works thereof, You may choose to offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License. However, in accepting such obligations, You may act only on Your own behalf and on Your sole responsibility, not on behalf of any other Contributor, and only if You agree to indemnify, defend, and hold each Contributor harmless for any liability incurred by, or claims asserted against, such Contributor by reason of your accepting any such warranty or additional liability.
 
 \n\nEND OF TERMS AND CONDITIONS
-
-
 </string>
+<string name="privacy_policy">This Privacy Policy has been created to answer a few of the questions that have come up about how
+     UTilities handles its users\' data, specifically the users\' UT EID and password.\n---\n
+     Q: What happens when I tick the "Persistent login" preference and enter my UT credentials into UTilities?\n\n
+     A: UTilities saves your EID in its settings file, and it encrypts and then saves your password in its settings file.\n---\n
+     Q: My password is encrypted? Does that mean it is super-ultra-mega-secure?\n\n
+     A: Unfortunately not, while the encryption is an added layer of protection on top of Android\'s own built-in security, if someone
+     were to steal your device and have the Android know-how, they would be able to extract your password from UTilities\' settings. 
+     This means if you lose your device, change your UT password! (as you should do with all of your important accounts if you lose
+      your smartphone).\n---\n
+     Q: What does UTilities do with my UT credentials anyway?\n\n
+     A: UTilities sends your credentials to UT\'s servers when it needs to log in, and that is the only place it sends them. 
+     Your UT EID and password will never be shared with anyone except The University of Texas at Austin.\n</string>
     
       <string-array name="routes_array">	
 			<item>No Bus Route</item>

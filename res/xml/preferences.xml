@@ -8,8 +8,7 @@
             android:id="@+id/login_pref"
             android:defaultValue="false"
             android:key="loginpref"
-            android:summaryOff="Persistent login is currently off."
-            android:summaryOn="Persistent login is turned on; credentials stored on device."
+            android:summary="Save credentials on device for faster login."
             android:title="Persistent login" />
     </PreferenceCategory>
     <PreferenceCategory

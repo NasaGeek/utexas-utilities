@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_gravity="center"
+     >
     
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="11dp" >
+        android:padding="11dp"
+        android:layout_gravity="top">
 	    <TextView
-	        android:id="@+id/license_text"
+	        android:id="@+id/privpolicy_text"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:text="@string/licenses" 
-	        android:autoLink="all"/>
+	        android:text="@string/privacy_policy"
+	        android:layout_gravity="top"
+	        android:gravity="top" />
 	</ScrollView>
     
-
 </RelativeLayout>

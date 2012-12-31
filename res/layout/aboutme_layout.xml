@@ -12,7 +12,6 @@
 	    android:orientation="vertical" >
 	
 	    <LinearLayout
-	        xmlns:android="http://schemas.android.com/apk/res/android"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:gravity="center_horizontal" >
@@ -30,7 +29,7 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:gravity="center_horizontal"
-	            android:text="@string/version"
+	            android:text="X.X"
 	            android:textSize="30sp" />
 	    </LinearLayout>
 	
@@ -78,6 +77,16 @@
 	        android:gravity="center_horizontal"
 	        android:paddingTop="70dp"
 	        android:text="@string/thankskevin" />
+	    
+	    <TextView 
+	        android:id="@+id/privacy_policy_link"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center_horizontal"
+	        android:layout_marginTop="20dp"
+	        android:clickable="true"
+	        android:textColor="#FF000000"
+	        android:text="@string/privacy_policy_link" />"
 	
 	    <TextView
 	        android:id="@+id/library_license_link"
@@ -87,7 +96,8 @@
 	        android:layout_gravity="bottom" 
 	        android:clickable="true"
 	        android:text="@string/library_license_link"
-	        android:paddingTop="20dp"
+	        android:textColor="#FF000000"
+	        android:layout_marginTop="20dp"
 	        android:paddingBottom="15dp" />
 	</LinearLayout>
 </ScrollView>

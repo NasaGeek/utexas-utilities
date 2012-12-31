@@ -98,3 +98,17 @@ Rewrote regex for transactions
 Exam schedule class names now truncate instead of going to multiple lines
 Reverted dashboard buttons
 
+Versioncode 12 - 1.72
+
+?? bugfixes I suspect...
+
+Versioncode 13 - 1.8
+
+Big maps overhaul, using new Google Maps V2 API along with a few new features
+Directions to buildings and bus stops!
+Blackboard is far more stable when restoring the app after it has been minimized
+A variety of bugfixes
+A Privacy Policy and Licenses for Open Source Software used in UTilities have been added
+Reworded a few preferences for more clarity
+Lots of other changes
+
