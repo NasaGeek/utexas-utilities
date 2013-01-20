@@ -12,10 +12,10 @@ import org.apache.http.util.EntityUtils;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,21 +34,21 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
+import com.nasageek.utexasutilities.Classtime;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.UTClass;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
-import com.nasageek.utexasutilities.Classtime;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
 import com.nasageek.utexasutilities.activities.ScheduleActivity;
 import com.nasageek.utexasutilities.adapters.ClassAdapter;
 
+@SuppressWarnings("deprecation")
 public class CourseScheduleFragment extends SherlockFragment implements ActionModeFragment, SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, AdapterView.OnItemClickListener {
 	
 	private GridView gv;
 	private WrappingSlidingDrawer sd ;
 	private LinearLayout sdll;
-//	private ClassDatabase cdb;
 	private ClassAdapter ca;
 	private DefaultHttpClient client;
 	private String[] colors = {"488ab0","00b060","b56eb3","94c6ff","81b941","ff866e","ffad46","ffe45e"};
@@ -122,8 +122,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	{
 		this.mMenu = menu;
 		menu.removeItem(R.id.map_all_classes);
-	    inflater.inflate(R.menu.schedule_menu, menu);
-	   
+	    inflater.inflate(R.menu.schedule_menu, menu);  
 	}
 	@Override
 	public void onPrepareOptionsMenu(Menu menu)
@@ -131,9 +130,13 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		if(classList == null || classList.size() == 0)
 		{
 			menu.findItem(R.id.map_all_classes).setEnabled(false);
+			menu.findItem(R.id.export_schedule).setEnabled(false);
 		}
 		else
+		{
 			menu.findItem(R.id.map_all_classes).setEnabled(true);
+			menu.findItem(R.id.export_schedule).setEnabled(true);
+		}
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -156,17 +159,30 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 				}
 	    		
 	    		Intent map = new Intent(getString(R.string.building_intent), null, parentAct, CampusMapActivity.class);
-		//		map.setData(Uri.parse(current_clt.getBuilding().getId()));
 				map.putStringArrayListExtra("buildings", buildings);
 				startActivity(map);
 				break;
     		}
+    	case R.id.export_schedule:
+    		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    		{
+    			//check to see if we're done loading the schedules (the ClassAdapter is initialized in onPostExecute)
+    			if(ca != null)
+	    		{	
+    				FragmentManager fm = parentAct.getSupportFragmentManager();
+    		        DoubleDatePickerDialogFragment ddpDlg = DoubleDatePickerDialogFragment.newInstance(classList);
+    		        ddpDlg.show(fm, "fragment_double_date_picker");
+	    		}
+    		}
+    		else
+    			Toast.makeText(parentAct, "Export to calendar is not supported on this version of Android yet", Toast.LENGTH_SHORT).show();
     	
-    	
+    	break;
     	default: return super.onOptionsItemSelected(item);
     	}
     	return true;
     }
+	
 	@Override
 	public ActionMode getActionMode()
 	{
@@ -186,64 +202,48 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	{
 		sd.close();
-	//	sdll.removeAllViews();
 		current_clt = (Classtime) parent.getItemAtPosition(position);
+		
 		if(current_clt!=null)
 		{
 			mode = parentAct.startActionMode(new ScheduleActionMode());
-
 			sd.setVisibility(View.VISIBLE);
-			//Cursor cur = cdb.getReadableDatabase().query("classes", null, "eid = \"" + sp.getString("eid", "eid not found")+"\" AND day = \""+ clt.getDay()+"\" AND start = \""+ clt.getStartTime()+"\"", null,null,null,null);
-//			Cursor cur = cdb.getReadableDatabase().query("classes", null, "day = \""+ current_clt.getDay()+"\" AND start = \""+ current_clt.getStartTime()+"\"", null,null,null,null);
-//		    cur.moveToFirst();
-//		    while(!cur.isAfterLast())
-		    {
-		    	String text = " ";
-		    	text+=current_clt.getUTClass().getId()+" - "+current_clt.getUTClass().getName()+" ";
-		    	String unique = current_clt.getUTClass().getUnique();
-		  //  	while(!cur.isAfterLast() && unique.equals(cur.getString(2)))
-		  //  	{
-		    		String daytext = "\n\t";
-		    		String building = current_clt.getBuilding().getId()+" "+current_clt.getBuilding().getRoom();
-		    		String checktext = current_clt.getStartTime()+building;
-		    		String time = current_clt.getStartTime();
-		    		String end = current_clt.getEndTime();
-		   // 		while(!cur.isAfterLast() && checktext.equals(cur.getString(8)+cur.getString(5)+" "+cur.getString(6)) )
-		   // 		{
-		    			if(current_clt.getDay()=='H')
-		    				daytext+="TH";
-		    			else
-		    				daytext+=current_clt.getDay();
-		 //   			cur.moveToNext();
-		//    		}
-		    		
-		    		text+=(daytext+" from " + time + "-"+end + " in "+building);
-		
-	//	    	}
-		    	text+="\n";
-		    	ci_iv.setBackgroundColor(Color.parseColor("#"+current_clt.getColor()));
-		    	ci_iv.setMinimumHeight(10);
-		    	ci_iv.setMinimumWidth(10);
-		    	
-	    		ci_tv.setTextColor(Color.BLACK);
-	    		ci_tv.setTextSize((float) 14);
-	    		ci_tv.setBackgroundColor(0x99F0F0F0);
-	    		ci_tv.setText(text);
+			
+	    	String text = " ";
+	    	text+=current_clt.getCourseId()+" - "+current_clt.getName()+" ";
+	 
+    		String daytext = "\n\t";
+    		String building = current_clt.getBuilding().getId()+" "+current_clt.getBuilding().getRoom();
+ 
+    		String time = current_clt.getStartTime();
+    		String end = current_clt.getEndTime();
+  
+			if(current_clt.getDay()=='H')
+				daytext+="TH";
+			else
+				daytext+=current_clt.getDay();
 
-	    	}
-//		    cur.close();
+    		text += (daytext+" from " + time + "-"+end + " in "+building) + "\n";
+
+	    	ci_iv.setBackgroundColor(Color.parseColor("#"+current_clt.getColor()));
+	    	ci_iv.setMinimumHeight(10);
+	    	ci_iv.setMinimumWidth(10);
+	    	
+    		ci_tv.setTextColor(Color.BLACK);
+    		ci_tv.setTextSize((float) 14);
+    		ci_tv.setBackgroundColor(0x99F0F0F0);
+    		ci_tv.setText(text);
+	    	
 		    sd.open();    
 		}
+		//they clicked an empty cell
 		else
-		{	if(mode!=null)
+		{	
+			if(mode!=null)
 				mode.finish();
-			//menu.removeItem(R.id.locate_class);
 			sd.setVisibility(View.INVISIBLE);
-			
-	//	Log.d("CLICKY", position+"");
 		}
 	}
-	
 	private class parseTask extends AsyncTask<Object,String,Integer>
 	{
 		private DefaultHttpClient client;
@@ -297,7 +297,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    		e.printStackTrace();
 		    		errorMsg = "UTilities could not fetch your class listing";
 		    		cancel(true);
-		    		return null;
+		    		return -1;
 		    	}
 		    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>"))
 		    	{
@@ -305,7 +305,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 					if(parentAct != null)
 						ConnectionHelper.logout(parentAct);
 					cancel(true);
-					return null;
+					return -1;
 		    	}
 		    	Pattern semSelectPattern = Pattern.compile("<select  name=\"sem\">.*</select>", Pattern.DOTALL);
 		    	Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
@@ -389,6 +389,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    		if(classAttMatcher.find())
 		    		{	
 		    			days = classAttMatcher.group(1).split("<br />");
+		    			//Thursday represented by H so I can treat all days as characters
 		    			for(int a = 0; a<days.length;a++) days[a] = days[a].replaceAll("TH", "H").trim();
 		    		}
 		    		else
@@ -417,36 +418,22 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    	return Integer.valueOf(classCount);
 			
 		}
+		//TODO: nullchecks everywhere, figure out what the real problem is -.-
 		@Override
 		protected void onPostExecute(Integer result)
 		{
-//			ArrayList<String> semesters = (ArrayList<String>)result[2];
 			pb_ll.setVisibility(GridView.GONE);
-//			parentAct.getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-//			parentAct.getSupportActionBar().setSelectedNavigationItem((Integer)result[1]);
-//			((ArrayAdapter)((ScheduleActivity)parentAct).spinner.getAdapter()).clear();
-/*			for(int i = 0; i<semesters.size(); i++)
-			{
-				switch(semesters.get(i).charAt(4))
-				{
-				case '2':((ArrayAdapter)((ScheduleActivity)parentAct).spinner.getAdapter()).add("Spring - "+semesters.get(i).substring(2,4));break;
-				case '6':((ArrayAdapter)((ScheduleActivity)parentAct).spinner.getAdapter()).add("Summer - "+semesters.get(i).substring(2,4));break;
-				case '9':((ArrayAdapter)((ScheduleActivity)parentAct).spinner.getAdapter()).add("Fall - "+semesters.get(i).substring(2,4));break;
-				}
-				
-			}
-			((ArrayAdapter)((ScheduleActivity)parentAct).spinner.getAdapter()).notifyDataSetChanged();
-			*/
-			if(result != null)
+
+			if(result != null && result >= 0)
 			{	
 				if(result.intValue()==0)
 				{	
 					daylist.setVisibility(View.GONE);
 					nc_tv.setText("You aren't enrolled for this semester.");
 					nc_tv.setVisibility(View.VISIBLE);
-					if(mMenu != null)
-						mMenu.findItem(R.id.map_all_classes).setEnabled(false);
 					
+					//if they're not enrolled for the semester, disable the calendar-specific options
+					setMenuItemsEnabled(false);
 					return;
 				}
 				else
@@ -459,8 +446,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	
 					gv.setVisibility(GridView.VISIBLE);
 					daylist.setVisibility(View.VISIBLE);
-					if(mMenu != null)
-						mMenu.findItem(R.id.map_all_classes).setEnabled(true);
+					
+					setMenuItemsEnabled(true);
 					if(!parentAct.isFinishing())
 				    	Toast.makeText(parentAct, "Tap a class to see its information.", Toast.LENGTH_SHORT).show();
 					Crittercism.leaveBreadcrumb("Loaded schedule from web");
@@ -475,8 +462,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 				daylist.setVisibility(View.GONE);
 				nc_tv.setVisibility(View.GONE);
 				gv.setVisibility(View.GONE);
-				if(mMenu != null)
-					mMenu.findItem(R.id.map_all_classes).setEnabled(false);
+				
+				setMenuItemsEnabled(false);
 			}	
 			if(classParseIssue)
 				Toast.makeText(parentAct, "One or more classes could not be parsed correctly, try emailing the dev ;)", Toast.LENGTH_LONG).show();
@@ -490,6 +477,18 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			daylist.setVisibility(View.GONE);
 			nc_tv.setVisibility(View.GONE);
 			gv.setVisibility(View.GONE);
+			
+			setMenuItemsEnabled(false);
+		}
+		
+		private void setMenuItemsEnabled(boolean enable)
+		{
+			if(mMenu != null)
+			{	if(mMenu.findItem(R.id.map_all_classes) != null)
+					mMenu.findItem(R.id.map_all_classes).setEnabled(enable);
+				if(mMenu.findItem(R.id.export_schedule) != null)
+					mMenu.findItem(R.id.export_schedule).setEnabled(enable);
+			}
 		}
 	}
 	public ArrayList<UTClass> getClassList()
@@ -520,7 +519,6 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             		Intent map = new Intent(getString(R.string.building_intent), null, parentAct, CampusMapActivity.class);
             		building.add(current_clt.getBuilding().getId());
             		map.putStringArrayListExtra("buildings", building);
-    			//	map.setData(Uri.parse(current_clt.getBuilding().getId()));
     				startActivity(map);
     				break;
             }

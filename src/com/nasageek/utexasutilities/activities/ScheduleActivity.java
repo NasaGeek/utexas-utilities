@@ -6,21 +6,14 @@ import java.util.List;
 import java.util.Vector;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.SlidingDrawer;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.ActionMode;
@@ -28,28 +21,17 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
+import com.nasageek.utexasutilities.Classtime;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.UTClass;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
-import com.nasageek.utexasutilities.Classtime;
-import com.nasageek.utexasutilities.R.drawable;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
-import com.nasageek.utexasutilities.R.menu;
-import com.nasageek.utexasutilities.R.string;
 import com.nasageek.utexasutilities.adapters.PagerAdapter;
 import com.nasageek.utexasutilities.fragments.ActionModeFragment;
 import com.nasageek.utexasutilities.fragments.CourseScheduleFragment;
 import com.nasageek.utexasutilities.fragments.ExamScheduleFragment;
-import com.viewpagerindicator.TabPageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
-public class ScheduleActivity extends SherlockFragmentActivity implements SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, ViewPager.OnPageChangeListener{
-	
-	private WrappingSlidingDrawer sd ;
-	
-	private ImageView ci_iv;
-	private TextView ci_tv;
+public class ScheduleActivity extends SherlockFragmentActivity implements ViewPager.OnPageChangeListener{
 	
 	private ActionBar actionbar;
 	private Classtime current_clt;
@@ -168,8 +150,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		    args.putString("title", "Exam Schedule");
 		    args.putString("semId", semId);
 		    fragments.add((SherlockFragment)SherlockFragment.instantiate(this, ExamScheduleFragment.class.getName(), args));
-		
-			
+					
 			args = new Bundle(2);
 	        args.putString("title", "Current Schedule");
 	        args.putString("semId", semId);
@@ -183,8 +164,8 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 	        
 	        titleIndicator = (TitlePageIndicator)findViewById(R.id.titles);
 			titleIndicator.setViewPager(pager);
-			
 			titleIndicator.setOnPageChangeListener(this);
+			
 			pager.setCurrentItem(1,false);
 						
 	   }
@@ -198,27 +179,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 	    {
 	    	int id = item.getItemId();
 	    	switch(id)
-	    	{
-	    	case R.id.map_all_classes:
-	    		//populate an array with the buildings IDs of all of the user's classtimes
-	    		ArrayList<String> buildings = new ArrayList<String>();
-	    		//we don't want to mess with ExamSchedule buildings for now, just Course Schedule
-	    		if(mPagerAdapter.getItem(pager.getCurrentItem()) instanceof CourseScheduleFragment)
-	    		{
-	    			ArrayList<UTClass> classList = ((CourseScheduleFragment)mPagerAdapter.getItem(pager.getCurrentItem())).getClassList();
-	    			for(UTClass clz : classList)
-	    			{
-	    				for(Classtime clt : clz.getClassTimes())
-		    				if(!buildings.contains(clt.getBuilding().getId()))
-		    					buildings.add(clt.getBuilding().getId());
-	    			}
-	    		}
-	    		Intent map = new Intent(getString(R.string.building_intent), null, ScheduleActivity.this, CampusMapActivity.class);
-		//		map.setData(Uri.parse(current_clt.getBuilding().getId()));
-				map.putStringArrayListExtra("buildings", buildings);
-				startActivity(map);
-				break;
-	    		
+	    	{	    		
 	    	case android.R.id.home:
 	            // app icon in action bar clicked; go home
 	            super.onBackPressed();
@@ -239,51 +200,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements Slidin
 		public TitlePageIndicator getIndicator()
 		{
 			return titleIndicator;
-		}
-		public void onDrawerClosed()
-		{
-			((ImageView)(sd.getHandle())).setImageResource(R.drawable.ic_expand_half);
-		}
-		public void onDrawerOpened()
-		{
-			((ImageView)(sd.getHandle())).setImageResource(R.drawable.ic_collapse_half);
-		}
-		private final class ScheduleActionMode extends ViewPager.SimpleOnPageChangeListener implements ActionMode.Callback {
-	    
-			//TODO: wtf is this ActionMode stuff?? Is it necessary? CourseScheduleFragment has it too.  This has some sort of functionality apparently, 
-			//as the ViewPager stuff apparently is called
-			@Override
-	        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-	            mode.setTitle("Class Info");
-	            MenuInflater inflater = getSupportMenuInflater();
-	            inflater.inflate(R.menu.schedule_action_mode, menu);
-	            return true;
-	        }
-
-	        @Override
-	        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-	            return false;
-	        }
-
-	        @Override
-	        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-	            switch(item.getItemId())
-	            {
-	            	case R.id.locate_class:
-	            		Intent map = new Intent(getString(R.string.building_intent), null, ScheduleActivity.this, CampusMapActivity.class);
-	    				map.setData(Uri.parse(current_clt.getBuilding().getId()));
-	    				startActivity(map);break;
-	            }
-	            return true;
-	        }
-
-	        @Override
-	        public void onDestroyActionMode(ActionMode mode) {
-	        	if(sd!=null)
-	        		sd.close();
-	        }
-		}
-		
+		}		
 		@Override
 		public void onPageScrollStateChanged(int arg0) {
 			

@@ -139,15 +139,15 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 				errorMsg = "UTilities could not fetch your exam schedule";
 				cancel(true);
 				e.printStackTrace();
-				return null;
+				return 'e';
 			}
 	    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>"))
 	    	{
 				errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-				if(getActivity() != null)
-					ConnectionHelper.logout(getActivity());
+				if(parentAct != null)
+					ConnectionHelper.logout(parentAct);
 				cancel(true);
-				return null;
+				return 'e';
 	    	}
 
 	    	if(pagedata.contains("will be available approximately three weeks"))// || !tempId.equals(semId))
@@ -184,7 +184,6 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 	    		}
 	    	
 	    		examlist.add(rowstring);
-	    		
 	    	}
 	    	
 	    	return ' ';
@@ -201,10 +200,13 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 			}
 			else
 			{
+				//TODO: check for null here? or figure out why result would be null to begin with
 				switch(result)
 				{
 					case 'c':netv.setText("'Tis not the season for exams.\nTry back later!\n(about 3 weeks before they begin)");break;
 					case 'b':netv.setText("You aren't enrolled for the current semester.");break;
+					//this should never be executed, anytime dIB returns 'e' it should go to onCancelled
+					case 'e':netv.setText("There was a problem loading the exam schedule.\nPlease try again.");break;
 				}
 	    		
 	    		netv.setVisibility(View.VISIBLE);

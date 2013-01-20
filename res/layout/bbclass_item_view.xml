@@ -28,6 +28,7 @@
 		        android:ellipsize="end"
 		        android:lines="1"
 		        android:scrollHorizontally="true"
+		        android:text="Class Name"
 
 		        android:textSize="15sp"/>
 		      <TextView 
@@ -36,6 +37,7 @@
 		        android:layout_height="wrap_content"
 		        android:textSize="13sp"
 		        android:textStyle="italic"
+		        android:text="Class ID"
 		        android:layout_gravity="left"/>
 		  </LinearLayout>
 	</LinearLayout>

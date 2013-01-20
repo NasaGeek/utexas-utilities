@@ -19,5 +19,6 @@
 			android:clickable="true"
 			android:layout_width="fill_parent" 
 		    android:layout_height="fill_parent"
-		    android:cacheColorHint="@android:color/transparent"/>			   	
+		    android:cacheColorHint="@android:color/transparent"
+		    android:background="@android:color/transparent"/>			   	
 </LinearLayout>

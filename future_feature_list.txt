@@ -34,3 +34,5 @@ address course overlap (try splitting down the middle with 2 colors) need to add
 Use mitmproxy to sniff more bb API
 show all class buildings on map (button in schedule) -- DONE
 first time use guides (overlays?)
+
+toggle to show class IDs on schedule (put in overflow menu)

@@ -227,7 +227,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 							@TargetApi(11)
 							public void onClick(DialogInterface dialog, int which) {
 		
-								if (true)//Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
+								if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
 								{	 
 									Intent downloadAttachment = new Intent(BlackboardDownloadableItemActivity.this, AttachmentDownloadService.class);
 									downloadAttachment.putExtra("fileName", item.getName());

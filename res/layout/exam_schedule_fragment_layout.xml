@@ -35,6 +35,7 @@
 		    android:layout_height="fill_parent" 
 		    android:orientation="vertical" 
 		    android:scrollbars="none"
-		    android:cacheColorHint="@android:color/transparent"/>
+		    android:cacheColorHint="@android:color/transparent"
+		    android:background="@android:color/transparent"/>
 	 
 </LinearLayout>

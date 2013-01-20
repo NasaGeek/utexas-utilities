@@ -3,7 +3,8 @@
    	android:id="@+id/menulinlay"
     android:layout_width="fill_parent" 
     android:layout_height="fill_parent" 
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
          
      <include 
          android:id="@+id/menu_progressbar_ll" 
@@ -18,5 +19,6 @@
             android:layout_width="fill_parent" 
             android:layout_height="fill_parent" 
             android:orientation="vertical" 
-            android:cacheColorHint="@android:color/transparent"/>
+            android:cacheColorHint="@android:color/transparent"
+            android:background="@android:color/transparent"/>
 </LinearLayout>

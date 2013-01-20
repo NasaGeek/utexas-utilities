@@ -333,10 +333,10 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 		}
 	}
 	/**
-	 * Loads the buildings specified in buildingIdList or shows the user an error if any of the buildingId's are invalid
+	 * Loads the buildings specified in buildingIdList or shows the user an error if any of the buildingIds are invalid
 	 * 
 	 * @param autoZoom - true to autozoom to 16 when moving (will not animate!) to the building, 
-	 * false to just animate to building should only be true when you are entering the map from 
+	 * false to just animate to building; should only be true when you are entering the map from 
 	 * an entry point other than the dashboard
 	 **/
 	public void loadBuildingOverlay(boolean autoZoom)
@@ -894,7 +894,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 							if(myLocation != null)
 							{	
 								Intent intent = new Intent(android.content.Intent.ACTION_VIEW, 
-								Uri.parse("http://maps.google.com/maps?saddr="+myLocation.latitude+","+myLocation.longitude+ "&daddr=" +marker.getPosition().latitude+","+marker.getPosition().longitude));
+								Uri.parse("http://maps.google.com/maps?saddr="+myLocation.latitude+","+myLocation.longitude+ "&daddr=" +marker.getPosition().latitude+","+marker.getPosition().longitude + "&dirflg=w"));
 								startActivity(intent);
 							}
 							else

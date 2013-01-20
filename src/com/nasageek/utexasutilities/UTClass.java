@@ -2,50 +2,78 @@ package com.nasageek.utexasutilities;
 
 import java.util.ArrayList;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
-public class UTClass {
+public class UTClass implements Parcelable{
 	
-	private String courseid, unique, name, professor, semId, color;
+	
+	private String courseId, unique, name, semId, color;
 
-	private ArrayList<Building> buildings;
 	private ArrayList<Classtime> classtimes;
+	
+	public static Parcelable.Creator<UTClass> CREATOR = new Parcelable.Creator<UTClass>() {
 
-	
-	
-	public UTClass(String u, String ci, String n, String[] b, String[] br, String[] d, String[] t, String semId, String c)
-	{
-		this.semId = semId;
-		classtimes = new ArrayList<Classtime>();
-		buildings = new ArrayList<Building>();
-		//Log.d("BLENGTH", b.length+ " "+br.length);
-		courseid = ci;
-		name = n;
-		unique = u;
-		color = c;
-		for(int i = 0; i<b.length; i++)
-		{
-			buildings.add(new Building(b[i], br[i]));
+		@Override
+		public UTClass createFromParcel(Parcel source) {
+			return new UTClass(source);
+		}
+
+		@Override
+		public UTClass[] newArray(int size) {
+			return new UTClass[size];
 		}
 		
-		if(!(d.length == t.length && d.length == buildings.size() && buildings.size() == t.length))
-			Log.d("UTClass creation", "building/day/time size inconsistency: b"+buildings.size()+" d"+d.length+" t"+t.length);
-		for(int i = 0; i < d.length && i < t.length && i < buildings.size(); i++)
+	};
+
+	private UTClass(Parcel in)
+	{
+		unique = in.readString();
+		courseId = in.readString();
+		name = in.readString();
+		
+		classtimes = new ArrayList<Classtime>();
+		in.readTypedList(classtimes, Classtime.CREATOR);
+		semId = in.readString();
+		color = in.readString();
+	}
+	
+	public UTClass(String unique, String courseId, String name, String[] buildingIds, String[] buildingRooms, String[] days, String[] times, String semId, String color)
+	{
+		this.unique = unique;
+		this.courseId = courseId;
+		this.name = name;
+		
+		ArrayList<Building> buildings = new ArrayList<Building>();
+		for(int i = 0; i<buildingIds.length; i++)
 		{
-			String[] days = d[i].split("");
+			buildings.add(new Building(buildingIds[i], buildingRooms[i]));
+		}
+		
+		classtimes = new ArrayList<Classtime>();
+		if(!(days.length == times.length && days.length == buildings.size() && buildings.size() == times.length))
+			Log.d("UTClass creation", "building/day/time size inconsistency: b"+buildings.size()+" d"+days.length+" t"+times.length);
+		for(int i = 0; i < days.length && i < times.length && i < buildings.size(); i++)
+		{
+			String[] dayArray = days[i].split("");
 			
-			for(int k = 1; k<days.length; k++)
+			for(int k = 1; k<dayArray.length; k++)
 			{
-				classtimes.add(new Classtime(days[k],t[i],buildings.get(i),c,this));
+				classtimes.add(new Classtime(dayArray[k], times[i], buildings.get(i), color, courseId, name));
 				//Log.d("DAYTIME", days[k]+" "+t[i]);
 			}
 			
 		}
+		//Log.d("BLENGTH", b.length+ " "+br.length);
+		
+		this.semId = semId;
+		this.color = color;
 	}
 	@Override
 	public String toString()
 	{
-		String out = courseid +" in ";
+		String out = courseId +" in ";
 		for(int i =0; i<classtimes.size(); i++)
 		{
 			out += classtimes.get(i).getBuilding().getId()+" in room "+classtimes.get(i).getBuilding().getRoom()+
@@ -67,7 +95,7 @@ public class UTClass {
 	}
 	public String getId()
 	{
-		return courseid;
+		return courseId;
 	}
 	public String getUnique()
 	{
@@ -80,5 +108,18 @@ public class UTClass {
 	public String getColor()
 	{
 		return color;
+	}
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+	@Override
+	public void writeToParcel(Parcel out, int flags) {
+		out.writeString(unique);
+		out.writeString(courseId);
+		out.writeString(name);
+		out.writeTypedList(classtimes);
+		out.writeString(semId);
+		out.writeString(color);
 	}
 }

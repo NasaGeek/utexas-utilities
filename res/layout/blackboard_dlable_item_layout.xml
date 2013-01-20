@@ -75,6 +75,7 @@ up correctly in hierarchy-viewer -->
         android:layout_marginTop="10dp"
         android:divider="#FFCCCCCC"
         android:dividerHeight="1dp"
-        android:cacheColorHint="@android:color/transparent" />
+        android:cacheColorHint="@android:color/transparent"
+        android:background="@android:color/transparent" />
 
 </RelativeLayout>

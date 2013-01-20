@@ -18,6 +18,7 @@
         android:layout_height="fill_parent"
         android:orientation="vertical"
         android:cacheColorHint="@android:color/transparent"
+		android:background="@android:color/transparent"
         android:paddingTop="10dp"
         android:scrollbars="none"
         android:visibility="gone" />

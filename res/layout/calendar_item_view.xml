@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingBottom="7dp"
+    android:paddingLeft="10dp"
+    android:paddingTop="7dp"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/calendar_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:ellipsize="end"
+        android:lines="1"
+        android:scrollHorizontally="true"
+        android:text="Calendar Name"
+        android:textSize="17sp" />
+
+    <TextView
+        android:id="@+id/calendar_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:text="Calendar Account"
+        android:textColor="@android:color/secondary_text_light"
+        android:textSize="12.5sp"
+        android:textStyle="italic" />
+
+</LinearLayout>

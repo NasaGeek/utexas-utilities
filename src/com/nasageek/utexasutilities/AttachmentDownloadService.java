@@ -35,7 +35,7 @@ public class AttachmentDownloadService extends IntentService {
 	}
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		// TODO Auto-generated method stub
+		
 		handler = new Handler();
 		return super.onStartCommand(intent, flags, startId);
 	}

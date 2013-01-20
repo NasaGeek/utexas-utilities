@@ -98,6 +98,17 @@ Rewrote regex for transactions
 Exam schedule class names now truncate instead of going to multiple lines
 Reverted dashboard buttons
 
+1.72
+-Fixed a crash in maps that was affecting quite a few users
+-Sorry for the rapid-fire updates, this should be the last for a while!
+1.71r2
+-woops! Buttons were a bit wonky. Also fixed a few bugs
+1.71
+-Hardware acceleration turned back on for smoother scrolling
+-Blank transactions bug hopefully fixed
+-Long exam schedule class names now truncate instead of going to multiple lines
+-Dashboard buttons reverted
+
 Versioncode 12 - 1.72
 
 ?? bugfixes I suspect...
@@ -111,4 +122,10 @@ A variety of bugfixes
 A Privacy Policy and Licenses for Open Source Software used in UTilities have been added
 Reworded a few preferences for more clarity
 Lots of other changes
+
+Versioncode 14 - 1.85
+
+Fixed several force closes related to not checking if the schedule fragments' parent activities were null
+Some big code cleanup, all in schedule
+Export schedule to Google Calendar!! (4.0+)
 

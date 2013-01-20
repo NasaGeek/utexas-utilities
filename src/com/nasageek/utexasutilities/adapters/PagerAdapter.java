@@ -42,7 +42,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
 	}
 	@Override
 	public String getPageTitle(int position) {
-		// TODO Auto-generated method stub
+		
 		return this.fragments.get(position).getArguments().getString("title");
 	}
 	public void updateFragments(List<SherlockFragment> fragments)
