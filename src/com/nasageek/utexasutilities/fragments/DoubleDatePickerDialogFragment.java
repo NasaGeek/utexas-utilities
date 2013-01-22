@@ -143,6 +143,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 						} catch (ParseException e1) {
 							Toast.makeText(getSherlockActivity(), "Error parsing "+clt.getCourseId()+" start/end time. Export canceled.", Toast.LENGTH_LONG);
 							e1.printStackTrace();
+							DoubleDatePickerDialogFragment.this.dismiss();
 							return;
 						}
 						
@@ -189,7 +190,14 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 						new String[]{"com.google","800","700","600","500"}, null);
 				ArrayList<String> calendars = new ArrayList<String>();
 				ArrayList<Integer> indices = new ArrayList<Integer>();
-						
+				
+				//If no calendars are available, let them know
+				if(cur == null)
+				{
+					Toast.makeText(getSherlockActivity(), "There are no available calendars to export to.", Toast.LENGTH_LONG).show();
+					DoubleDatePickerDialogFragment.this.dismiss();
+					return;
+				}
 				while (cur.moveToNext()) 
 				{	
 				    long calID = 0;
@@ -210,7 +218,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 		        PickCalendarDialogFragment pcdf = PickCalendarDialogFragment.newInstance(indices, calendars, valuesList);
 		        DoubleDatePickerDialogFragment.this.dismiss();
 		        pcdf.show(fm, "fragment_pick_calendar");
-
+		        return;
 			}
 		});
 		((Button)view.findViewById(R.id.calendar_button_cancel)).setOnClickListener(new OnClickListener() {
