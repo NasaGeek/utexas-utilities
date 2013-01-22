@@ -13,15 +13,19 @@ import org.apache.http.util.EntityUtils;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,6 +139,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	{
 		private DefaultHttpClient client;
 		private String errorMsg;
+		final DownloadManager manager = (DownloadManager) getSystemService(Service.DOWNLOAD_SERVICE);
 		
 		public fetchData(DefaultHttpClient client)
 		{
@@ -181,13 +186,15 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	    		String attachData = attachmentMatcher.group();
 	    		Pattern namePattern = Pattern.compile("linkLabel=\"(.*?)\"");
 		    	Matcher nameMatcher = namePattern.matcher(attachData);
+		    	Pattern fileNamePattern = Pattern.compile("name=\"(.*?)\"");
+		    	Matcher fileNameMatcher = fileNamePattern.matcher(attachData);
 		    	Pattern uriPattern = Pattern.compile("uri=\"(.*?)\"");
 		    	Matcher uriMatcher = uriPattern.matcher(attachData);
 		    	Pattern sizePattern = Pattern.compile("filesize=\"(.*?)\"");
 		    	Matcher sizeMatcher = sizePattern.matcher(attachData);
 		    	
-		    	if(sizeMatcher.find() && nameMatcher.find() && uriMatcher.find())
-		    		data.add(new bbFile(nameMatcher.group(1).replace("&amp;", "&"),sizeMatcher.group(1),uriMatcher.group(1).replace("&amp;", "&"),getIntent().getStringExtra("itemName")));
+		    	if(sizeMatcher.find() && nameMatcher.find() && fileNameMatcher.find() && uriMatcher.find())
+		    		data.add(new bbFile(nameMatcher.group(1).replace("&amp;", "&"),fileNameMatcher.group(1),sizeMatcher.group(1),uriMatcher.group(1).replace("&amp;", "&"),getIntent().getStringExtra("itemName")));
 	    	}
 	    	
 	    	result[0] = content;
@@ -230,25 +237,25 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 								if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
 								{	 
 									Intent downloadAttachment = new Intent(BlackboardDownloadableItemActivity.this, AttachmentDownloadService.class);
-									downloadAttachment.putExtra("fileName", item.getName());
+									downloadAttachment.putExtra("fileName", item.getFileName());
 									downloadAttachment.putExtra("url", item.getDlUri());
 									startService(downloadAttachment);
-									
-									//showNotSupportedDlg(BlackboardDownloadableItemActivity.this);
 								}	
 								else if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 								{ 
-									 final DownloadManager manager; 
+									 registerReceiver(onNotificationClick, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
+							//		 registerReceiver(onNotificationClick, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+									  
 									 Uri uri = Uri.parse("https://courses.utexas.edu"+Uri.decode(item.getDlUri()));
 									 DownloadManager.Request request = new DownloadManager.Request(uri);
 									 
 									 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 							    	 request.setDescription("Downloading to the Download folder.");
-							    	 request.setTitle(item.getName());
-							    	 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getName());
+							    	 request.setTitle(item.getFileName());
+							    	 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getFileName());
 							    	 
 							    	 request.addRequestHeader("Cookie", "s_session_id="+ConnectionHelper.getBBAuthCookie(BlackboardDownloadableItemActivity.this, client));
-							    	 manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+							    	 
 							    	 dlID = manager.enqueue(request);
 							    	 
 							    	 Crittercism.leaveBreadcrumb("Attachment Downloaded (>=3.0)");
@@ -320,6 +327,21 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 			contentDescription.setVisibility(View.GONE);
     		dlableItems.setVisibility(View.GONE);
 		}
+		
+		 BroadcastReceiver onNotificationClick=new BroadcastReceiver() {
+			    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+				public void onReceive(Context con, Intent intent) {
+			    	String action = intent.getAction();
+			    	if(DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action))
+			    	{
+			    		long[] dlIDs = intent.getLongArrayExtra(DownloadManager.EXTRA_NOTIFICATION_CLICK_DOWNLOAD_IDS);
+			    		
+			    		//not sure when dlIDs will ever have >1 member, so let's just assume only 1 member
+			    		//TODO: need to confirm when dlIDs might be >1
+			    		startActivity(new Intent(Intent.ACTION_VIEW, manager.getUriForDownloadedFile(dlIDs[0])));
+			    	}
+			    }
+			  };
 	}
 	private class dlableItemAdapter extends ArrayAdapter<bbFile>
 	{
@@ -386,11 +408,13 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		private String size;
 		private String dlUri;
 		private String viewUri;
+		private String fileName;
 		
 		
-		public bbFile(String name, String size, String dlUri, String viewUri)
+		public bbFile(String name, String fileName, String size, String dlUri, String viewUri)
 		{
 			this.name=name;
+			this.fileName=fileName;
 			this.size=size;
 			this.dlUri=dlUri;
 			this.viewUri=viewUri;
@@ -424,6 +448,10 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		public String getViewUri()
 		{
 			return viewUri;
+		}
+		public String getFileName()
+		{
+			return fileName;
 		}
 	}
 
