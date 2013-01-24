@@ -29,8 +29,6 @@ import com.foound.widget.AmazingAdapter;
 import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
 
 public class MenuFragment extends SherlockFragment
 {
@@ -118,6 +116,8 @@ public class MenuFragment extends SherlockFragment
 			ArrayList<food> foodList = new ArrayList<food>();
 			meal = (String)params[1];
 			String location = "";
+			
+			//Special case for JCM, which combines Lunch and Dinner
 			if(restId.equals("05") && (meal.equals("Lunch")||meal.equals("Dinner")))
 				location = "http://129.116.62.55/foodpro/pickMenu.asp?locationNum="+params[0]+"&mealName=Lunch/Dinner";
 			else
@@ -146,30 +146,34 @@ public class MenuFragment extends SherlockFragment
 	    	}
 	    	else
 	    	{
-		
+	    		//have to leave in the lookahead so the regex matches don't overlap
 		    	Pattern catPattern = Pattern.compile("<div class=\'pickmenucolmenucat\'.*?(?=<div class='pickmenucolmenucat'|</html>)", Pattern.DOTALL);
 		    	Matcher catMatcher = catPattern.matcher(pagedata);
 		    	while(catMatcher.find())
 		    	{
+		    		String categoryData = catMatcher.group();
 		    		foodList = new ArrayList<food>();
 		    		
-		    		Pattern catNamePattern = Pattern.compile("(?<=>-- ).*?(?= --<)");
-		    		Matcher catNameMatcher = catNamePattern.matcher(catMatcher.group());
-		    		catNameMatcher.find();
+		    		Pattern catNamePattern = Pattern.compile(">-- (.*?) --<");
+		    		Matcher catNameMatcher = catNamePattern.matcher(categoryData);
+		    		if(catNameMatcher.find())
+		    			categories.add(catNameMatcher.group(1));
+		    		else
+		    			categories.add("Unknown Category");
 		    		
-		    		categories.add(catNameMatcher.group());
+		    		Pattern nutritionLinkPattern = Pattern.compile("a href=\'(.*?)\'");
+		    		Matcher nutritionLinkMatcher = nutritionLinkPattern.matcher(categoryData);
 		    		
-		    		Pattern nutritionLinkPattern = Pattern.compile("(?<=a href=\').*?(?=')");
-		    		Matcher nutritionLinkMatcher = nutritionLinkPattern.matcher(catMatcher.group());
-		    		
-		    		Pattern foodPattern = Pattern.compile("(?<=\">).*?(?=</a)");
-		    		Matcher foodMatcher = foodPattern.matcher(catMatcher.group());
+		    		//This pattern is glitchy on a Nexus S 4G running CM10.1 nightly
+		    		//Seems to activate Pattern.DOTALL by default. Set flags to 0 to try and mitigate?
+		    		Pattern foodPattern = Pattern.compile("<a href=.*?\">(\\w.*?)</a>",0);
+		    		Matcher foodMatcher = foodPattern.matcher(categoryData);
 		    		
 		    		while(foodMatcher.find() && nutritionLinkMatcher.find())
 		    		{
-		    			foodList.add(new food(foodMatcher.group(),nutritionLinkMatcher.group()));
+		    			foodList.add(new food(foodMatcher.group(1),nutritionLinkMatcher.group(1)));
 		    		}	
-		    		listOfLists.add(new Pair<String,ArrayList<food>>(catNameMatcher.group(),foodList));	
+		    		listOfLists.add(new Pair<String,ArrayList<food>>(catNameMatcher.group(1),foodList));	
 		    		if(isCancelled())
 		    			return "";
 		    	}
@@ -182,17 +186,16 @@ public class MenuFragment extends SherlockFragment
 			mlv.setAdapter(new MenuAdapter(listOfLists));	
 			mlv.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		    	
 				String url ="http://129.116.62.55/foodpro/"+((food)(arg0.getItemAtPosition(arg2))).nutritionLink;  
 				Intent i = new Intent(Intent.ACTION_VIEW);  
 				i.setData(Uri.parse(url));  
 				startActivity(i);
-		    	
 				}
 			});
-			if(getActivity() != null) //was getting a NPE here probably from leaving the activity while the menu was loading
+			
+			if(getSherlockActivity() != null) //was getting a NPE here probably from leaving the activity while the menu was loading
 				mlv.setPinnedHeaderView(getActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, mlv, false));
 			
 			mlv.setVisibility(View.VISIBLE);	
@@ -207,10 +210,8 @@ public class MenuFragment extends SherlockFragment
 			mlv.setVisibility(View.GONE);	
 			m_pb_ll.setVisibility(View.GONE);
 		}
-	
 	}
-	
-	
+
 	class food
 	{
 		String name;
@@ -230,8 +231,7 @@ public class MenuFragment extends SherlockFragment
 			return nutritionLink;
 		}
 	}
-	
-	
+
 	class MenuAdapter extends AmazingAdapter {
 		ArrayList<Pair<String, ArrayList<food>>> all;
 
@@ -268,8 +268,7 @@ public class MenuFragment extends SherlockFragment
 		}
 
 		@Override
-		protected void onNextPageRequested(int page) {
-		}
+		protected void onNextPageRequested(int page) {}
 
 		@Override
 		protected void bindSectionHeader(View view, int position, boolean displaySectionHeader) {
