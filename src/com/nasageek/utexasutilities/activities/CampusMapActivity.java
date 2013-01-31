@@ -824,7 +824,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     				e.printStackTrace();
     				return times;
     			} 
-    			Pattern pattern = Pattern.compile("<b>\\d+</b>-(.*?) <span.*?</div>", Pattern.DOTALL);
+    			Pattern pattern = Pattern.compile("<b>\\d+</b>-(.*?) <span.*?</span></div>", Pattern.DOTALL);
     			Matcher matcher = pattern.matcher(data);
     		//	ArrayList<String> times = new ArrayList();
     			while(matcher.find())
@@ -851,9 +851,15 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     					}
     				}
     			}
+    			//if something goes wrong during the time check, times will be set to "" and not populate
+    			//with times (this was happening when routes would have a detour tag, though hopefully I fixed that).  
+    			//Set back to default error message.
+    			if("".equals(times))
+					times = "Oops! There are no specified times\nfor this stop on capmetro.org ";
+    			
     			return times;
     		}
-    		protected void onPostExecute(String times)
+    		protected void onPostExecute(String times) 
     		{
     			if((infoSnippet.getText()+"").contains("Loading"))
     			{	
