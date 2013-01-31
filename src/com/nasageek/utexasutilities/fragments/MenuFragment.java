@@ -196,7 +196,7 @@ public class MenuFragment extends SherlockFragment
 			});
 			
 			if(getSherlockActivity() != null) //was getting a NPE here probably from leaving the activity while the menu was loading
-				mlv.setPinnedHeaderView(getActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, mlv, false));
+				mlv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, mlv, false));
 			
 			mlv.setVisibility(View.VISIBLE);	
 			m_pb_ll.setVisibility(View.GONE);
