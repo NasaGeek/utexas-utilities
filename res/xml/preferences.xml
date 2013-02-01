@@ -94,7 +94,8 @@
             />
     </PreferenceCategory>
     <PreferenceScreen android:title="Experimental"
-        >
+        android:enabled="false"
+        android:selectable="false">
         <Preference 
             android:id="@+id/update_stops"
             android:key="update_stops"
