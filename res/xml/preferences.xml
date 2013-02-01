@@ -86,12 +86,20 @@
             android:title="Auto-send crash reports"
             android:summary="@string/preference_sendcrashes_summary"/>
     </PreferenceCategory>
-	    <PreferenceCategory android:title="Miscellaneous">
-	        <Preference
-	            android:id="@+id/about"
-	            android:key="about"
-	            android:title="About UTilities"
-	            />
-	    </PreferenceCategory>
+    <PreferenceCategory android:title="Miscellaneous">
+        <Preference
+            android:id="@+id/about"
+            android:key="about"
+            android:title="About UTilities"
+            />
+    </PreferenceCategory>
+    <PreferenceScreen android:title="Experimental"
+        >
+        <Preference 
+            android:id="@+id/update_stops"
+            android:key="update_stops"
+            android:title="Update Bus Stops" />
+    </PreferenceScreen>
+	    
     
 </PreferenceScreen>

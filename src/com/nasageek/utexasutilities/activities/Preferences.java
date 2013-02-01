@@ -1,5 +1,7 @@
 package com.nasageek.utexasutilities.activities;
 
+import java.io.IOException;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -26,6 +28,7 @@ import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.R.xml;
+import com.nasageek.utexasutilities.Utility;
 
 public class Preferences extends SherlockPreferenceActivity{
 
@@ -133,7 +136,7 @@ public class Preferences extends SherlockPreferenceActivity{
         });
 
         //disable the EID and password preferences if the user is logged in
-        //TODO: make a method to check if user is logged in, cleaner
+        //TODO: make a method to check if user is logged in, it's cleaner that way
         if(ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet() && ConnectionHelper.bbCookieHasBeenSet())
         {
         	loginfield.setEnabled(false);
@@ -171,6 +174,20 @@ public class Preferences extends SherlockPreferenceActivity{
 			public boolean onPreferenceClick(Preference preference) {
 				final Intent about_intent = new Intent(Preferences.this, AboutMeActivity.class);
 				startActivity(about_intent);
+				return true;
+			}
+		});
+        final Preference updateBusStops = (Preference) findPreference("update_stops");
+        updateBusStops.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				try {
+					Utility.updateBusStops(Preferences.this);
+				} catch (IOException e) {
+					e.printStackTrace();
+					Toast.makeText(Preferences.this, "Stops could not be written to file.", Toast.LENGTH_SHORT).show();
+				}
 				return true;
 			}
 		});
