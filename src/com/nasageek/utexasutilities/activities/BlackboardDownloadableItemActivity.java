@@ -85,9 +85,9 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	}
 	
 	@Override
-	public void onStop()
+	public void onDestroy()
 	{
-		super.onStop();
+		super.onDestroy();
 		if(onNotificationClick != null)
 			unregisterReceiver(onNotificationClick);
 	}
