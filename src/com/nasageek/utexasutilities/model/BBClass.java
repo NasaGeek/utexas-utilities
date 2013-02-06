@@ -1,4 +1,4 @@
-package com.nasageek.utexasutilities;
+package com.nasageek.utexasutilities.model;
 
 import android.util.Log;
 

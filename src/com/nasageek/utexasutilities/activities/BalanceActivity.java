@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -19,8 +17,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
 import com.nasageek.utexasutilities.adapters.PagerAdapter;
 import com.nasageek.utexasutilities.fragments.BevoFragment;
 import com.nasageek.utexasutilities.fragments.DineinFragment;
@@ -52,53 +48,33 @@ public class BalanceActivity extends SherlockFragmentActivity
 		actionbar.setHomeButtonEnabled(true);
 		actionbar.setDisplayHomeAsUpEnabled(true);
 		
-	/*	 actionbar.addTab(actionbar.newTab()
-		            .setText("Dinein")
-		            .setTabListener(new TabListener<DineinFragment>(
-		                    this, "dinein", DineinFragment.class, null)));
-
-		    actionbar.addTab(actionbar.newTab()
-		            .setText("Bevo Bucks")
-		            .setTabListener(new TabListener<BevoFragment>(
-		                    this, "bevo", BevoFragment.class, null)));*/
-		
 		Crittercism.leaveBreadcrumb("BalanceActivity entered");
 	}
 	
 	 /** maintains the pager adapter*/
 	
-	    private PagerAdapter mPagerAdapter;
-	
-	    /* (non-Javadoc)
-	
-	     * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-	
-	     */
-	    /**
-	
-	     * Initialise the fragments to be paged
-	
-	     */
-	
-	    private void initialisePaging() {
+    private PagerAdapter mPagerAdapter;	    
 
-	        List<SherlockFragment> fragments = new Vector<SherlockFragment>();
-	        Bundle args = new Bundle(1);
-	        args.putString("title", "Dine In");
-	        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, DineinFragment.class.getName(), args));
-	        args = new Bundle(1);
-	        args.putString("title", "Bevo Bucks");
-	        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, BevoFragment.class.getName(), args));
-	
-	      
-	        this.mPagerAdapter  = new PagerAdapter(getSupportFragmentManager(), fragments);	
-	        ViewPager pager = (ViewPager)findViewById(R.id.viewpager);
-	        pager.setPageMargin(2);
-	        pager.setAdapter(this.mPagerAdapter);
-	        TabPageIndicator tabIndicator = (TabPageIndicator)findViewById(R.id.titles);
-			tabIndicator.setViewPager(pager);
-			
-	    }
+    private void initialisePaging() 
+    {
+
+        List<SherlockFragment> fragments = new Vector<SherlockFragment>();
+        Bundle args = new Bundle(1);
+        args.putString("title", "Dine In");
+        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, DineinFragment.class.getName(), args));
+        args = new Bundle(1);
+        args.putString("title", "Bevo Bucks");
+        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, BevoFragment.class.getName(), args));
+
+      
+        this.mPagerAdapter  = new PagerAdapter(getSupportFragmentManager(), fragments);	
+        ViewPager pager = (ViewPager)findViewById(R.id.viewpager);
+        pager.setPageMargin(2);
+        pager.setAdapter(this.mPagerAdapter);
+        TabPageIndicator tabIndicator = (TabPageIndicator)findViewById(R.id.titles);
+		tabIndicator.setViewPager(pager);
+		
+    }
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{

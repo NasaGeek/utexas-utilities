@@ -52,6 +52,7 @@ public class AttachmentDownloadService extends IntentService {
         .setContentTitle(fileName)
         .setContentText("Download in progress")
         .setTicker("UTilities download started.")
+  // TODO:  .build(); really should do this, but don't want to break anything
         .getNotification();
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(fileName,1123,n);
 		
@@ -89,6 +90,7 @@ public class AttachmentDownloadService extends IntentService {
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
             .setContentText("Download failed")
             .setTicker("Download failed.")
+            // TODO:  .build(); really should do this, but don't want to break anything
             .getNotification();
             ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(fileName, 1123, n);
             return;
@@ -109,6 +111,7 @@ public class AttachmentDownloadService extends IntentService {
        	.setSmallIcon(android.R.drawable.stat_sys_download_done)
        	.setContentText("Download complete")
         .setTicker("Download complete.")
+        // TODO:  .build(); really should do this, but don't want to break anything
         .getNotification();
        	((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(fileName, 1123, n);
        	Crittercism.leaveBreadcrumb("Attachment Downloaded (<3.0)");

@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,14 +22,14 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
-import com.nasageek.utexasutilities.Classtime;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.UTClass;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.adapters.PagerAdapter;
 import com.nasageek.utexasutilities.fragments.ActionModeFragment;
 import com.nasageek.utexasutilities.fragments.CourseScheduleFragment;
 import com.nasageek.utexasutilities.fragments.ExamScheduleFragment;
+import com.nasageek.utexasutilities.model.Classtime;
+import com.nasageek.utexasutilities.model.UTClass;
 import com.viewpagerindicator.TitlePageIndicator;
 
 public class ScheduleActivity extends SherlockFragmentActivity implements ViewPager.OnPageChangeListener{

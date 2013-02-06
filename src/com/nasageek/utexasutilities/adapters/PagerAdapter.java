@@ -45,6 +45,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
 		
 		return this.fragments.get(position).getArguments().getString("title");
 	}
+	
 	public void updateFragments(List<SherlockFragment> fragments)
 	{
 		this.fragments=fragments;

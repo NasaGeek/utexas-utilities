@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Vector;
 
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
@@ -35,10 +36,10 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.nasageek.utexasutilities.Classtime;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.UTClass;
 import com.nasageek.utexasutilities.WrappedViewPager;
+import com.nasageek.utexasutilities.model.Classtime;
+import com.nasageek.utexasutilities.model.UTClass;
 import com.viewpagerindicator.TabPageIndicator;
 
 public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {

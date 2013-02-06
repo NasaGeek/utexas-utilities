@@ -1,6 +1,8 @@
 package com.nasageek.utexasutilities;
 
+
 import com.crittercism.app.Crittercism;
+import com.nasageek.utexasutilities.model.UTClass;
 
 import android.content.ContentValues;
 import android.content.Context;

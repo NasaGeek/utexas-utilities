@@ -3,10 +3,11 @@ package com.nasageek.utexasutilities.adapters;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.UTClass;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
-import com.nasageek.utexasutilities.Classtime;
+import com.nasageek.utexasutilities.model.Classtime;
+import com.nasageek.utexasutilities.model.UTClass;
 
 import android.content.Context;
 import android.content.SharedPreferences;

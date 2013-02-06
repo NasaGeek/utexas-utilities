@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -29,7 +30,6 @@ import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
 import com.foound.widget.AmazingListView;
-import com.nasageek.utexasutilities.BBClass;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.Pair;
 import com.nasageek.utexasutilities.R;
@@ -37,6 +37,7 @@ import com.nasageek.utexasutilities.R.id;
 import com.nasageek.utexasutilities.R.layout;
 import com.nasageek.utexasutilities.R.string;
 import com.nasageek.utexasutilities.adapters.BBClassAdapter;
+import com.nasageek.utexasutilities.model.BBClass;
 
 public class BlackboardActivity extends SherlockActivity {
 	

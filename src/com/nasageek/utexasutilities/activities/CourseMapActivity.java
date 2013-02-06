@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -41,13 +42,13 @@ import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.nasageek.utexasutilities.BBClass;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.CourseMapSaxHandler;
 import com.nasageek.utexasutilities.Pair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.CourseMapItem;
 import com.nasageek.utexasutilities.adapters.CourseMapAdapter;
+import com.nasageek.utexasutilities.model.BBClass;
 
 
 public class CourseMapActivity extends SherlockActivity {

@@ -35,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -45,10 +46,6 @@ import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.AttachmentDownloadService;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
-import com.nasageek.utexasutilities.R.menu;
-
 
 public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	
@@ -59,6 +56,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	private LinearLayout dlil_pb_ll;
 	private TextView dlil_etv;
 	private ActionBar actionbar;
+	private BroadcastReceiver onNotificationClick;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -84,6 +82,14 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
     	client.getCookieStore().addCookie(cookie);
 		
 		new fetchData(client).execute(getIntent().getStringExtra("contentid"));
+	}
+	
+	@Override
+	public void onStop()
+	{
+		super.onStop();
+		if(onNotificationClick != null)
+			unregisterReceiver(onNotificationClick);
 	}
 	
 	@Override
@@ -139,7 +145,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	{
 		private DefaultHttpClient client;
 		private String errorMsg;
-		final DownloadManager manager = (DownloadManager) getSystemService(Service.DOWNLOAD_SERVICE);
+		
 		
 		public fetchData(DefaultHttpClient client)
 		{
@@ -243,8 +249,29 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 								}	
 								else if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 								{ 
+									
+									final DownloadManager manager = (DownloadManager) getSystemService(Service.DOWNLOAD_SERVICE);
+									 
+									onNotificationClick=new BroadcastReceiver() {
+										    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+											public void onReceive(Context con, Intent intent) {
+										    	String action = intent.getAction();
+										    	if(DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action))
+										    	{
+										    		long[] dlIDs = intent.getLongArrayExtra(DownloadManager.EXTRA_NOTIFICATION_CLICK_DOWNLOAD_IDS);
+										    		Uri downloadedFile = manager.getUriForDownloadedFile(dlIDs[0]);
+										    		//not sure when dlIDs will ever have >1 member, so let's just assume only 1 member
+										    		//TODO: need to confirm when dlIDs might be >1
+										    		if(downloadedFile != null) //make sure file isn't still downloading
+										    			startActivity(new Intent(Intent.ACTION_VIEW, downloadedFile));
+										    		else
+										    			Toast.makeText(con, "Download could not be opened at this time.", Toast.LENGTH_SHORT).show();
+										    	}
+										    }
+										  };
+									
+									
 									 registerReceiver(onNotificationClick, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
-							//		 registerReceiver(onNotificationClick, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 									  
 									 Uri uri = Uri.parse("https://courses.utexas.edu"+Uri.decode(item.getDlUri()));
 									 DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -290,6 +317,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 								         registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 							    	 }
 							    	 Toast.makeText(BlackboardDownloadableItemActivity.this, "Download started, item should appear in the \"Download\" folder on your external storage.", Toast.LENGTH_LONG).show();*/
+							    	 
 							     }
 								 else
 								 {
@@ -328,20 +356,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
     		dlableItems.setVisibility(View.GONE);
 		}
 		
-		 BroadcastReceiver onNotificationClick=new BroadcastReceiver() {
-			    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-				public void onReceive(Context con, Intent intent) {
-			    	String action = intent.getAction();
-			    	if(DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action))
-			    	{
-			    		long[] dlIDs = intent.getLongArrayExtra(DownloadManager.EXTRA_NOTIFICATION_CLICK_DOWNLOAD_IDS);
-			    		
-			    		//not sure when dlIDs will ever have >1 member, so let's just assume only 1 member
-			    		//TODO: need to confirm when dlIDs might be >1
-			    		startActivity(new Intent(Intent.ACTION_VIEW, manager.getUriForDownloadedFile(dlIDs[0])));
-			    	}
-			    }
-			  };
+		
 	}
 	private class dlableItemAdapter extends ArrayAdapter<bbFile>
 	{

@@ -8,6 +8,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -23,9 +24,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
-import com.nasageek.utexasutilities.R.string;
 import com.nasageek.utexasutilities.adapters.PagerAdapter;
 import com.nasageek.utexasutilities.fragments.MenuFragment;
 import com.viewpagerindicator.TabPageIndicator;
