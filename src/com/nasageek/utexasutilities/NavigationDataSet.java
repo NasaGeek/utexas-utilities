@@ -3,6 +3,8 @@ package com.nasageek.utexasutilities;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.nasageek.utexasutilities.model.Placemark;
+
 
 public class NavigationDataSet implements Iterable<Placemark>{ 
 

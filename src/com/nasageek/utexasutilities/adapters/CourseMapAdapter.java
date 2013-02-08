@@ -6,7 +6,7 @@ import com.nasageek.utexasutilities.Pair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.R.id;
 import com.nasageek.utexasutilities.R.layout;
-import com.nasageek.utexasutilities.CourseMapItem;
+import com.nasageek.utexasutilities.model.CourseMapItem;
 
 import android.content.Context;
 import android.view.LayoutInflater;

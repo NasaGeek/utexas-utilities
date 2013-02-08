@@ -1,11 +1,6 @@
 package com.nasageek.utexasutilities.adapters;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
 import android.util.Log;
@@ -14,35 +9,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.foound.widget.AmazingAdapter;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
+import com.nasageek.utexasutilities.fragments.TransactionsFragment;
+import com.nasageek.utexasutilities.model.Transaction;
 
 public class TransactionAdapter extends AmazingAdapter
 {
 	private Context con;
 	private ArrayList<Boolean> areHeaders;
-	private ArrayList<String> transactions;
+	private ArrayList<Transaction> transactions;
 	private LayoutInflater li;
 	private String currentDate;
 	boolean isSectionHeader;
-	private List<BasicNameValuePair> postdata;
-	private SherlockFragment sf;
+	private TransactionsFragment frag;
 	
-	public TransactionAdapter(Context c, SherlockFragment sf, ArrayList<String> objects)
+	public TransactionAdapter(Context c, TransactionsFragment frag, ArrayList<Transaction> transactions)
 	{
 		con = c;
-		transactions = objects;
-		this.sf = sf;
+		this.transactions = transactions;
+		this.frag = frag;
 		areHeaders = new ArrayList<Boolean>();
 		li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
 		for(int i = 0; i<transactions.size(); i++)
 		{
-			String dateandplace  = transactions.get(i).substring(0,transactions.get(i).indexOf("$"));
-			String date = dateandplace.substring(0,dateandplace.indexOf(" "));
+	//		String dateandplace = transactions.get(i).substring(0,transactions.get(i).indexOf("$"));
+			String date = transactions.get(i).getDate();
 			if(i == 0)
 			{
 				currentDate = date;
@@ -87,12 +80,17 @@ public class TransactionAdapter extends AmazingAdapter
 		
 /*		if(position == transactions.size() - 1)
 			return new View(con);*/
-		String trans = transactions.get(position);
+		Transaction trans = transactions.get(position);
 		
-		String dateplace = trans.substring(0,trans.indexOf("$"));
-		String date = dateplace.substring(0,dateplace.indexOf(" "));
-		String place = "\t"+dateplace.substring(dateplace.indexOf(" "));
-		String cost = trans.substring(trans.indexOf("$"));
+		String date = trans.getDate();
+		String reason = "\t" + trans.getReason();
+		String cost = trans.getCost();
+		
+		
+	//	String dateplace = trans.substring(0,trans.indexOf("$"));
+	//	String date = dateplace.substring(0,dateplace.indexOf(" "));
+	//	String place = "\t"+dateplace.substring(dateplace.indexOf(" "));
+	//	String cost = trans.substring(trans.indexOf("$"));
 		
 		
 		ViewGroup lin = (ViewGroup) convertView;
@@ -109,7 +107,7 @@ public class TransactionAdapter extends AmazingAdapter
 		}
 		
 		TextView left= (TextView) lin.findViewById(R.id.itemview);
-		left.setText(place);
+		left.setText(reason);
 		TextView right = (TextView) lin.findViewById(R.id.costview);
 		right.setText(cost);
 
@@ -120,8 +118,8 @@ public class TransactionAdapter extends AmazingAdapter
 		areHeaders.clear();
 		for(int i = 0; i<transactions.size(); i++)
 		{
-			String dateandplace  = transactions.get(i).substring(0,transactions.get(i).indexOf("$"));
-			String date = dateandplace.substring(0,dateandplace.indexOf(" "));
+		//	String dateandplace  = transactions.get(i).substring(0,transactions.get(i).indexOf("$"));
+			String date = transactions.get(i).getDate();
 			if(i == 0)
 			{
 				currentDate = date;
@@ -155,12 +153,7 @@ public class TransactionAdapter extends AmazingAdapter
 		{	
 			nextPage();
 			Log.d("TransactionAdapter","Page requested!");
-			try {
-				Method meth = sf.getClass().getMethod("parser",Boolean.TYPE);
-				meth.invoke(sf, new Object[] {false});	
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			frag.parser(false);
 		}
 		super.automaticNextPageLoading = false;
 	}

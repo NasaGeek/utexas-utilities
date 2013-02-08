@@ -69,8 +69,8 @@ import com.nasageek.utexasutilities.BuildingSaxHandler;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.NavigationDataSet;
 import com.nasageek.utexasutilities.NavigationSaxHandler;
-import com.nasageek.utexasutilities.Placemark;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.model.Placemark;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;

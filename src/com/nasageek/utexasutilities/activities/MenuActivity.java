@@ -24,6 +24,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
 import com.nasageek.utexasutilities.adapters.PagerAdapter;
 import com.nasageek.utexasutilities.fragments.MenuFragment;
 import com.viewpagerindicator.TabPageIndicator;
@@ -76,10 +77,13 @@ public class MenuActivity extends SherlockFragmentActivity {
 
 	ViewPager pager;
 	ActionBar actionbar;
-	private  DefaultHttpClient httpclient;
+	private DefaultHttpClient httpclient;
 	private SharedPreferences settings;
 	
 	private PagerAdapter mPagerAdapter;
+	private MultiPanePagerAdapter landPagerAdapter;
+	
+	
 	TabPageIndicator tabIndicator;
 	MenuFragment breakfast,lunch,dinner;
 	List<SherlockFragment> fragments;
@@ -165,11 +169,13 @@ public class MenuActivity extends SherlockFragmentActivity {
         dinner.setArguments(args2);
         fragments.add(dinner);
      
-        this.mPagerAdapter  = new PagerAdapter(getSupportFragmentManager(), fragments);	
+        this.mPagerAdapter  = new PagerAdapter(getSupportFragmentManager(), fragments);
+        landPagerAdapter = new MultiPanePagerAdapter(getSupportFragmentManager(), fragments);
         pager = (ViewPager)findViewById(R.id.viewpager);
         pager.setOffscreenPageLimit(2);
-        pager.setPageMargin(4);
-        pager.setAdapter(this.mPagerAdapter);
+ //       pager.setPageMargin(4);
+ //       pager.setAdapter(this.mPagerAdapter);
+        pager.setAdapter(landPagerAdapter);
         tabIndicator = (TabPageIndicator)findViewById(R.id.titles);
 		tabIndicator.setViewPager(pager);
 		

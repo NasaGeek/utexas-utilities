@@ -46,9 +46,9 @@ import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.CourseMapSaxHandler;
 import com.nasageek.utexasutilities.Pair;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.CourseMapItem;
 import com.nasageek.utexasutilities.adapters.CourseMapAdapter;
 import com.nasageek.utexasutilities.model.BBClass;
+import com.nasageek.utexasutilities.model.CourseMapItem;
 
 
 public class CourseMapActivity extends SherlockActivity {

@@ -7,6 +7,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.nasageek.utexasutilities.model.CourseMapItem;
+
 
 public class CourseMapSaxHandler extends DefaultHandler {
 

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/translinlay"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/trans_progressbar_ll"
+        layout="@layout/loading_content_layout" />
+
+    <include
+        android:id="@+id/trans_error"
+        layout="@layout/error_message_view" />
+
+    <TextView
+        android:id="@+id/balance_label_tv"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textColor="#FF444444"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/balance_tv"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textColor="#FF444444" />
+
+    <com.foound.widget.AmazingListView
+        android:id="@+id/transactions_listview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:scrollbars="none"
+        android:visibility="gone" />
+
+</LinearLayout>
