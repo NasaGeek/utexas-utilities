@@ -33,28 +33,41 @@ import com.nasageek.utexasutilities.R;
 public class MenuFragment extends SherlockFragment
 {
 	private DefaultHttpClient httpclient;
-	private ArrayList<String> mealList;
-	private ArrayList<food> foodList;
+//	private ArrayList<String> mealList;
+	private ArrayList<Pair<String,ArrayList<food>>> listOfLists;
+//	private ArrayList<food> foodList;
 	private AmazingListView mlv;
 	private LinearLayout m_pb_ll;
 	private TextView metv;
 	private fetchMenuTask fetchMTask;
 	private String restId;
-	private String times;
+	private MenuAdapter mAdapter;
 	
 
+	public MenuFragment() {}
+	
+	public static MenuFragment newInstance(String title, String restId)
+	{
+		MenuFragment f = new MenuFragment();
+		Bundle args = new Bundle();
+        args.putString("title", title);
+        args.putString("restId", restId);
+        f.setArguments(args);
+        
+        return f;
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{	
 		if(restId.equals("0"))
 		{	View vg =  inflater.inflate(R.layout.menu_fragment_layout, container, false);
-			((LinearLayout) vg.findViewById(R.id.menu_progressbar_ll)).setVisibility(View.GONE);
 			return vg;
 		}
 
 		View vg =  inflater.inflate(R.layout.menu_fragment_layout, container, false);
 			
-		updateView(restId, vg);
+		updateView(restId, vg, false);
 
 		return vg;
 	}
@@ -63,10 +76,13 @@ public class MenuFragment extends SherlockFragment
 	{
 		super.onCreate(savedInstanceState);	
 		restId = getArguments().getString("restId");
-        httpclient = ConnectionHelper.getThreadSafeClient();      
+        httpclient = ConnectionHelper.getThreadSafeClient();
+        listOfLists = new ArrayList<Pair<String,ArrayList<food>>>();
+        mAdapter = new MenuAdapter(listOfLists);
+        setRetainInstance(true);
 	}
 	@TargetApi(11)
-	public void updateView(String restId, View vg)
+	public void updateView(String restId, View vg, Boolean update)
 	{
 		this.restId = restId;
 
@@ -75,19 +91,20 @@ public class MenuFragment extends SherlockFragment
         mlv = (AmazingListView) vg.findViewById(R.id.menu_listview);
         metv = (TextView) vg.findViewById(R.id.menu_error);
   
-		m_pb_ll.setVisibility(View.VISIBLE);
-		mlv.setVisibility(View.GONE);
-		fetchMTask = new fetchMenuTask(httpclient);
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			fetchMTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, restId,this.getArguments().getString("title"),mlv);
-		else
-			fetchMTask.execute(restId,this.getArguments().getString("title"),mlv);
+        mlv.setAdapter(mAdapter);
+        mlv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, mlv, false));
+        
+        if(listOfLists.size() == 0 || update)
+        {	
+        	listOfLists.clear();
+        	fetchMTask = new fetchMenuTask(httpclient);
 		
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				fetchMTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, restId,this.getArguments().getString("title"),mlv);
+			else
+				fetchMTask.execute(restId,this.getArguments().getString("title"),mlv);
+        }
 		
-	}
-	public String getTimes()
-	{
-		return times;
 	}
 	@Override
 	public void onDestroy()
@@ -98,7 +115,6 @@ public class MenuFragment extends SherlockFragment
 	}
 	private class fetchMenuTask extends AsyncTask<Object,Integer,String>
 	{
-		private ArrayList<Pair<String,ArrayList<food>>> listOfLists;
 		private DefaultHttpClient client;
 		private String meal;
 		private String errorMsg;
@@ -109,9 +125,14 @@ public class MenuFragment extends SherlockFragment
 		}
 		
 		@Override
-		protected String doInBackground(Object... params)
+		protected void onPreExecute()
 		{
-			listOfLists = new ArrayList<Pair<String,ArrayList<food>>>(); 
+			m_pb_ll.setVisibility(View.VISIBLE);
+			mlv.setVisibility(View.GONE);
+		}
+		@Override
+		protected String doInBackground(Object... params)
+		{ 
 			ArrayList<String> categories = new ArrayList<String>();
 			ArrayList<food> foodList = new ArrayList<food>();
 			meal = (String)params[1];
@@ -183,8 +204,9 @@ public class MenuFragment extends SherlockFragment
 		@Override
 		protected void onPostExecute(String result)
 		{
-			mlv.setAdapter(new MenuAdapter(listOfLists));	
+			mAdapter.notifyDataSetChanged();
 			mlv.setOnItemClickListener(new OnItemClickListener() {
+			
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		    	
@@ -233,9 +255,8 @@ public class MenuFragment extends SherlockFragment
 	}
 
 	class MenuAdapter extends AmazingAdapter {
-		ArrayList<Pair<String, ArrayList<food>>> all;
+		private ArrayList<Pair<String, ArrayList<food>>> all;
 
-		
 		public MenuAdapter(ArrayList<Pair<String, ArrayList<food>>> all)
 		{
 			this.all = all;

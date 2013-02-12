@@ -98,11 +98,9 @@
 					   android:resource="@xml/searchable"/>
         		</activity>
         		
-        <activity android:name=".activities.BalanceActivity" 
-        		  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
+        <activity android:name=".activities.BalanceActivity"></activity>
         
-        <activity android:name=".activities.MenuActivity"
-        		 android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
+        <activity android:name=".activities.MenuActivity" ></activity>
         
                  	
         <provider android:name=".BuildingProvider"

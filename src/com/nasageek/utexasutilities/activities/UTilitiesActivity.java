@@ -11,6 +11,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -29,6 +30,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.crittercism.app.Crittercism;
+import com.nasageek.utexasutilities.ChangeableContextTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
@@ -48,18 +50,18 @@ public class UTilitiesActivity extends SherlockActivity {
 	private final static int LOGOUT_MENU_ID = 11;
 	private final static int CANCEL_LOGIN_MENU_ID = 12;
     
-	ProgressDialog pd; 
-	SharedPreferences settings;
+	private ProgressDialog pd; 
+	private SharedPreferences settings;
 	private Menu menu;
-	ActionBar actionbar;
-	Toast message;
+	private ActionBar actionbar;
+	private Toast message;
 	private ImageView scheduleCheck, balanceCheck, dataCheck, blackboardCheck;
 //	 AnimationDrawable frameAnimation;
-	 ConnectionHelper.loginTask lt;
-	 ConnectionHelper.PNALoginTask plt;
-	 ConnectionHelper.bbLoginTask bblt;
+	 private ConnectionHelper.loginTask lt;
+	 private ConnectionHelper.PNALoginTask plt;
+	 private ConnectionHelper.bbLoginTask bblt;
 	 
-	 AlertDialog nologin;
+	 private AlertDialog nologin;
 	
 	
 	@Override
@@ -81,10 +83,17 @@ public class UTilitiesActivity extends SherlockActivity {
         }*/
         Crittercism.init(getApplicationContext(), "4fed1764be790e4597000001");
         
-  //    Window win = getWindow();
+        final ChangeableContextTask[] loginTasks = (ChangeableContextTask[]) getLastNonConfigurationInstance();
+        if(loginTasks != null)
+        {    
+        	for(ChangeableContextTask at : loginTasks)
+	        {
+	        	if(at != null)
+	        		at.setContext(this);
+	        }
+        }
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
         Crittercism.setOptOutStatus(!settings.getBoolean("sendcrashes", true));
-  //    win.setFormat(PixelFormat.RGBA_8888);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         
         setContentView(R.layout.main);
@@ -98,7 +107,6 @@ public class UTilitiesActivity extends SherlockActivity {
     	final Intent data = new Intent(getBaseContext(), DataUsageActivity.class);
     	final Intent menu = new Intent(getBaseContext(), MenuActivity.class);
     	final Intent blackboard = new Intent(getBaseContext(), BlackboardActivity.class);
- //   	final Intent libraries = new Intent(getBaseContext(), WelcomeScreen.class);
     	
     	actionbar = getSupportActionBar();
     	actionbar.show();
@@ -109,16 +117,6 @@ public class UTilitiesActivity extends SherlockActivity {
     	dataCheck = (ImageView) findViewById(R.id.dataCheck);
     	blackboardCheck = (ImageView) findViewById(R.id.blackboardCheck);
     	
-  
-   // 	BitmapDrawable bmd = (BitmapDrawable) getResources().getDrawable(R.drawable.main_background);
-   // 	bmd.setDither(true);
-       
-  /*    TableLayout tl = (TableLayout) findViewById(R.id.button_table);
-        tl.setBackgroundDrawable(bmd);
-        */
-    	
-    	
-    	 
     	if(!settings.contains("encryptedpassword") && settings.contains("firstRun") && settings.contains("password"))
          {
          	Utility.commit(settings.edit().remove("password"));
@@ -179,27 +177,10 @@ public class UTilitiesActivity extends SherlockActivity {
         
         final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
         
-    //    schedulebutton.setBackgroundResource(R.drawable.schedule_button_anim);
-    //    AlphaAnimation aa = new AlphaAnimation(0.0f,1.0f);
-/*        ViewAnimator va = (ViewAnimator) findViewById(R.id.schedule_button_animator);
-        AlphaAnimation ia = new AlphaAnimation(0.0f,1.0f);
-        AlphaAnimation oa = new AlphaAnimation(1.0f,0.0f);
-        va.setInAnimation(ia);
-        va.setOutAnimation(oa);*/
-        
-    //    Transformation tran = new Transformation();
-        
-  //      tran.setTransformationType(Transformation.TYPE_ALPHA);
-        // Get the background, which has been compiled to an AnimationDrawable object.
-    //    frameAnimation = (AnimationDrawable) schedulebutton.getBackground();
-        
-        // Start the animation (looped playback by default).
-        
+      
         schedulebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-          //  	frameAnimation.start();
-            //	va.removeAllViews();
-           // 	va.addView(child)
+            	
             	if(settings.getBoolean("loginpref", false))
             	{
             		if(!ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.isLoggingIn())
@@ -337,37 +318,7 @@ public class UTilitiesActivity extends SherlockActivity {
             	}
             }
             
-    });
-/*        final ImageButton librariesbutton = (ImageButton) findViewById(R.id.libraries_button);
-        librariesbutton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-            	if(settings.getBoolean("loginpref", false))
-            	{
-            		if(!ConnectionHelper.cookieHasBeenSet() || 
-        			ConnectionHelper.isLoggingIn() ) 
-	            	{
-	            		message.setText(R.string.login_first);
-	                	message.setDuration(Toast.LENGTH_SHORT);
-	            		message.show();
-	            	}
-	            	else
-	            		startActivity(libraries);
-            	}
-            	else
-            	{
-            		if(!ConnectionHelper.cookieHasBeenSet()) 
-	            	{
-            			Intent login_intent = new Intent(UTilitiesActivity.this, LoginActivity.class);
-            			login_intent.putExtra("activity", balance.getComponent().getClassName());
-            			login_intent.putExtra("service", 'u');
-            	    	startActivity(login_intent);
-	            	}
-	            	else
-	            		startActivity(balance);
-            	} 
-            }
-    });*/
-        
+        });
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -429,9 +380,15 @@ public class UTilitiesActivity extends SherlockActivity {
     	}
     	return true;
     }
+    @Override
+    public Object onRetainNonConfigurationInstance()
+    {
+    	return new ChangeableContextTask[] {bblt, lt, plt};
+    }
+
     public void loadSettings()
     {
-    	Intent pref_intent = new Intent(this, Preferences.class);
+    	final Intent pref_intent = new Intent(this, Preferences.class);
     	startActivity(pref_intent);
     }
     public void login()
@@ -467,13 +424,19 @@ public class UTilitiesActivity extends SherlockActivity {
       	//		ch.new loginTask(this,httpclient,pnahttpclient).execute(ch);
       	//		ch.new PNALoginTask(this,httpclient,pnahttpclient).execute(ch);
       			bblt = ch.new bbLoginTask(this, httpclient, pnahttpclient, bbhttpclient);
-      			bblt.execute(ch);
       			lt = ch.new loginTask(this,httpclient, pnahttpclient, bbhttpclient);
-      			lt.execute(ch);
       			plt = ch.new PNALoginTask(this, httpclient, pnahttpclient, bbhttpclient);
-      			plt.execute(ch);
+      			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+	      			bblt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ch);
+	      			lt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ch);
+	      			plt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ch);
+      			}
+      			else {	
+      				bblt.execute(ch);
+      				lt.execute(ch);
+      				plt.execute(ch);
+      			}
            	}
-  		
     	}
     	else
     	{

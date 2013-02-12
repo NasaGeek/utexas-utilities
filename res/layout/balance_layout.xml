@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:background="@drawable/background_holo_light" >
+    android:background="@drawable/background_holo_light"
+    android:orientation="vertical" >
 
     <com.viewpagerindicator.TabPageIndicator
         android:id="@+id/titles"
@@ -14,10 +14,5 @@
         android:id="@+android:id/viewpager"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
-
-    <!--
-<include layout="@layout/dinein_fragment_layout"/>
-<include layout="@layout/bevo_fragment_layout"/>
-    -->
 
 </LinearLayout>

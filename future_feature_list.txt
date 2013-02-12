@@ -35,4 +35,6 @@ Use mitmproxy to sniff more bb API
 show all class buildings on map (button in schedule) -- DONE
 first time use guides (overlays?)
 
-toggle to show class IDs on schedule (put in overflow menu)
+toggle to show class IDs on schedule (put in overflow menu) might make it too "busy"
+panel menu popup on tablet schedule (like I first envisioned?)
+learn to use sw*dp  and w*dp qualifiers correctly

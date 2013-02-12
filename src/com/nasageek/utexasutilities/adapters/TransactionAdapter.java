@@ -14,6 +14,7 @@ import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.fragments.TransactionsFragment;
 import com.nasageek.utexasutilities.model.Transaction;
 
+
 public class TransactionAdapter extends AmazingAdapter
 {
 	private Context con;
@@ -74,6 +75,8 @@ public class TransactionAdapter extends AmazingAdapter
 	{
 		return false;
 	}
+	
+	//TODO: fix crash on refresh when in the middle of a scroll
 	@Override
 	public View getAmazingView(int position, View convertView, ViewGroup parent)
 	{

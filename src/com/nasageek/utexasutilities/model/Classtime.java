@@ -5,11 +5,11 @@ import android.os.Parcelable;
 
 public class Classtime implements Parcelable
 {
-	char day;
-	String starttime, endtime, courseId, name;
-	Building buil;
-	String unique;
-	String color;
+	private char day;
+	private String starttime, endtime, courseId, name;
+	private Building buil;
+	private String unique;
+	private String color;
 	
 	public static Parcelable.Creator<Classtime> CREATOR = new Parcelable.Creator<Classtime>() {
 
@@ -34,9 +34,10 @@ public class Classtime implements Parcelable
 		color = in.readString();
 		courseId = in.readString();
 		name = in.readString();
+		unique = in.readString();
 	}
 	
-	public Classtime(String day, String time, Building building, String color, String courseId, String name)
+	public Classtime(String day, String time, Building building, String color, String courseId, String name, String unique)
 	{
 		this.day = day.charAt(0); 
 		starttime = time.split("-")[0];
@@ -52,6 +53,7 @@ public class Classtime implements Parcelable
 		this.color = color;	
 		this.courseId = courseId;
 		this.name = name;
+		this.unique = unique;
 
 	}
 	//TODO: old leftovers, do I need this?
@@ -90,6 +92,10 @@ public class Classtime implements Parcelable
 	{
 		return name;
 	}
+	public String getUnique()
+	{
+		return unique;
+	}
 	@Override
 	public int describeContents() {
 		return 0;
@@ -103,5 +109,6 @@ public class Classtime implements Parcelable
 		dest.writeString(color);
 		dest.writeString(courseId);
 		dest.writeString(name);
+		dest.writeString(unique);
 	}
 }

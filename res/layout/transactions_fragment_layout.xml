@@ -1,42 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/translinlay"
+<!-- I don't know why layoutparams don't work on top level view, so framelayout is a workaround -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:layout_height="fill_parent" >
 
-    <include
-        android:id="@+id/trans_progressbar_ll"
-        layout="@layout/loading_content_layout" />
-
-    <include
-        android:id="@+id/trans_error"
-        layout="@layout/error_message_view" />
-
-    <TextView
-        android:id="@+id/balance_label_tv"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:textColor="#FF444444"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/balance_tv"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:textColor="#FF444444" />
-
-    <com.foound.widget.AmazingListView
-        android:id="@+id/transactions_listview"
+    <LinearLayout
+        android:id="@+id/translinlay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@android:color/transparent"
-        android:cacheColorHint="@android:color/transparent"
-        android:orientation="vertical"
-        android:paddingTop="10dp"
-        android:scrollbars="none"
-        android:visibility="gone" />
+        android:layout_margin="1dp"
+        android:orientation="vertical" >
 
-</LinearLayout>
+        <include
+            android:id="@+id/trans_progressbar_ll"
+            layout="@layout/loading_content_layout"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/trans_error"
+            layout="@layout/error_message_view" />
+
+        <TextView
+            android:id="@+id/balance_label_tv"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:text="Balance"
+            android:textColor="#FF444444"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="90dp"
+            android:layout_height="1dp"
+            android:layout_gravity="center_horizontal"
+            android:background="#99AAAAAA" />
+
+        <TextView
+            android:id="@+id/balance_tv"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textColor="#FF444444"
+            android:textSize="17sp" />
+
+        <com.foound.widget.AmazingListView
+            android:id="@+id/transactions_listview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@android:color/transparent"
+            android:cacheColorHint="@android:color/transparent"
+            android:paddingTop="10dp"
+            android:scrollbars="none" />
+    </LinearLayout>
+
+</FrameLayout>

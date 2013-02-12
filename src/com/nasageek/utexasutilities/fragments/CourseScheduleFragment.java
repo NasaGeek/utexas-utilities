@@ -64,7 +64,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	
 	private ArrayList<UTClass> classList;
 	private Classtime current_clt;
-	public ActionMode mode;
+	
+	private ActionMode mode;
 
 	private SherlockFragmentActivity parentAct;
 	String semId;
@@ -215,7 +216,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	 
     		String daytext = "\n\t";
     		String building = current_clt.getBuilding().getId()+" "+current_clt.getBuilding().getRoom();
- 
+    		String unique = current_clt.getUnique();
+    		
     		String time = current_clt.getStartTime();
     		String end = current_clt.getEndTime();
   
@@ -224,14 +226,17 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			else
 				daytext+=current_clt.getDay();
 
-    		text += (daytext+" from " + time + "-"+end + " in "+building) + "\n";
+    		//TODO: stringbuilder
+			text += (daytext+" from " + time + "-"+end + " in "+building) + "\n";
+    		
+    		text += "\tUnique: " + unique + "\n";
 
 	    	ci_iv.setBackgroundColor(Color.parseColor("#"+current_clt.getColor()));
 	    	ci_iv.setMinimumHeight(10);
 	    	ci_iv.setMinimumWidth(10);
 	    	
     		ci_tv.setTextColor(Color.BLACK);
-    		ci_tv.setTextSize((float) 14);
+    		ci_tv.setTextSize(14f);
     		ci_tv.setBackgroundColor(0x99F0F0F0);
     		ci_tv.setText(text);
 	    	

@@ -13,7 +13,7 @@ import com.actionbarsherlock.app.SherlockFragment;
  * The <code>PagerAdapter</code> serves the fragments when paging.
  * @author mwho
  */
-public class PagerAdapter extends FragmentPagerAdapter {
+public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
 	int pos;
 	private List<SherlockFragment> fragments;
@@ -21,7 +21,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
 	 * @param fm
 	 * @param fragments
 	 */
-	public PagerAdapter(FragmentManager fm, List<SherlockFragment> fragments) {
+	public MyFragmentPagerAdapter(FragmentManager fm, List<SherlockFragment> fragments) {
 		super(fm);
 		this.fragments = fragments;
 	}

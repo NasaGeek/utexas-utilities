@@ -24,7 +24,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
-import com.nasageek.utexasutilities.adapters.PagerAdapter;
+import com.nasageek.utexasutilities.adapters.MyFragmentPagerAdapter;
 import com.nasageek.utexasutilities.fragments.ActionModeFragment;
 import com.nasageek.utexasutilities.fragments.CourseScheduleFragment;
 import com.nasageek.utexasutilities.fragments.ExamScheduleFragment;
@@ -37,7 +37,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements ViewPa
 	private ActionBar actionbar;
 	private Classtime current_clt;
 	private ActionMode mode;
-	protected PagerAdapter mPagerAdapter;
+	protected MyFragmentPagerAdapter mPagerAdapter;
 	private ViewPager pager;
 	protected List<SherlockFragment> fragments;
 	protected TitlePageIndicator titleIndicator;
@@ -157,7 +157,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements ViewPa
 	        args.putString("semId", semId);
 	        fragments.add((SherlockFragment)SherlockFragment.instantiate(this, CourseScheduleFragment.class.getName(), args));
 	      
-	        this.mPagerAdapter  = new PagerAdapter(getSupportFragmentManager(), fragments);	
+	        this.mPagerAdapter  = new MyFragmentPagerAdapter(getSupportFragmentManager(), fragments);	
 	        pager = (ViewPager)findViewById(R.id.viewpager);
 	        pager.setPageMargin(2);
 	        pager.setOffscreenPageLimit(2);
@@ -194,7 +194,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements ViewPa
 		{
 			return fragments;
 		}
-		public PagerAdapter getAdapter()
+		public MyFragmentPagerAdapter getAdapter()
 		{
 			return mPagerAdapter;
 		}

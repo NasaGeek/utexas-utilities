@@ -12,6 +12,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -24,9 +25,12 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
-import com.nasageek.utexasutilities.adapters.PagerAdapter;
+import com.nasageek.utexasutilities.adapters.MyFragmentPagerAdapter;
 import com.nasageek.utexasutilities.fragments.MenuFragment;
+import com.nasageek.utexasutilities.fragments.TransactionsFragment;
+import com.nasageek.utexasutilities.fragments.TransactionsFragment.TransactionType;
 import com.viewpagerindicator.TabPageIndicator;
 
 public class MenuActivity extends SherlockFragmentActivity {
@@ -75,44 +79,52 @@ public class MenuActivity extends SherlockFragmentActivity {
 	    }
 	}
 
-	ViewPager pager;
-	ActionBar actionbar;
-	private DefaultHttpClient httpclient;
+	private ViewPager pager;
+	private ActionBar actionbar;
+//	private DefaultHttpClient httpclient;
 	private SharedPreferences settings;
 	
-	private PagerAdapter mPagerAdapter;
-	private MultiPanePagerAdapter landPagerAdapter;
+	private MultiPanePagerAdapter mPagerAdapter;
+//	private MultiPanePagerAdapter landPagerAdapter;
 	
+//	private MenuFragment breakfast,lunch,dinner;
 	
-	TabPageIndicator tabIndicator;
-	MenuFragment breakfast,lunch,dinner;
-	List<SherlockFragment> fragments;
+	private int previousItem;
 	
+	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.menu_layout);
 		
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
-		breakfast = new MenuFragment();
-		lunch = new MenuFragment();
-		dinner=  new MenuFragment();
-		initialisePaging("0");
-		
+	//	breakfast = new MenuFragment();
+	//	lunch = new MenuFragment();
+	//	dinner=  new MenuFragment();
+	
+
 		actionbar = getSupportActionBar();
 		actionbar.setTitle("Menus");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionbar.setHomeButtonEnabled(true);
 		actionbar.setDisplayHomeAsUpEnabled(true);
-			
+		
+		
         final Spinner spinner = new Spinner(this);
         spinner.setPromptId(R.string.restaurantprompt);
 		final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(actionbar.getThemedContext(), android.R.layout.simple_spinner_item, Restaurant.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
        
+        if(savedInstanceState != null)
+        	previousItem = savedInstanceState.getInt("spinner_selection");
+        else
+        	previousItem = 0;
         
-        httpclient = ConnectionHelper.getThreadSafeClient();
+        initialisePaging(((Restaurant)spinner.getAdapter().getItem(previousItem)).code+"");	
+        
+        
+  //      httpclient = ConnectionHelper.getThreadSafeClient();
         
         actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() 
         {
@@ -121,7 +133,7 @@ public class MenuActivity extends SherlockFragmentActivity {
         		Restaurant r = (Restaurant)spinner.getAdapter().getItem(itemPosition);
         		
         		String restId = r.getCode();
-         		if(!"0".equals(restId))
+         		if(!"0".equals(restId) && itemPosition != previousItem)
          		{	
          			String[] times = ((Restaurant)spinner.getAdapter().getItem(itemPosition)).getTimes();
          			
@@ -138,48 +150,58 @@ public class MenuActivity extends SherlockFragmentActivity {
 	         			((TextView)findViewById(R.id.dinner_times)).setText("");
          			}
          			
-         			breakfast.updateView(restId,breakfast.getView());
-         			lunch.updateView(restId,lunch.getView());
-         			dinner.updateView(restId,dinner.getView());
+         			((MenuFragment)mPagerAdapter.getItem(0)).updateView(restId, mPagerAdapter.getItem(0).getView(), true);
+         			((MenuFragment)mPagerAdapter.getItem(1)).updateView(restId, mPagerAdapter.getItem(1).getView(), true);
+         			((MenuFragment)mPagerAdapter.getItem(2)).updateView(restId, mPagerAdapter.getItem(2).getView(), true);
+         			
+         			previousItem = -1;
+
          		}	
-        		return false;
+        		return true;
         	}
         });
-        actionbar.setSelectedNavigationItem(Integer.parseInt(settings.getString("default_restaurant", "0")));
+        if(savedInstanceState == null)
+        	actionbar.setSelectedNavigationItem(Integer.parseInt(settings.getString("default_restaurant", "0")));
+        else
+        	actionbar.setSelectedNavigationItem(savedInstanceState.getInt("spinner_selection"));
        
 	}
 	private void initialisePaging(String restId) {
 	
-        fragments = new Vector<SherlockFragment>();
-        Bundle args = new Bundle();
-        args.putString("title", "Breakfast");
-        args.putString("restId", restId);
-        breakfast.setArguments(args);
-        fragments.add(breakfast);
-        
-        Bundle args1 = new Bundle();
-        args1.putString("title", "Lunch");
-        args1.putString("restId", restId);
-        lunch.setArguments(args1);
-        fragments.add(lunch);
-        
-        Bundle args2 = new Bundle();
-        args2.putString("title", "Dinner");
-        args2.putString("restId", restId);
-        dinner.setArguments(args2);
-        fragments.add(dinner);
-     
-        this.mPagerAdapter  = new PagerAdapter(getSupportFragmentManager(), fragments);
-        landPagerAdapter = new MultiPanePagerAdapter(getSupportFragmentManager(), fragments);
+        List<SherlockFragment> fragments = new Vector<SherlockFragment>();
         pager = (ViewPager)findViewById(R.id.viewpager);
-        pager.setOffscreenPageLimit(2);
- //       pager.setPageMargin(4);
- //       pager.setAdapter(this.mPagerAdapter);
-        pager.setAdapter(landPagerAdapter);
-        tabIndicator = (TabPageIndicator)findViewById(R.id.titles);
+        
+        if(getSupportFragmentManager().findFragmentByTag(Utility.makeFragmentName(pager.getId(), 0)) != null) {
+        	
+        	fragments.add((SherlockFragment)getSupportFragmentManager().findFragmentByTag(Utility.makeFragmentName(pager.getId(), 0)));
+        	fragments.add((SherlockFragment)getSupportFragmentManager().findFragmentByTag(Utility.makeFragmentName(pager.getId(), 1)));
+        	fragments.add((SherlockFragment)getSupportFragmentManager().findFragmentByTag(Utility.makeFragmentName(pager.getId(), 2)));
+        }
+        else {
+        	fragments.add(MenuFragment.newInstance("Breakfast", restId));
+            fragments.add(MenuFragment.newInstance("Lunch", restId));
+            fragments.add(MenuFragment.newInstance("Dinner", restId));
+        }
+        
+        final TabPageIndicator tabIndicator = (TabPageIndicator)findViewById(R.id.titles);
+        
+        mPagerAdapter = new MultiPanePagerAdapter(getSupportFragmentManager(), fragments);
+        mPagerAdapter.setPagesDisplayed(getResources().getInteger(R.integer.menu_num_visible_pages));
+        
+        pager.setAdapter(mPagerAdapter);
+        if(mPagerAdapter.getPageWidth(0) < 1)
+        	tabIndicator.setSelectAll(true);
+
 		tabIndicator.setViewPager(pager);
 		
+		pager.setOffscreenPageLimit(2);
     }
+	@Override
+	public void onSaveInstanceState(Bundle out)
+	{
+		super.onSaveInstanceState(out);
+		out.putInt("spinner_selection", actionbar.getSelectedNavigationIndex());
+	}
 	@Override
     public boolean onOptionsItemSelected(MenuItem item)
     {

@@ -13,8 +13,13 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.res.TypedArray;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +43,7 @@ import com.nasageek.utexasutilities.model.Transaction;
 
 public class TransactionsFragment extends SherlockFragment
 {
-	private  DefaultHttpClient httpclient;
+	private DefaultHttpClient httpclient;
 	private LinearLayout t_pb_ll;
 	private AmazingListView tlv;
 	private ArrayList<Transaction> transactionlist;
@@ -47,7 +52,7 @@ public class TransactionsFragment extends SherlockFragment
 	private TextView etv;
 	
 	private List<BasicNameValuePair> postdata;
-	private SherlockFragmentActivity parentAct;
+//	private SherlockFragmentActivity parentAct;
 
 	private View vg;
 	
@@ -58,114 +63,139 @@ public class TransactionsFragment extends SherlockFragment
 	{
 		Bevo, Dinein;
 	}
-	private TransactionType type;
+	private TransactionType mType;
+	
+	public TransactionsFragment() { }
+	
+	public static TransactionsFragment newInstance(String title, TransactionType type)
+	{
+		TransactionsFragment f = new TransactionsFragment();
+
+        Bundle args = new Bundle();
+        args.putSerializable("type", type);
+        args.putString("title", title);
+        f.setArguments(args);
+
+        return f;
+	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		if(vg==null)
-		{
-			vg =  inflater.inflate(R.layout.transactions_fragment_layout, container, false);
-			
-			tlv = (AmazingListView) vg.findViewById(R.id.transactions_listview);
-			t_pb_ll = (LinearLayout) vg.findViewById(R.id.trans_progressbar_ll);
-			etv = (TextView) vg.findViewById(R.id.trans_error);
-			balanceLabelView = (TextView) vg.findViewById(R.id.balance_label_tv);
-			balanceView = (TextView) vg.findViewById(R.id.balance_tv);
-			
-			tlv.setLoadingView(inflater.inflate(R.layout.loading_content_layout, null));
-			tlv.setAdapter(ta);
-			
+		vg =  inflater.inflate(R.layout.transactions_fragment_layout, container, false);
+		
+		tlv = (AmazingListView) vg.findViewById(R.id.transactions_listview);
+		t_pb_ll = (LinearLayout) vg.findViewById(R.id.trans_progressbar_ll);
+		etv = (TextView) vg.findViewById(R.id.trans_error);
+		balanceLabelView = (TextView) vg.findViewById(R.id.balance_label_tv);
+		balanceView = (TextView) vg.findViewById(R.id.balance_tv);
+		
+/*		if(TransactionType.Bevo.equals(mType))
+			balanceLabelView.setText("Bevo Bucks ");
+		else if(TransactionType.Dinein.equals(mType))
+			balanceLabelView.setText("Dine In Dollars ");*/
+		if(!"".equals(balance))
+			balanceView.setText(balance);
+		
+		tlv.setLoadingView(inflater.inflate(R.layout.loading_content_layout, null));
+		tlv.setAdapter(ta);
+		
+		if(ta.getCount() == 0)
 			parser(false);
-	
-			return vg;
-		}
-		else
-		{	
-			((ViewGroup)(vg.getParent())).removeView(vg);
-			return vg;
-		}
+
+		return vg;
+
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
 		
-		parentAct = this.getSherlockActivity();
+	//	parentAct = this.getSherlockActivity();
 		
 		postdata = new ArrayList<BasicNameValuePair>();
 		
-		type = (TransactionType) getArguments().getSerializable("type");
+		//for now we're going to assume having arguments means we're using the pager
+		if(getArguments() != null) {
+			mType = (TransactionType) getArguments().getSerializable("type");
+		}
+		setRetainInstance(true);
 		
-		if(TransactionType.Bevo.equals(type))
+		if(TransactionType.Bevo.equals(mType))
 			postdata.add(new BasicNameValuePair("sRequestSw","B"));
-		else if(TransactionType.Dinein.equals(type))
+		else if(TransactionType.Dinein.equals(mType))
 			postdata.add(new BasicNameValuePair("rRequestSw","B"));
 		
-		transactionlist = new ArrayList<Transaction>();
-		ta = new TransactionAdapter(parentAct, this, transactionlist);
+		if(savedInstanceState == null)
+			transactionlist = new ArrayList<Transaction>();
+		else
+			transactionlist = savedInstanceState.getParcelableArrayList("transactions");
+		
+		ta = new TransactionAdapter(getSherlockActivity(), this, transactionlist);
 
 	}
+/*	@Override 
+	public void onInflate(Activity activity, AttributeSet attrs, Bundle savedInstanceState) {
+        super.onInflate(activity, attrs, savedInstanceState);
+
+        TypedArray a = activity.obtainStyledAttributes(attrs, R.styleable.TransactionsFragment);
+        
+        //setting the title isn't really necessary because title is not used when inflating from xml
+  //     Bundle args = new Bundle();
+  //      args.putString("title", a.getText(R.styleable.TransactionsFragment_label).toString());
+  //      setArguments(args);
+        
+        mType = a.getInt(R.styleable.TransactionsFragment_transactionsType, 0) == 1 
+        										? TransactionType.Dinein
+        										: TransactionType.Bevo;
+        a.recycle();
+    }*/
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void parser(boolean refresh)
 	{
-		
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
 		
 		BasicClientCookie screen = new BasicClientCookie("webBrowserSize", "B");
 		screen.setDomain(".utexas.edu");
 		httpclient.getCookieStore().addCookie(screen);
-		BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(parentAct,httpclient));
+		BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(getSherlockActivity(),httpclient));
 		cookie.setDomain(".utexas.edu");
 		httpclient.getCookieStore().addCookie(cookie);
 		
 		fetch = new fetchTransactionDataTask(httpclient, refresh);
-		fetch.execute();	
-	}
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) 
-	{
-		menu.removeItem(R.id.balance_refresh);
-	    inflater.inflate(R.menu.balance_menu, menu);     
-	}
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-	    	int id = item.getItemId();
-	    	switch(id)
-	    	{
-	    		case R.id.balance_refresh:
-	    			
-					tlv.setVisibility(View.GONE);
-					etv.setVisibility(View.GONE);
-					t_pb_ll.setVisibility(View.VISIBLE);
-					if(fetch!=null)
-					{	fetch.cancel(true);
-						fetch = null;
-					}
-	    			transactionlist.clear();
-					balance = "";
-					postdata.clear();
-
-					if(TransactionType.Bevo.equals(type))
-						postdata.add(new BasicNameValuePair("sRequestSw","B"));
-					else if(TransactionType.Dinein.equals(type))
-						postdata.add(new BasicNameValuePair("rRequestSw","B"));
-						
-					parser(true);		
-
-		    		break;
-	    	}
-	    	ta.resetPage();
-    		tlv.setSelectionFromTop(0, 0);
-	    	return true;
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		else
+			fetch.execute();
 	}
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		if(fetch!=null)
 			fetch.cancel(true);
+	}
+	public void refresh()
+	{
+	//	tlv.setVisibility(View.GONE);
+	//	etv.setVisibility(View.GONE);
+	//	t_pb_ll.setVisibility(View.VISIBLE);
+		if(fetch!=null)
+		{	fetch.cancel(true);
+			fetch = null;
+		}
+		transactionlist.clear();
+		balance = "";
+		postdata.clear();
+
+		if(TransactionType.Bevo.equals(mType))
+			postdata.add(new BasicNameValuePair("sRequestSw","B"));
+		else if(TransactionType.Dinein.equals(mType))
+			postdata.add(new BasicNameValuePair("rRequestSw","B"));
+			
+		parser(true);
+		ta.resetPage();
+		tlv.setSelectionFromTop(0, 0);
 	}
 	private class fetchTransactionDataTask extends AsyncTask<Object,Void,Character>
 	{
@@ -178,6 +208,19 @@ public class TransactionsFragment extends SherlockFragment
 		{
 			this.client = client;
 			this.refresh = refresh;
+		}
+		@Override
+		protected void onPreExecute()
+		{
+			//only show the loading view if we're loading the first page of transactions or refreshing
+			if(ta.page == 1 || refresh)
+			{
+				t_pb_ll.setVisibility(View.VISIBLE);
+				tlv.setVisibility(View.GONE);
+				etv.setVisibility(View.GONE);
+				balanceLabelView.setVisibility(View.GONE);
+				balanceView.setVisibility(View.GONE);
+			}
 		}
 		@Override
 		protected Character doInBackground(Object... params)
@@ -200,7 +243,7 @@ public class TransactionsFragment extends SherlockFragment
 	    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>"))
 	    	{
 				errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-				ConnectionHelper.logout(parentAct);
+				ConnectionHelper.logout(getSherlockActivity());
 				cancel(true);
 				return null;
 	    	}
@@ -224,10 +267,6 @@ public class TransactionsFragment extends SherlockFragment
 	    	while(reasonMatcher.find() && costMatcher.find() && dateMatcher.find() && !this.isCancelled())
 	    	{
 	    		Transaction tran = new Transaction(reasonMatcher.group(1).trim(), costMatcher.group(1).replaceAll("\\s",""), dateMatcher.group(1));
-	    		
-	    //		String transaction=datematcher.group(1)+" ";
-	    //		transaction+=matcher3.group(1).trim()+" ";
-	    //		transaction+=matcher4.group(1).replaceAll("\\s","");
 	    		tempTransactionList.add(tran);
 	    	}
 	    	if(pagedata.contains("<form name=\"next\"") && !this.isCancelled()) //check for additional pages
@@ -243,9 +282,9 @@ public class TransactionsFragment extends SherlockFragment
 	    			postdata.clear();
 			    	postdata.add(new BasicNameValuePair("sNameFL",nameMatcher.group(1)));
 			    	postdata.add(new BasicNameValuePair("nexttransid",nextTransMatcher.group(1)));
-			    	if(TransactionType.Bevo.equals(type))
+			    	if(TransactionType.Bevo.equals(mType))
 			    		postdata.add(new BasicNameValuePair("sRequestSw","B"));
-			    	else if(TransactionType.Dinein.equals(type))
+			    	else if(TransactionType.Dinein.equals(mType))
 			    		postdata.add(new BasicNameValuePair("rRequestSw","B"));
 			    	postdata.add(new BasicNameValuePair("sStartDateTime",dateTimeMatcher.group(1)));
 			    }
@@ -277,16 +316,15 @@ public class TransactionsFragment extends SherlockFragment
 	    		else
 	    			tlv.setSelection(0);
 
-	    		if(TransactionType.Bevo.equals(type))
-	    			balanceLabelView.setText("Bevo Bucks ");
-				else if(TransactionType.Dinein.equals(type))
-					balanceLabelView.setText("Dine In Dollars ");
+	    		
 				
 	    		balanceView.setText(balance);
 	    		
 	    		t_pb_ll.setVisibility(View.GONE);
 	    		etv.setVisibility(View.GONE);
 				tlv.setVisibility(View.VISIBLE);
+				balanceLabelView.setVisibility(View.VISIBLE);
+				balanceView.setVisibility(View.VISIBLE);
 	    		
 	    	} 	
 		}
@@ -301,11 +339,13 @@ public class TransactionsFragment extends SherlockFragment
 					etv.setText(errorMsg);
 					t_pb_ll.setVisibility(View.GONE);
 					tlv.setVisibility(View.GONE);
+					balanceLabelView.setVisibility(View.GONE);
+					balanceView.setVisibility(View.GONE);
 					etv.setVisibility(View.VISIBLE);
 				}
 				else //on later pages we should let them see what's already loaded
 				{
-					Toast.makeText(parentAct, errorMsg, Toast.LENGTH_SHORT).show();
+					Toast.makeText(getSherlockActivity(), errorMsg, Toast.LENGTH_SHORT).show();
 					ta.notifyNoMorePages();
 					ta.notifyDataSetChanged();
 				}

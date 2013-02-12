@@ -167,7 +167,7 @@ public class Utility {
 		@Override
 		protected void onPostExecute(Void result) {
 			//TODO: will need to set a flag here so campus map knows where to fetch the new stops
-			//private data folder instead of assets)
+			//(private data folder instead of assets)
 			
 			Toast.makeText(con, "Stops have been updated.", Toast.LENGTH_LONG).show();
 		}
@@ -175,4 +175,8 @@ public class Utility {
     	
     	
     }
+    public static String makeFragmentName(int viewId, int position)
+	{
+    	return "android:switcher:" + viewId + ":" + position;
+	}
 }

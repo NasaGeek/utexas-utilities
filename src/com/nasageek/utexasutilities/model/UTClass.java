@@ -26,7 +26,7 @@ public class UTClass implements Parcelable{
 		}
 		
 	};
-
+	
 	private UTClass(Parcel in)
 	{
 		unique = in.readString();
@@ -60,7 +60,7 @@ public class UTClass implements Parcelable{
 			
 			for(int k = 1; k<dayArray.length; k++)
 			{
-				classtimes.add(new Classtime(dayArray[k], times[i], buildings.get(i), color, courseId, name));
+				classtimes.add(new Classtime(dayArray[k], times[i], buildings.get(i), color, courseId, name, unique));
 				//Log.d("DAYTIME", days[k]+" "+t[i]);
 			}
 			

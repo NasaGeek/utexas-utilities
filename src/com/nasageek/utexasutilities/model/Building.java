@@ -28,7 +28,6 @@ public class Building implements Parcelable
 	}
 	public Building(String i, String r)
 	{
-		//Log.d("BUILDING", "constructed");
 		id = i; room = r;
 	}
 	public String getRoom()

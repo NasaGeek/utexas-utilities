@@ -333,7 +333,7 @@ public class ConnectionHelper {
 	{
 		return bbCookieHasBeenSet;
 	}
-	public class loginTask extends AsyncTask<Object,Integer,Boolean>
+	public class loginTask extends AsyncTask<Object,Integer,Boolean> implements ChangeableContextTask
 	{	
 		DefaultHttpClient pnahttpclient;
 		DefaultHttpClient httpclient;
@@ -397,6 +397,11 @@ public class ConnectionHelper {
 				Crittercism.leaveBreadcrumb("Logged in (persistent)");
 			}
 		}
+		public void setContext(Context con)
+		{
+			context = con;
+		}
+		//baaaaaddd
 		private void cancelProgressBar()
 		{
 			if(context.getClass().equals(UTilitiesActivity.class))
@@ -406,13 +411,13 @@ public class ConnectionHelper {
 		}
 		
 	}
-    public class PNALoginTask extends AsyncTask<Object,Integer,Boolean>
+    public class PNALoginTask extends AsyncTask<Object,Integer,Boolean> implements ChangeableContextTask
 	{   	
-    	DefaultHttpClient pnahttpclient;
-		DefaultHttpClient httpclient;
-		DefaultHttpClient bbhttpclient;
-		Editor edit;
-		Context context;
+    	private DefaultHttpClient pnahttpclient;
+		private DefaultHttpClient httpclient;
+		private DefaultHttpClient bbhttpclient;
+		private Editor edit;
+		private Context context;
     	
     	public PNALoginTask(Context con, DefaultHttpClient httpclient, DefaultHttpClient pnahttpclient, DefaultHttpClient bbhttpclient)
 		{
@@ -468,6 +473,10 @@ public class ConnectionHelper {
 				Crittercism.leaveBreadcrumb("Logged in (persistent)");
 			}
 		}
+		public void setContext(Context con)
+		{
+			context = con;
+		}
 		private void cancelProgressBar()
 		{
 			if(context.getClass().equals(UTilitiesActivity.class))
@@ -476,13 +485,13 @@ public class ConnectionHelper {
 				((SherlockPreferenceActivity)context).setSupportProgressBarIndeterminateVisibility(false);
 		}	
 	}
-    public class bbLoginTask extends AsyncTask<Object,Integer,Boolean>
+    public class bbLoginTask extends AsyncTask<Object,Integer,Boolean> implements ChangeableContextTask
 	{
-		DefaultHttpClient pnahttpclient;
-		DefaultHttpClient httpclient;
-		DefaultHttpClient bbhttpclient;
-		Editor edit;
-		Context context;
+		private DefaultHttpClient pnahttpclient;
+		private DefaultHttpClient httpclient;
+		private DefaultHttpClient bbhttpclient;
+		private Editor edit;
+		private Context context;
     	
     	public bbLoginTask(Context con, DefaultHttpClient httpclient, DefaultHttpClient pnahttpclient, DefaultHttpClient bbhttpclient)
 		{
@@ -539,6 +548,10 @@ public class ConnectionHelper {
 				Crittercism.leaveBreadcrumb("Logged in (persistent)");
 			}
 		}
+		public void setContext(Context con)
+		{
+			context = con;
+		}
 		private void cancelProgressBar()
 		{
 			if(context.getClass().equals(UTilitiesActivity.class))
@@ -548,4 +561,5 @@ public class ConnectionHelper {
 		}
 		
 	}
+    
 }
