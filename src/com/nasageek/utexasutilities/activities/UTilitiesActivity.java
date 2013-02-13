@@ -342,8 +342,7 @@ public class UTilitiesActivity extends SherlockActivity {
 		    		menu.add(R.id.log, R.id.login, Menu.NONE, "Log in");
 		    		MenuItem item = menu.findItem(R.id.login);
 		    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		    	}
-	    	
+		    	}	
 	    	}
 	    	else if(ConnectionHelper.isLoggingIn())
 	    	{
@@ -421,8 +420,6 @@ public class UTilitiesActivity extends SherlockActivity {
 
       			ConnectionHelper.resetCookies(this);
 
-      	//		ch.new loginTask(this,httpclient,pnahttpclient).execute(ch);
-      	//		ch.new PNALoginTask(this,httpclient,pnahttpclient).execute(ch);
       			bblt = ch.new bbLoginTask(this, httpclient, pnahttpclient, bbhttpclient);
       			lt = ch.new loginTask(this,httpclient, pnahttpclient, bbhttpclient);
       			plt = ch.new PNALoginTask(this, httpclient, pnahttpclient, bbhttpclient);
@@ -455,7 +452,6 @@ public class UTilitiesActivity extends SherlockActivity {
    		message.setText("Cancelled");
     	ConnectionHelper.logout(this);
     	setSupportProgressBarIndeterminateVisibility(false);
-
     }
     public void logout()
     {
@@ -529,5 +525,4 @@ public class UTilitiesActivity extends SherlockActivity {
     		blackboardCheck.setVisibility(View.VISIBLE);
         }
     }
-
 }

@@ -20,10 +20,13 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,7 +47,6 @@ import com.nasageek.utexasutilities.adapters.ClassAdapter;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
 
-@SuppressWarnings("deprecation")
 public class CourseScheduleFragment extends SherlockFragment implements ActionModeFragment, SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener, AdapterView.OnItemClickListener {
 	
 	private GridView gv;
@@ -102,7 +104,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    nc_tv = (TextView) vg.findViewById(R.id.no_courses);
 	    gv = (GridView) vg.findViewById(R.id.scheduleview);
 		daylist = (LinearLayout) vg.findViewById(R.id.daylist);
-	
+		
 		client = ConnectionHelper.getThreadSafeClient();
 		new parseTask(client).execute();
 		

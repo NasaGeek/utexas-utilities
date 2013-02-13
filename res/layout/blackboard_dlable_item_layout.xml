@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- doesn't fill the whole parent in 2.1, not sure why as the layout attribute shows
-up correctly in hierarchy-viewer -->
+<!--
+doesn't fill the whole parent in 2.1, not sure why as the layout attribute shows
+up correctly in hierarchy-viewer
+-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_gravity="center_horizontal"
     android:layout_marginLeft="15dp"
     android:layout_marginRight="15dp"
-    android:background="@drawable/background_holo_light"  >
+    android:background="@drawable/background_holo_light" >
 
     <include
         android:id="@+id/blackboard_dl_items_progressbar_ll"
@@ -53,7 +55,9 @@ up correctly in hierarchy-viewer -->
             android:id="@+id/content_description"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:autoLink="all"
             android:paddingTop="10dp"
+            android:textIsSelectable="true"
             android:textSize="15sp"
             android:visibility="gone" />
     </ScrollView>
@@ -72,10 +76,9 @@ up correctly in hierarchy-viewer -->
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/content_attachment_separator"
-        android:layout_marginTop="10dp"
-        android:divider="#FFCCCCCC"
-        android:dividerHeight="1dp"
+        android:background="@android:color/transparent"
         android:cacheColorHint="@android:color/transparent"
-        android:background="@android:color/transparent" />
+        android:divider="#FFCCCCCC"
+        android:dividerHeight="1dp" />
 
 </RelativeLayout>

@@ -1,4 +1,4 @@
-making bus stops appear within a radius of the user rather than the current route list implementation
+making bus stops appear within a radius of the user along with the current route list implementation
 longclick buildings for directions -- DONE
 edit classes - probably not going to do this
 
@@ -37,4 +37,8 @@ first time use guides (overlays?)
 
 toggle to show class IDs on schedule (put in overflow menu) might make it too "busy"
 panel menu popup on tablet schedule (like I first envisioned?)
+rework schedule (scrolling times along side, maybe just in landscape?, less boxy?)
+blackboard tablet interface - each new opened folder sweeps across right -> left and rests on the previous folder, but a bit staggered.  User can tap previous folders to navigate to them, some sort of tappable breadcrumb system above?
 learn to use sw*dp  and w*dp qualifiers correctly
+
+tweak actionbar background/colors, touchable item accent colors

@@ -3,22 +3,23 @@
     android:id="@+id/grades_linlay"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" 
-    android:background="@drawable/background_holo_light" >
-    
-    <include 
-        android:id="@+id/grades_progressbar_ll" 
-        layout="@layout/loading_content_layout"/>
-    <include 
+    android:background="@drawable/background_holo_light"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/grades_progressbar_ll"
+        layout="@layout/loading_content_layout" />
+
+    <include
         android:id="@+id/grades_error"
-        layout="@layout/error_message_view"/>
-    
-    <ListView 
-        android:visibility="gone"
+        layout="@layout/error_message_view" />
+
+    <ListView
         android:id="@+id/gradesListView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:background="@android:color/transparent"
         android:cacheColorHint="@android:color/transparent"
-        android:background="@android:color/transparent"/>
+        android:visibility="gone" />
 
 </LinearLayout>

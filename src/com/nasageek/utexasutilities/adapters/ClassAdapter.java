@@ -12,9 +12,16 @@ import com.nasageek.utexasutilities.model.UTClass;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.PaintDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.Shape;
 import android.preference.PreferenceManager;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -23,9 +30,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-public class ClassAdapter extends BaseAdapter{
+public class ClassAdapter extends BaseAdapter {
 
-//	static ClassDatabase cdb;
 	private int height;
 	private ArrayList<Classtime> cllist;
 	private ArrayList<UTClass> classlist;
@@ -42,6 +48,9 @@ public class ClassAdapter extends BaseAdapter{
 	private ImageView ci_iv;
 	private TextView ci_tv;
 	private Resources res;
+	
+	
+	int currMinutes;
 	
 	private String empty_cell_pref;
 	
@@ -61,31 +70,14 @@ public class ClassAdapter extends BaseAdapter{
 
 		updateTime();
 		
-		
-//		Cursor cur = null;
-//		String[] col = {"uniqueid","day","start","end","building"};
 		ArrayList<Classtime> cl = new ArrayList<Classtime>(50);
-	/*	for(int i = 0; i<cdb.size(); i++)
-		{
-			cur = sqldb.query("classes",col,"_id = "+(i+1)+" AND eid = "+sp.getString("eid", "no eid found"),null,null,null, null);
-			cur.moveToFirst();
-		//	Log.d("columns",cur.getColumnCount()+"");
-		//	Log.d("cursor", cur.getString(0)+cur.getString(1)+cur.getString(2)+cur.getString(3));
-			cl.add(new classtime(cur.getString(0),cur.getString(1).charAt(0),cur.getString(2),cur.getString(3)));
-		}*/
-	//	SQLiteDatabase sqldb = cdb.getReadableDatabase();
-	//	cur = sqldb.query("classes",col,"semester = \""+semId+"\"",null,null,null,null, null);
-	//	cur.moveToFirst();
-		
+
 		for(UTClass clz : classList)
 		{
 			for(Classtime clzt : clz.getClassTimes())
 				cl.add(clzt);
 		}
 
-	//	sqldb.close();
-	//	cdb.close();
-		
 		firstlist = new ArrayList<Boolean>();
 		
 		classlist = new ArrayList<UTClass>();
@@ -95,24 +87,41 @@ public class ClassAdapter extends BaseAdapter{
 		firstlist.ensureCapacity(160);
 		for(int x = 0; x<160; x++){	cllist.add(null);firstlist.add(false);}
 		
-		for(int i =0; i<cl.size(); i++)
+		for(int i = 0; i < cl.size(); i++)
 		{
-	//		for(int k = 0; k<cl.get(i).getClassTimes().size();k++)
-	//		{	
-			//	classtime ct = cl.get(i).getClassTimes().get(k);
-				Classtime ct = cl.get(i);
-			//	Log.d("DBG", ct.getDay()+" "+timeToPos(ct.getStartTime())+" "+timeToPos(ct.getEndTime()));
-				int startpos = timeToPos(ct.getStartTime());
-				int endpos = timeToPos(ct.getEndTime());
-				switch(ct.getDay())
-				{
-				case 'M':for(int a = 0; a<(endpos-startpos);a++){cllist.set(0+5*startpos+a*5, ct);if(a==0)firstlist.set(0+5*startpos+a*5, true);}break;
-				case 'T':for(int a = 0; a<(endpos-startpos);a++){cllist.set(1+5*startpos+a*5, ct);if(a==0)firstlist.set(1+5*startpos+a*5, true);}break;
-				case 'W':for(int a = 0; a<(endpos-startpos);a++){cllist.set(2+5*startpos+a*5, ct);if(a==0)firstlist.set(2+5*startpos+a*5, true);}break;
-				case 'H':for(int a = 0; a<(endpos-startpos);a++){cllist.set(3+5*startpos+a*5, ct);if(a==0)firstlist.set(3+5*startpos+a*5, true);}break;
-				case 'F':for(int a = 0; a<(endpos-startpos);a++){cllist.set(4+5*startpos+a*5, ct);if(a==0)firstlist.set(4+5*startpos+a*5, true);}break;
-				}
-	//		}		
+			Classtime ct = cl.get(i);
+		
+			int startpos = timeToPos(ct.getStartTime());
+			int endpos = timeToPos(ct.getEndTime());
+			switch(ct.getDay())
+			{
+			case 'M':
+				for(int a = 0; a<(endpos-startpos); a++) {
+					cllist.set(0+5*startpos+a*5, ct);
+					if(a==0)
+						firstlist.set(0+5*startpos+a*5, true);
+				}break;
+			case 'T':
+				for(int a = 0; a<(endpos-startpos); a++) {
+					cllist.set(1+5*startpos+a*5, ct);
+					if(a==0)firstlist.set(1+5*startpos+a*5, true);
+				}break;
+			case 'W':
+				for(int a = 0; a<(endpos-startpos); a++) {
+					cllist.set(2+5*startpos+a*5, ct);
+					if(a==0)firstlist.set(2+5*startpos+a*5, true);
+				}break;
+			case 'H':
+				for(int a = 0; a<(endpos-startpos); a++) {
+					cllist.set(3+5*startpos+a*5, ct);
+					if(a==0)firstlist.set(3+5*startpos+a*5, true);
+				}break;
+			case 'F':
+				for(int a = 0; a<(endpos-startpos); a++) {
+					cllist.set(4+5*startpos+a*5, ct);
+					if(a==0)firstlist.set(4+5*startpos+a*5, true);
+				}break;
+			}	
 		}	
 	}
 	public void updateTime()
@@ -124,6 +133,7 @@ public class ClassAdapter extends BaseAdapter{
 		if(day<5 && day>=0 && cal.get(Calendar.HOUR_OF_DAY)<=22 && cal.get(Calendar.HOUR_OF_DAY)>=8)
 		{
 			currentTimePos = day+5*timeToPos(time);
+			currMinutes = cal.get(Calendar.MINUTE) % 30;
 		}
 		//currentTimePos = day+5*timeToPos(time);
 	}
@@ -137,90 +147,92 @@ public class ClassAdapter extends BaseAdapter{
 			pos++;
 		return pos;
 	}
-	
+	@Override
 	public int getCount() {
 		return cllist.size();
 	}
-
+	@Override
 	public Object getItem(int position) {
 		return cllist.get(position);
 	}
-
+	@Override
 	public long getItemId(int position) {
-		return 0;
+		return position;
 	}
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) 
+	public View getView(final int position, View convertView, ViewGroup parent) 
 	{
-	//	Log.d("POSITIONS", position+":"+currentTimePos);
-		
-		//Log.d("ClassAdapter", "getView");
 		TextView iv;
 		
-		if(convertView==null)
-		{    
+		if(convertView==null)   
 			iv = new TextView(currentContext);
-		}
-		else
-		{	
+		else	
 			iv =(TextView) convertView;
-		}
 		
-	//	iv = new TextView(currentContext);
-            iv.setTextColor(Color.BLACK); 
-            iv.setTextSize((float)13); //11.75 for full
-            if(cllist.get(position)==null)
-            {	
-            	
-            	if(position == currentTimePos)
-            	{	
-            		GradientDrawable back = (GradientDrawable) res.getDrawable(R.drawable.classbackground);
-	            	back.setColor(getEmptyCellColor(position));
-            		iv.setBackgroundDrawable(back);
-           // 		Log.d("TIME", "Time Match: "+position);
-            	}
-            	else
-            	{	
-            		iv.setBackgroundColor(getEmptyCellColor(position));
-            		
-            		iv.setText("");
-            	}
-            }
-            else
-            {	
-            	Classtime cl = cllist.get(position);
-            	String color = "#"+cl.getColor();
+        iv.setTextColor(Color.BLACK); 
+        iv.setTextSize(13f); //11.75 for full
+        if(cllist.get(position)==null)
+        {	
+        	if(position == currentTimePos)
+        	{	
+        		Drawable currentMinutesLine = new ShapeDrawable(new Shape() {
+					
+					@Override
+					public void draw(Canvas canvas, Paint paint) {
+						paint.setStrokeWidth(3f);
+						canvas.drawColor(getEmptyCellColor(position));
+						canvas.drawLine(0, (int)((currMinutes/30.0)*getHeight() + .5), 
+								getWidth(), (int)((currMinutes/30.0)*getHeight() + .5), paint);	
+					}
+				});
+        		iv.setBackgroundDrawable(currentMinutesLine);
+        	}
+        	else
+        	{	
+        		iv.setBackgroundColor(getEmptyCellColor(position));
+        		iv.setText("");
+        	}
+        }
+        else
+        {	
+        	final Classtime cl = cllist.get(position);
+        	final String color = "#"+cl.getColor();
 
-            	if(position == currentTimePos)
-            	{	
-            		GradientDrawable back = (GradientDrawable) res.getDrawable(R.drawable.classbackground);
-	            	back.setColor(Color.parseColor(color));
-            		iv.setBackgroundDrawable(back);
-            //		Log.d("TIME", "Time Match: "+position);
-            	}
-            	else
-            		iv.setBackgroundColor(Color.parseColor(color));
-            	
-            	if(firstlist.get(position))
-            	{	
-            		iv.setText(cllist.get(position).getStartTime());
-            		iv.setGravity(0x01);
-            //		LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-            //		llp.setMargins(0, 1, 0, 0);
-           // 		iv.setLayoutParams(llp);
-           // 		LinearLayout ll = new LinearLayout(currentContext);
-            //		ll.addView(iv);
-            //		ll.setPadding(0, 1, 0, 1);
-            		
-           // 		return ll;
-            	}
-            	else
-            	{
-            		iv.setText("");	
-            	}
-            }
-            
-      //  Log.d("ClassAdapter", "view drawn");
+        	if(position == currentTimePos)
+        	{	
+        		Drawable currentMinutesLine = new ShapeDrawable(new Shape() {
+					
+					@Override
+					public void draw(Canvas canvas, Paint paint) {
+						paint.setStrokeWidth(3f);
+						canvas.drawColor(Color.parseColor(color));
+						canvas.drawLine(0, (int)((currMinutes/30.0)*getHeight() + .5), 
+								getWidth(), (int)((currMinutes/30.0)*getHeight() + .5), paint);	
+					}
+				});
+        		iv.setBackgroundDrawable(currentMinutesLine);
+        	}
+        	else
+        		iv.setBackgroundColor(Color.parseColor(color));
+        	
+        	if(firstlist.get(position))
+        	{	
+        		iv.setText(cllist.get(position).getStartTime());
+        		iv.setGravity(Gravity.CENTER_HORIZONTAL);
+        //		LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+        //		llp.setMargins(0, 1, 0, 0);
+       // 		iv.setLayoutParams(llp);
+       // 		LinearLayout ll = new LinearLayout(currentContext);
+        //		ll.addView(iv);
+        //		ll.setPadding(0, 1, 0, 1);
+        		
+       // 		return ll;
+        	}
+        	else
+        	{
+        		iv.setText("");	
+        	}
+        }
 		return iv;
 	}
 	private int getEmptyCellColor(int position)

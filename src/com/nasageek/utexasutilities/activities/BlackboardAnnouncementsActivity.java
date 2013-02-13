@@ -14,12 +14,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,9 +33,6 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
-import com.nasageek.utexasutilities.R.menu;
 
 
 public class BlackboardAnnouncementsActivity extends SherlockActivity 
@@ -48,7 +42,6 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	private ListView alv;
 	private TextView atv;
 	private TextView etv;
-	private SharedPreferences settings;
 	private DefaultHttpClient httpclient;
 	private fetchAnnouncementsTask fetch;
 	
@@ -56,33 +49,31 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-			super.onCreate(savedInstanceState);
-			setContentView(R.layout.blackboard_announcements_layout);
-			
-			a_pb_ll = (LinearLayout) findViewById(R.id.announcements_progressbar_ll);
-	    	alv = (ListView) findViewById(R.id.announcementsListView);
-	    	atv = (TextView) findViewById(R.id.no_announcements_textview);
-	    	etv = (TextView) findViewById(R.id.announcements_error);
-	    	
-	    	actionbar = getSupportActionBar();
-	    	actionbar.setTitle(getIntent().getStringExtra("coursename"));
-	    	actionbar.setSubtitle("Announcements");
-			actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-			actionbar.setHomeButtonEnabled(true);
-			actionbar.setDisplayHomeAsUpEnabled(true);
-			
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.blackboard_announcements_layout);
 		
-			settings = PreferenceManager.getDefaultSharedPreferences(this);
-			
-			httpclient = ConnectionHelper.getThreadSafeClient();
-			httpclient.getCookieStore().clear();
-			BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(this,httpclient));
-	    	cookie.setDomain("courses.utexas.edu");
-	    	httpclient.getCookieStore().addCookie(cookie);
-	    	
-	    	fetch = new fetchAnnouncementsTask(httpclient);
-	    	fetch.execute();
-			
+		a_pb_ll = (LinearLayout) findViewById(R.id.announcements_progressbar_ll);
+    	alv = (ListView) findViewById(R.id.announcementsListView);
+    	atv = (TextView) findViewById(R.id.no_announcements_textview);
+    	etv = (TextView) findViewById(R.id.announcements_error);
+    	
+    	actionbar = getSupportActionBar();
+    	actionbar.setTitle(getIntent().getStringExtra("coursename"));
+    	actionbar.setSubtitle("Announcements");
+		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+		actionbar.setHomeButtonEnabled(true);
+		actionbar.setDisplayHomeAsUpEnabled(true);
+		
+		alv.setEmptyView(atv);
+		
+		httpclient = ConnectionHelper.getThreadSafeClient();
+		httpclient.getCookieStore().clear();
+		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(this,httpclient));
+    	cookie.setDomain("courses.utexas.edu");
+    	httpclient.getCookieStore().addCookie(cookie);
+    	
+    	fetch = new fetchAnnouncementsTask(httpclient);
+    	fetch.execute();
 	}
 	
 	@Override
@@ -184,17 +175,17 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	    	{
 				a_pb_ll.setVisibility(View.GONE);
 				etv.setVisibility(View.GONE);
-				if(!result.isEmpty())
-				{
+			//	if(!result.isEmpty())
+			//	{
 					alv.setAdapter(new AnnouncementsAdapter(BlackboardAnnouncementsActivity.this,result));
-					alv.setVisibility(View.VISIBLE);
-					atv.setVisibility(View.GONE);
-				}
+				//	alv.setVisibility(View.VISIBLE);
+				//	atv.setVisibility(View.GONE);
+			/*	}
 				else
 				{	
-					atv.setVisibility(View.VISIBLE);
-					alv.setVisibility(View.GONE);
-				}
+				//	atv.setVisibility(View.VISIBLE);
+				//	alv.setVisibility(View.GONE);
+				}*/
 	    	}
 		}
 		@Override
@@ -244,12 +235,11 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 		@Override
 		public boolean isEnabled(int i)
 		{
-			return true;
+			return false;
 		}
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
-			
 			bbAnnouncement announce = items.get(position);
 			
 			String subject = announce.getSubject();
@@ -275,7 +265,7 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	
 	class bbAnnouncement
 	{
-		String subject, date, body;
+		private String subject, date, body;
 		
 		public bbAnnouncement(String subject, String date, String body)
 		{

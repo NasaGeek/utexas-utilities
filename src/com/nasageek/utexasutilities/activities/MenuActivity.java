@@ -98,10 +98,6 @@ public class MenuActivity extends SherlockFragmentActivity {
 		setContentView(R.layout.menu_layout);
 		
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
-	//	breakfast = new MenuFragment();
-	//	lunch = new MenuFragment();
-	//	dinner=  new MenuFragment();
-	
 
 		actionbar = getSupportActionBar();
 		actionbar.setTitle("Menus");
@@ -120,11 +116,7 @@ public class MenuActivity extends SherlockFragmentActivity {
         	previousItem = savedInstanceState.getInt("spinner_selection");
         else
         	previousItem = 0;
-        
         initialisePaging(((Restaurant)spinner.getAdapter().getItem(previousItem)).code+"");	
-        
-        
-  //      httpclient = ConnectionHelper.getThreadSafeClient();
         
         actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() 
         {
@@ -150,9 +142,9 @@ public class MenuActivity extends SherlockFragmentActivity {
 	         			((TextView)findViewById(R.id.dinner_times)).setText("");
          			}
          			
-         			((MenuFragment)mPagerAdapter.getItem(0)).updateView(restId, mPagerAdapter.getItem(0).getView(), true);
-         			((MenuFragment)mPagerAdapter.getItem(1)).updateView(restId, mPagerAdapter.getItem(1).getView(), true);
-         			((MenuFragment)mPagerAdapter.getItem(2)).updateView(restId, mPagerAdapter.getItem(2).getView(), true);
+         			((MenuFragment)mPagerAdapter.getItem(0)).updateView(restId, true);
+         			((MenuFragment)mPagerAdapter.getItem(1)).updateView(restId, true);
+         			((MenuFragment)mPagerAdapter.getItem(2)).updateView(restId, true);
          			
          			previousItem = -1;
 

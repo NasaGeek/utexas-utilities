@@ -60,14 +60,17 @@ public class MenuFragment extends SherlockFragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{	
-		if(restId.equals("0"))
-		{	View vg =  inflater.inflate(R.layout.menu_fragment_layout, container, false);
-			return vg;
-		}
+		View vg = inflater.inflate(R.layout.menu_fragment_layout, container, false);
+		
 
-		View vg =  inflater.inflate(R.layout.menu_fragment_layout, container, false);
-			
-		updateView(restId, vg, false);
+		m_pb_ll = (LinearLayout) vg.findViewById(R.id.menu_progressbar_ll);
+        mlv = (AmazingListView) vg.findViewById(R.id.menu_listview);
+        metv = (TextView) vg.findViewById(R.id.menu_error);
+        
+        if(restId.equals("0"))
+			return vg;
+        
+		updateView(restId, false);
 
 		return vg;
 	}
@@ -75,22 +78,17 @@ public class MenuFragment extends SherlockFragment
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);	
+		setRetainInstance(true);
 		restId = getArguments().getString("restId");
         httpclient = ConnectionHelper.getThreadSafeClient();
         listOfLists = new ArrayList<Pair<String,ArrayList<food>>>();
         mAdapter = new MenuAdapter(listOfLists);
-        setRetainInstance(true);
 	}
 	@TargetApi(11)
-	public void updateView(String restId, View vg, Boolean update)
+	public void updateView(String restId, Boolean update)
 	{
 		this.restId = restId;
 
-		//TODO: vg is null every once in a while, can probably fix by doing fragments the right way
-		m_pb_ll = (LinearLayout) vg.findViewById(R.id.menu_progressbar_ll);
-        mlv = (AmazingListView) vg.findViewById(R.id.menu_listview);
-        metv = (TextView) vg.findViewById(R.id.menu_error);
-  
         mlv.setAdapter(mAdapter);
         mlv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, mlv, false));
         
@@ -104,7 +102,6 @@ public class MenuFragment extends SherlockFragment
 			else
 				fetchMTask.execute(restId,this.getArguments().getString("title"),mlv);
         }
-		
 	}
 	@Override
 	public void onDestroy()
@@ -217,8 +214,8 @@ public class MenuFragment extends SherlockFragment
 				}
 			});
 			
-			if(getSherlockActivity() != null) //was getting a NPE here probably from leaving the activity while the menu was loading
-				mlv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, mlv, false));
+	//		if(getSherlockActivity() != null) //was getting a NPE here probably from leaving the activity while the menu was loading
+	//			mlv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, mlv, false));
 			
 			mlv.setVisibility(View.VISIBLE);	
 			m_pb_ll.setVisibility(View.GONE);

@@ -2,31 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
     android:gravity="center_horizontal"
+    android:minHeight="?android:listPreferredItemHeightSmall"
+    android:orientation="horizontal"
     android:paddingLeft="10dp"
     android:paddingRight="5dp"
-    android:paddingTop="7dp"
-	android:paddingBottom="7dp"
-	android:weightSum="2">
-    	     
-     <TextView 
+    android:weightSum="2" >
+
+    <TextView
         android:id="@+id/coursemap_item_name"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_gravity="left"
         android:layout_weight="1"
-    	android:layout_gravity="left"
-    	android:gravity="center_vertical"
         android:ellipsize="marquee"
-        android:singleLine="true"
+        android:gravity="center_vertical"
         android:lines="1"
         android:scrollHorizontally="true"
-        android:textSize="16sp"/>
-      <ImageView 
+        android:singleLine="true"
+        android:textSize="17sp" />
+
+    <ImageView
         android:id="@+id/coursemap_folder"
-        android:src="@drawable/ic_list_folder"
-        android:layout_weight="1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"		  
-        android:layout_gravity="right"/>
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_weight="1"
+        android:src="@drawable/ic_list_folder" />
+
 </LinearLayout>

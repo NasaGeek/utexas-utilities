@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="?android:attr/listSeparatorTextViewStyle" 
-    android:singleLine="true"
-    android:ellipsize="end"/>
+    style="?android:attr/listSeparatorTextViewStyle"
+    android:ellipsize="end"
+    android:singleLine="true" />

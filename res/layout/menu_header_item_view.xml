@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id = "@+id/header"
- 
+    android:id="@+id/header"
     style="?android:attr/listSeparatorTextViewStyle"
     android:paddingLeft="8dp"
-    android:paddingRight="8dp"/>
-	
-
-
-<!-- <merge
+    android:paddingRight="8dp" />
+<!--
+     <merge
 	xmlns:android="http://schemas.android.com/apk/res/android">
 	
 	  <include 
@@ -18,13 +15,11 @@
         android:textStyle="bold"
         layout="@android:layout/preference_category" 
         />
-	  </merge>  -->
+	  </merge>
+-->
 
-
-
-
-
-<!-- <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content">
 <include 
@@ -33,9 +28,9 @@
         layout="@android:layout/preference_category" 
         />
 
-</FrameLayout> -->
-<!-- 
-
+</FrameLayout>
+-->
+<!--
 <TextView xmlns:android="http://schemas.android.com/apk/res/android" 
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
@@ -44,4 +39,5 @@
     android:text="Header" 
     android:textStyle="bold" 
     android:padding="6dp" 
-    android:id="@+id/header" /> -->
+    android:id="@+id/header" />
+-->

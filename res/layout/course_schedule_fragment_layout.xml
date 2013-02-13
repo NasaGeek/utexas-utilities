@@ -61,6 +61,7 @@
         <include
             android:id="@+id/schedule_progressbar_ll"
             layout="@layout/loading_content_layout" />
+
         <include
             android:id="@+id/schedule_error"
             layout="@layout/error_message_view" />
@@ -70,79 +71,107 @@
 		android:orientation="horizontal"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content">
- 		<ScrollView
+    
+    <ScrollView
+			android:id="@+id/schedule_times"
 			android:layout_height="fill_parent"
-			android:layout_width="wrap_content">
+			android:layout_width="wrap_content"
+			android:scrollbars="none">
 		<LinearLayout
 			android:id="@+id/timelist"
 			android:orientation="vertical"
-			android:layout_height="fill_parent"
-			android:layout_width="wrap_content">
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:gravity="right"
+			android:paddingRight="3dp">
 			
-			<TextView
-				
+			<TextView	
 				android:layout_width="fill_parent"
-				android:layout_height="33dp"
+				android:layout_height="wrap_content"
+				android:text=" "
+				android:visibility="invisible"/>
+			<TextView	
+				android:layout_width="fill_parent"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="8:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="9:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="10:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="11:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="12:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="1:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="2:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="3:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="4:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="5:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="6:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="7:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="8:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="9:00"/>
 			<TextView
 				android:layout_width="fill_parent"
-				android:layout_height="39dp"
+				android:layout_height="36dp"
+				android:gravity="right"
 				android:text="10:00"/> 
-		</LinearLayout> 
-	 </ScrollView>
-        -->
+			<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="36dp"
+				android:gravity="right"
+				android:text="11:00"/> 
+		</LinearLayout> 	 
+	</ScrollView> -->
 
         <GridView
             android:id="@+id/scheduleview"

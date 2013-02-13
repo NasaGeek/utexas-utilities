@@ -35,7 +35,6 @@ public class TransactionAdapter extends AmazingAdapter
 		
 		for(int i = 0; i<transactions.size(); i++)
 		{
-	//		String dateandplace = transactions.get(i).substring(0,transactions.get(i).indexOf("$"));
 			String date = transactions.get(i).getDate();
 			if(i == 0)
 			{
@@ -51,8 +50,7 @@ public class TransactionAdapter extends AmazingAdapter
 				areHeaders.add(true);
 				currentDate=date;
 			}
-		}
-		
+		}	
 	}
 	public int getCount() {
 		return transactions.size();
@@ -89,13 +87,6 @@ public class TransactionAdapter extends AmazingAdapter
 		String reason = "\t" + trans.getReason();
 		String cost = trans.getCost();
 		
-		
-	//	String dateplace = trans.substring(0,trans.indexOf("$"));
-	//	String date = dateplace.substring(0,dateplace.indexOf(" "));
-	//	String place = "\t"+dateplace.substring(dateplace.indexOf(" "));
-	//	String cost = trans.substring(trans.indexOf("$"));
-		
-		
 		ViewGroup lin = (ViewGroup) convertView;
 	
 		if (areHeaders.size() == transactions.size() && areHeaders.get(position))
@@ -121,7 +112,6 @@ public class TransactionAdapter extends AmazingAdapter
 		areHeaders.clear();
 		for(int i = 0; i<transactions.size(); i++)
 		{
-		//	String dateandplace  = transactions.get(i).substring(0,transactions.get(i).indexOf("$"));
 			String date = transactions.get(i).getDate();
 			if(i == 0)
 			{
@@ -155,7 +145,7 @@ public class TransactionAdapter extends AmazingAdapter
 		if(super.automaticNextPageLoading)
 		{	
 			nextPage();
-			Log.d("TransactionAdapter","Page requested!");
+		//	Log.d("TransactionAdapter","Page requested!");
 			frag.parser(false);
 		}
 		super.automaticNextPageLoading = false;

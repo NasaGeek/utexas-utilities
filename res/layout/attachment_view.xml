@@ -2,30 +2,34 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:gravity="center_vertical"
+    android:minHeight="?android:listPreferredItemHeight"
     android:orientation="vertical"
-    android:paddingTop="7dp"
-	android:paddingBottom="7dp"
-	android:weightSum="2">
-    	     
-     <TextView 
+    android:weightSum="2" >
+
+    <TextView
         android:id="@+id/attachment_name"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_gravity="left"
         android:layout_weight="1"
-    	android:layout_gravity="left"
-    	android:gravity="center_vertical"
         android:ellipsize="end"
+        android:gravity="bottom"
         android:lines="1"
-        android:singleLine="true"
         android:scrollHorizontally="true"
-        android:textSize="18sp"/>
-      <TextView 
+        android:singleLine="true"
+        android:text="text"
+        android:textSize="18sp" />
+
+    <TextView
         android:id="@+id/attachment_size"
-        android:layout_weight="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"		  
         android:layout_gravity="left"
+        android:layout_weight="1"
+        android:gravity="top"
+        android:text="Text"
         android:textSize="13sp"
-        android:textStyle="italic"/>
+        android:textStyle="italic" />
+
 </LinearLayout>
