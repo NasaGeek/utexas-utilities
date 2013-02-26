@@ -11,8 +11,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Vector;
 
-
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentValues;

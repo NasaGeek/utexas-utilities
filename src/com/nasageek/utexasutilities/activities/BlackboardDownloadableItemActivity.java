@@ -38,7 +38,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -467,23 +466,15 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 			this.dlUri=dlUri;
 			this.viewUri=viewUri;
 		}
-
-
 		public String getName() {
 			return name;
 		}
-
-
 		public void setName(String name) {
 			this.name = name;
 		}
-
-
 		public String getSize() {
 			return size;
 		}
-
-
 		public void setSize(String size) {
 			this.size = size;
 		}

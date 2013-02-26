@@ -1,11 +1,7 @@
 package com.nasageek.utexasutilities.fragments;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -14,17 +10,14 @@ import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,13 +25,10 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -408,8 +398,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    	}
 	    	
 	    	Pattern pattern3 = Pattern.compile("<table.*</table>",Pattern.DOTALL);
-	    	Matcher matcher3 = pattern3.matcher(pagedata);
-	    	
+	    	Matcher matcher3 = pattern3.matcher(pagedata);    	
 	    	
 	    	if(matcher3.find())
 	    		pagedata = matcher3.group(0);
