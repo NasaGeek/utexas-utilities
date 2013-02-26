@@ -1,8 +1,18 @@
 package com.nasageek.utexasutilities.fragments;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 import org.apache.http.HttpResponse;
@@ -11,8 +21,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -76,23 +88,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		View vg =  inflater.inflate(R.layout.course_schedule_fragment_layout, container, false);
-		
-		updateView(semId, vg);
-
-		return vg;	
-	}
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
-		parentAct = this.getSherlockActivity();
-		semId = getArguments().getString("semId");
-	}
-	public void updateView(String semId, View vg)
-	{
-		this.semId = semId;
-		
+			
 		sd = (WrappingSlidingDrawer) vg.findViewById(R.id.drawer);
 	    sdll = (LinearLayout) vg.findViewById(R.id.llsd);
 	    
@@ -106,11 +102,26 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		daylist = (LinearLayout) vg.findViewById(R.id.daylist);
 		
 		client = ConnectionHelper.getThreadSafeClient();
+		
+	/*	if(savedInstanceState != null)
+			classList = savedInstanceState.getParcelableArrayList("classList"); */
+			
 		new parseTask(client).execute();
+
 		
 		sd.setOnDrawerCloseListener(this);
 		sd.setOnDrawerOpenListener(this);
 	    sd.setVisibility(View.INVISIBLE);
+		
+		return vg;	
+	}
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+		parentAct = this.getSherlockActivity();
+		semId = getArguments().getString("semId");
 	}
 	@Override
 	public void onResume()
@@ -128,6 +139,12 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		menu.removeItem(R.id.map_all_classes);
 	    inflater.inflate(R.menu.schedule_menu, menu);  
 	}
+/*	@Override
+	public void onSaveInstanceState(Bundle out)
+	{
+		super.onSaveInstanceState(out);
+		out.putParcelableArrayList("classList", classList);
+	}*/
 	@Override
 	public void onPrepareOptionsMenu(Menu menu)
 	{
@@ -206,6 +223,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	{
 		sd.close();
+		parent.setSelection(position);
 		current_clt = (Classtime) parent.getItemAtPosition(position);
 		
 		if(current_clt!=null)
@@ -285,20 +303,73 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			((ScheduleActivity)parentAct).getAdapter().notifyDataSetChanged();
 			((ScheduleActivity)parentAct).getIndicator().notifyDataSetChanged();
 		}
+		private String convertStreamToString(InputStream is)
+		{
+			Scanner s = new Scanner(is, "iso-8859-1").useDelimiter("\\A");
+			return s.hasNext() ? s.next() : "";
+		}
 		
 		@Override
 		protected Integer doInBackground(Object... params)
 		{
-		//	Object[] result = new Object[3];
+	//"stateful" stuff, I'll get it figured out in the next release
+	//		if(classList == null)
+				classList = new ArrayList<UTClass>();
+	//		else
+	//			return classList.size();
 			
-			HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId);
 	    	String pagedata="";
 
-		    	try
-		    	{
-		    		HttpResponse res = client.execute(hget);
-		    		pagedata = EntityUtils.toString(res.getEntity());
+	    	if(Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) 
+	    	{
+	    		URL location;
+	    		HttpsURLConnection conn = null;
+	    		
+	    		try {
 
+					location = new URL("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId);
+					conn = (HttpsURLConnection) location.openConnection();
+					
+					if(getSherlockActivity() == null)
+					{	
+						cancel(true);
+						errorMsg = "";
+						return -1;
+					}
+					//TODO: why not just do this in onPreExecute?
+					conn.setRequestProperty("Cookie", "SC="+ConnectionHelper.getAuthCookie(getSherlockActivity(),client));
+					
+			//		conn.setUseCaches(true); 
+			//		conn.setRequestProperty("Cache-Control", "only-if-cached");
+					conn.setRequestMethod("GET");
+					conn.setDoInput(true);
+				/*	if(HttpResponseCache.getInstalled().get(new URI("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId), "GET", conn.getHeaderFields()) != null)
+					{	
+						pagedata = convertStreamToString(HttpResponseCache.getInstalled().get(new URI("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId), "GET", conn.getHeaderFields()).getBody());
+					}
+					else
+					{	*/
+						conn.connect();
+						pagedata = convertStreamToString(conn.getInputStream());
+			//		}
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+		    		errorMsg = "UTilities could not fetch your class listing";
+		    		cancel(true);
+		    		return -1;
+				} finally {
+					if(conn != null)
+						conn.disconnect();
+				}
+	    	}
+	    	else
+	    	{	
+	    		HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId);
+				try
+		    	{
+					HttpResponse res = client.execute(hget);
+		    		pagedata = EntityUtils.toString(res.getEntity());
 		    	}
 		    	catch(Exception e)
 		    	{
@@ -307,130 +378,127 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    		cancel(true);
 		    		return -1;
 		    	}
-		    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>"))
-		    	{
-					errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-					if(parentAct != null)
-						ConnectionHelper.logout(parentAct);
-					cancel(true);
-					return -1;
-		    	}
-		    	Pattern semSelectPattern = Pattern.compile("<select  name=\"sem\">.*</select>", Pattern.DOTALL);
-		    	Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
-		    	
-		    	//TODO: un-hardcode this eventually! Shouldn't be too hard to figure out the dropdown size
-		    	if(semSelectMatcher.find() && parentAct != null && ((ScheduleActivity)parentAct).getFragments().size()<3)
-		    	{
-		    		Pattern semesterPattern = Pattern.compile("<option.*?value=\"(\\d*)\"\\s*>([\\w\\s]*?)</option>", Pattern.DOTALL);
-		    		Matcher semesterMatcher = semesterPattern.matcher(semSelectMatcher.group());
-		    		while(semesterMatcher.find())
-		    		{
-		    			if(semesterMatcher.group(0).contains("selected=\"selected\""))
-		    				continue;
-		    			else
-		    			{	
-		    				publishProgress(semesterMatcher.group(2), semesterMatcher.group(1));
-		    			}
-		    		}	
-		    	}
-		    	
-		    	Pattern pattern3 = Pattern.compile("<table.*</table>",Pattern.DOTALL);
-		    	Matcher matcher3 = pattern3.matcher(pagedata);
-		    	
-		    	
-		    	if(matcher3.find())
-		    		pagedata = matcher3.group(0);
-		    	else
-		    	{
-		    		//if no <table>, user probably isn't enrolled for semester
-		    		return 0;
-		    	}
-		    	Pattern classPattern = Pattern.compile("<tr  .*?</tr>",Pattern.DOTALL);
-		    	Matcher classMatcher = classPattern.matcher(pagedata);
-		    	int classCount = 0, colorCount = 0;
-		    	classList = new ArrayList<UTClass>();
-		    	while(classMatcher.find())
-		    	{
-		    		String classContent = classMatcher.group();
-		    		String uniqueid="", classid="", classname="";
-		    		String [] buildings=null, rooms=null, days=null, times=null;
-		    		Pattern classAttPattern = Pattern.compile("<td >(.*?)</td>",Pattern.DOTALL);
-		    		Matcher classAttMatcher = classAttPattern.matcher(classContent);
-		    		if(classAttMatcher.find())
-		    			uniqueid = classAttMatcher.group(1);
-		    		else
-		    		{	classParseIssue = true;
-		    			continue;
-		    		}
-		    		if(classAttMatcher.find())
-		    			classid = classAttMatcher.group(1);
-		    		else
-		    		{	classParseIssue = true;
-		    			continue;
-		    		}
-		    		if(classAttMatcher.find())
-		    			classname =  classAttMatcher.group(1);
-		    		else
-		    		{	classParseIssue = true;
-		    			continue;
-		    		}
-		    		if(classAttMatcher.find())
-		    		{
-		    			buildings = classAttMatcher.group(1).split("<br />");
-		    			for(int i = 0; i<buildings.length; i++)
-		    				buildings[i] = buildings[i].replaceAll("<.*?>", "").trim();
-		    		}
-		    		else
-		    		{	classParseIssue = true;
-		    			continue;
-		    		}
-		    		if(classAttMatcher.find())
-		    		{
-		    			rooms = classAttMatcher.group(1).split("<br />");
-		    			for(int i = 0; i<rooms.length; i++)
-		    				rooms[i] = rooms[i].trim();
-		    		}
-		    		else
-		    		{	classParseIssue = true;
-		    			continue;
-		    		}
-		    		if(classAttMatcher.find())
-		    		{	
-		    			days = classAttMatcher.group(1).split("<br />");
-		    			//Thursday represented by H so I can treat all days as characters
-		    			for(int a = 0; a<days.length;a++) days[a] = days[a].replaceAll("TH", "H").trim();
-		    		}
-		    		else
-		    		{	classParseIssue = true;
-		    			continue;
-		    		}
-		    		if(classAttMatcher.find())
-		    		{
-		    			times = classAttMatcher.group(1).replaceAll("- ", "-").split("<br />");	
-		    			for(int i = 0; i<times.length; i++)
-		    				times[i] = times[i].trim();
-		    		}
-		    		else
-		    		{	classParseIssue = true;
-		    			continue;
-		    		}
-		    		classList.add(new UTClass(uniqueid,classid,classname,buildings, rooms, days, times, semId, colors[colorCount]));
-		    		colorCount = (colorCount == colors.length-1) ? 0 : colorCount+1;
-		    		classCount++;
-		    	}
-		    	
-	
-	 //   	} 
-	//    	result[1] = itemSelected;
-	//    	result[2] = semesters;
+	    	}
+	    	
+	    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>"))
+	    	{
+				errorMsg = "You've been logged out of UTDirect, back out and log in again.";
+				if(parentAct != null)
+					ConnectionHelper.logout(parentAct);
+				cancel(true);
+				return -1;
+	    	}
+	    	Pattern semSelectPattern = Pattern.compile("<select  name=\"sem\">.*</select>", Pattern.DOTALL);
+	    	Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
+	    	
+	    	//TODO: un-hardcode this eventually! Shouldn't be too hard to figure out the dropdown size
+	    	if(semSelectMatcher.find() && parentAct != null && ((ScheduleActivity)parentAct).getFragments().size()<3)
+	    	{
+	    		Pattern semesterPattern = Pattern.compile("<option.*?value=\"(\\d*)\"\\s*>([\\w\\s]*?)</option>", Pattern.DOTALL);
+	    		Matcher semesterMatcher = semesterPattern.matcher(semSelectMatcher.group());
+	    		while(semesterMatcher.find())
+	    		{
+	    			if(semesterMatcher.group(0).contains("selected=\"selected\""))
+	    				continue;
+	    			else
+	    			{	
+	    				publishProgress(semesterMatcher.group(2), semesterMatcher.group(1));
+	    			}
+	    		}	
+	    	}
+	    	
+	    	Pattern pattern3 = Pattern.compile("<table.*</table>",Pattern.DOTALL);
+	    	Matcher matcher3 = pattern3.matcher(pagedata);
+	    	
+	    	
+	    	if(matcher3.find())
+	    		pagedata = matcher3.group(0);
+	    	else
+	    	{
+	    		//if no <table>, user probably isn't enrolled for semester
+	    		return 0;
+	    	}
+	    	Pattern classPattern = Pattern.compile("<tr  .*?</tr>",Pattern.DOTALL);
+	    	Matcher classMatcher = classPattern.matcher(pagedata);
+	    	int classCount = 0, colorCount = 0;
+	    	
+	    	while(classMatcher.find())
+	    	{
+	    		String classContent = classMatcher.group();
+	    		String uniqueid="", classid="", classname="";
+	    		String [] buildings=null, rooms=null, days=null, times=null;
+	    		Pattern classAttPattern = Pattern.compile("<td >(.*?)</td>",Pattern.DOTALL);
+	    		Matcher classAttMatcher = classAttPattern.matcher(classContent);
+	    		if(classAttMatcher.find())
+	    			uniqueid = classAttMatcher.group(1);
+	    		else
+	    		{	classParseIssue = true;
+	    			continue;
+	    		}
+	    		if(classAttMatcher.find())
+	    			classid = classAttMatcher.group(1);
+	    		else
+	    		{	classParseIssue = true;
+	    			continue;
+	    		}
+	    		if(classAttMatcher.find())
+	    			classname =  classAttMatcher.group(1);
+	    		else
+	    		{	classParseIssue = true;
+	    			continue;
+	    		}
+	    		if(classAttMatcher.find())
+	    		{
+	    			buildings = classAttMatcher.group(1).split("<br />");
+	    			for(int i = 0; i<buildings.length; i++)
+	    				buildings[i] = buildings[i].replaceAll("<.*?>", "").trim();
+	    		}
+	    		else
+	    		{	classParseIssue = true;
+	    			continue;
+	    		}
+	    		if(classAttMatcher.find())
+	    		{
+	    			rooms = classAttMatcher.group(1).split("<br />");
+	    			for(int i = 0; i<rooms.length; i++)
+	    				rooms[i] = rooms[i].trim();
+	    		}
+	    		else
+	    		{	classParseIssue = true;
+	    			continue;
+	    		}
+	    		if(classAttMatcher.find())
+	    		{	
+	    			days = classAttMatcher.group(1).split("<br />");
+	    			//Thursday represented by H so I can treat all days as characters
+	    			for(int a = 0; a<days.length;a++) days[a] = days[a].replaceAll("TH", "H").trim();
+	    		}
+	    		else
+	    		{	classParseIssue = true;
+	    			continue;
+	    		}
+	    		if(classAttMatcher.find())
+	    		{
+	    			times = classAttMatcher.group(1).replaceAll("- ", "-").split("<br />");	
+	    			for(int i = 0; i<times.length; i++)
+	    				times[i] = times[i].trim();
+	    		}
+	    		else
+	    		{	classParseIssue = true;
+	    			continue;
+	    		}
+	    		classList.add(new UTClass(uniqueid,classid,classname,buildings, rooms, days, times, semId, colors[colorCount]));
+	    		colorCount = (colorCount == colors.length-1) ? 0 : colorCount+1;
+	    		classCount++;
+	    	}
 	    	return Integer.valueOf(classCount);
 			
 		}
-		//TODO: nullchecks everywhere, figure out what the real problem is -.-
+		//TODO: nullchecks everywhere, figure out what the real problem is
 		@Override
 		protected void onPostExecute(Integer result)
 		{
-			pb_ll.setVisibility(GridView.GONE);
+			pb_ll.setVisibility(View.GONE);
 
 			if(result != null && result >= 0)
 			{	
@@ -498,10 +566,6 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 					mMenu.findItem(R.id.export_schedule).setEnabled(enable);
 			}
 		}
-	}
-	public ArrayList<UTClass> getClassList()
-	{
-		return classList;
 	}
 	private final class ScheduleActionMode implements ActionMode.Callback {
         @Override

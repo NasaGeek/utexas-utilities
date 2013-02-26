@@ -124,9 +124,11 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
     			SimpleDateFormat formatter = new SimpleDateFormat("hh:mmaa", Locale.US);
     			ArrayList<UTClass> classList = getArguments().getParcelableArrayList("classList");
     			SimpleDateFormat endDateFormatter = new SimpleDateFormat("yyyyMMdd'T000000Z'", Locale.US);
-    			String endDateString = endDateFormatter.format(endDate.getTime());
+    			//roll forward one because RRULE will not place events on the specified end date
+    			endDate.roll(Calendar.DATE, true);
     			
-    			    			
+    			String endDateString = endDateFormatter.format(endDate.getTime());
+    			   			
     			ArrayList<ContentValues> valuesList = new ArrayList<ContentValues>();
     			
     			//copying our original selected start date for comparison to each class
@@ -173,7 +175,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 						values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;UNTIL=" + endDateString);						
 						values.put(CalendarContract.Events.DURATION, startEndToDuration(classStartTime, classEndTime));
 						values.put(CalendarContract.Events.DTSTART, startDate.getTimeInMillis());
-						values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getTimeZone("America/Austin").getID());
+						values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getTimeZone("US/Central").getID());
 						
 						valuesList.add(values);
 						
@@ -243,7 +245,8 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 		default:return Calendar.MONDAY;
 		}
 	}
-	@SuppressLint("NewApi")
+	
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	private void initialisePaging(View view)
 	{	
 		datePickers = new Vector<View>();

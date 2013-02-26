@@ -45,7 +45,6 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	private DefaultHttpClient httpclient;
 	private fetchAnnouncementsTask fetch;
 	
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -77,29 +76,30 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	}
 	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		
+	public boolean onCreateOptionsMenu(Menu menu) 
+	{	
 		MenuInflater inflater = this.getSupportMenuInflater();
         inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
-		return true;
-		 
+        if(!getIntent().getBooleanExtra("showViewInWeb", false))
+        	menu.removeItem(R.id.viewInWeb);
+		return true;	 
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-	    	int id = item.getItemId();
-	    	switch(id)
-	    	{
-		    	case android.R.id.home:
-		            // app icon in action bar clicked; go home
-		            super.onBackPressed();
-		            break;
-		    	case R.id.viewInWeb:
-		    		showAreYouSureDlg(BlackboardAnnouncementsActivity.this);
-		    		break;
-	    	}
-	    	return false;
+    	int id = item.getItemId();
+    	switch(id)
+    	{
+	    	case android.R.id.home:
+	            // app icon in action bar clicked; go home
+	            super.onBackPressed();
+	            break;
+	    	case R.id.viewInWeb:
+	    		showAreYouSureDlg(BlackboardAnnouncementsActivity.this);
+	    		break;
+    	}
+    	return false;
 	}
 	private void showAreYouSureDlg(Context con)
 	{

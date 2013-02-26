@@ -14,11 +14,14 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.app.Service;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -26,6 +29,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.text.Html;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +38,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +50,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.AttachmentDownloadService;
 import com.nasageek.utexasutilities.ConnectionHelper;
+import com.nasageek.utexasutilities.MyScrollView;
 import com.nasageek.utexasutilities.R;
 
 public class BlackboardDownloadableItemActivity extends SherlockActivity {
@@ -57,6 +63,8 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	private TextView dlil_etv;
 	private ActionBar actionbar;
 	private BroadcastReceiver onNotificationClick;
+	
+	private MyScrollView msv;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -75,6 +83,8 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		dlil_pb_ll = (LinearLayout) findViewById(R.id.blackboard_dl_items_progressbar_ll);
 		dlil_etv = (TextView) findViewById(R.id.blackboard_dl_error);
 		contentDescription = (TextView) findViewById(R.id.content_description);
+		
+		msv = (MyScrollView) findViewById(R.id.scroll_content_description);
 		
 		DefaultHttpClient client = ConnectionHelper.getThreadSafeClient();
 		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(this,client));
@@ -96,24 +106,26 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = this.getSupportMenuInflater();
         inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
+        if(!getIntent().getBooleanExtra("showViewInWeb", false))
+        	menu.removeItem(R.id.viewInWeb);
 		return true;
 		 
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-	    	int id = item.getItemId();
-	    	switch(id)
-	    	{
-		    	case android.R.id.home:
-		            // app icon in action bar clicked; go home
-		           super.onBackPressed();
-		           break;
-		    	case R.id.viewInWeb:
-		    		showAreYouSureDlg(BlackboardDownloadableItemActivity.this);
-		    		break;
-	    	}
-	    	return false;
+    	int id = item.getItemId();
+    	switch(id)
+    	{
+	    	case android.R.id.home:
+	            // app icon in action bar clicked; go home
+	           super.onBackPressed();
+	           break;
+	    	case R.id.viewInWeb:
+	    		showAreYouSureDlg(BlackboardDownloadableItemActivity.this);
+	    		break;
+    	}
+    	return false;
 	}
 	private void showAreYouSureDlg(Context con)
 	{
@@ -213,18 +225,31 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		{
 			if(!this.isCancelled())
 	    	{
-				String content = Html.fromHtml(Html.fromHtml(((String) result[0]).replaceAll("<!--.*?-->", "")).toString()).toString();
+				String content = Html.fromHtml(Html.fromHtml(((String) result[0]).replaceAll("<!--.*?-->", "")).toString()).toString().trim();
+				if("".equals(content))
+				{	
+					content = "No description";
+					TypedValue tv = new TypedValue();
+					if(getTheme().resolveAttribute(android.R.attr.textColorTertiary, tv, true))	
+					{	
+						TypedArray arr = obtainStyledAttributes(tv.resourceId, new int[] {android.R.attr.textColorTertiary});
+						contentDescription.setTextColor(arr.getColor(0, Color.BLACK));
+					}			
+				}
 				ArrayList<bbFile> data = (ArrayList<bbFile>) result[1];
 				
-				contentDescription.setText(content);			
+				contentDescription.setText(content);	
+				msv.requestLayout();
+				msv.invalidate();
+				Log.d("canScroll", msv.canScroll()+"");
 				
 				dlableItems.setAdapter(new dlableItemAdapter(BlackboardDownloadableItemActivity.this,data));
 				dlableItems.setOnItemClickListener(new OnItemClickListener() {
 					
 					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
+					public void onItemClick(AdapterView<?> parent, View arg1, int position, long id)
 					{
-						final bbFile item = (bbFile)(arg0.getAdapter().getItem(arg2));
+						final bbFile item = (bbFile)(parent.getAdapter().getItem(position));
 						
 						AlertDialog.Builder alertBuilder = new AlertDialog.Builder(BlackboardDownloadableItemActivity.this);
 						alertBuilder.setMessage("Would you like to download this attached file?").
@@ -255,7 +280,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 									onNotificationClick=new BroadcastReceiver() {
 										    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 											public void onReceive(Context con, Intent intent) {
-										    	String action = intent.getAction();
+										    	final String action = intent.getAction();
 										    	if(DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action))
 										    	{
 										    		long[] dlIDs = intent.getLongArrayExtra(DownloadManager.EXTRA_NOTIFICATION_CLICK_DOWNLOAD_IDS);
@@ -263,12 +288,20 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 										    		//not sure when dlIDs will ever have >1 member, so let's just assume only 1 member
 										    		//TODO: need to confirm when dlIDs might be >1
 										    		if(downloadedFile != null) //make sure file isn't still downloading
-										    			startActivity(new Intent(Intent.ACTION_VIEW, downloadedFile));
+										    		{	
+										    			try {
+										 	    			startActivity(new Intent(Intent.ACTION_VIEW, downloadedFile));
+										    			}
+									 	    			catch(ActivityNotFoundException ex) {
+										 	    				ex.printStackTrace();
+										 	    				//TODO: let the user know something went wrong?
+										 	    		}
+										    		}
 										    		else
 										    			Toast.makeText(con, "Download could not be opened at this time.", Toast.LENGTH_SHORT).show();
 										    	}
 										    }
-										  };
+									};
 									
 									
 									 registerReceiver(onNotificationClick, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));

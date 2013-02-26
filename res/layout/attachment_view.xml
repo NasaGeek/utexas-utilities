@@ -10,14 +10,10 @@
     <TextView
         android:id="@+id/attachment_name"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:layout_weight="1"
-        android:ellipsize="end"
         android:gravity="bottom"
-        android:lines="1"
-        android:scrollHorizontally="true"
-        android:singleLine="true"
         android:text="text"
         android:textSize="18sp" />
 

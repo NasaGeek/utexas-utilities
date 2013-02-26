@@ -57,63 +57,63 @@ public class BlackboardGradesActivity extends SherlockActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-			super.onCreate(savedInstanceState);
-			setContentView(R.layout.blackboard_grades_layout);
-			actionbar = getSupportActionBar();
-			actionbar.setHomeButtonEnabled(true);
-			actionbar.setDisplayHomeAsUpEnabled(true);
-			actionbar.setTitle(getIntent().getStringExtra("coursename"));
-			actionbar.setSubtitle("Grades");
-			
-			g_pb_ll = (LinearLayout)findViewById(R.id.grades_progressbar_ll);
-			glv = (ListView) findViewById(R.id.gradesListView);
-			getv = (TextView) findViewById(R.id.grades_error);
-			
-			glv.setOnItemClickListener(new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int arg2, long arg3) {
-					bbGrade grade = (bbGrade) arg0.getAdapter().getItem(arg2);
-					
-					Dialog dlg = new Dialog(BlackboardGradesActivity.this,R.style.Theme_Sherlock_Light_Dialog);
-					dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					dlg.setContentView(R.layout.grade_info_dialog);
-					dlg.setTitle("Grade Info");
-					
-					TextView name = (TextView) dlg.findViewById(R.id.grade_info_name);
-					TextView value = (TextView) dlg.findViewById(R.id.grade_info_value);
-					TextView comment = (TextView) dlg.findViewById(R.id.grade_info_comment);
-					
-					name.setText(grade.getName());
-					
-					String valueString = null;
-					if(grade.getNumGrade().equals(-1))
-						valueString = "-";
-					else if(grade.getNumGrade().equals(-2))
-						valueString = grade.getGrade();
-					else
-						valueString = grade.getNumGrade() +"/"+grade.getNumPointsPossible();
-					value.setText(valueString);
-					comment.setText(grade.getComment());
-					
-					dlg.setCanceledOnTouchOutside(true);
-					dlg.show();
-					//TODO: DialogFragment or showDialog
-				}
-				
-			});
-			
-			
-			httpclient = ConnectionHelper.getThreadSafeClient();
-			httpclient.getCookieStore().clear();
-			BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(this,httpclient));
-			cookie.setDomain("courses.utexas.edu");
-			httpclient.getCookieStore().addCookie(cookie);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.blackboard_grades_layout);
+		actionbar = getSupportActionBar();
+		actionbar.setHomeButtonEnabled(true);
+		actionbar.setDisplayHomeAsUpEnabled(true);
+		actionbar.setTitle(getIntent().getStringExtra("coursename"));
+		actionbar.setSubtitle("Grades");
 		
-			fetch = new fetchGradesTask(httpclient);
-			fetch.execute();
+		g_pb_ll = (LinearLayout)findViewById(R.id.grades_progressbar_ll);
+		glv = (ListView) findViewById(R.id.gradesListView);
+		getv = (TextView) findViewById(R.id.grades_error);
+		
+		glv.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				bbGrade grade = (bbGrade) arg0.getAdapter().getItem(arg2);
+				
+				Dialog dlg = new Dialog(BlackboardGradesActivity.this,R.style.Theme_Sherlock_Light_Dialog);
+				dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
+				dlg.setContentView(R.layout.grade_info_dialog);
+				dlg.setTitle("Grade Info");
+				
+				TextView name = (TextView) dlg.findViewById(R.id.grade_info_name);
+				TextView value = (TextView) dlg.findViewById(R.id.grade_info_value);
+				TextView comment = (TextView) dlg.findViewById(R.id.grade_info_comment);
+				
+				name.setText(grade.getName());
+				
+				String valueString = null;
+				if(grade.getNumGrade().equals(-1))
+					valueString = "-";
+				else if(grade.getNumGrade().equals(-2))
+					valueString = grade.getGrade();
+				else
+					valueString = grade.getNumGrade() +"/"+grade.getNumPointsPossible();
+				value.setText(valueString);
+				comment.setText(grade.getComment());
+				
+				dlg.setCanceledOnTouchOutside(true);
+				dlg.show();
+				//TODO: DialogFragment or showDialog
+			}
 			
+		});
+		
+		
+		httpclient = ConnectionHelper.getThreadSafeClient();
+		httpclient.getCookieStore().clear();
+		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(this,httpclient));
+		cookie.setDomain("courses.utexas.edu");
+		httpclient.getCookieStore().addCookie(cookie);
+	
+		fetch = new fetchGradesTask(httpclient);
+		fetch.execute();
+		
 	}
 	
 	@Override
@@ -121,6 +121,8 @@ public class BlackboardGradesActivity extends SherlockActivity
 		
 		MenuInflater inflater = this.getSupportMenuInflater();
         inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
+        if(!getIntent().getBooleanExtra("showViewInWeb", false))
+        	menu.removeItem(R.id.viewInWeb);
 		return true;
 		 
 	}
@@ -128,18 +130,18 @@ public class BlackboardGradesActivity extends SherlockActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-	    	int id = item.getItemId();
-	    	switch(id)
-	    	{
-		    	case android.R.id.home:
-		            // app icon in action bar clicked; go home
-		           super.onBackPressed();
-		           break;
-		    	case R.id.viewInWeb:
-		    		showAreYouSureDlg(BlackboardGradesActivity.this);
-		    		break;
-	    	}
-	    	return false;
+    	int id = item.getItemId();
+    	switch(id)
+    	{
+	    	case android.R.id.home:
+	            // app icon in action bar clicked; go home
+	           super.onBackPressed();
+	           break;
+	    	case R.id.viewInWeb:
+	    		showAreYouSureDlg(BlackboardGradesActivity.this);
+	    		break;
+    	}
+    	return false;
 	}
 	private void showAreYouSureDlg(Context con)
 	{

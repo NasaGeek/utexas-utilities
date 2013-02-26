@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 doesn't fill the whole parent in 2.1, not sure why as the layout attribute shows
-up correctly in hierarchy-viewer
--->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+up correctly in hierarchy-viewer -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_gravity="center_horizontal"
-    android:layout_marginLeft="15dp"
-    android:layout_marginRight="15dp"
-    android:background="@drawable/background_holo_light" >
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:background="@drawable/background_holo_light"
+    android:gravity="center_vertical"
+    android:orientation="vertical" >
 
     <include
         android:id="@+id/blackboard_dl_items_progressbar_ll"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         layout="@layout/loading_content_layout" />
 
     <include
         android:id="@+id/blackboard_dl_error"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         layout="@layout/error_message_view" />
 
     <TextView
         android:id="@+id/content_description_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical|top"
         android:gravity="center"
         android:paddingTop="10dp"
         android:text="Content Description"
@@ -37,18 +37,19 @@ up correctly in hierarchy-viewer
         android:id="@+id/content_description_separator"
         android:layout_width="fill_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/content_description_title"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_vertical"
         android:layout_marginTop="10dp"
         android:src="#99AAAAAA" />
 
-    <ScrollView
+    <com.nasageek.utexasutilities.MyScrollView
         android:id="@+id/scroll_content_description"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/content_description_separator"
-        android:layout_centerVertical="true"
+        android:layout_height="0dp"    
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical"
         android:fillViewport="false"
+        android:scrollbars="vertical"
+        android:scrollbarStyle="insideInset"
         android:isScrollContainer="true" >
 
         <TextView
@@ -60,25 +61,24 @@ up correctly in hierarchy-viewer
             android:textIsSelectable="true"
             android:textSize="15sp"
             android:visibility="gone" />
-    </ScrollView>
+    </com.nasageek.utexasutilities.MyScrollView>
 
     <ImageView
         android:id="@+id/content_attachment_separator"
         android:layout_width="fill_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/scroll_content_description"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_vertical"
         android:layout_marginTop="10dp"
         android:src="#99AAAAAA" />
 
     <ListView
         android:id="@+id/dlable_item_list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/content_attachment_separator"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:background="@android:color/transparent"
         android:cacheColorHint="@android:color/transparent"
         android:divider="#FFCCCCCC"
         android:dividerHeight="1dp" />
 
-</RelativeLayout>
+</LinearLayout>

@@ -20,7 +20,6 @@
 			android:id="@+id/schedule_button"
 			android:layout_height="wrap_content"
 		    android:layout_width="wrap_content"
-			android:src="@drawable/schedule_image_button"
 			android:layout_centerInParent="true"
 			android:background="#00000000"
 			/>
@@ -43,7 +42,6 @@
 			android:id="@+id/blackboard_button"
 			android:layout_height="wrap_content"
 		    android:layout_width="wrap_content"
-			android:src="@drawable/blackboard_image_button"
 			android:layout_centerInParent="true"
 			android:background="#00000000"
 			/>
@@ -66,7 +64,6 @@
 			android:id="@+id/map_button"
 			android:layout_height="wrap_content"
 		    android:layout_width="wrap_content"
-			android:src="@drawable/map_image_button"
 			android:layout_centerInParent="true"
 			android:background="#00000000"
 			/>
@@ -95,7 +92,6 @@
 			android:id="@+id/balance_button"
 			android:layout_height="wrap_content"
 		    android:layout_width="wrap_content"
-			android:src="@drawable/balance_image_button"
 			android:layout_centerInParent="true"
 			android:background="#00000000"
 			/>
@@ -118,7 +114,6 @@
 			android:id="@+id/data_button"
 			android:layout_height="wrap_content"
 		    android:layout_width="wrap_content"
-			android:src="@drawable/data_image_button"
 			android:layout_centerInParent="true"
 			android:background="#00000000"
 			/>
@@ -140,7 +135,6 @@
 			android:id="@+id/menu_button"
 			android:layout_height="wrap_content"
 		    android:layout_width="wrap_content"
-			android:src="@drawable/menu_image_button"
 			android:layout_centerInParent="true"
 			android:background="#00000000"
 			/>

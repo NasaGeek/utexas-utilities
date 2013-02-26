@@ -1,12 +1,10 @@
 package com.nasageek.utexasutilities.activities;
 
-import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -25,11 +23,9 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -52,7 +48,6 @@ import com.nasageek.utexasutilities.model.CourseMapItem;
 
 
 public class CourseMapActivity extends SherlockActivity {
-
 	
 	private ActionBar actionbar;
 	private DefaultHttpClient httpclient;
@@ -83,19 +78,8 @@ public class CourseMapActivity extends SherlockActivity {
 		actionbar.setDisplayShowTitleEnabled(false);
 		actionbar.setHomeButtonEnabled(true);
 		actionbar.setDisplayHomeAsUpEnabled(true);
-		
-		TextView titleView = new TextView(this);
-		titleView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-		titleView.setLines(1);
-		titleView.setTextSize(18);
-		titleView.setPadding(0, 0, 7, 0);
-		titleView.setSingleLine(true);
-		titleView.setTextColor(Color.BLACK);
-		titleView.setTypeface(Typeface.DEFAULT);
-		titleView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT));
-		
-		//actionbar.setCustomView(titleView);
 		actionbar.setCustomView(getLayoutInflater().inflate(R.layout.action_bar_title_subtitle, null));
+		
 		absTitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_title);
 		absSubtitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_subtitle);
 		
@@ -128,10 +112,10 @@ public class CourseMapActivity extends SherlockActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-				String linkType = mainList.get(position).first.getLinkType();
-				String url = mainList.get(position).first.getViewUrl();
+				final String linkType = mainList.get(position).first.getLinkType();
+				final String url = mainList.get(position).first.getViewUrl();
 				
-				if(mainList.get(position).second.size() != 0)
+				if(mainList.get(position).second.size() != 0) //a folder was clicked
 				{	
 					Intent courseMapLaunch = new Intent(getString(R.string.coursemap_nest_intent), Uri.parse(position+""), CourseMapActivity.this, CourseMapActivity.class);
 					courseMapLaunch.putExtra("mainList", mainList.get(position).second);
@@ -142,6 +126,7 @@ public class CourseMapActivity extends SherlockActivity {
 					courseMapLaunch.putExtra("viewUri", mainList.get(position).first.getViewUrl());
 					courseMapLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
 					courseMapLaunch.putExtra("coursename", getIntent().getStringExtra("coursename"));
+					courseMapLaunch.putExtra("showViewInWeb", true);
 					startActivity(courseMapLaunch);
 				}
 				else if(linkType.equals("resource/x-bb-file") || linkType.equals("resource/x-bb-document"))
@@ -156,6 +141,7 @@ public class CourseMapActivity extends SherlockActivity {
 					bbItemLaunch.putExtra("viewUri", url);
 					bbItemLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
 					bbItemLaunch.putExtra("coursename", getIntent().getStringExtra("coursename"));
+					bbItemLaunch.putExtra("showViewInWeb", true);
 					startActivity(bbItemLaunch);
 				}
 				else if(linkType.equals("resource/x-bb-externallink"))
@@ -174,6 +160,7 @@ public class CourseMapActivity extends SherlockActivity {
 					gradesLaunch.putExtra("viewUri", url);
 					gradesLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
 					gradesLaunch.putExtra("coursename", getIntent().getStringExtra("coursename"));
+					gradesLaunch.putExtra("showViewInWeb", true);
 					startActivity(gradesLaunch);
 				}
 				else if(linkType.equals("announcements"))
@@ -182,6 +169,7 @@ public class CourseMapActivity extends SherlockActivity {
 					announcementsLaunch.putExtra("viewUri", url);
 					announcementsLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
 					announcementsLaunch.putExtra("coursename", getIntent().getStringExtra("coursename"));
+					announcementsLaunch.putExtra("showViewInWeb", true);
 					startActivity(announcementsLaunch);
 				}
 				else //default to webview
@@ -193,7 +181,7 @@ public class CourseMapActivity extends SherlockActivity {
 					else
 						bbItemLaunch.putExtra("itemName", absSubtitle.getText() + "/" + mainList.get(position).first.getName()); //Subtitle
 					bbItemLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
-					bbItemLaunch.putExtra("coursename", getIntent().getStringExtra("coursename")); //will be used at Title
+					bbItemLaunch.putExtra("coursename", getIntent().getStringExtra("coursename")); //will be used as Title
 					startActivity(bbItemLaunch);
 				}
 			}
@@ -266,10 +254,8 @@ public class CourseMapActivity extends SherlockActivity {
 		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
 		{
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				
+			public void onClick(DialogInterface dialog, int which) {				
 				dialog.dismiss();
-				
 			}
 		});
 		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() 

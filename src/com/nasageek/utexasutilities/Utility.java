@@ -70,6 +70,7 @@ public class Utility {
     	new StopParseTask().execute(con);
 	}
     
+    //TODO: check resulting files against regex to confirm they are correct?
     static class StopParseTask extends AsyncTask<Context, Void, Void>
     {
     	String errorText;
@@ -109,7 +110,7 @@ public class Utility {
 				try {
 					bos = new BufferedOutputStream(new FileOutputStream(stopsfile));
 				} catch (FileNotFoundException e) {
-					errorText = "Stops files could not be created.";
+					errorText = "Stop files could not be created.";
 					cancel(true);
 					e.printStackTrace();
 					return null;
@@ -134,7 +135,7 @@ public class Utility {
 		            
 			            while(coordMatcher.find() && nameMatcher.find() && idMatcher.find())
 			            {
-								bos.write((coordMatcher.group(1)+", "+coordMatcher.group(2)+"\t").getBytes());
+							bos.write((coordMatcher.group(1)+", "+coordMatcher.group(2)+"\t").getBytes());
 							
 			            	bos.write((nameMatcher.group(1)+"\t").getBytes());
 			            	bos.write((idMatcher.group(1)+"\n").getBytes());
@@ -171,10 +172,14 @@ public class Utility {
 			
 			Toast.makeText(con, "Stops have been updated.", Toast.LENGTH_LONG).show();
 		}
-    	
-    	
-    	
     }
+    
+    /*
+     * this method copies the ViewPager method of the same name
+     * (perhaps I should just use reflection?) to generate the
+     * necessary fragment tags for the purpose of restoring them
+     */
+    
     public static String makeFragmentName(int viewId, int position)
 	{
     	return "android:switcher:" + viewId + ":" + position;

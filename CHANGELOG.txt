@@ -129,3 +129,18 @@ Fixed several force closes related to not checking if the schedule fragments' pa
 Some big code cleanup, all in schedule
 Export schedule to Google Calendar!! (4.0+)
 
+Versioncode 16 - 1.86
+
+Updated bus routes and stops, also implemented early ability to download and parse bus stops
+Fixed crash on stops with detours
+Fixed Blackboard downloads getting wrong file names
+Other bug fixes
+
+Versioncode 17 - 1.86v2
+
+Fixed 2.2 crash on viewing blackboard attachments
+
+Versioncode 18 - 2.0?
+
+Tablet interface for Menus, Balances, ?
+Improved login speed

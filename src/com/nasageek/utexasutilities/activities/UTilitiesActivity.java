@@ -1,5 +1,8 @@
 package com.nasageek.utexasutilities.activities;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.AlertDialog;
@@ -11,12 +14,20 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
+import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.View.OnTouchListener;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -49,21 +60,17 @@ public class UTilitiesActivity extends SherlockActivity {
 	
 	private final static int LOGOUT_MENU_ID = 11;
 	private final static int CANCEL_LOGIN_MENU_ID = 12;
+	private final static int BUTTON_ANIMATION_DURATION = 100;
     
-	private ProgressDialog pd; 
 	private SharedPreferences settings;
 	private Menu menu;
-	private ActionBar actionbar;
 	private Toast message;
 	private ImageView scheduleCheck, balanceCheck, dataCheck, blackboardCheck;
-//	 AnimationDrawable frameAnimation;
-	 private ConnectionHelper.loginTask lt;
-	 private ConnectionHelper.PNALoginTask plt;
-	 private ConnectionHelper.bbLoginTask bblt;
+	private ConnectionHelper.loginTask lt;
+	private ConnectionHelper.PNALoginTask plt;
+	private ConnectionHelper.bbLoginTask bblt; 
+	private AlertDialog nologin;
 	 
-	 private AlertDialog nologin;
-	
-	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +90,14 @@ public class UTilitiesActivity extends SherlockActivity {
         }*/
         Crittercism.init(getApplicationContext(), "4fed1764be790e4597000001");
         
+   /*     try {
+        	File httpCacheDir = new File(getCacheDir(), "http");
+        	long httpCacheSize = 1024*1024;
+        	HttpResponseCache.install(httpCacheDir, httpCacheSize);
+        } catch (IOException e) {
+        	e.printStackTrace();
+        }*/
+        
         final ChangeableContextTask[] loginTasks = (ChangeableContextTask[]) getLastNonConfigurationInstance();
         if(loginTasks != null)
         {    
@@ -101,20 +116,19 @@ public class UTilitiesActivity extends SherlockActivity {
         	setSupportProgressBarIndeterminateVisibility(true);
         else
         	setSupportProgressBarIndeterminateVisibility(false);
-        final Intent schedule = new Intent(getBaseContext(), ScheduleActivity.class);
-    	final Intent balance = new Intent(getBaseContext(), BalanceActivity.class);
-    	final Intent map = new Intent(getBaseContext(), CampusMapActivity.class);
-    	final Intent data = new Intent(getBaseContext(), DataUsageActivity.class);
-    	final Intent menu = new Intent(getBaseContext(), MenuActivity.class);
-    	final Intent blackboard = new Intent(getBaseContext(), BlackboardActivity.class);
-    	
-    	actionbar = getSupportActionBar();
-    	actionbar.show();
+        
+        final Intent schedule 	= new Intent(this, ScheduleActivity.class);
+    	final Intent balance 	= new Intent(this, BalanceActivity.class);
+    	final Intent map 		= new Intent(this, CampusMapActivity.class);
+    	final Intent data 		= new Intent(this, DataUsageActivity.class);
+    	final Intent menu 		= new Intent(this, MenuActivity.class);
+    	final Intent blackboard = new Intent(this, BlackboardActivity.class);
+
     	message = Toast.makeText(this, R.string.login_first, Toast.LENGTH_SHORT);
     	
-    	scheduleCheck = (ImageView) findViewById(R.id.scheduleCheck);
-    	balanceCheck = (ImageView) findViewById(R.id.balanceCheck);
-    	dataCheck = (ImageView) findViewById(R.id.dataCheck);
+    	scheduleCheck 	= (ImageView) findViewById(R.id.scheduleCheck);
+    	balanceCheck 	= (ImageView) findViewById(R.id.balanceCheck);
+    	dataCheck 		= (ImageView) findViewById(R.id.dataCheck);
     	blackboardCheck = (ImageView) findViewById(R.id.blackboardCheck);
     	
     	if(!settings.contains("encryptedpassword") && settings.contains("firstRun") && settings.contains("password"))
@@ -152,32 +166,18 @@ public class UTilitiesActivity extends SherlockActivity {
         	Utility.id(this);
         }
 
-   /* 	if(!ConnectionHelper.cookieHasBeenSet() && (!settings.contains("eid") || !settings.contains("password")||settings.getString("eid", "error").equals("")||settings.getString("password", "error").equals("")))
-        {
-        	AlertDialog.Builder nologin_builder = new AlertDialog.Builder(this);
-        	nologin_builder.setMessage("It would seem that you are not logged into UTDirect yet, why don't we take care of that?")
-        			.setCancelable(false)
-        			.setPositiveButton("Ok!", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    loadSettings();
-                }
-            })
-            .setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                     dialog.cancel();
-                }
-            });
-        	AlertDialog nologin = nologin_builder.create();
-        	nologin.show();
-        }*/
         if(settings.getBoolean("autologin", false) && !ConnectionHelper.cookieHasBeenSet() && !ConnectionHelper.isLoggingIn())
         {
         	login(); 
         }
         
-        final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
         
-      
+        final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
+        final Drawable scheduleDrawables[] = new Drawable[] {getResources().getDrawable(R.drawable.schedulebutton),
+        											 getResources().getDrawable(R.drawable.schedulebuttonpressed)};
+        final TransitionDrawable scheduleCrossfade = new TransitionDrawable(scheduleDrawables);
+        schedulebutton.setImageDrawable(scheduleCrossfade);  
+        schedulebutton.setOnTouchListener(new imageButtonTouchListener(scheduleCrossfade));
         schedulebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	
@@ -207,8 +207,14 @@ public class UTilitiesActivity extends SherlockActivity {
 	            		startActivity(schedule);
             	}
             }   
-    });
+        });
+        
         final ImageButton balancebutton = (ImageButton) findViewById(R.id.balance_button);
+        final Drawable balanceDrawables[] = new Drawable[] {getResources().getDrawable(R.drawable.balancebutton),
+				 											getResources().getDrawable(R.drawable.balancebuttonpressed)};
+		final TransitionDrawable balanceCrossfade = new TransitionDrawable(balanceDrawables);
+		balancebutton.setImageDrawable(balanceCrossfade);  
+		balancebutton.setOnTouchListener(new imageButtonTouchListener(balanceCrossfade));
         balancebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	if(settings.getBoolean("loginpref", false))
@@ -237,18 +243,25 @@ public class UTilitiesActivity extends SherlockActivity {
             	} 
             }
     });
+        
         final ImageButton mapbutton = (ImageButton) findViewById(R.id.map_button);
+        final Drawable mapDrawables[] = new Drawable[] {getResources().getDrawable(R.drawable.busandmapbutton),
+        												getResources().getDrawable(R.drawable.busandmapbuttonpressed)};
+		final TransitionDrawable mapCrossfade = new TransitionDrawable(mapDrawables);
+		mapbutton.setImageDrawable(mapCrossfade);  
+		mapbutton.setOnTouchListener(new imageButtonTouchListener(mapCrossfade));
         mapbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-            	
-         //		pd = ProgressDialog.show(UTilitiesActivity.this, "", "Loading. Please wait...");
-            
-            	startActivity(map);
-            		
-            }
-            
-    });
+            	startActivity(map);		
+            }         
+        });
+        
         final ImageButton databutton = (ImageButton) findViewById(R.id.data_button);
+        final Drawable dataDrawables[] = new Drawable[] {getResources().getDrawable(R.drawable.databutton),
+				 										 getResources().getDrawable(R.drawable.databuttonpressed)};
+		final TransitionDrawable dataCrossfade = new TransitionDrawable(dataDrawables);
+		databutton.setImageDrawable(dataCrossfade);  
+		databutton.setOnTouchListener(new imageButtonTouchListener(dataCrossfade));
         databutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             
@@ -280,14 +293,26 @@ public class UTilitiesActivity extends SherlockActivity {
             	}	
             }         
     });
+        
         final ImageButton menubutton = (ImageButton) findViewById(R.id.menu_button);
+        final Drawable menuDrawables[] = new Drawable[] {getResources().getDrawable(R.drawable.menubutton),
+				 										 getResources().getDrawable(R.drawable.menubuttonpressed)};
+		final TransitionDrawable menuCrossfade = new TransitionDrawable(menuDrawables);
+		menubutton.setImageDrawable(menuCrossfade);  
+		menubutton.setOnTouchListener(new imageButtonTouchListener(menuCrossfade));
         menubutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {        
            		startActivity(menu);	          		
             }
             
-    });
+        });
+        
         final ImageButton blackboardbutton = (ImageButton) findViewById(R.id.blackboard_button);
+        final Drawable blackboardDrawables[] = new Drawable[] {getResources().getDrawable(R.drawable.blackboardbutton),
+				 											   getResources().getDrawable(R.drawable.blackboardbuttonpressed)};
+		final TransitionDrawable blackboardCrossfade = new TransitionDrawable(blackboardDrawables);
+		blackboardbutton.setImageDrawable(blackboardCrossfade);  
+		blackboardbutton.setOnTouchListener(new imageButtonTouchListener(blackboardCrossfade));
         blackboardbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	
@@ -320,6 +345,70 @@ public class UTilitiesActivity extends SherlockActivity {
             
         });
     }
+	
+	private class imageButtonTouchListener implements OnTouchListener
+	{
+		private boolean buttonPressed = false;
+    	private TransitionDrawable crossfade;
+    	
+    	public imageButtonTouchListener(TransitionDrawable transDrawable)
+    	{
+    		crossfade = transDrawable;
+    	}
+    	@Override
+    	public boolean onTouch(View v, MotionEvent event) {
+    		
+    		switch(event.getActionMasked())
+    		{
+    		case MotionEvent.ACTION_DOWN:
+    			if(!buttonPressed)
+    			{
+    				buttonPressed = true;
+    				crossfade.startTransition(BUTTON_ANIMATION_DURATION);
+    			}
+    			break;
+    		case MotionEvent.ACTION_UP:
+    			if(buttonPressed)
+    			{	
+    				buttonPressed = false;
+    				crossfade.reverseTransition(BUTTON_ANIMATION_DURATION);
+    			}
+    			break;	
+    		case MotionEvent.ACTION_MOVE:
+    			final int[] states = v.getDrawableState();
+    			boolean pressedStateFound = false;
+    			for(int state : states)
+    			{
+    				if(state == android.R.attr.state_pressed)
+    				{
+    					pressedStateFound = true;
+    					if(!buttonPressed)
+    					{	
+    						buttonPressed = true;
+    						crossfade.startTransition(BUTTON_ANIMATION_DURATION);
+    					}
+    					break;
+    				}
+    			}
+    			if(!pressedStateFound && buttonPressed)
+    			{
+    				buttonPressed = false;
+    				crossfade.reverseTransition(BUTTON_ANIMATION_DURATION);
+    			}
+    			break;
+    		}
+    		return false;
+    	}	
+	}
+
+/*	@Override
+	protected void onStop()
+	{
+		super.onStop();
+		HttpResponseCache cache = HttpResponseCache.getInstalled();
+		if(cache != null)
+			cache.flush();
+	}*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = this.getSupportMenuInflater();
@@ -417,11 +506,12 @@ public class UTilitiesActivity extends SherlockActivity {
       			DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
       			DefaultHttpClient pnahttpclient = ConnectionHelper.getThreadSafeClient();
       			DefaultHttpClient bbhttpclient = ConnectionHelper.getThreadSafeClient();
-
+      			
+      			
       			ConnectionHelper.resetCookies(this);
 
       			bblt = ch.new bbLoginTask(this, httpclient, pnahttpclient, bbhttpclient);
-      			lt = ch.new loginTask(this,httpclient, pnahttpclient, bbhttpclient);
+      			lt = ch.new loginTask(this, httpclient, pnahttpclient, bbhttpclient);
       			plt = ch.new PNALoginTask(this, httpclient, pnahttpclient, bbhttpclient);
       			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 	      			bblt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ch);
@@ -464,16 +554,7 @@ public class UTilitiesActivity extends SherlockActivity {
     {
     	super.onResume();
     	invalidateOptionsMenu();
-    	if(pd!=null)
-    		pd.dismiss();
-    	resetChecks();
-    	
-    }
-    public void onStart()
-    {
-    	super.onStart();
-    	if(pd!=null)
-    		pd.dismiss();
+    	resetChecks();	
     }
     public void onPause()
     {

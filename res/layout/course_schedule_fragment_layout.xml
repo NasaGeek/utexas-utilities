@@ -182,10 +182,13 @@
             android:numColumns="5"
             android:stretchMode="columnWidth"
             android:verticalSpacing="0dp"
-            android:visibility="gone" />
+            android:visibility="gone" 
+            android:choiceMode="singleChoice"/>
 
         <TextView
             android:id="@+id/no_courses"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:gravity="center"

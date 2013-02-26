@@ -9,9 +9,11 @@ import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -20,6 +22,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.PaintDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.View;
@@ -50,7 +53,7 @@ public class ClassAdapter extends BaseAdapter {
 	private Resources res;
 	
 	
-	int currMinutes;
+	private int currMinutes;
 	
 	private String empty_cell_pref;
 	
@@ -106,6 +109,7 @@ public class ClassAdapter extends BaseAdapter {
 					cllist.set(1+5*startpos+a*5, ct);
 					if(a==0)firstlist.set(1+5*startpos+a*5, true);
 				}break;
+			//TODO: 2+5*startpost+a*5 == -9 ? getting an exception from someone
 			case 'W':
 				for(int a = 0; a<(endpos-startpos); a++) {
 					cllist.set(2+5*startpos+a*5, ct);
@@ -128,7 +132,7 @@ public class ClassAdapter extends BaseAdapter {
 	{
 		cal = Calendar.getInstance();
 		day = cal.get(Calendar.DAY_OF_WEEK)-2;
-		time = cal.get(Calendar.HOUR)+(cal.get(Calendar.MINUTE)>30?":30":":00")+ (cal.get(Calendar.AM_PM)==Calendar.PM?"pm":"");
+		time = cal.get(Calendar.HOUR)+(cal.get(Calendar.MINUTE)>=30?":30":":00")+ (cal.get(Calendar.AM_PM)==Calendar.PM?"pm":"");
 		
 		if(day<5 && day>=0 && cal.get(Calendar.HOUR_OF_DAY)<=22 && cal.get(Calendar.HOUR_OF_DAY)>=8)
 		{
@@ -159,6 +163,7 @@ public class ClassAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		return position;
 	}
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) 
 	{
@@ -179,12 +184,30 @@ public class ClassAdapter extends BaseAdapter {
 					
 					@Override
 					public void draw(Canvas canvas, Paint paint) {
+					//	paint.setStrokeWidth(1.5f);
 						paint.setStrokeWidth(3f);
+					
+					//	paint.setARGB(255, 236, 132, 62);
+						paint.setColor(Color.BLACK);
+						paint.setStyle(Paint.Style.STROKE);
 						canvas.drawColor(getEmptyCellColor(position));
+					//	canvas.drawLine(getWidth() - 12, (int)((currMinutes/30.0)*getHeight() + .5) - 12, getWidth()-9, (int)((currMinutes/30.0)*getHeight() + .5) - 9, paint);
+					//	canvas.drawLine(getWidth() - 12, (int)((currMinutes/30.0)*getHeight() + .5) - 12, getWidth()-12, (int)((currMinutes/30.0)*getHeight() + .5) - 16, paint);
+					//	canvas.drawCircle( getWidth() - 12, (int)((currMinutes/30.0)*getHeight() + .5) - 12, 5, paint);
+						
+						
+						/*	canvas.drawLine(0, (int)((currMinutes/30.0)*getHeight() + .5), 
+								getWidth(), (int)((currMinutes/30.0)*getHeight() + .5), paint);*/
+						Paint blur = new Paint(paint);
+						blur.setStrokeWidth(3f);
+						blur.setMaskFilter(new BlurMaskFilter(3, BlurMaskFilter.Blur.SOLID));
 						canvas.drawLine(0, (int)((currMinutes/30.0)*getHeight() + .5), 
-								getWidth(), (int)((currMinutes/30.0)*getHeight() + .5), paint);	
+								getWidth(), (int)((currMinutes/30.0)*getHeight() + .5), paint);
+
+						
 					}
 				});
+        		iv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         		iv.setBackgroundDrawable(currentMinutesLine);
         	}
         	else
@@ -204,12 +227,29 @@ public class ClassAdapter extends BaseAdapter {
 					
 					@Override
 					public void draw(Canvas canvas, Paint paint) {
+					//	paint.setStrokeWidth(1.5f);
 						paint.setStrokeWidth(3f);
+
+					//	paint.setARGB(255, 236, 132, 62);
+						paint.setColor(Color.BLACK);
+						paint.setStyle(Paint.Style.STROKE);
 						canvas.drawColor(Color.parseColor(color));
+						
+					//	canvas.drawLine(getWidth() - 12, (int)((currMinutes/30.0)*getHeight() + .5) - 12, getWidth()-9, (int)((currMinutes/30.0)*getHeight() + .5) - 9, paint);
+					//	canvas.drawLine(getWidth() - 12, (int)((currMinutes/30.0)*getHeight() + .5) - 12, getWidth()-12, (int)((currMinutes/30.0)*getHeight() + .5) - 16, paint);
+					//	canvas.drawCircle(getWidth() - 12, (int)((currMinutes/30.0)*getHeight() + .5) - 12, 5, paint);
+					/*	canvas.drawLine(0, (int)((currMinutes/30.0)*getHeight() + .5), 
+								getWidth(), (int)((currMinutes/30.0)*getHeight() + .5), paint);*/
+						Paint blur = new Paint(paint);
+						blur.setStrokeWidth(3f);
+						blur.setMaskFilter(new BlurMaskFilter(3, BlurMaskFilter.Blur.SOLID));
 						canvas.drawLine(0, (int)((currMinutes/30.0)*getHeight() + .5), 
-								getWidth(), (int)((currMinutes/30.0)*getHeight() + .5), paint);	
+								getWidth(), (int)((currMinutes/30.0)*getHeight() + .5), paint);
+
+						
 					}
 				});
+        		iv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         		iv.setBackgroundDrawable(currentMinutesLine);
         	}
         	else

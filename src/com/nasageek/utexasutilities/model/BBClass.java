@@ -7,20 +7,22 @@ public class BBClass {
 	private String name;
 	private String bbid;
 	private String fullcourseid;
-	private String 	semester;
+	private String semester;
 	private String unique;
 	private String courseid;
 	
 	private boolean courseIdAvailable, fullCourseIdTooShort;
 
+	//TODO: move auto-formatting into a separate method? 
 	public BBClass(String name, String bbid, String fullcourseid)
 	{
-		//name is now blank, and the Course ID is mysteriously absent :( - all as of 8/29/2012 
+		//name is now blank, and the Course ID is mysteriously absent :( - all as of 8/29/2012  
 		//oh ho ho! It was fixed, how wonderful. Ignore commented stuff below
-		//checks to see if it is what is now a legitimate courseid
+		//checks to see if it is what is now a legitimate courseid 
 		//year (2 digits) followed by semester (in caps) followed by name followed by unique (digits in parentheses)
 	//	if(courseid.matches("^\\d\\d[A-Z]{1,2} .*?(\\d+?)$"))
 	//		Log.d("BBClass check", "Class format is good");
+		
 
 		
 		
@@ -56,7 +58,7 @@ public class BBClass {
 			//assumes Course ID is directly after unique_ and is at the end of the string
 			//will fail if unique start is less than 6 characters from the end of the string.
 			try
-			{
+			{ 
 				courseid = fullcourseid.substring(fullcourseid.indexOf(unique)+6).replaceAll("_"," ");
 				courseIdAvailable = true;
 			}

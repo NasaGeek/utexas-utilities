@@ -26,7 +26,7 @@ public class BalanceActivity extends SherlockFragmentActivity
 	private ActionBar actionbar;
 	private MultiPanePagerAdapter mPagerAdapter;	   
 	private ViewPager pager;
-	private Boolean isLargeLayout;
+	private int pagesDisplayed;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -35,7 +35,7 @@ public class BalanceActivity extends SherlockFragmentActivity
 		setContentView(R.layout.balance_layout);
 
 		pager = (ViewPager) findViewById(R.id.viewpager);
-		isLargeLayout = getResources().getBoolean(R.bool.largeScreen);
+		pagesDisplayed = getResources().getInteger(R.integer.balance_num_visible_pages);
 
 		this.initialisePaging();
 
@@ -68,11 +68,11 @@ public class BalanceActivity extends SherlockFragmentActivity
         final TabPageIndicator tabIndicator = (TabPageIndicator)findViewById(R.id.titles);
         
         mPagerAdapter = new MultiPanePagerAdapter(getSupportFragmentManager(), fragments);
-        mPagerAdapter.setPagesDisplayed(getResources().getInteger(R.integer.balance_num_visible_pages));
+        mPagerAdapter.setPagesDisplayed(pagesDisplayed);
         
         pager.setAdapter(this.mPagerAdapter);
         final double dpiScale = getResources().getDisplayMetrics().density;
-        if(!isLargeLayout)
+        if(pagesDisplayed == 1)
         	pager.setPageMargin((int)(8 * dpiScale + .5));
         else
         	tabIndicator.setSelectAll(true);
@@ -91,9 +91,10 @@ public class BalanceActivity extends SherlockFragmentActivity
 	           super.onBackPressed();
 	           break;
 	        //tightly coupling the activity to the fragments for the sake of graphical consistency
-	        //was getting weird disappearing menu buttons when I had them in the fragments
+	        //was getting weird disappearing menu buttons when I had them in the fragments 
+	        //TODO: should at least do this with an interface
 	    	case R.id.balance_refresh:
-	    		if(isLargeLayout)
+	    		if(pagesDisplayed > 1)
 	    		{	
 	    			((TransactionsFragment) ((MultiPanePagerAdapter) pager.getAdapter()).getItem(0)).refresh();
 	    			((TransactionsFragment) ((MultiPanePagerAdapter) pager.getAdapter()).getItem(1)).refresh();
