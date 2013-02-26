@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/dash_linlay"
+		android:layout_width="fill_parent" 
+	    android:layout_height="fill_parent" 
+	    android:orientation="vertical"
+	    android:background="@drawable/background_holo_light" >
+	   	
+	    <include 
+	        android:id="@+id/dash_progressbar_ll" 
+	        layout="@layout/loading_content_layout"/>
+	    <include
+	        android:id="@+id/dash_error"
+	        layout="@layout/error_message_view"/>
+
+	   	 <com.foound.widget.AmazingListView
+		 	android:visibility="gone"
+			android:id="@+id/dash_listview"
+			android:clickable="true"
+			android:layout_width="fill_parent" 
+		    android:layout_height="fill_parent"
+		    android:cacheColorHint="@android:color/transparent"
+		    android:background="@android:color/transparent"/>			   	
+</LinearLayout>
