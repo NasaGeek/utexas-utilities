@@ -40,6 +40,7 @@ import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
 import com.viewpagerindicator.TabPageIndicator;
 
+@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 	
 	private List<View> datePickers;
@@ -101,7 +102,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 		initialisePaging(view);
 		((Button)view.findViewById(R.id.calendar_button_ok)).setOnClickListener(new OnClickListener() {
 			
-			@TargetApi(14)
+			@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 			@Override
 			public void onClick(View v) {
 				

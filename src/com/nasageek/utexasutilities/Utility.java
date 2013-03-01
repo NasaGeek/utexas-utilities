@@ -28,7 +28,8 @@ public class Utility {
 	private static String sID = null;
     private static final String INSTALLATION = "UUID";
 	
-	@TargetApi(9)
+    
+	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
 	public static void commit(SharedPreferences.Editor editor)
 	{
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)

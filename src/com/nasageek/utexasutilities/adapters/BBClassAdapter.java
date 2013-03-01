@@ -2,7 +2,6 @@ package com.nasageek.utexasutilities.adapters;
 
 import java.util.ArrayList;
 
-
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -13,8 +12,6 @@ import android.widget.TextView;
 import com.foound.widget.AmazingAdapter;
 import com.nasageek.utexasutilities.Pair;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
 import com.nasageek.utexasutilities.model.BBClass;
 
 public class BBClassAdapter extends AmazingAdapter

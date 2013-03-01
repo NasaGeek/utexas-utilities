@@ -271,6 +271,8 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 				etv.setVisibility(View.VISIBLE); 
 			}
 		}
+		
+		//TODO: figure out fast scroll, maybe the min-sdk is just too low...
 		class BlackboardDashboardAdapter extends AmazingAdapter {
 			
 			private List<Pair<String, List<FeedItem>>> items;
@@ -337,7 +339,10 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 				TextView message = (TextView) res.findViewById(R.id.d_message);
 
 				//TODO: make this look nice for malformed classes
-				courseName.setText(fi.getCourseId()+ " - " + fi.getName()+ " ("+fi.getBbClass().getUnique()+")");
+				if(!"".equals(fi.getCourseId()))
+					courseName.setText(fi.getCourseId()+ " - " + fi.getName()+ " ("+fi.getBbClass().getUnique()+")");
+				else
+					courseName.setText(fi.getName()+ " ("+fi.getBbClass().getUnique()+")");
 				contentType.setText(fi.getType());
 				message.setText(fi.getMessage());
 				

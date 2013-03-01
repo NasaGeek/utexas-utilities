@@ -33,6 +33,9 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.ViewTreeObserver.OnScrollChangedListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -224,6 +227,25 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 		{
 			if(!this.isCancelled())
 	    	{
+				
+				if(msv.getViewTreeObserver().isAlive())
+				{
+					msv.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+
+						@Override
+						public void onGlobalLayout() {
+							
+							msv.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+							
+							if(!msv.canScroll())
+								msv.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 0));
+							else if(msv.canScroll())
+								msv.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 6));
+
+						}
+					});
+				}
+				
 				String content = Html.fromHtml(Html.fromHtml(((String) result[0]).replaceAll("<!--.*?-->", "")).toString()).toString().trim();
 				if("".equals(content))
 				{	
@@ -238,9 +260,6 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 				ArrayList<bbFile> data = (ArrayList<bbFile>) result[1];
 				
 				contentDescription.setText(content);	
-				msv.requestLayout();
-				msv.invalidate();
-				Log.d("canScroll", msv.canScroll()+"");
 				
 				dlableItems.setAdapter(new dlableItemAdapter(BlackboardDownloadableItemActivity.this,data));
 				dlableItems.setOnItemClickListener(new OnItemClickListener() {
@@ -261,7 +280,7 @@ public class BlackboardDownloadableItemActivity extends SherlockActivity {
 						}).
 						setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 							@Override
-							@TargetApi(11)
+							@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 							public void onClick(DialogInterface dialog, int which) {
 		
 								if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 

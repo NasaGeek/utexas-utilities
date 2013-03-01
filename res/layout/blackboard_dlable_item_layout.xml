@@ -3,12 +3,14 @@
 doesn't fill the whole parent in 2.1, not sure why as the layout attribute shows
 up correctly in hierarchy-viewer -->
 
+<!--  try using linearlayout's dividers instead of the imageviews -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_gravity="center_horizontal"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
     android:background="@drawable/background_holo_light"
     android:gravity="center_vertical"
     android:orientation="vertical" >
@@ -30,6 +32,7 @@ up correctly in hierarchy-viewer -->
         android:layout_gravity="center_vertical|top"
         android:gravity="center"
         android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:text="Content Description"
         android:textSize="22sp" />
 
@@ -38,16 +41,15 @@ up correctly in hierarchy-viewer -->
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginTop="10dp"
         android:src="#99AAAAAA" />
 
     <com.nasageek.utexasutilities.MyScrollView
         android:id="@+id/scroll_content_description"
         android:layout_width="fill_parent"
-        android:layout_height="0dp"    
-        android:layout_weight="1"
+        android:layout_height="0dp"
         android:layout_gravity="center_vertical"
         android:fillViewport="false"
+        android:layout_weight="6"
         android:scrollbars="vertical"
         android:scrollbarStyle="insideInset"
         android:isScrollContainer="true" >
@@ -58,6 +60,7 @@ up correctly in hierarchy-viewer -->
             android:layout_height="wrap_content"
             android:autoLink="all"
             android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:textIsSelectable="true"
             android:textSize="15sp"
             android:visibility="gone" />
@@ -68,14 +71,13 @@ up correctly in hierarchy-viewer -->
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginTop="10dp"
         android:src="#99AAAAAA" />
 
     <ListView
         android:id="@+id/dlable_item_list"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="4"
         android:background="@android:color/transparent"
         android:cacheColorHint="@android:color/transparent"
         android:divider="#FFCCCCCC"

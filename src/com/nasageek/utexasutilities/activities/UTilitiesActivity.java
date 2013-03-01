@@ -1,40 +1,25 @@
 package com.nasageek.utexasutilities.activities;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
-import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
-import android.widget.ViewAnimator;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -46,24 +31,15 @@ import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.Utility;
-import com.nasageek.utexasutilities.ConnectionHelper.PNALoginTask;
-import com.nasageek.utexasutilities.ConnectionHelper.bbLoginTask;
-import com.nasageek.utexasutilities.ConnectionHelper.loginTask;
-import com.nasageek.utexasutilities.R.drawable;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
-import com.nasageek.utexasutilities.R.menu;
-import com.nasageek.utexasutilities.R.string;
 
 
 public class UTilitiesActivity extends SherlockActivity {
 	
 	private final static int LOGOUT_MENU_ID = 11;
 	private final static int CANCEL_LOGIN_MENU_ID = 12;
-	private final static int BUTTON_ANIMATION_DURATION = 100;
+	private final static int BUTTON_ANIMATION_DURATION = 90;
     
 	private SharedPreferences settings;
-	private Menu menu;
 	private Toast message;
 	private ImageView scheduleCheck, balanceCheck, dataCheck, blackboardCheck;
 	private ConnectionHelper.loginTask lt;
@@ -173,11 +149,7 @@ public class UTilitiesActivity extends SherlockActivity {
         
         
         final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
-        final Drawable scheduleDrawables[] = new Drawable[] {getResources().getDrawable(R.drawable.schedulebutton),
-        											 getResources().getDrawable(R.drawable.schedulebuttonpressed)};
-        final TransitionDrawable scheduleCrossfade = new TransitionDrawable(scheduleDrawables);
-        schedulebutton.setImageDrawable(scheduleCrossfade);  
-        schedulebutton.setOnTouchListener(new imageButtonTouchListener(scheduleCrossfade));
+        schedulebutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) schedulebutton.getDrawable()));
         schedulebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	
@@ -210,11 +182,7 @@ public class UTilitiesActivity extends SherlockActivity {
         });
         
         final ImageButton balancebutton = (ImageButton) findViewById(R.id.balance_button);
-        final Drawable balanceDrawables[] = new Drawable[] {getResources().getDrawable(R.drawable.balancebutton),
-				 											getResources().getDrawable(R.drawable.balancebuttonpressed)};
-		final TransitionDrawable balanceCrossfade = new TransitionDrawable(balanceDrawables);
-		balancebutton.setImageDrawable(balanceCrossfade);  
-		balancebutton.setOnTouchListener(new imageButtonTouchListener(balanceCrossfade));
+		balancebutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) balancebutton.getDrawable()));
         balancebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	if(settings.getBoolean("loginpref", false))
@@ -245,11 +213,7 @@ public class UTilitiesActivity extends SherlockActivity {
     });
         
         final ImageButton mapbutton = (ImageButton) findViewById(R.id.map_button);
-        final Drawable mapDrawables[] = new Drawable[] {getResources().getDrawable(R.drawable.busandmapbutton),
-        												getResources().getDrawable(R.drawable.busandmapbuttonpressed)};
-		final TransitionDrawable mapCrossfade = new TransitionDrawable(mapDrawables);
-		mapbutton.setImageDrawable(mapCrossfade);  
-		mapbutton.setOnTouchListener(new imageButtonTouchListener(mapCrossfade));
+		mapbutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) mapbutton.getDrawable()));
         mapbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	startActivity(map);		
@@ -257,11 +221,7 @@ public class UTilitiesActivity extends SherlockActivity {
         });
         
         final ImageButton databutton = (ImageButton) findViewById(R.id.data_button);
-        final Drawable dataDrawables[] = new Drawable[] {getResources().getDrawable(R.drawable.databutton),
-				 										 getResources().getDrawable(R.drawable.databuttonpressed)};
-		final TransitionDrawable dataCrossfade = new TransitionDrawable(dataDrawables);
-		databutton.setImageDrawable(dataCrossfade);  
-		databutton.setOnTouchListener(new imageButtonTouchListener(dataCrossfade));
+		databutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) databutton.getDrawable()));
         databutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             
@@ -295,11 +255,7 @@ public class UTilitiesActivity extends SherlockActivity {
     });
         
         final ImageButton menubutton = (ImageButton) findViewById(R.id.menu_button);
-        final Drawable menuDrawables[] = new Drawable[] {getResources().getDrawable(R.drawable.menubutton),
-				 										 getResources().getDrawable(R.drawable.menubuttonpressed)};
-		final TransitionDrawable menuCrossfade = new TransitionDrawable(menuDrawables);
-		menubutton.setImageDrawable(menuCrossfade);  
-		menubutton.setOnTouchListener(new imageButtonTouchListener(menuCrossfade));
+		menubutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) menubutton.getDrawable()));
         menubutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {        
            		startActivity(menu);	          		
@@ -308,11 +264,7 @@ public class UTilitiesActivity extends SherlockActivity {
         });
         
         final ImageButton blackboardbutton = (ImageButton) findViewById(R.id.blackboard_button);
-        final Drawable blackboardDrawables[] = new Drawable[] {getResources().getDrawable(R.drawable.blackboardbutton),
-				 											   getResources().getDrawable(R.drawable.blackboardbuttonpressed)};
-		final TransitionDrawable blackboardCrossfade = new TransitionDrawable(blackboardDrawables);
-		blackboardbutton.setImageDrawable(blackboardCrossfade);  
-		blackboardbutton.setOnTouchListener(new imageButtonTouchListener(blackboardCrossfade));
+		blackboardbutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) blackboardbutton.getDrawable()));
         blackboardbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	

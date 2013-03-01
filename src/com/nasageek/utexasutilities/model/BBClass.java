@@ -27,15 +27,32 @@ public class BBClass {
 		
 		
 		if(!fullcourseid.matches("^\\d{4}_[a-z]+?_\\d{5}_[A-Za-z]+?_\\w+$"))
-			Log.d("BBClass check", "Class Course ID malformed: " + fullcourseid);
+			Log.d("BBClass check", "Course ID malformed: " + fullcourseid);
 		if(!name.matches("^\\d{2}[A-Z]{1,2} .*?\\(\\d+?\\)$"))
-			Log.d("BBClass check", "Class Name malformed: " + name);
+			Log.d("BBClass check", "Course Name malformed: " + name);
 		
 		//filter out the year and semester at the beginning and the unique at the end
 		//year/semester should never fail.  If no space, indexOf returns -1 and you get the whole string
-		this.name = (name.contains("(") && name.charAt(0) != '(' && name.indexOf(" ")+1 <= name.indexOf("(")-1) 
-																? name.substring(name.indexOf(" ")+1,name.indexOf("(")-1)
-																: name.substring(name.indexOf(" ")+1);
+	//	this.name = (name.contains("(") && name.charAt(0) != '(' && name.indexOf(" ")+1 <= name.indexOf("(")-1) 
+//																? name.substring(name.indexOf(" ")+1,name.indexOf("(")-1)
+	//															: name.substring(name.indexOf(" ")+1);
+		
+		//If we've got a date in the front (probably) chop it off
+		if(name.substring(0, name.indexOf(" ")).matches("^\\d{2}[A-Z]{1,2}$"))
+			this.name = name.substring(name.indexOf(" ")+1);
+		else
+			this.name = name;
+		
+		//Remove anything in parentheses, it's usually all superfluous
+		this.name = this.name.replaceAll("\\(.*?\\)", "");													
+		
+		/* 
+		 * sometimes the name will still contain parentheses, this seems to largely be caused
+		 * by a parenthesized semester at the beginning being filtered out instead of the unique
+		 * at the end.  Filter out remaining parenthesized stuff. TODO: couldn't I just do a 
+		 * replaceAll with some regex? Why am I not doing that?
+		 */
+	//	if(this.name.contains("("))
 		
 		this.bbid = bbid;
 		this.fullcourseid = fullcourseid;
@@ -60,6 +77,7 @@ public class BBClass {
 			try
 			{ 
 				courseid = fullcourseid.substring(fullcourseid.indexOf(unique)+6).replaceAll("_"," ");
+				
 				courseIdAvailable = true;
 			}
 			catch(Exception ex)

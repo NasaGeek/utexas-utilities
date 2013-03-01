@@ -2,12 +2,6 @@ package com.nasageek.utexasutilities.adapters;
 
 import java.util.ArrayList;
 
-import com.nasageek.utexasutilities.Pair;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
-import com.nasageek.utexasutilities.model.CourseMapItem;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.nasageek.utexasutilities.Pair;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.model.CourseMapItem;
 
 public class CourseMapAdapter extends ArrayAdapter<Pair<CourseMapItem,ArrayList>> {
 

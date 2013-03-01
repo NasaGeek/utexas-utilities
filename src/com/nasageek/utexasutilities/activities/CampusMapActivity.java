@@ -14,7 +14,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -45,15 +44,11 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,18 +60,11 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
-import com.nasageek.utexasutilities.BuildingSaxHandler;
-import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.NavigationDataSet;
-import com.nasageek.utexasutilities.NavigationSaxHandler;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.model.Placemark;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -84,6 +72,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.nasageek.utexasutilities.BuildingSaxHandler;
+import com.nasageek.utexasutilities.ConnectionHelper;
+import com.nasageek.utexasutilities.NavigationDataSet;
+import com.nasageek.utexasutilities.NavigationSaxHandler;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.model.Placemark;
 
 
 public class CampusMapActivity extends SherlockFragmentActivity  {
@@ -835,7 +829,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 
     				if(matcher2.find())
     				{	
-    					String a = matcher2.group(1);
+    			//		String a = matcher2.group(1);
     					if(matcher2.group(1).equals(routeid))
     					{
     						times = "";
@@ -851,7 +845,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     					}
     				}
     			}
-    			//if something goes wrong during the time check, times will be set to "" and not populate
+    			//if something goes wrong during the time check, times string will be set to "" and not populate
     			//with times (this was happening when routes would have a detour tag, though hopefully I fixed that).  
     			//Set back to default error message.
     			if("".equals(times))

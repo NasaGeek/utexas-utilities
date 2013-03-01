@@ -31,13 +31,11 @@ import com.nasageek.utexasutilities.activities.UTilitiesActivity;
 
 public class ConnectionHelper {
 	
-	private HttpPost httppost;
-	private DefaultHttpClient httpclient;
 	private static SharedPreferences settings;
 	private static SecurePreferences sp;
-	public static String authCookie;
-	public static String PNAAuthCookie;
-	public static String bbAuthCookie;
+	private static String authCookie;
+	private static String PNAAuthCookie;
+	private static String bbAuthCookie;
 	private static boolean bbCookieHasBeenSet = false;
 	private static boolean PNACookieHasBeenSet = false;
 	private static boolean cookieHasBeenSet = false;

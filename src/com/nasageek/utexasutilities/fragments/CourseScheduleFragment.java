@@ -16,6 +16,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -68,12 +69,14 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	
 	private ArrayList<UTClass> classList;
 	private Classtime current_clt;
+	private parseTask fetch;
 	
 	private ActionMode mode;
 
 	private SherlockFragmentActivity parentAct;
 	String semId;
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -95,13 +98,17 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		
 	/*	if(savedInstanceState != null)
 			classList = savedInstanceState.getParcelableArrayList("classList"); */
-			
-		new parseTask(client).execute();
-
 		
 		sd.setOnDrawerCloseListener(this);
 		sd.setOnDrawerOpenListener(this);
-	    sd.setVisibility(View.INVISIBLE);
+		sd.setVisibility(View.INVISIBLE);
+		
+		fetch = new parseTask(client);
+			
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		else
+			fetch.execute();
 		
 		return vg;	
 	}
@@ -135,6 +142,13 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		super.onSaveInstanceState(out);
 		out.putParcelableArrayList("classList", classList);
 	}*/
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		if(fetch!=null)
+			fetch.cancel(true);
+	}
 	@Override
 	public void onPrepareOptionsMenu(Menu menu)
 	{
@@ -186,7 +200,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    		}
     		}
     		else
-    			Toast.makeText(parentAct, "Export to calendar is not supported on this version of Android yet", Toast.LENGTH_SHORT).show();
+    			Toast.makeText(parentAct, "Export to calendar is not supported on this version of Android", Toast.LENGTH_SHORT).show();
     	
     	break;
     	default: return super.onOptionsItemSelected(item);
@@ -213,7 +227,6 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	{
 		sd.close();
-		parent.setSelection(position);
 		current_clt = (Classtime) parent.getItemAtPosition(position);
 		
 		if(current_clt!=null)

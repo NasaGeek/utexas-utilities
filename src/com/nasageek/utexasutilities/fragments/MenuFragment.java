@@ -33,9 +33,7 @@ import com.nasageek.utexasutilities.R;
 public class MenuFragment extends SherlockFragment
 {
 	private DefaultHttpClient httpclient;
-//	private ArrayList<String> mealList;
 	private ArrayList<Pair<String,ArrayList<food>>> listOfLists;
-//	private ArrayList<food> foodList;
 	private AmazingListView mlv;
 	private LinearLayout m_pb_ll;
 	private TextView metv;
@@ -84,7 +82,7 @@ public class MenuFragment extends SherlockFragment
         listOfLists = new ArrayList<Pair<String,ArrayList<food>>>();
         mAdapter = new MenuAdapter(listOfLists);
 	}
-	@TargetApi(11)
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void updateView(String restId, Boolean update)
 	{
 		this.restId = restId;

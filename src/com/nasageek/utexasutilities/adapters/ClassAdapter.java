@@ -3,26 +3,15 @@ package com.nasageek.utexasutilities.adapters;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.WrappingSlidingDrawer;
-import com.nasageek.utexasutilities.model.Classtime;
-import com.nasageek.utexasutilities.model.UTClass;
-
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.PaintDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.View;
@@ -32,26 +21,21 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.nasageek.utexasutilities.WrappingSlidingDrawer;
+import com.nasageek.utexasutilities.model.Classtime;
+import com.nasageek.utexasutilities.model.UTClass;
+
 
 public class ClassAdapter extends BaseAdapter {
 
-	private int height;
 	private ArrayList<Classtime> cllist;
-	private ArrayList<UTClass> classlist;
 	private Context currentContext;
 	private ArrayList<Boolean> firstlist;
 	private SharedPreferences sp;
-	private WrappingSlidingDrawer sd;
-	private LinearLayout sdll;
 	private int currentTimePos=-1;
 	private String time;
 	private int day;
 	private Calendar cal;
-	
-	private ImageView ci_iv;
-	private TextView ci_tv;
-	private Resources res;
-	
 	
 	private int currMinutes;
 	
@@ -59,18 +43,10 @@ public class ClassAdapter extends BaseAdapter {
 	
 	public ClassAdapter(Context c, WrappingSlidingDrawer wsd, LinearLayout llsd, ImageView ci_iv, TextView ci_tv, String semId, ArrayList<UTClass> classList)
 	{
-		
-		sdll = llsd;
-		sd = wsd;
 		sp = PreferenceManager.getDefaultSharedPreferences(c);
 		empty_cell_pref = sp.getString("schedule_background_style", "checkhour");
-//		cdb  = ClassDatabase.getInstance(c);
 		currentContext = c;
-		res = currentContext.getResources();
 		
-		this.ci_iv = ci_iv;
-		this.ci_tv = ci_tv;
-
 		updateTime();
 		
 		ArrayList<Classtime> cl = new ArrayList<Classtime>(50);
@@ -82,8 +58,6 @@ public class ClassAdapter extends BaseAdapter {
 		}
 
 		firstlist = new ArrayList<Boolean>();
-		
-		classlist = new ArrayList<UTClass>();
 		
 		cllist = new ArrayList<Classtime>();
 		cllist.ensureCapacity(160);
@@ -163,7 +137,6 @@ public class ClassAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		return position;
 	}
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) 
 	{
@@ -184,30 +157,19 @@ public class ClassAdapter extends BaseAdapter {
 					
 					@Override
 					public void draw(Canvas canvas, Paint paint) {
-					//	paint.setStrokeWidth(1.5f);
 						paint.setStrokeWidth(3f);
-					
-					//	paint.setARGB(255, 236, 132, 62);
 						paint.setColor(Color.BLACK);
 						paint.setStyle(Paint.Style.STROKE);
 						canvas.drawColor(getEmptyCellColor(position));
-					//	canvas.drawLine(getWidth() - 12, (int)((currMinutes/30.0)*getHeight() + .5) - 12, getWidth()-9, (int)((currMinutes/30.0)*getHeight() + .5) - 9, paint);
-					//	canvas.drawLine(getWidth() - 12, (int)((currMinutes/30.0)*getHeight() + .5) - 12, getWidth()-12, (int)((currMinutes/30.0)*getHeight() + .5) - 16, paint);
-					//	canvas.drawCircle( getWidth() - 12, (int)((currMinutes/30.0)*getHeight() + .5) - 12, 5, paint);
-						
-						
-						/*	canvas.drawLine(0, (int)((currMinutes/30.0)*getHeight() + .5), 
-								getWidth(), (int)((currMinutes/30.0)*getHeight() + .5), paint);*/
+
 						Paint blur = new Paint(paint);
 						blur.setStrokeWidth(3f);
 						blur.setMaskFilter(new BlurMaskFilter(3, BlurMaskFilter.Blur.SOLID));
 						canvas.drawLine(0, (int)((currMinutes/30.0)*getHeight() + .5), 
 								getWidth(), (int)((currMinutes/30.0)*getHeight() + .5), paint);
-
-						
+	
 					}
 				});
-        		iv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         		iv.setBackgroundDrawable(currentMinutesLine);
         	}
         	else
@@ -227,29 +189,18 @@ public class ClassAdapter extends BaseAdapter {
 					
 					@Override
 					public void draw(Canvas canvas, Paint paint) {
-					//	paint.setStrokeWidth(1.5f);
 						paint.setStrokeWidth(3f);
-
-					//	paint.setARGB(255, 236, 132, 62);
 						paint.setColor(Color.BLACK);
 						paint.setStyle(Paint.Style.STROKE);
 						canvas.drawColor(Color.parseColor(color));
-						
-					//	canvas.drawLine(getWidth() - 12, (int)((currMinutes/30.0)*getHeight() + .5) - 12, getWidth()-9, (int)((currMinutes/30.0)*getHeight() + .5) - 9, paint);
-					//	canvas.drawLine(getWidth() - 12, (int)((currMinutes/30.0)*getHeight() + .5) - 12, getWidth()-12, (int)((currMinutes/30.0)*getHeight() + .5) - 16, paint);
-					//	canvas.drawCircle(getWidth() - 12, (int)((currMinutes/30.0)*getHeight() + .5) - 12, 5, paint);
-					/*	canvas.drawLine(0, (int)((currMinutes/30.0)*getHeight() + .5), 
-								getWidth(), (int)((currMinutes/30.0)*getHeight() + .5), paint);*/
 						Paint blur = new Paint(paint);
 						blur.setStrokeWidth(3f);
 						blur.setMaskFilter(new BlurMaskFilter(3, BlurMaskFilter.Blur.SOLID));
 						canvas.drawLine(0, (int)((currMinutes/30.0)*getHeight() + .5), 
 								getWidth(), (int)((currMinutes/30.0)*getHeight() + .5), paint);
 
-						
 					}
 				});
-        		iv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         		iv.setBackgroundDrawable(currentMinutesLine);
         	}
         	else

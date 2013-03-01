@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -13,33 +12,24 @@ import org.apache.http.util.EntityUtils;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
 import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.Pair;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
-import com.nasageek.utexasutilities.R.string;
 import com.nasageek.utexasutilities.activities.CourseMapActivity;
 import com.nasageek.utexasutilities.adapters.BBClassAdapter;
 import com.nasageek.utexasutilities.model.BBClass;
@@ -47,9 +37,7 @@ import com.nasageek.utexasutilities.model.BBClass;
 public class BlackboardCourseListFragment extends SherlockFragment {
 	
 	private DefaultHttpClient httpclient;
-	private SharedPreferences settings;
 	private LinearLayout bb_pb_ll;
-	private LinearLayout blackboardlinlay;
 	private TextView bbtv;
 	private AmazingListView bblv;
 	private ArrayList<BBClass> classList;
@@ -79,8 +67,6 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 		setRetainInstance(true);
     	classList = new ArrayList<BBClass>();
     	classSectionList = new ArrayList<Pair<String,ArrayList<BBClass>>>();
-
-		settings = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity());
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
@@ -107,7 +93,6 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 
     	bb_pb_ll = (LinearLayout) vg.findViewById(R.id.blackboard_progressbar_ll);
     	bblv = (AmazingListView) vg.findViewById(R.id.blackboard_class_listview);
-    	blackboardlinlay = (LinearLayout) vg.findViewById(R.id.blackboard_courselist);
     	bbtv = (TextView) vg.findViewById (R.id.blackboard_error);
 
 		return vg;
@@ -158,14 +143,14 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 			if(!this.isCancelled()) // not necessary
 	    	{
 	    		String currentCategory="";
-	    		ArrayList sectionList=null;
+	    		ArrayList<BBClass> sectionList=null;
 				for(int i = 0; i<classList.size(); i++)
 	    		{
 	    			//first course is always in a new category (the first category)
 					if(i==0)
 	    			{	
 	    				currentCategory = classList.get(i).getSemester();
-	    				sectionList = new ArrayList();
+	    				sectionList = new ArrayList<BBClass>();
 	    				sectionList.add(classList.get(i));
 	    			}
 					//if the current course is not part of the current category or we're on the last course
@@ -176,10 +161,10 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 	    				if(i == classList.size()-1)
 	    					sectionList.add(classList.get(i));
 	    					
-	    				classSectionList.add(new Pair(currentCategory,sectionList));
+	    				classSectionList.add(new Pair<String, ArrayList<BBClass>>(currentCategory,sectionList));
 	    				
 	    				currentCategory = classList.get(i).getSemester();
-	    				sectionList=new ArrayList();
+	    				sectionList=new ArrayList<BBClass>();
 	    				
 	    				if(i != classList.size()-1)
 	    					sectionList.add(classList.get(i));

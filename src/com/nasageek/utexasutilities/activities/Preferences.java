@@ -3,20 +3,16 @@ package com.nasageek.utexasutilities.activities;
 import java.io.IOException;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
-import android.view.Window;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
@@ -27,57 +23,38 @@ import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
-import com.nasageek.utexasutilities.R.xml;
 import com.nasageek.utexasutilities.Utility;
 
 public class Preferences extends SherlockPreferenceActivity{
 
-	boolean set;
-	Toast toast;
-	ProgressDialog pd;
-	SharedPreferences settings;
-	Preference loggedin;
-	Preference loginfield;
-    Preference passwordfield;
-    CheckBoxPreference autologin;
-    Editor edit;
-    BaseAdapter ba;
-    ActionBar actionbar;
-    OnPreferenceChangeListener listen;
+	private Preference loginfield;
+    private Preference passwordfield;
+    private CheckBoxPreference autologin;
+    private BaseAdapter ba;
+    private ActionBar actionbar;
     private SecurePreferences sp;
     
-    @Override
+	@Override
     protected void onCreate(Bundle savedInstanceState) 
     {
-   // 	requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
     	super.onCreate(savedInstanceState);
 
-    	settings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	sp = new SecurePreferences(this,"com.nasageek.utexasutilities.password", "lalalawhatanicekey", false);
-       
-    	edit = settings.edit();
-   	//	toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
-      
+
    		actionbar = getSupportActionBar();
     	actionbar.setTitle("Preferences");
     	actionbar.setHomeButtonEnabled(true);
     	actionbar.setDisplayHomeAsUpEnabled(true);
     	
-   // 	setSupportProgressBarIndeterminateVisibility(false);
         addPreferencesFromResource(R.xml.preferences);
         getListView().setCacheColorHint(Color.TRANSPARENT);
         ba = (BaseAdapter)getPreferenceScreen().getRootAdapter();
-   //   PreferenceGroup loginfields = (PreferenceGroup) findPreference("loginfields");
-        
-    /*  if(!settings.getBoolean("loginpref", true))
-        	loginfields.setEnabled(false);
-        else loginfields.setEnabled(true);*/
-   //   	loggedin = (Preference) findPreference("loggedin");
+  
         autologin = (CheckBoxPreference) findPreference("autologin");
         loginfield = (Preference) findPreference("eid");
         passwordfield = (Preference) findPreference("password");
         
-        //bypass the default SharedPreferences and save the password to the encryped SP instead
+        //bypass the default SharedPreferences and save the password to the encrypted SP instead
         passwordfield.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			
 			@Override
@@ -125,7 +102,10 @@ public class Preferences extends SherlockPreferenceActivity{
             	else
             	{	           		
             		loginfield.setEnabled(true);
-               	  	passwordfield.setEnabled(true);    
+               	  	passwordfield.setEnabled(true);
+               	  	/*if they switch to temp login we'll save their EID, but clear their password
+               	  	for security purposes*/
+               	  	sp.removeValue("password");
             		ba.notifyDataSetChanged();
             	}
         	//  whenever they switch between temp and persistent, log them out
@@ -148,14 +128,6 @@ public class Preferences extends SherlockPreferenceActivity{
         	passwordfield.setEnabled(true);      
         }
         
-        //what the hell is this... looks like a simple preference black hole of sorts
-        listen = new OnPreferenceChangeListener()
-        {
-        	public boolean onPreferenceChange(Preference preference, Object newValue)
-			{
-				return false;
-			}
-      	};
         final CheckBoxPreference sendcrashes = (CheckBoxPreference)findPreference("sendcrashes");
         sendcrashes.setOnPreferenceChangeListener(new OnPreferenceChangeListener() 
         {	
@@ -192,23 +164,6 @@ public class Preferences extends SherlockPreferenceActivity{
 			}
 		});
     }
-  /*It's never called anymore
-    public void refreshPrefs()
-    {
-    	if(ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet() && ConnectionHelper.bbCookieHasBeenSet())
-        {
-    		loginfield.setEnabled(false);
-			passwordfield.setEnabled(false);
-			ba.notifyDataSetChanged();
-        }
-        else
-        {
-        	loginfield.setEnabled(true);
-        	passwordfield.setEnabled(true);  
-        	ba.notifyDataSetChanged();
-        }
-    }
-    */
     @Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{

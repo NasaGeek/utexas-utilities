@@ -140,7 +140,11 @@ Versioncode 17 - 1.86v2
 
 Fixed 2.2 crash on viewing blackboard attachments
 
-Versioncode 18 - 2.0?
+Versioncode 18 - 1.9
 
-Tablet interface for Menus, Balances, ?
+Tablet interface for Menus and Balances, more to come
 Improved login speed
+Tweaked sizes of lots of list items to make them a bit more "touchable"
+Blackboard notification dashboard added
+Lots of tweaking
+
