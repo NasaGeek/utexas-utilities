@@ -44,6 +44,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ArrayAdapter;
@@ -542,20 +543,20 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 		}
 		try{
 			
-		InputSource is = new InputSource(am.open("kml/"+kml_al.get(kml_al.indexOf(fid+".kml"))));
-         // perform the synchronous parse           
-         xmlreader.parse(is);
-         // get the results - should be a fully populated DataSet, or null on error
-         NavigationDataSet ds = navSaxHandler.getParsedData();
-
-         // draw path
-         drawPath(ds, Color.parseColor("#DDCC5500"));
-         
-         routeid = fid;
-         BufferedInputStream bis = new BufferedInputStream(am.open("stops/"+stops_al.get(stops_al.indexOf(fid+"_stops.txt")))); 
+			InputSource is = new InputSource(am.open("kml/"+kml_al.get(kml_al.indexOf(fid+".kml"))));
+	        // perform the synchronous parse           
+	        xmlreader.parse(is);
+	        // get the results - should be a fully populated DataSet, or null on error
+	        NavigationDataSet ds = navSaxHandler.getParsedData();
 	
-         int b;  
-         	StringBuilder data=new StringBuilder();
+	        // draw path
+	        drawPath(ds, Color.parseColor("#DDCC5500"));
+	        
+	        routeid = fid;
+	        BufferedInputStream bis = new BufferedInputStream(am.open("stops/"+stops_al.get(stops_al.indexOf(fid+"_stops.txt")))); 
+		
+	        int b;  
+	     	StringBuilder data=new StringBuilder();
 			do
 			{
 				b = bis.read();
@@ -585,12 +586,14 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 									.snippet(stops[x].split("\t")[2]));
 				stopMarkerMap.put(stopMarker.getId(), stopMarker);
 			}
-			
+				
 		} catch(IOException e) {
-	//         Log.d("DirectionMap","Exception loading some file related to the kml or the stops files.");
+			e.printStackTrace();
+	         Log.d("DirectionMap","Exception loading some file related to the kml or the stops files.");
 		}
 		catch(SAXException e) {
-	//         Log.d("DirectionMap","Exception parsing kml files");
+			e.printStackTrace();
+	         Log.d("DirectionMap","Exception parsing kml files");
 		}     
 	}
 	@Override
@@ -677,7 +680,8 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	        } 
 		    catch (NumberFormatException e) 
 		    {
- //            Log.e("MAP", "Cannot draw route.", e);
+		    	e.printStackTrace();
+		    	Log.d("MAP", "Cannot draw route.");
 		    }
 	    }
     }
@@ -857,8 +861,12 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     		{
     			if((infoSnippet.getText()+"").contains("Loading"))
     			{	
-    				infoSnippet.setText(times.substring(0,times.length()-1));
-    				stopMarker.showInfoWindow();
+    				//fix issue with InfoWindow "cycling" if the user taps other markers while
+    				//a marker's InfoWindow is loading data.
+    				if(stopMarker.isInfoWindowShown())
+    				{	infoSnippet.setText(times.substring(0,times.length()-1));
+    					stopMarker.showInfoWindow();
+    				}
     			}
     		}
     	}	

@@ -113,6 +113,7 @@ public class MenuFragment extends SherlockFragment
 		private DefaultHttpClient client;
 		private String meal;
 		private String errorMsg;
+		private ArrayList<Pair<String,ArrayList<food>>> tempListOfLists;
 		
 		public fetchMenuTask(DefaultHttpClient client)
 		{
@@ -130,6 +131,7 @@ public class MenuFragment extends SherlockFragment
 		{ 
 			ArrayList<String> categories = new ArrayList<String>();
 			ArrayList<food> foodList = new ArrayList<food>();
+			tempListOfLists = new ArrayList<Pair<String,ArrayList<food>>>();
 			meal = (String)params[1];
 			String location = "";
 			
@@ -189,7 +191,7 @@ public class MenuFragment extends SherlockFragment
 		    		{
 		    			foodList.add(new food(foodMatcher.group(1),nutritionLinkMatcher.group(1)));
 		    		}	
-		    		listOfLists.add(new Pair<String,ArrayList<food>>(catNameMatcher.group(1),foodList));	
+		    		tempListOfLists.add(new Pair<String,ArrayList<food>>(catNameMatcher.group(1),foodList));	
 		    		if(isCancelled())
 		    			return "";
 		    	}
@@ -199,6 +201,7 @@ public class MenuFragment extends SherlockFragment
 		@Override
 		protected void onPostExecute(String result)
 		{
+			listOfLists.addAll(tempListOfLists);
 			mAdapter.notifyDataSetChanged();
 			mlv.setOnItemClickListener(new OnItemClickListener() {
 			
