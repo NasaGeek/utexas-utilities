@@ -1,0 +1,50 @@
+making bus stops appear within a radius of the user along with the current route list implementation
+longclick buildings for directions -- DONE
+edit classes - probably not going to do this
+
+fix multiple schedules -- DONE/CANNED
+	current potential issues:
+		spinner needs internet to load, but what if they want to browse saved schedules?
+		maybe load spinner on different thread so double schedule load isn't needed?
+		
+		OPTIONS
+			Always try to populate spinner from present db entries, then from web.  Remove duplicates.
+				best to have spinner web call in separate ast even if it's inefficient
+				
+AccountManager stuff? - probably not for a while if ever
+onResume check login status
+spinner for multiple days worth of bandwidth graphs or dynamic loading of multiple days?
+remove certain blackboard "apps"/folders/whatever
+prompt for alternate location if external storage is not available (Data directory probably)  -  ? not sure if this is really necessary
+
+Look into httpclient use (do I really need threadsafe?)
+
+
+rewrite db.clear to re-copy the database? would certainly help with upgrades & troubleshooting  -- CANNED
+
+
+redo temp login, prompt to redirect user to login page upon feature tap
+	overlayed icon to indicate logged in or logged out -- DONE
+	log out button in feature? how else to log out...? Keep current logout button, should be clear enough -- DONE
+screen to save schedules instead of automatically doing it, listdialog that would show if db is empty and be manually shown by a button on the -- CANNED
+actionbar overflow or maybe in settings.  Either way it should be text, clear explanation of what it does.
+
+blackboard "favorite courses" viewpager in main blackboard page maybe
+address course overlap (try splitting down the middle with 2 colors) need to address possible selection issue
+Use mitmproxy to sniff more bb API
+show all class buildings on map (button in schedule) -- DONE
+first time use guides (overlays?)
+
+toggle to show class IDs on schedule (put in overflow menu) might make it too "busy" -- NO
+panel menu popup on tablet schedule (like I first envisioned?)
+rework schedule (scrolling times along side, maybe just in landscape?, less boxy?)
+blackboard tablet interface - each new opened folder sweeps across right -> left and rests on the previous folder, but a bit staggered.  User can tap previous folders to navigate to them, some sort of tappable breadcrumb system above?
+learn to use sw*dp  and w*dp qualifiers correctly
+
+tweak actionbar background/colors, touchable item accent colors -- maybe not?
+
+better discussion board support (# of unread threads, etc.) check bb app!
+
+classes should show when they're selected
+
+unit testing!

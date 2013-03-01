@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- I don't know why layoutparams don't work on top level view, so framelayout is a workaround -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:id="@+id/menulinlay"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
+        android:orientation="vertical" >
+
+        <include
+            android:id="@+id/menu_progressbar_ll"
+            layout="@layout/loading_content_layout"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/menu_error"
+            layout="@layout/error_message_view" />
+
+        <com.foound.widget.AmazingListView
+            android:id="@+id/menu_listview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@android:color/transparent"
+            android:cacheColorHint="@android:color/transparent" />
+    </LinearLayout>
+
+</FrameLayout>

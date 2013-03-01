@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:key="loginstyle"
+        android:title="Login Style" >
+        <CheckBoxPreference
+            android:id="@+id/login_pref"
+            android:defaultValue="false"
+            android:key="loginpref"
+            android:summary="Save credentials on device for faster login."
+            android:title="Persistent login" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:dependency="loginpref"
+        android:key="loginfields"
+        android:title="@string/login_category" >
+        <EditTextPreference
+            android:id="@+id/eidfield"
+            android:dependency="loginpref"
+            android:dialogTitle="Enter your EID"
+            android:key="eid"
+            android:title="Edit UT EID" />
+        <EditTextPreference
+            android:id="@+id/passwordfield"
+            android:dependency="loginpref"
+            android:dialogTitle="Enter your password"
+            android:inputType="textPassword"
+            android:key="password"
+            android:title="Edit Password" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="loginpref"
+            android:key="autologin"
+            android:title="Auto Login" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Schedule" >
+        <com.nasageek.utexasutilities.FixedListPreference
+            android:id="@+id/schedule_background_style"
+            android:defaultValue="checkhour"
+            android:entries="@array/schedule_background_array"
+            android:entryValues="@array/schedule_background_value_array"
+            android:key="schedule_background_style"
+            android:title="Background Style"
+            android:summary="%s" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Campus Map" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="starting_location"
+            android:summaryOff="Map currently centers on UT Tower."
+            android:summaryOn="Map currently centers on your location."
+            android:title="Center on My Location" />
+        <com.nasageek.utexasutilities.FixedListPreference 
+            android:id="@+id/default_map_bus_route"
+            android:defaultValue="0"
+            android:entries="@array/routes_array"
+            android:entryValues="@array/routes_value_array"
+            android:key="default_bus_route"
+            android:title="Default Bus Route"
+            android:summary="%s"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Menu">
+        <com.nasageek.utexasutilities.FixedListPreference
+            android:id="@+id/default_menu_restaurant"
+            android:defaultValue="0"
+            android:entries="@array/restaurants_array"
+            android:entryValues="@array/restaurants_value_array"
+            android:key="default_restaurant"
+            android:title="Default Restaurant" 
+            android:summary="%s"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Blackboard">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="blackboard_class_longform"
+            android:summary="@string/preference_blackboard_class_longform_summary"
+            android:title="Use raw class names"/>
+    </PreferenceCategory>
+	<PreferenceCategory android:title="Privacy" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:id="@+id/sendcrashes"
+            android:key="sendcrashes"
+            android:title="Auto-send crash reports"
+            android:summary="@string/preference_sendcrashes_summary"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Miscellaneous">
+        <Preference
+            android:id="@+id/about"
+            android:key="about"
+            android:title="About UTilities"
+            />
+    </PreferenceCategory>
+    <PreferenceScreen android:title="Experimental"
+        android:enabled="false"
+        android:selectable="false">
+        <Preference 
+            android:id="@+id/update_stops"
+            android:key="update_stops"
+            android:title="Update Bus Stops" />
+    </PreferenceScreen>
+	    
+    
+</PreferenceScreen>

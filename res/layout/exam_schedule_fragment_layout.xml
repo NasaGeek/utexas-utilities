@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/examschedule_linlay"
+ 	android:layout_width="fill_parent"
+ 	android:layout_height="fill_parent"
+ 	android:orientation="vertical">
+	 
+	 <TextView 
+	     android:id="@+id/login_first_tv"
+	     android:layout_width="fill_parent"
+	     android:layout_height="fill_parent"
+	     android:gravity="center"
+	     android:text="@string/login_first"
+	     android:visibility="gone"/>
+	 
+	 <TextView 
+	     android:id="@+id/no_exams"
+	     android:layout_width="fill_parent"
+	     android:layout_height="fill_parent"
+	     android:gravity="center"
+	     android:textSize="19sp"
+	     android:visibility="gone"/>
+	 
+	 <include 
+	     android:id="@+id/examschedule_progressbar_ll" 
+	     layout="@layout/loading_content_layout"/>
+	 <include
+	     android:id="@+id/examschedule_error"
+	     layout="@layout/error_message_view"/>
+	 
+	 <ListView
+		 	android:paddingTop="5dp"
+			android:id="@+id/examschedule_listview"
+			android:layout_width="fill_parent" 
+		    android:layout_height="fill_parent" 
+		    android:orientation="vertical" 
+		    android:scrollbars="none"
+		    android:cacheColorHint="@android:color/transparent"
+		    android:background="@android:color/transparent"/>
+	 
+</LinearLayout>

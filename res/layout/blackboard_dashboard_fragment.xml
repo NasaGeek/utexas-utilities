@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dash_linlay"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background_holo_light"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/dash_progressbar_ll"
+        layout="@layout/loading_content_layout" />
+
+    <include
+        android:id="@+id/dash_error"
+        layout="@layout/error_message_view" />
+
+    <!-- figure out fast scroll, seems really neat but the UI is terribly broken -->
+    
+    <com.foound.widget.AmazingListView
+        android:id="@+id/dash_listview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent"
+        android:clickable="true"
+        android:visibility="gone" />
+</LinearLayout>

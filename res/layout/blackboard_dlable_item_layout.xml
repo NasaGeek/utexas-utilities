@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+doesn't fill the whole parent in 2.1, not sure why as the layout attribute shows
+up correctly in hierarchy-viewer -->
+
+<!--  try using linearlayout's dividers instead of the imageviews -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center_horizontal"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:background="@drawable/background_holo_light"
+    android:gravity="center_vertical"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/blackboard_dl_items_progressbar_ll"
+        android:layout_gravity="center"
+        layout="@layout/loading_content_layout" />
+
+    <include
+        android:id="@+id/blackboard_dl_error"
+        android:layout_gravity="center"
+        layout="@layout/error_message_view" />
+
+    <TextView
+        android:id="@+id/content_description_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|top"
+        android:gravity="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="Content Description"
+        android:textSize="22sp" />
+
+    <ImageView
+        android:id="@+id/content_description_separator"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center_vertical"
+        android:src="#99AAAAAA" />
+
+    <com.nasageek.utexasutilities.MyScrollView
+        android:id="@+id/scroll_content_description"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
+        android:fillViewport="false"
+        android:layout_weight="6"
+        android:scrollbars="vertical"
+        android:scrollbarStyle="insideInset"
+        android:isScrollContainer="true" >
+
+        <TextView
+            android:id="@+id/content_description"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="all"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textIsSelectable="true"
+            android:textSize="15sp"
+            android:visibility="gone" />
+    </com.nasageek.utexasutilities.MyScrollView>
+
+    <ImageView
+        android:id="@+id/content_attachment_separator"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center_vertical"
+        android:src="#99AAAAAA" />
+
+    <ListView
+        android:id="@+id/dlable_item_list"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:background="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="#FFCCCCCC"
+        android:dividerHeight="1dp" />
+
+</LinearLayout>

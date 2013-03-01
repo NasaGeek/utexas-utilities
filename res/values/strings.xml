@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">UTilities</string>
+    <string name="version"> 1.72</string>
+    <string name="login_button_text">Save</string>
+    <string name="login_category">Persistent Login</string>
+    <string name="edit_credentials">Edit login credentials</string>
+    <string name="sharedpref_file">UTilities_preferences</string>
+    <string name="routeprompt">Select Route Overlay</string>
+    <string name="restaurantprompt">Select a Restaurant</string>
+    <string name="semesterprompt">Select a Semester</string>
+    <string name="building_intent">BUILDING</string>
+    <string name="coursemap_intent">COURSE_BBID</string>
+    <string name="coursemap_nest_intent">COURSEMAP_ITEM</string>
+    <string name="developer">Developer: Chris Roberts</string>
+    <string name="classinfo">Electrical Engineering Class of 2015\nComputer Science Class of 2015</string>
+    <string name="contact">Love the app?  Hate it?  Suggestions? Snide remarks?</string>
+    <string name="email">Chris_Roberts@utexas.edu</string>
+    <string name="loading_content">Loading content…</string>
+    <string name="login_first">Please log in before using this feature</string>
+    <string name="login_bb_first">Please log in before using this feature</string>
+    <string name="login_pna_first">Please log in before using this feature</string>
+    <string name="preference_blackboard_class_longform_summary">Check this if Blackboard crashes on launch, might fix it.</string>
+    <string name="preference_sendcrashes_summary">Help me help you! No personal information will be sent.</string>
+    <string name="thankskevin">Also, a huge thanks to fellow UT student, Kevin Lin, for providing many of the graphical assets for this application.  It would be an ugly jumble of gray buttons if not for him.</string>
+    <string name="library_license_link">Open Source Licenses and Legal Notices</string>
+    <string name="privacy_policy_link">Privacy Policy</string>
+    <string name="licenses">ActionBarSherlock: \n\n
+        
+        Copyright 2012 Jake Wharton\n
+Licensed under the Apache License, Version 2.0 (the "License");\n
+you may not use this file except in compliance with the License.\n
+You may obtain a copy of the License at\n
+\n
+   http://www.apache.org/licenses/LICENSE-2.0\n
+\n
+Unless required by applicable law or agreed to in writing, software\n
+distributed under the License is distributed on an "AS IS" BASIS,\n
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n
+See the License for the specific language governing permissions and\n
+limitations under the License.\n
+\n
+ViewPagerIndicator: \n\n
+Copyright 2012 Jake Wharton\n
+Copyright 2011 Patrik Åkerfeldt\n
+Copyright 2011 Francisco Figueiredo Jr.\n
+\n
+Licensed under the Apache License, Version 2.0 (the "License");\n
+you may not use this file except in compliance with the License.\n
+You may obtain a copy of the License at\n
+\n
+   http://www.apache.org/licenses/LICENSE-2.0\n
+\n
+Unless required by applicable law or agreed to in writing, software\n
+distributed under the License is distributed on an "AS IS" BASIS,\n
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n
+See the License for the specific language governing permissions and\n
+limitations under the License.\n\n
+
+Androidplot:\n\n
+Copyright 2012 AndroidPlot.com\n
+\n
+    Licensed under the Apache License, Version 2.0 (the "License");\n
+     you may not use this file except in compliance with the License.\n
+     You may obtain a copy of the License at\n
+ \n
+         http://www.apache.org/licenses/LICENSE-2.0\n
+ \n
+     Unless required by applicable law or agreed to in writing, software\n
+     distributed under the License is distributed on an "AS IS" BASIS,\n
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n
+     See the License for the specific language governing permissions and\n
+     limitations under the License.\n
+
+Also a big thanks to yukuku for his AmazingListView library (http://code.google.com/p/android-amazing-listview/)\n\n
+
+
+Apache License\n\n
+
+Version 2.0, January 2004\n\n
+
+http://www.apache.org/licenses/\n\n
+
+TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n
+
+1. Definitions.\n\n
+
+"License" shall mean the terms and conditions for use, reproduction, and distribution as defined by Sections 1 through 9 of this document.
+
+"Licensor" shall mean the copyright owner or entity authorized by the copyright owner that is granting the License.
+
+"Legal Entity" shall mean the union of the acting entity and all other entities that control, are controlled by, or are under common control with that entity. For the purposes of this definition, "control" means (i) the power, direct or indirect, to cause the direction or management of such entity, whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the outstanding shares, or (iii) beneficial ownership of such entity.
+
+"You" (or "Your") shall mean an individual or Legal Entity exercising permissions granted by this License.
+
+"Source" form shall mean the preferred form for making modifications, including but not limited to software source code, documentation source, and configuration files.
+
+"Object" form shall mean any form resulting from mechanical transformation or translation of a Source form, including but not limited to compiled object code, generated documentation, and conversions to other media types.
+
+"Work" shall mean the work of authorship, whether in Source or Object form, made available under the License, as indicated by a copyright notice that is included in or attached to the work (an example is provided in the Appendix below).
+
+"Derivative Works" shall mean any work, whether in Source or Object form, that is based on (or derived from) the Work and for which the editorial revisions, annotations, elaborations, or other modifications represent, as a whole, an original work of authorship. For the purposes of this License, Derivative Works shall not include works that remain separable from, or merely link (or bind by name) to the interfaces of, the Work and Derivative Works thereof.
+
+"Contribution" shall mean any work of authorship, including the original version of the Work and any modifications or additions to that Work or Derivative Works thereof, that is intentionally submitted to Licensor for inclusion in the Work by the copyright owner or by an individual or Legal Entity authorized to submit on behalf of the copyright owner. For the purposes of this definition, "submitted" means any form of electronic, verbal, or written communication sent to the Licensor or its representatives, including but not limited to communication on electronic mailing lists, source code control systems, and issue tracking systems that are managed by, or on behalf of, the Licensor for the purpose of discussing and improving the Work, but excluding communication that is conspicuously marked or otherwise designated in writing by the copyright owner as "Not a Contribution."
+
+"Contributor" shall mean Licensor and any individual or Legal Entity on behalf of whom a Contribution has been received by Licensor and subsequently incorporated within the Work.
+
+\n2. Grant of Copyright License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable copyright license to reproduce, prepare Derivative Works of, publicly display, publicly perform, sublicense, and distribute the Work and such Derivative Works in Source or Object form.
+
+\n3. Grant of Patent License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable (except as stated in this section) patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the Work, where such license applies only to those patent claims licensable by such Contributor that are necessarily infringed by their Contribution(s) alone or by combination of their Contribution(s) with the Work to which such Contribution(s) was submitted. If You institute patent litigation against any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the Work or a Contribution incorporated within the Work constitutes direct or contributory patent infringement, then any patent licenses granted to You under this License for that Work shall terminate as of the date such litigation is filed.
+
+\n4. Redistribution. You may reproduce and distribute copies of the Work or Derivative Works thereof in any medium, with or without modifications, and in Source or Object form, provided that You meet the following conditions:
+
+You must give any other recipients of the Work or Derivative Works a copy of this License; and
+
+You must cause any modified files to carry prominent notices stating that You changed the files; and
+
+You must retain, in the Source form of any Derivative Works that You distribute, all copyright, patent, trademark, and attribution notices from the Source form of the Work, excluding those notices that do not pertain to any part of the Derivative Works; and
+
+If the Work includes a "NOTICE" text file as part of its distribution, then any Derivative Works that You distribute must include a readable copy of the attribution notices contained within such NOTICE file, excluding those notices that do not pertain to any part of the Derivative Works, in at least one of the following places: within a NOTICE text file distributed as part of the Derivative Works; within the Source form or documentation, if provided along with the Derivative Works; or, within a display generated by the Derivative Works, if and wherever such third-party notices normally appear. The contents of the NOTICE file are for informational purposes only and do not modify the License. You may add Your own attribution notices within Derivative Works that You distribute, alongside or as an addendum to the NOTICE text from the Work, provided that such additional attribution notices cannot be construed as modifying the License. You may add Your own copyright statement to Your modifications and may provide additional or different license terms and conditions for use, reproduction, or distribution of Your modifications, or for any such Derivative Works as a whole, provided Your use, reproduction, and distribution of the Work otherwise complies with the conditions stated in this License.
+
+\n5. Submission of Contributions. Unless You explicitly state otherwise, any Contribution intentionally submitted for inclusion in the Work by You to the Licensor shall be under the terms and conditions of this License, without any additional terms or conditions. Notwithstanding the above, nothing herein shall supersede or modify the terms of any separate license agreement you may have executed with Licensor regarding such Contributions.
+
+\n6. Trademarks. This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the Work and reproducing the content of the NOTICE file.
+
+\n7. Disclaimer of Warranty. Unless required by applicable law or agreed to in writing, Licensor provides the Work (and each Contributor provides its Contributions) on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied, including, without limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for determining the appropriateness of using or redistributing the Work and assume any risks associated with Your exercise of permissions under this License.
+
+\n8. Limitation of Liability. In no event and under no legal theory, whether in tort (including negligence), contract, or otherwise, unless required by applicable law (such as deliberate and grossly negligent acts) or agreed to in writing, shall any Contributor be liable to You for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising as a result of this License or out of the use or inability to use the Work (including but not limited to damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses), even if such Contributor has been advised of the possibility of such damages.
+
+\n9. Accepting Warranty or Additional Liability. While redistributing the Work or Derivative Works thereof, You may choose to offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License. However, in accepting such obligations, You may act only on Your own behalf and on Your sole responsibility, not on behalf of any other Contributor, and only if You agree to indemnify, defend, and hold each Contributor harmless for any liability incurred by, or claims asserted against, such Contributor by reason of your accepting any such warranty or additional liability.
+
+\n\nEND OF TERMS AND CONDITIONS
+</string>
+<string name="privacy_policy">This Privacy Policy has been created to answer a few of the questions that have come up about how
+     UTilities handles its users\' data, specifically the users\' UT EID and password.\n---\n
+     Q: What happens when I tick the "Persistent login" preference and enter my UT credentials into UTilities?\n\n
+     A: UTilities saves your EID in its settings file, and it encrypts and then saves your password in its settings file.\n---\n
+     Q: My password is encrypted? Does that mean it is super-ultra-mega-secure?\n\n
+     A: Unfortunately not, while the encryption is an added layer of protection on top of Android\'s own built-in security, if someone
+     were to steal your device and have the Android know-how, they would be able to extract your password from UTilities\' settings. 
+     This means if you lose your device, change your UT password! (as you should do with all of your important accounts if you lose
+      your smartphone).\n---\n
+     Q: What does UTilities do with my UT credentials anyway?\n\n
+     A: UTilities sends your credentials to UT\'s servers when it needs to log in, and that is the only place it sends them. 
+     Your UT EID and password will never be shared with anyone except The University of Texas at Austin.\n</string>
+    
+      <string-array name="routes_array">	
+			<item>No Bus Route</item>
+			<item>Crossing Place</item>
+			<item>Cameron Road</item>
+			<item>East Campus</item>
+			<item>Forty Acres</item>
+			<item>Far West</item>
+			<item>Intramural Fields</item>
+			<item>Intramural Field/Far West</item>
+			<item>Lake Austin</item>
+			<item>Lakeshore</item>
+			<item>North Riverside</item>
+			<item>North Riverside/Lakeshore</item>
+			<item>Pickle Research Campus</item>
+			<item>Red River</item>
+			<item>Red River/Cameron Road</item>
+			<item>West Campus</item>
+			<item>Wickersham Lane</item>
+			<item>Wickersham/Crossing Place</item>
+    </string-array>   
+    <string-array name="routes_value_array">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item> 
+    </string-array>
+    <string-array name="restaurants_array">	
+		<item>No Restaurant</item>
+		<item>Jester City Limits</item>
+		<item>Jester City Market</item>
+		<item>Jester 2nd Floor Dining</item>
+		<item>Kinsolving Dining Hall</item>
+		<item>Kin\'s Market</item>
+		<item>Cypress Bend</item>
+		<item>Littlefield Patio Cafe</item>
+		<item>Jest A\' Pizza</item>
+    </string-array>
+    <string-array name="restaurants_value_array">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+    
+   
+    <string-array name="schedule_background_array">
+    	<item>Checkerboard (1 hour)</item>
+    	<item>Checkerboard (&#189; hour)</item>
+    	<item>Striped (1 hour)</item>
+    	<item>Striped (&#189; hour)</item>
+    </string-array>
+     <string-array name="schedule_background_value_array">
+    	<item>checkhour</item>
+    	<item>checkhalf</item>
+    	<item>stripehour</item>
+    	<item>stripehalf</item>
+    </string-array>
+</resources>
+

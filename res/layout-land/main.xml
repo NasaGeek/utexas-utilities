@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/button_table"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background_holo_light">
+	
+	<TableRow
+		android:layout_weight="1"
+		android:layout_gravity="center">
+		<!-- 	android:paddingTop="64dp" -->
+		
+		<RelativeLayout
+		    android:layout_weight="1"
+		    android:layout_height="fill_parent"
+		    android:layout_width="fill_parent"
+		    android:layout_gravity="center">
+		<ImageButton
+			
+			android:id="@+id/schedule_button"
+			android:layout_height="wrap_content"
+		    android:layout_width="wrap_content"
+			android:layout_centerInParent="true"
+			android:src="@drawable/schedule_image_button"
+			android:background="#00000000"
+			/>
+		<ImageView 
+		    android:id="@+id/scheduleCheck"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:src="@drawable/ic_done"
+		    android:layout_alignBottom="@+id/schedule_button"
+		    android:layout_alignRight="@+id/schedule_button"/>
+		</RelativeLayout>
+		
+		<RelativeLayout
+		    android:layout_weight="1"
+		    android:layout_height="fill_parent"
+		    android:layout_width="fill_parent"
+		    android:layout_gravity="center">
+		<ImageButton
+			
+			android:id="@+id/blackboard_button"
+			android:layout_height="wrap_content"
+		    android:layout_width="wrap_content"
+			android:layout_centerInParent="true"
+			android:src="@drawable/blackboard_image_button"
+			android:background="#00000000"
+			/>
+		<ImageView 
+		    android:id="@+id/blackboardCheck"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:src="@drawable/ic_done"
+		    android:layout_alignBottom="@+id/blackboard_button"
+		    android:layout_alignRight="@+id/blackboard_button"/>
+		</RelativeLayout>
+		
+		<RelativeLayout
+		    android:layout_weight="1"
+		    android:layout_height="fill_parent"
+		    android:layout_width="fill_parent"
+		    android:layout_gravity="center">
+		<ImageButton
+			
+			android:id="@+id/map_button"
+			android:layout_height="wrap_content"
+		    android:layout_width="wrap_content"
+			android:layout_centerInParent="true"
+			android:src="@drawable/map_image_button"
+			android:background="#00000000"
+			/>
+		<ImageView 
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:src="@null"
+		    android:layout_alignBottom="@+id/map_button"
+		    android:layout_alignRight="@+id/map_button"/>
+		</RelativeLayout>
+		
+	</TableRow>
+	<TableRow
+	    android:layout_weight="1"
+		android:layout_gravity="center"
+		android:layout_width="fill_parent" 
+		android:baselineAligned="true"> <!-- android:paddingTop="47dp"  android:layout_marginBottom="27px"   -->
+	    
+	    <RelativeLayout
+		    android:layout_weight="1"
+		    android:layout_height="fill_parent"
+		    android:layout_width="fill_parent"
+		    android:layout_gravity="center">
+		<ImageButton
+			
+			android:id="@+id/balance_button"
+			android:layout_height="wrap_content"
+		    android:layout_width="wrap_content"
+			android:layout_centerInParent="true"
+			android:src="@drawable/balance_image_button"
+			android:background="#00000000"
+			/>
+		<ImageView 
+		    android:id="@+id/balanceCheck"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:src="@drawable/ic_done"
+		    android:layout_alignBottom="@+id/balance_button"
+		    android:layout_alignRight="@+id/balance_button"/>
+		</RelativeLayout>
+	    
+	   <RelativeLayout
+		    android:layout_weight="1"
+		    android:layout_height="fill_parent"
+		    android:layout_width="fill_parent"
+		    android:layout_gravity="center">
+		<ImageButton
+			
+			android:id="@+id/data_button"
+			android:layout_height="wrap_content"
+		    android:layout_width="wrap_content"
+			android:layout_centerInParent="true"
+			android:src="@drawable/data_image_button"
+			android:background="#00000000"
+			/>
+		<ImageView 
+		    android:id="@+id/dataCheck"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:src="@drawable/ic_done"
+		    android:layout_alignBottom="@+id/data_button"
+		    android:layout_alignRight="@+id/data_button"/>
+		</RelativeLayout>
+		
+	   <RelativeLayout
+		    android:layout_weight="1"
+		    android:layout_height="fill_parent"
+		    android:layout_width="fill_parent"
+		    android:layout_gravity="center">
+		<ImageButton
+			android:id="@+id/menu_button"
+			android:layout_height="wrap_content"
+		    android:layout_width="wrap_content"
+			android:layout_centerInParent="true"
+			android:src="@drawable/menu_image_button"
+			android:background="#00000000"
+			/>
+		<ImageView 
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:src="@null"
+		    android:layout_alignBottom="@+id/menu_button"
+		    android:layout_alignRight="@+id/menu_button"/>
+		</RelativeLayout>
+	</TableRow> 	
+</TableLayout>

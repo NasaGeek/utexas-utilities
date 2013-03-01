@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background_holo_light"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="3" >
+
+        <TextView
+            android:id="@+id/breakfast_times"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/lunch_times"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/dinner_times"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <com.viewpagerindicator.TabPageIndicator
+        android:id="@+id/titles"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+android:id/viewpager"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+</LinearLayout><!--
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/menutabhost"
+   
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">        
+                <LinearLayout 
+                    android:id="@+id/menu_tab_linlayout"
+                    android:layout_width="fill_parent" 
+                    android:layout_height="fill_parent" 
+                    android:orientation="vertical">
+                    <TabWidget
+                        android:id="@android:id/tabs"
+                        
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        />
+                    <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+                   
+                   <LinearLayout 
+                                    android:id="@+id/breakfastlinlay"
+                                    android:layout_width="fill_parent" 
+                                    android:layout_height="fill_parent" 
+                                    android:orientation="vertical">
+                                         
+                                     <include android:id="@+id/breakfast_progressbar_ll" layout="@layout/loading_content_layout"/>    
+                                         
+                                         <com.foound.widget.AmazingListView
+                                           
+                                            android:id="@+id/breakfast_listview"
+                                            android:layout_width="fill_parent" 
+                                            android:layout_height="fill_parent" 
+                                            android:orientation="vertical" 
+                                            
+                                            />
+                                            
+                                            
+                                </LinearLayout>
+                                <LinearLayout 
+                                    android:id="@+id/lunchlinlay"
+                                    android:layout_width="fill_parent" 
+                                    android:layout_height="fill_parent" 
+                                    android:orientation="vertical">
+                                         
+                                     <include android:id="@+id/lunch_progressbar_ll" layout="@layout/loading_content_layout"/>    
+                                         
+                                         <com.foound.widget.AmazingListView
+                                           
+                                            android:id="@+id/lunch_listview"
+                                            android:layout_width="fill_parent" 
+                                            android:layout_height="fill_parent" 
+                                            android:orientation="vertical" 
+                                            
+                                            />
+                                            
+                                            
+                                </LinearLayout>
+                                <LinearLayout 
+                                    android:id="@+id/dinnerlinlay"
+                                    android:layout_width="fill_parent" 
+                                    android:layout_height="fill_parent" 
+                                    android:orientation="vertical">
+                                         
+                                     <include android:id="@+id/dinner_progressbar_ll" layout="@layout/loading_content_layout"/>    
+                                         
+                                         <com.foound.widget.AmazingListView
+                                           
+                                            android:id="@+id/dinner_listview"
+                                            android:layout_width="fill_parent" 
+                                            android:layout_height="fill_parent" 
+                                            android:orientation="vertical" 
+                                            
+                                            />
+                                            
+                                            
+                                </LinearLayout>
+                                
+                         </FrameLayout>  
+                </LinearLayout>
+</TabHost>
+-->

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style name="StyledIndicators" parent="@style/Theme.Sherlock.Light">
+        <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
+        <item name="vpiTitlePageIndicatorStyle">@style/CustomTitlePageIndicator</item>
+    </style>
+
+   	<style name="CustomTitlePageIndicator">
+        <item name="android:background">#00000000</item>
+        <item name="footerColor">#FFCC5500</item>
+        <item name="footerLineHeight">1dp</item>
+        <item name="footerIndicatorHeight">4dp</item>
+        <item name="footerIndicatorStyle">underline</item>
+        <item name="android:textColor">#FF555555</item>
+        <item name="android:textSize">13sp</item>
+        <item name="selectedColor">#FF666666</item>
+        <item name="titlePadding">2dp</item>
+        <item name="selectedBold">true</item>
+    </style>
+    
+    <style name="CustomTabPageIndicator" parent="Widget.TabPageIndicator">
+        <item name="android:background">@drawable/custom_tab_indicator</item>
+        <item name="android:textAppearance">@style/CustomTabPageIndicator.Text</item>
+        <item name="android:divider">@drawable/custom_tab_indicator_divider</item>
+        <item name="android:dividerPadding">10dp</item>
+        <item name="android:showDividers">middle</item>
+    </style>
+    <style name="CustomTabPageIndicator.Text" parent="TextAppearance.TabPageIndicator">
+        <item name="android:textColor">#FF555555</item>
+    </style>
+    
+    <style name="Theme.UTilities" parent="@style/Theme.Sherlock.Light.ForceOverflow">
+        <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
+        <item name="vpiTitlePageIndicatorStyle">@style/CustomTitlePageIndicator</item>
+        <item name="android:windowBackground">@drawable/background_holo_light</item>
+        <item name="android:cacheColorHint">@android:color/transparent</item>
+    </style>
+    
+    
+</resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/header"
+    style="?android:attr/listSeparatorTextViewStyle"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp" />
+<!--
+     <merge
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	
+	  <include 
+	    android:layout_width="fill_parent" 
+        android:layout_height="wrap_content" 
+        android:id="@+id/header"
+        android:textStyle="bold"
+        layout="@android:layout/preference_category" 
+        />
+	  </merge>
+-->
+
+<!--
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content">
+<include 
+        android:id="@+id/header"
+        android:textStyle="bold"
+        layout="@android:layout/preference_category" 
+        />
+
+</FrameLayout>
+-->
+<!--
+<TextView xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:background="#bfb" 
+    android:textColor="#000" 
+    android:text="Header" 
+    android:textStyle="bold" 
+    android:padding="6dp" 
+    android:id="@+id/header" />
+-->
