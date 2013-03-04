@@ -1,8 +1,12 @@
 package com.nasageek.utexasutilities.model;
 
+import java.util.Locale;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
-public class BBClass {
+public class BBClass implements Parcelable {
 
 	private String name;
 	private String bbid;
@@ -13,6 +17,34 @@ public class BBClass {
 	
 	private boolean courseIdAvailable, fullCourseIdTooShort;
 
+	public static Parcelable.Creator<BBClass> CREATOR = new Parcelable.Creator<BBClass>(){
+
+		@Override
+		public BBClass createFromParcel(Parcel source) {
+			return new BBClass(source);
+		}
+
+		@Override
+		public BBClass[] newArray(int size) {
+			return new BBClass[size];
+		}
+		
+	};
+	
+	public BBClass(Parcel in)
+	{
+		name = in.readString();
+		bbid = in.readString();
+		fullcourseid = in.readString();
+		semester = in.readString();
+		unique = in.readString();
+		courseid = in.readString();
+		boolean[] temp = new boolean[2];
+		in.readBooleanArray(temp);
+		courseIdAvailable = temp[0];
+		fullCourseIdTooShort = temp[1];				
+	}
+	
 	//TODO: move auto-formatting into a separate method? 
 	public BBClass(String name, String bbid, String fullcourseid)
 	{
@@ -65,7 +97,7 @@ public class BBClass {
 		try
 		{
 			//pulls the first section and second section of courseid, capitalizes the first letter of the semester
-			this.semester = fullcourseid.split("_")[0]+" "+(fullcourseid.split("_")[1].charAt(0)+"").toUpperCase()+fullcourseid.split("_")[1].substring(1);	
+			this.semester = fullcourseid.split("_")[0]+" "+(fullcourseid.split("_")[1].charAt(0)+"").toUpperCase(Locale.US)+fullcourseid.split("_")[1].substring(1);	
 		}
 		catch(Exception ex)
 		{
@@ -142,5 +174,21 @@ public class BBClass {
 	public void setSemester(String semester)
 	{
 		this.semester = semester;
+	}
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+
+		dest.writeString(name);
+		dest.writeString(bbid);
+		dest.writeString(fullcourseid);
+		dest.writeString(semester);
+		dest.writeString(unique);
+		dest.writeString(courseid);
+		dest.writeBooleanArray(new boolean[] {courseIdAvailable, fullCourseIdTooShort});
+
 	}
 }

@@ -50,7 +50,6 @@ public class UTilitiesActivity extends SherlockActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       
         
  /*       if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
         {
@@ -64,6 +63,7 @@ public class UTilitiesActivity extends SherlockActivity {
         	.build());
         	
         }*/
+       
         Crittercism.init(getApplicationContext(), "4fed1764be790e4597000001");
         
    /*     try {
@@ -98,7 +98,7 @@ public class UTilitiesActivity extends SherlockActivity {
     	final Intent map 		= new Intent(this, CampusMapActivity.class);
     	final Intent data 		= new Intent(this, DataUsageActivity.class);
     	final Intent menu 		= new Intent(this, MenuActivity.class);
-    	final Intent blackboard = new Intent(this, BlackboardActivity.class);
+    	final Intent blackboard = new Intent(this, BlackboardPanesActivity.class);
 
     	message = Toast.makeText(this, R.string.login_first, Toast.LENGTH_SHORT);
     	

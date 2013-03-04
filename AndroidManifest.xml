@@ -55,26 +55,7 @@
         <activity android:name=".activities.DataUsageActivity"
         		 android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         
-        <activity android:name=".activities.BlackboardAnnouncementsActivity"
-            	  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
-        
-        <activity android:name=".activities.BlackboardGradesActivity"
-            	  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
-        
-        <activity android:name=".activities.BlackboardAssignmentActivity"
-            	  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
-        
-        <activity android:name=".activities.BlackboardExternalItemActivity"
-            	  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
-        
-        <activity android:name=".activities.BlackboardDownloadableItemActivity"
-            	  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
-        
-        <activity android:name=".activities.BlackboardActivity"
-        		  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
-        
-        <activity android:name=".activities.CourseMapActivity"
-            	 android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
+        <activity android:name=".activities.BlackboardPanesActivity"></activity>
             	               	     
         <activity android:name=".activities.AboutMeActivity"
         		  android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>

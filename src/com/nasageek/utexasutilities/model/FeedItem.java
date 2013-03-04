@@ -6,25 +6,50 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.TimeFormatException;
 
-public class FeedItem
-{
+public class FeedItem implements Parcelable {
 	/*public enum SourceType {
 		
 	}*/
 	
 	private BBClass clz;
-	private String bbid, type, message, contentid, name, sourcetype;
+	private String type, message, contentid, sourcetype;
 	private Date date;
+	
+	public static Parcelable.Creator<FeedItem> CREATOR = new Parcelable.Creator<FeedItem>(){
+
+		@Override
+		public FeedItem createFromParcel(Parcel source) {
+			return new FeedItem(source);
+		}
+
+		@Override
+		public FeedItem[] newArray(int size) {
+			return new FeedItem[size];
+		}
+		
+	};
+	
+	public FeedItem(Parcel in)
+	{
+		type = in.readString();
+		message = in.readString();
+		contentid = in.readString();
+		clz = in.readParcelable(BBClass.class.getClassLoader());
+		sourcetype = in.readString();
+		date = new Date(in.readLong());
+	}
 	
 	public FeedItem(String type, String message, String contentid, BBClass clz, String sourcetype, String date, SimpleDateFormat formatter)
 	{
 		this.type = type;
 		this.message = message;
 		this.contentid = contentid;
-		this.sourcetype = sourcetype;
 		this.clz = clz;
+		this.sourcetype = sourcetype;
 		try {
 			this.date = formatter.parse(date);
 		} catch (ParseException e) {
@@ -83,6 +108,19 @@ public class FeedItem
 	public BBClass getBbClass()
 	{
 		return clz;
+	}
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(type);
+		dest.writeString(message);
+		dest.writeString(contentid);
+		dest.writeParcelable(clz, 0);
+		dest.writeString(sourcetype);
+		dest.writeLong(date.getTime());
 	}
 
 }

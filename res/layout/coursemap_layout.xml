@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/coursemap_linlay"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:background="@drawable/background_holo_light" >
-    
-    <include 
-        android:id="@+id/coursemap_progressbar_ll" 
-        layout="@layout/loading_content_layout"/>
-    
-    <include 
-        android:id="@+id/coursemap_error"
-        layout="@layout/error_message_view"/>
+    android:background="@drawable/background_holo_light"
+    android:orientation="vertical" >
 
-   	<ListView
-		android:visibility="gone"
-		android:id="@+id/coursemap_listview"
-		android:layout_width="fill_parent" 
-		android:layout_height="fill_parent"
-		android:cacheColorHint="@android:color/transparent"
-		android:background="@android:color/transparent"/>
+    <include
+        android:id="@+id/coursemap_progressbar_ll"
+        layout="@layout/loading_content_layout"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/coursemap_error"
+        layout="@layout/error_message_view" />
+
+    <ListView
+        android:id="@+id/coursemap_listview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent" />
 
 </LinearLayout>

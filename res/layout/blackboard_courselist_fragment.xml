@@ -8,7 +8,8 @@
 
     <include
         android:id="@+id/blackboard_progressbar_ll"
-        layout="@layout/loading_content_layout" />
+        layout="@layout/loading_content_layout"
+        android:visibility="gone" />
 
     <include
         android:id="@+id/blackboard_error"
@@ -20,7 +21,6 @@
         android:layout_height="fill_parent"
         android:background="@android:color/transparent"
         android:cacheColorHint="@android:color/transparent"
-        android:clickable="true"
-        android:visibility="gone" />
+        android:clickable="true" />
 
 </LinearLayout>

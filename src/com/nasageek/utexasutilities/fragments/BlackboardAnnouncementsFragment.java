@@ -1,4 +1,4 @@
- package com.nasageek.utexasutilities.activities;
+ package com.nasageek.utexasutilities.fragments;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -35,47 +36,95 @@ import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 
 
-public class BlackboardAnnouncementsActivity extends SherlockActivity 
-{
-	private ActionBar actionbar;
+public class BlackboardAnnouncementsFragment extends SherlockFragment implements BlackboardFragment {
+	
 	private LinearLayout a_pb_ll;
 	private ListView alv;
 	private TextView atv;
 	private TextView etv;
 	private DefaultHttpClient httpclient;
 	private fetchAnnouncementsTask fetch;
+	private AnnouncementsAdapter announceAdapter;
+	private ArrayList<bbAnnouncement> announcements;
+	private boolean noAnnouncements = false;
+	
+	public BlackboardAnnouncementsFragment() {}
+	
+	public static BlackboardAnnouncementsFragment newInstance(String courseID, String courseName, String viewUri, Boolean fromDashboard)
+	{
+		BlackboardAnnouncementsFragment baf = new BlackboardAnnouncementsFragment();
+		
+		Bundle args = new Bundle();
+        args.putString("courseID", courseID);
+        args.putString("courseName", courseName);
+        args.putString("viewUri", viewUri);
+        args.putBoolean("fromDashboard", fromDashboard);
+        baf.setArguments(args);
+        
+        return baf;
+	}
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.blackboard_announcements_layout);
+		setRetainInstance(true);
 		
-		a_pb_ll = (LinearLayout) findViewById(R.id.announcements_progressbar_ll);
-    	alv = (ListView) findViewById(R.id.announcementsListView);
-    	atv = (TextView) findViewById(R.id.no_announcements_textview);
-    	etv = (TextView) findViewById(R.id.announcements_error);
-    	
-    	actionbar = getSupportActionBar();
-    	actionbar.setTitle(getIntent().getStringExtra("coursename"));
-    	actionbar.setSubtitle("Announcements");
-		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-		actionbar.setHomeButtonEnabled(true);
-		actionbar.setDisplayHomeAsUpEnabled(true);
-		
-		alv.setEmptyView(atv);
+		announcements = new ArrayList<bbAnnouncement>();
+		announceAdapter = new AnnouncementsAdapter(getSherlockActivity(), announcements);
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
-		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(this,httpclient));
+		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(),httpclient));
     	cookie.setDomain("courses.utexas.edu");
     	httpclient.getCookieStore().addCookie(cookie);
     	
-    	fetch = new fetchAnnouncementsTask(httpclient);
-    	fetch.execute();
 	}
 	
 	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
+	{
+		final View vg = inflater.inflate(R.layout.blackboard_announcements_layout, container, false);
+		
+		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+		actionbar.setTitle(getArguments().getString("courseName"));
+		actionbar.setSubtitle("Announcements");
+		
+		a_pb_ll = (LinearLayout) vg.findViewById(R.id.announcements_progressbar_ll);
+    	alv     = (ListView)     vg.findViewById(R.id.announcementsListView);
+    	atv     = (TextView)     vg.findViewById(R.id.no_announcements_textview);
+    	etv     = (TextView)     vg.findViewById(R.id.announcements_error);
+    	
+    	alv.setEmptyView(atv);
+    	alv.setAdapter(announceAdapter);
+ 
+    	if(announcements.size() == 0 && !noAnnouncements)
+    	{	
+    		fetch = new fetchAnnouncementsTask(httpclient);
+	    	fetch.execute();
+    	}
+    	
+    	return vg;
+	}
+	
+	@Override
+	public String getBbid() {	
+		return getArguments().getString("courseID");
+	}
+
+	@Override
+	public String getCourseName() {
+		return getArguments().getString("courseName");
+	}
+	
+	@Override
+	public boolean isFromDashboard() {
+		return getArguments().getBoolean("fromDashboard");
+	}
+	
+/*	@Override
 	public boolean onCreateOptionsMenu(Menu menu) 
 	{	
 		MenuInflater inflater = this.getSupportMenuInflater();
@@ -128,7 +177,7 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 		});
 		alertBuilder.setTitle("View on Blackboard");
 		alertBuilder.show();
-	}	
+	}	*/
 	private class fetchAnnouncementsTask extends AsyncTask<Object,Void,ArrayList<bbAnnouncement>>
 	{
 		private DefaultHttpClient client;
@@ -138,11 +187,19 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 		{
 			this.client = client;
 		}
+		@Override
+		protected void onPreExecute()
+		{
+			a_pb_ll.setVisibility(View.VISIBLE);
+			alv.setVisibility(View.GONE);
+			atv.setVisibility(View.GONE);
+			etv.setVisibility(View.GONE);
+		}
 
 		@Override
 		protected ArrayList<bbAnnouncement> doInBackground(Object... params)
 		{
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=ANNOUNCEMENTS&course_id="+getIntent().getStringExtra("courseid"));
+			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=ANNOUNCEMENTS&course_id="+getArguments().getString("courseID"));
 	    	String pagedata="";
 
 	    	try
@@ -176,8 +233,11 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 				a_pb_ll.setVisibility(View.GONE);
 				etv.setVisibility(View.GONE);
 			//	if(!result.isEmpty())
-			//	{
-					alv.setAdapter(new AnnouncementsAdapter(BlackboardAnnouncementsActivity.this,result));
+			//	{					
+					announcements.addAll(result);
+					if(announcements.size() == 0)
+						noAnnouncements = true;
+					announceAdapter.notifyDataSetChanged();
 				//	alv.setVisibility(View.VISIBLE);
 				//	atv.setVisibility(View.GONE);
 			/*	}

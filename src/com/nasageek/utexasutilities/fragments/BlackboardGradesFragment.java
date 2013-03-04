@@ -1,4 +1,4 @@
-package com.nasageek.utexasutilities.activities;
+package com.nasageek.utexasutilities.fragments;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -17,7 +17,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -35,40 +34,78 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
-import com.nasageek.utexasutilities.R.menu;
-import com.nasageek.utexasutilities.R.style;
 
-public class BlackboardGradesActivity extends SherlockActivity 
-{
-	private ActionBar actionbar;
+public class BlackboardGradesFragment extends SherlockFragment implements BlackboardFragment {
+	
 	private LinearLayout g_pb_ll;
 	private ListView glv;
 	private TextView getv;
+	
+	private String courseID, courseName, viewUri;
 	private DefaultHttpClient httpclient;
 	private fetchGradesTask fetch;
+	
+	private ArrayList<bbGrade> grades;
+	private GradesAdapter gradeAdapter;
+	
+	public BlackboardGradesFragment() {}
+	
+	public static BlackboardGradesFragment newInstance(String courseID, String courseName, String viewUri, boolean fromDashboard)
+	{
+		BlackboardGradesFragment bgf = new BlackboardGradesFragment();
+		
+		Bundle args = new Bundle();
+        args.putString("courseID", courseID);
+        args.putString("courseName", courseName);
+        args.putString("viewUri", viewUri);
+        args.putBoolean("fromDashboard", fromDashboard);
+        bgf.setArguments(args);
+        
+        return bgf;
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.blackboard_grades_layout);
-		actionbar = getSupportActionBar();
-		actionbar.setHomeButtonEnabled(true);
-		actionbar.setDisplayHomeAsUpEnabled(true);
-		actionbar.setTitle(getIntent().getStringExtra("coursename"));
+		setRetainInstance(true);
+		
+		courseID = getArguments().getString("courseID");
+		courseName = getArguments().getString("courseName");
+		viewUri = getArguments().getString("viewUri");
+		
+		grades = new ArrayList<bbGrade>();
+		gradeAdapter = new GradesAdapter(getSherlockActivity(), grades);
+		
+		httpclient = ConnectionHelper.getThreadSafeClient();
+		httpclient.getCookieStore().clear();
+		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(),httpclient));
+		cookie.setDomain("courses.utexas.edu");
+		httpclient.getCookieStore().addCookie(cookie);
+			
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
+	{
+		final View vg = inflater.inflate(R.layout.blackboard_grades_layout, container, false);
+		
+		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+		actionbar.setTitle(courseName);
 		actionbar.setSubtitle("Grades");
 		
-		g_pb_ll = (LinearLayout)findViewById(R.id.grades_progressbar_ll);
-		glv = (ListView) findViewById(R.id.gradesListView);
-		getv = (TextView) findViewById(R.id.grades_error);
+		g_pb_ll = (LinearLayout) vg.findViewById(R.id.grades_progressbar_ll);
+		glv = (ListView) vg.findViewById(R.id.gradesListView);
+		getv = (TextView) vg.findViewById(R.id.grades_error);
 		
+		glv.setAdapter(gradeAdapter);
 		glv.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -76,7 +113,7 @@ public class BlackboardGradesActivity extends SherlockActivity
 					int arg2, long arg3) {
 				bbGrade grade = (bbGrade) arg0.getAdapter().getItem(arg2);
 				
-				Dialog dlg = new Dialog(BlackboardGradesActivity.this,R.style.Theme_Sherlock_Light_Dialog);
+				Dialog dlg = new Dialog(getSherlockActivity(),R.style.Theme_Sherlock_Light_Dialog);
 				dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				dlg.setContentView(R.layout.grade_info_dialog);
 				dlg.setTitle("Grade Info");
@@ -103,20 +140,19 @@ public class BlackboardGradesActivity extends SherlockActivity
 			}
 			
 		});
-		
-		
-		httpclient = ConnectionHelper.getThreadSafeClient();
-		httpclient.getCookieStore().clear();
-		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(this,httpclient));
-		cookie.setDomain("courses.utexas.edu");
-		httpclient.getCookieStore().addCookie(cookie);
-	
-		fetch = new fetchGradesTask(httpclient);
-		fetch.execute();
+			
+		//there should always be at least 2 grades, so checking for 0 is a valid way to see if it couldn't load last time
+		if(grades.size() == 0)
+		{	
+			fetch = new fetchGradesTask(httpclient);
+			fetch.execute();
+		}
+
+		return vg;
 		
 	}
 	
-	@Override
+/*	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		
 		MenuInflater inflater = this.getSupportMenuInflater();
@@ -170,7 +206,22 @@ public class BlackboardGradesActivity extends SherlockActivity
 		});
 		alertBuilder.setTitle("View on Blackboard");
 		alertBuilder.show();
+	}*/
+	@Override
+	public String getBbid() {	
+		return getArguments().getString("courseID");
 	}
+
+	@Override
+	public String getCourseName() {
+		return getArguments().getString("courseName");
+	}
+	
+	@Override
+	public boolean isFromDashboard() {
+		return getArguments().getBoolean("fromDashboard");
+	}
+	
 	private class fetchGradesTask extends AsyncTask<Object,Void,ArrayList<bbGrade>>
 	{
 		private DefaultHttpClient client;
@@ -182,9 +233,18 @@ public class BlackboardGradesActivity extends SherlockActivity
 		}
 		
 		@Override
+		protected void onPreExecute()
+		{
+			g_pb_ll.setVisibility(View.VISIBLE);
+    		glv.setVisibility(View.GONE);
+    		getv.setVisibility(View.GONE);
+		}
+		
+		@Override
 		protected ArrayList<bbGrade> doInBackground(Object... params)
 		{
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=GRADES&course_id="+getIntent().getStringExtra("courseid"));
+
+			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=GRADES&course_id="+courseID);
 	    	String pagedata="";
 
 	    	try
@@ -228,8 +288,8 @@ public class BlackboardGradesActivity extends SherlockActivity
 		{
 			if(!this.isCancelled())
 	    	{
-				
-				glv.setAdapter(new GradesAdapter(BlackboardGradesActivity.this,result));
+				grades.addAll(result);
+				gradeAdapter.notifyDataSetChanged();
 				
 				g_pb_ll.setVisibility(View.GONE);
 				getv.setVisibility(View.GONE);
@@ -288,7 +348,6 @@ public class BlackboardGradesActivity extends SherlockActivity
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
-			
 			bbGrade grade = items.get(position);
 			
 			String title = grade.getName();
