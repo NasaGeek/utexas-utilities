@@ -27,7 +27,7 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionbar.setHomeButtonEnabled(true);
 		actionbar.setDisplayHomeAsUpEnabled(true);
-		PanesLayout panes = (PanesLayout) findViewById(R.id.panes);
+		//PanesLayout panes = (PanesLayout) findViewById(R.id.panes);
 		//setOnIndexChangedListener(this);
 		setPaneSizer(new BlackboardPaneSizer());
 		
@@ -55,7 +55,7 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 		public int getWidth(int index, int type, int parentWidth, int parentHeight) {
 			if (parentWidth > parentHeight) {
 				if (type == BLACKBOARD_PAGER_PANE_TYPE && index == 0)
-					return (int) (0.5 * parentWidth);
+					return (int) (0.55 * parentWidth);
 				else if (type == BLACKBOARD_EXTERNAL_ITEM_PANE_TYPE)
 					return (int) (0.55 * parentWidth);
 				else if (type == BLACKBOARD_OTHER_PANE_TYPE)
