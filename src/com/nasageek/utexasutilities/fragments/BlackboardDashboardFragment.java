@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Pair;
 import android.util.TimingLogger;
 import android.util.TypedValue;
@@ -38,6 +39,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.foound.widget.AmazingAdapter;
 import com.foound.widget.AmazingListView;
+import com.google.android.gms.internal.bb;
 import com.nasageek.utexasutilities.BlackboardDashboardXmlParser;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
@@ -55,6 +57,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 		private TextView etv;
 		private TimingLogger tl;
 		private fetchDashboardTask fetch;
+		private boolean longform;
 				
 		
 		public BlackboardDashboardFragment() { }
@@ -78,18 +81,21 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 			tl = new TimingLogger("Dashboard", "loadTime");
 			setRetainInstance(true);
 			
+			String bbAuthCookie = ConnectionHelper.getBBAuthCookie(getSherlockActivity(),httpclient);
+			longform = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean("blackboard_class_longform", false);
+			
 			httpclient = ConnectionHelper.getThreadSafeClient();
 			httpclient.getCookieStore().clear();
-			BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(),httpclient));
+			BasicClientCookie cookie = new BasicClientCookie("s_session_id", bbAuthCookie);
 	    	cookie.setDomain("courses.utexas.edu");
 	    	httpclient.getCookieStore().addCookie(cookie);
 			
 			fetch = new fetchDashboardTask(httpclient);
 			
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+				fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, bbAuthCookie);
 			else
-				fetch.execute();
+				fetch.execute(bbAuthCookie);
 			
 		}
 		@Override
@@ -124,7 +130,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 	//		ta.resetPage();
 	//		tlv.setSelectionFromTop(0, 0);
 		}
-		private class fetchDashboardTask extends AsyncTask<Object,Void,List<Pair<String, List<FeedItem>>>>
+		private class fetchDashboardTask extends AsyncTask<String,Void,List<Pair<String, List<FeedItem>>>>
 		{
 			private DefaultHttpClient client;
 			private String errorMsg = "";
@@ -136,9 +142,10 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 			}
 			
 			@Override
-			protected List<Pair<String, List<FeedItem>>> doInBackground(Object... params)
+			protected List<Pair<String, List<FeedItem>>> doInBackground(String... params)
 			{
 		    	String pagedata="";
+		    	String bbAuthCookie = params[0];		
 		    	feedList = new ArrayList<Pair<String, List<FeedItem>>>();
 		    	
 		    	if(Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) 
@@ -148,7 +155,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 					try {
 						location = new URL("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/dashboard?course_type=COURSE&with_notifications=true");
 						conn = (HttpsURLConnection) location.openConnection();
-						conn.setRequestProperty("Cookie", "s_session_id="+ConnectionHelper.getBBAuthCookie(getSherlockActivity(),httpclient));
+						conn.setRequestProperty("Cookie", "s_session_id="+bbAuthCookie);
 						conn.setRequestMethod("GET");
 						conn.setDoInput(true);
 						conn.connect();
@@ -200,70 +207,78 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 			@Override
 			protected void onPostExecute(List<Pair<String, List<FeedItem>>> result)
 			{
-				dlv.setAdapter(new BlackboardDashboardAdapter(result));
-				dlv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, dlv, false));
-				dlv.setOnItemClickListener(new OnItemClickListener() {
-
-					@Override
-					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-						FeedItem fi = (FeedItem) parent.getAdapter().getItem(position);
-						String courseid = fi.getBbId();
-						String contentid = fi.getContentId();
-						String coursename = fi.getCourseId();
-						String message = fi.getMessage();
-						
-						if("Grades".equals(fi.getType()))
-						{		
-							final Intent gradesLaunch = new Intent(null, null, getSherlockActivity(), BlackboardGradesActivity.class);
-				//			gradesLaunch.putExtra("viewUri", url);
-						//TODO: fetch coursemap for viewurl
-							gradesLaunch.putExtra("courseid", courseid);
-							gradesLaunch.putExtra("coursename", coursename);
-							gradesLaunch.putExtra("showViewInWeb", false);
-							startActivity(gradesLaunch);
-						}
-						else if("Content".equals(fi.getType()))
-						{
-							final Intent bbItemLaunch = new Intent(null, null, getSherlockActivity(), BlackboardDownloadableItemActivity.class);
-							bbItemLaunch.putExtra("contentid", contentid);
+				if(result != null) {
+					dlv.setAdapter(new BlackboardDashboardAdapter(result));
+					dlv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, dlv, false));
+					dlv.setOnItemClickListener(new OnItemClickListener() {
+	
+						@Override
+						public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+							FeedItem fi = (FeedItem) parent.getAdapter().getItem(position);
+							String courseid = fi.getBbId();
+							String contentid = fi.getContentId();
+							String coursename = fi.getCourseId();
+							String message = fi.getMessage();
 							
-							bbItemLaunch.putExtra("itemName", message); //TODO: not sure if I want to keep this
-							
-						//	bbItemLaunch.putExtra("viewUri", url); TODO
-							bbItemLaunch.putExtra("courseid", courseid);
-							bbItemLaunch.putExtra("coursename", coursename);
-							bbItemLaunch.putExtra("showViewInWeb", false);
-							startActivity(bbItemLaunch);
+							if("Grades".equals(fi.getType()))
+							{		
+								final Intent gradesLaunch = new Intent(null, null, getSherlockActivity(), BlackboardGradesActivity.class);
+					//			gradesLaunch.putExtra("viewUri", url);
+							//TODO: fetch coursemap for viewurl
+								gradesLaunch.putExtra("courseid", courseid);
+								gradesLaunch.putExtra("coursename", coursename);
+								gradesLaunch.putExtra("showViewInWeb", false);
+								startActivity(gradesLaunch);
+							}
+							else if("Content".equals(fi.getType()))
+							{
+								final Intent bbItemLaunch = new Intent(null, null, getSherlockActivity(), BlackboardDownloadableItemActivity.class);
+								bbItemLaunch.putExtra("contentid", contentid);
+								
+								bbItemLaunch.putExtra("itemName", message); //TODO: not sure if I want to keep this
+								
+							//	bbItemLaunch.putExtra("viewUri", url); TODO
+								bbItemLaunch.putExtra("courseid", courseid);
+								bbItemLaunch.putExtra("coursename", coursename);
+								bbItemLaunch.putExtra("showViewInWeb", false);
+								startActivity(bbItemLaunch);
+							}
+							else if("Announcement".equals(fi.getType()))
+							{
+								//TODO: figure out how to seek to a specific announcement
+								final Intent announcementsLaunch = new Intent(null, null, getSherlockActivity(), BlackboardAnnouncementsActivity.class);
+						//		announcementsLaunch.putExtra("viewUri", url); TODO
+								announcementsLaunch.putExtra("courseid", courseid);
+								announcementsLaunch.putExtra("coursename", coursename);
+								announcementsLaunch.putExtra("showViewInWeb", false);
+								startActivity(announcementsLaunch);
+							}
+							else if("Courses".equals(fi.getType()))
+							{
+								final Intent classLaunch = new Intent(getString(R.string.coursemap_intent), null, getSherlockActivity(), CourseMapActivity.class);
+								classLaunch.putExtra("courseid", fi.getBbId());
+								classLaunch.setData(Uri.parse(fi.getBbId()));
+								classLaunch.putExtra("folderName", "Course Map");
+								classLaunch.putExtra("coursename", fi.getCourseId());
+					//			classLaunch.putExtra("showViewInWeb", false);
+								startActivity(classLaunch);
+							}
 						}
-						else if("Announcement".equals(fi.getType()))
-						{
-							//TODO: figure out how to seek to a specific announcement
-							final Intent announcementsLaunch = new Intent(null, null, getSherlockActivity(), BlackboardAnnouncementsActivity.class);
-					//		announcementsLaunch.putExtra("viewUri", url); TODO
-							announcementsLaunch.putExtra("courseid", courseid);
-							announcementsLaunch.putExtra("coursename", coursename);
-							announcementsLaunch.putExtra("showViewInWeb", false);
-							startActivity(announcementsLaunch);
-						}
-						else if("Courses".equals(fi.getType()))
-						{
-							final Intent classLaunch = new Intent(getString(R.string.coursemap_intent), null, getSherlockActivity(), CourseMapActivity.class);
-							classLaunch.putExtra("courseid", fi.getBbId());
-							classLaunch.setData(Uri.parse(fi.getBbId()));
-							classLaunch.putExtra("folderName", "Course Map");
-							classLaunch.putExtra("coursename", fi.getCourseId());
-				//			classLaunch.putExtra("showViewInWeb", false);
-							startActivity(classLaunch);
-						}
-					}
-				});
-				tl.addSplit("Adapter created");
-				d_pb_ll.setVisibility(View.GONE);
-	    		dlv.setVisibility(View.VISIBLE);
-	    		etv.setVisibility(View.GONE);
+					});
+					
+					tl.addSplit("Adapter created");
+					d_pb_ll.setVisibility(View.GONE);
+		    		dlv.setVisibility(View.VISIBLE);
+		    		etv.setVisibility(View.GONE);
+				}
+				else {
+					errorMsg = "UTilities could not fetch your Blackboard Dashboard";
+					onCancelled(null);
+				}
+					
 			}
 			@Override
-			protected void onCancelled()
+			protected void onCancelled(List<Pair<String, List<FeedItem>>> result)
 			{
 				etv.setText(errorMsg);
 				d_pb_ll.setVisibility(View.GONE);
@@ -338,16 +353,22 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 				TextView contentType = (TextView) res.findViewById(R.id.d_content_type);
 				TextView message = (TextView) res.findViewById(R.id.d_message);
 
-				//TODO: make this look nice for malformed classes
-				if(!"".equals(fi.getCourseId()))
-					courseName.setText(fi.getCourseId()+ " - " + fi.getName()+ " ("+fi.getBbClass().getUnique()+")");
-				else
-					courseName.setText(fi.getName()+ " ("+fi.getBbClass().getUnique()+")");
+				if(!longform) {
+					//TODO: make this look nice for malformed classes
+					if(!"".equals(fi.getCourseId()))
+						courseName.setText(fi.getCourseId()+ " - " + fi.getName()+ " ("+fi.getBbClass().getUnique()+")");
+					else
+						courseName.setText(fi.getName()+ " ("+fi.getBbClass().getUnique()+")");
+				}
+				else {
+					courseName.setText(fi.getBbClass().getFullName());
+				}
+				
 				contentType.setText(fi.getType());
 				message.setText(fi.getMessage());
-				
-				if(!isEnabled(position))
-				{	TypedValue tv = new TypedValue();
+					
+				if(!isEnabled(position)) {	
+					TypedValue tv = new TypedValue();
 					if(getSherlockActivity().getTheme().resolveAttribute(android.R.attr.textColorTertiary, tv, true))	
 					{	
 						TypedArray arr = getSherlockActivity().obtainStyledAttributes(tv.resourceId, new int[] {android.R.attr.textColorTertiary});
@@ -355,8 +376,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 						courseName.setTextColor(arr.getColor(0, Color.BLACK));
 					}
 				}
-				else
-				{	
+				else {	
 					message.setTextColor(Color.BLACK);
 					courseName.setTextColor(Color.BLACK);
 				}

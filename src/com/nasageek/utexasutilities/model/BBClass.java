@@ -1,5 +1,7 @@
 package com.nasageek.utexasutilities.model;
 
+import java.util.Locale;
+
 import android.util.Log;
 
 public class BBClass {
@@ -10,6 +12,7 @@ public class BBClass {
 	private String semester;
 	private String unique;
 	private String courseid;
+	private String fullName;
 	
 	private boolean courseIdAvailable, fullCourseIdTooShort;
 
@@ -34,12 +37,19 @@ public class BBClass {
 		//filter out the year and semester at the beginning and the unique at the end
 		//year/semester should never fail.  If no space, indexOf returns -1 and you get the whole string
 	//	this.name = (name.contains("(") && name.charAt(0) != '(' && name.indexOf(" ")+1 <= name.indexOf("(")-1) 
-//																? name.substring(name.indexOf(" ")+1,name.indexOf("(")-1)
+	//																? name.substring(name.indexOf(" ")+1,name.indexOf("(")-1)
 	//															: name.substring(name.indexOf(" ")+1);
 		
-		//If we've got a date in the front (probably) chop it off
-		if(name.substring(0, name.indexOf(" ")).matches("^\\d{2}[A-Z]{1,2}$"))
-			this.name = name.substring(name.indexOf(" ")+1);
+		//Check if the name has spaces, apparently they don't always have them
+		if(name.indexOf(" ") >= 0) {
+			//TODO: might try this with a split[0] rather than the substring
+			//TODO: this might not trim off Summer semester identifier, check Alex's tablet
+			//If we've got a date in the front (probably) chop it off
+			if(name.substring(0, name.indexOf(" ")).matches("^\\d{2}[A-Z]{1,2}$"))
+				this.name = name.substring(name.indexOf(" ")+1);
+			else
+				this.name = name;
+		}
 		else
 			this.name = name;
 		
@@ -55,12 +65,13 @@ public class BBClass {
 	//	if(this.name.contains("("))
 		
 		this.bbid = bbid;
+		this.fullName = name;
 		this.fullcourseid = fullcourseid;
 		//some courseid's are malformed (ex. 00002), can't pull semester out of that unfortunately
 		try
 		{
 			//pulls the first section and second section of courseid, capitalizes the first letter of the semester
-			this.semester = fullcourseid.split("_")[0]+" "+(fullcourseid.split("_")[1].charAt(0)+"").toUpperCase()+fullcourseid.split("_")[1].substring(1);	
+			this.semester = fullcourseid.split("_")[0]+" "+(fullcourseid.split("_")[1].charAt(0)+"").toUpperCase(Locale.US)+fullcourseid.split("_")[1].substring(1);	
 		}
 		catch(Exception ex)
 		{
@@ -137,5 +148,9 @@ public class BBClass {
 	public void setSemester(String semester)
 	{
 		this.semester = semester;
+	}
+	public String getFullName()
+	{
+		return fullName;
 	}
 }
