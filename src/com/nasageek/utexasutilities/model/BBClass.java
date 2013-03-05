@@ -27,6 +27,7 @@ public class BBClass {
 	//		Log.d("BBClass check", "Class format is good");
 		
 
+		//TODO: check for longform in here somewhere and don't format if it is set
 		
 		
 		if(!fullcourseid.matches("^\\d{4}_[a-z]+?_\\d{5}_[A-Za-z]+?_\\w+$"))
