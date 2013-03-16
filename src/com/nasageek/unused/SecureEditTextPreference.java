@@ -14,17 +14,17 @@ public class SecureEditTextPreference extends EditTextPreference {
 	public SecureEditTextPreference(Context con)
 	{
 		super(con);
-		sp = new SecurePreferences(con,"com.nasageek.utexasutilities", "lalalakeyhere", false);
+		sp = new SecurePreferences(con,"com.nasageek.utexasutilities", false);
 	}
 	public SecureEditTextPreference(Context con, AttributeSet as)
 	{
 		super(con,as);
-		sp = new SecurePreferences(con,"com.nasageek.utexasutilities", "lalalakeyhere", false);
+		sp = new SecurePreferences(con,"com.nasageek.utexasutilities", false);
 	}
 	public SecureEditTextPreference(Context con, AttributeSet as, int defStyle)
 	{
 		super(con,as,defStyle);
-		sp = new SecurePreferences(con,"com.nasageek.utexasutilities", "lalalakeyhere", false);
+		sp = new SecurePreferences(con,"com.nasageek.utexasutilities", false);
 	}
 	@Override
 	public void setText(String text)

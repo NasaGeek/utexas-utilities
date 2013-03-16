@@ -452,7 +452,7 @@ public class UTilitiesActivity extends SherlockActivity {
     }
     public void login()
     {
-    	SecurePreferences sp = new SecurePreferences(UTilitiesActivity.this,"com.nasageek.utexasutilities.password","lalalawhatanicekey", false);
+    	SecurePreferences sp = new SecurePreferences(UTilitiesActivity.this,"com.nasageek.utexasutilities.password", false);
     	if(settings.getBoolean("loginpref", false))
     	{
     		if( !settings.contains("eid") || 

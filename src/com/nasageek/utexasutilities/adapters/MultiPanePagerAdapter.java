@@ -11,18 +11,17 @@ public class MultiPanePagerAdapter extends MyFragmentPagerAdapter {
 	/**
 	 * number of pages we want to display at once
 	 */
-	private int mPagesDisplayed;
+	private int mPanesDisplayed;
 	
 	public MultiPanePagerAdapter(FragmentManager fm, List<SherlockFragment> fragments) {
 		super(fm, fragments);
-		mPagesDisplayed = 1;	
+		mPanesDisplayed = 1;	
 	}
-	public void setPagesDisplayed(int pages)
-	{
-		this.mPagesDisplayed = pages;
+	public void setPagesDisplayed(int panes) {
+		mPanesDisplayed = panes;
 	}
 	@Override
 	public float getPageWidth(int position) {
-		return (float) (1.0/mPagesDisplayed);
+		return (float) (1.0/mPanesDisplayed);
 	}
 }

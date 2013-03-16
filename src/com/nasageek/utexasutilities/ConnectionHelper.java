@@ -60,7 +60,7 @@ public class ConnectionHelper {
 	public boolean bbLogin(Context con, DefaultHttpClient client)
 	{
 		settings = PreferenceManager.getDefaultSharedPreferences(con);
-		sp = new SecurePreferences(con, "com.nasageek.utexasutilities.password","lalalawhatanicekey",false);
+		sp = new SecurePreferences(con, "com.nasageek.utexasutilities.password",false);
 		HttpPost httppost = new HttpPost("https://courses.utexas.edu/webapps/login/");
 		try {
 		       
@@ -88,7 +88,7 @@ public class ConnectionHelper {
 	public boolean Login(Context con, DefaultHttpClient client)
 	{
 		settings = PreferenceManager.getDefaultSharedPreferences(con);
-		sp = new SecurePreferences(con, "com.nasageek.utexasutilities.password","lalalawhatanicekey",false);
+		sp = new SecurePreferences(con, "com.nasageek.utexasutilities.password",false);
 		HttpPost httppost = new HttpPost("https://utdirect.utexas.edu/security-443/logon_check.logonform");
 		try {
 		       
@@ -116,7 +116,7 @@ public class ConnectionHelper {
 	public boolean PNALogin(Context con, DefaultHttpClient client)
 	{
 		settings = PreferenceManager.getDefaultSharedPreferences(con);
-		sp = new SecurePreferences(con, "com.nasageek.utexasutilities.password","lalalawhatanicekey",false);
+		sp = new SecurePreferences(con, "com.nasageek.utexasutilities.password",false);
 		HttpPost httppost = new HttpPost("https://management.pna.utexas.edu/server/graph.cgi");
 		try {
 		       

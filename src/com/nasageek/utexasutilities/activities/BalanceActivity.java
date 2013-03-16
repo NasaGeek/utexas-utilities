@@ -18,6 +18,7 @@ import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
 import com.nasageek.utexasutilities.fragments.TransactionsFragment;
 import com.nasageek.utexasutilities.fragments.TransactionsFragment.TransactionType;
+import com.viewpagerindicator.MyTabPageIndicator;
 import com.viewpagerindicator.TabPageIndicator;
 
 public class BalanceActivity extends SherlockFragmentActivity
@@ -53,7 +54,7 @@ public class BalanceActivity extends SherlockFragmentActivity
     	List<SherlockFragment> fragments = new Vector<SherlockFragment>();
         /**
          * this is a bit of a hacky solution for something that should be handled by default.
-         * on a rotate, pager caches the old fragments (with setRetainInstance(true), but the 
+         * on a rotate, pager caches the old fragments (with setRetainInstance(true)), but the 
          * adapter does not, so I have to add the old fragments back to the adapter manually
         */
         if(getSupportFragmentManager().findFragmentByTag(Utility.makeFragmentName(pager.getId(), 0)) != null) {
@@ -65,7 +66,7 @@ public class BalanceActivity extends SherlockFragmentActivity
         	fragments.add(TransactionsFragment.newInstance("Bevo Bucks", TransactionType.Bevo));
         }
         
-        final TabPageIndicator tabIndicator = (TabPageIndicator)findViewById(R.id.titles);
+        final MyTabPageIndicator tabIndicator = (MyTabPageIndicator)findViewById(R.id.titles);
         
         mPagerAdapter = new MultiPanePagerAdapter(getSupportFragmentManager(), fragments);
         mPagerAdapter.setPagesDisplayed(pagesDisplayed);
