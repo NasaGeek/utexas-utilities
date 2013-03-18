@@ -32,11 +32,12 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 
 
-public class BlackboardAnnouncementsFragment extends SherlockFragment implements BlackboardFragment {
+public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 	
 	private LinearLayout a_pb_ll;
 	private ListView alv;
@@ -47,6 +48,8 @@ public class BlackboardAnnouncementsFragment extends SherlockFragment implements
 	private AnnouncementsAdapter announceAdapter;
 	private ArrayList<bbAnnouncement> announcements;
 	private boolean noAnnouncements = false;
+	private String courseID, courseName, viewUri;
+	private boolean fromDashboard;	
 	
 	public BlackboardAnnouncementsFragment() {}
 	
@@ -70,7 +73,10 @@ public class BlackboardAnnouncementsFragment extends SherlockFragment implements
 	{
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
-		
+		courseID = getArguments().getString("courseID");
+		courseName = getArguments().getString("courseName");
+		viewUri = getArguments().getString("viewUri");
+		setHasOptionsMenu(true);
 		announcements = new ArrayList<bbAnnouncement>();
 		announceAdapter = new AnnouncementsAdapter(getSherlockActivity(), announcements);
 		
@@ -124,14 +130,15 @@ public class BlackboardAnnouncementsFragment extends SherlockFragment implements
 		return getArguments().getBoolean("fromDashboard");
 	}
 	
-/*	@Override
-	public boolean onCreateOptionsMenu(Menu menu) 
-	{	
-		MenuInflater inflater = this.getSupportMenuInflater();
-        inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
-        if(!getIntent().getBooleanExtra("showViewInWeb", false))
-        	menu.removeItem(R.id.viewInWeb);
-		return true;	 
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {	
+        
+		menu.clear();
+		
+    //    if(!getIntent().getBooleanExtra("showViewInWeb", false))
+        if(viewUri != null && !viewUri.equals(""))
+        	inflater.inflate(R.menu.blackboard_announcements_menu, menu);
+    //    	menu.removeItem(R.id.announcements_view_in_web);	 
 	}
 
 	@Override
@@ -140,12 +147,8 @@ public class BlackboardAnnouncementsFragment extends SherlockFragment implements
     	int id = item.getItemId();
     	switch(id)
     	{
-	    	case android.R.id.home:
-	            // app icon in action bar clicked; go home
-	            super.onBackPressed();
-	            break;
-	    	case R.id.viewInWeb:
-	    		showAreYouSureDlg(BlackboardAnnouncementsActivity.this);
+	    	case R.id.announcements_view_in_web:
+	    		showAreYouSureDlg(getSherlockActivity());
 	    		break;
     	}
     	return false;
@@ -169,15 +172,19 @@ public class BlackboardAnnouncementsFragment extends SherlockFragment implements
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 	
-				Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardAnnouncementsActivity.this,BlackboardExternalItemActivity.class);
+				((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardAnnouncementsFragment.this, 
+						BlackboardExternalItemFragment.newInstance(viewUri, courseID, courseName, "Announcements", false));
+				
+			/*	Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardAnnouncementsActivity.this,BlackboardExternalItemActivity.class);
 	    		web.putExtra("itemName", "Announcements");
 	    		web.putExtra("coursename", getIntent().getStringExtra("coursename"));
-	    		startActivity(web);
+	    		startActivity(web);*/
 			}		
 		});
 		alertBuilder.setTitle("View on Blackboard");
 		alertBuilder.show();
-	}	*/
+	}	
+	
 	private class fetchAnnouncementsTask extends AsyncTask<Object,Void,ArrayList<bbAnnouncement>>
 	{
 		private DefaultHttpClient client;

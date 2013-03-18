@@ -1,4 +1,5 @@
 package com.nasageek.utexasutilities.activities;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -12,10 +13,13 @@ import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.fragments.BlackboardCourseListFragment;
 import com.nasageek.utexasutilities.fragments.BlackboardExternalItemFragment;
 import com.nasageek.utexasutilities.fragments.BlackboardFragment;
+import com.nasageek.utexasutilities.fragments.BlackboardGradesFragment;
 import com.nasageek.utexasutilities.fragments.BlackboardPagerFragment;
 
 public class BlackboardPanesActivity extends PanesActivity implements OnIndexChangedListener {
 	private ActionBar actionbar;
+	private PanesLayout panes;
+	private int lastCompleteIndex = 0;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -27,8 +31,16 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionbar.setHomeButtonEnabled(true);
 		actionbar.setDisplayHomeAsUpEnabled(true);
-		//PanesLayout panes = (PanesLayout) findViewById(R.id.panes);
-		//setOnIndexChangedListener(this);
+		
+		int screenSize = (getResources().getConfiguration().screenLayout
+				& Configuration.SCREENLAYOUT_SIZE_MASK);
+
+		if (screenSize == Configuration.SCREENLAYOUT_SIZE_LARGE ||
+				screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+			panes = (PanesLayout) findViewById(R.id.panes);
+			panes.setOnIndexChangedListener(this);
+		}
+		
 		setPaneSizer(new BlackboardPaneSizer());
 		
 		//this is a requirement, not sure why, nasty crashes otherwise
@@ -37,7 +49,7 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 		
 		//addFragment(null, BlackboardPagerFragment.newInstance());
 //		addFragment(null, BlackboardCourseListFragment.newInstance("Course List"));
-		
+		showMenu();
 		
 	}
 	@Override
@@ -95,8 +107,25 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 	public void onIndexChanged(int firstIndex, int lastIndex,
 			int firstCompleteIndex, int lastCompleteIndex) {
 		
+		if (firstCompleteIndex == 0)
+			getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+		else getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
-		
+		if(lastCompleteIndex != this.lastCompleteIndex) {
+			if((OnFragmentMenuChangedListener)getFragment(lastCompleteIndex) != null) {
+				this.lastCompleteIndex = lastCompleteIndex;
+				for(int i = 0; i < panes.getNumPanes(); i++) {
+					if(i == lastCompleteIndex)
+						getFragment(i).setHasOptionsMenu(true);
+					else
+						getFragment(i).setHasOptionsMenu(false);
+				}
+//				((OnFragmentMenuChangedListener)getFragment(lastCompleteIndex)).onFragmentMenuChanged();
+			}
+		}
 	}
 
+	public interface OnFragmentMenuChangedListener {	
+		public void onFragmentMenuChanged();
+	}
 }

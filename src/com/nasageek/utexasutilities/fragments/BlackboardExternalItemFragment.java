@@ -16,11 +16,13 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 
-public class BlackboardExternalItemFragment extends SherlockFragment implements BlackboardFragment {
+public class BlackboardExternalItemFragment extends BlackboardFragment {
 	
 	private TextView absTitle;
 	private TextView absSubtitle;
@@ -46,14 +48,14 @@ public class BlackboardExternalItemFragment extends SherlockFragment implements 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-			super.onCreate(savedInstanceState);
-			setRetainInstance(true);
-						
-			CookieSyncManager.createInstance(getSherlockActivity());
-			CookieManager man = CookieManager.getInstance();
-			man.setCookie("courses.utexas.edu", "s_session_id="+ConnectionHelper.getBBAuthCookie(getSherlockActivity(), ConnectionHelper.getThreadSafeClient()));
-			
-			CookieSyncManager.getInstance().sync();
+		super.onCreate(savedInstanceState);
+		setRetainInstance(true);
+		setHasOptionsMenu(true);			
+		CookieSyncManager.createInstance(getSherlockActivity());
+		CookieManager man = CookieManager.getInstance();
+		man.setCookie("courses.utexas.edu", "s_session_id="+ConnectionHelper.getBBAuthCookie(getSherlockActivity(), ConnectionHelper.getThreadSafeClient()));
+		
+		CookieSyncManager.getInstance().sync();
 	}
 	
 	@Override
@@ -97,20 +99,12 @@ public class BlackboardExternalItemFragment extends SherlockFragment implements 
 	@Override
 	public boolean isFromDashboard() {
 		return getArguments().getBoolean("fromDashboard");
-	}
+	}	
 	
-/*	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-    	int id = item.getItemId();
-    	switch(id)
-    	{
-	    	case android.R.id.home:
-	            // app icon in action bar clicked; go home
-	            super.onBackPressed();
-	            break;
-    	}
-    	return false;
-	}*/
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		menu.clear();     
+	}
+
 
 }

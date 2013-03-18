@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,10 +39,11 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 
-public class BlackboardGradesFragment extends SherlockFragment implements BlackboardFragment {
+public class BlackboardGradesFragment extends BlackboardFragment {
 	
 	private LinearLayout g_pb_ll;
 	private ListView glv;
@@ -75,10 +77,10 @@ public class BlackboardGradesFragment extends SherlockFragment implements Blackb
 	{
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
-		
 		courseID = getArguments().getString("courseID");
 		courseName = getArguments().getString("courseName");
 		viewUri = getArguments().getString("viewUri");
+		setHasOptionsMenu(true);
 		
 		grades = new ArrayList<bbGrade>();
 		gradeAdapter = new GradesAdapter(getSherlockActivity(), grades);
@@ -94,6 +96,8 @@ public class BlackboardGradesFragment extends SherlockFragment implements Blackb
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	{
+		//TODO: check type of container, should we get the current index from container or parent activity?
+		
 		final View vg = inflater.inflate(R.layout.blackboard_grades_layout, container, false);
 		
 		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
@@ -152,14 +156,14 @@ public class BlackboardGradesFragment extends SherlockFragment implements Blackb
 		
 	}
 	
-/*	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		
-		MenuInflater inflater = this.getSupportMenuInflater();
-        inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
-        if(!getIntent().getBooleanExtra("showViewInWeb", false))
-        	menu.removeItem(R.id.viewInWeb);
-		return true;
+		menu.clear();
+  //      if(!getIntent().getBooleanExtra("showViewInWeb", false))
+        if(viewUri != null && !viewUri.equals(""))	
+        	inflater.inflate(R.menu.blackboard_grades_menu, menu);
+       // 	menu.removeItem(R.id.viewInWeb);
 		 
 	}
 
@@ -169,12 +173,8 @@ public class BlackboardGradesFragment extends SherlockFragment implements Blackb
     	int id = item.getItemId();
     	switch(id)
     	{
-	    	case android.R.id.home:
-	            // app icon in action bar clicked; go home
-	           super.onBackPressed();
-	           break;
-	    	case R.id.viewInWeb:
-	    		showAreYouSureDlg(BlackboardGradesActivity.this);
+	    	case R.id.grades_view_in_web:
+	    		showAreYouSureDlg(getSherlockActivity());
 	    		break;
     	}
     	return false;
@@ -198,15 +198,20 @@ public class BlackboardGradesFragment extends SherlockFragment implements Blackb
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 	
-				Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardGradesActivity.this,BlackboardExternalItemActivity.class);
+				((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardGradesFragment.this, 
+					BlackboardExternalItemFragment.newInstance(viewUri, courseID, courseName, "Grades", false));
+				
+				
+		/*		Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardGradesActivity.this,BlackboardExternalItemActivity.class);
 	    		web.putExtra("itemName", "Grades");
 	    		web.putExtra("coursename", getIntent().getStringExtra("coursename"));
-	    		startActivity(web);
+	    		startActivity(web);*/
 			}		
 		});
 		alertBuilder.setTitle("View on Blackboard");
 		alertBuilder.show();
-	}*/
+	}
+	
 	@Override
 	public String getBbid() {	
 		return getArguments().getString("courseID");
@@ -438,5 +443,6 @@ public class BlackboardGradesFragment extends SherlockFragment implements Blackb
 		}
 	
 	}
+
 	
 }

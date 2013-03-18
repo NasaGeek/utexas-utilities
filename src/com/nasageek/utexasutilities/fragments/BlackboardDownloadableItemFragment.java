@@ -51,6 +51,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.crittercism.app.Crittercism;
+import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.AttachmentDownloadService;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.MyScrollView;
@@ -58,7 +59,7 @@ import com.nasageek.utexasutilities.ParcelablePair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.model.CourseMapItem;
 
-public class BlackboardDownloadableItemFragment extends SherlockFragment implements BlackboardFragment {
+public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	
 	private ListView dlableItems;
 	private TextView contentDescription;
@@ -69,6 +70,7 @@ public class BlackboardDownloadableItemFragment extends SherlockFragment impleme
 	private ArrayList<bbFile> attachments;
 	private dlableItemAdapter attachmentAdapter;
 	private String content;
+	private String courseID, courseName, viewUri, itemName;
 	
 	private MyScrollView msv;
 	
@@ -96,6 +98,13 @@ public class BlackboardDownloadableItemFragment extends SherlockFragment impleme
 	{
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
+		
+		courseID = getArguments().getString("courseID");
+		courseName = getArguments().getString("courseName");
+		viewUri = getArguments().getString("viewUri");
+		itemName = getArguments().getString("itemName");
+		
+		setHasOptionsMenu(true);
 		
 		attachments = new ArrayList<bbFile>();
 		attachmentAdapter = new dlableItemAdapter(getSherlockActivity(), attachments);
@@ -238,13 +247,14 @@ public class BlackboardDownloadableItemFragment extends SherlockFragment impleme
 			getSherlockActivity().unregisterReceiver(onNotificationClick);
 	}
 	
-/*	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = this.getSupportMenuInflater();
-        inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
-        if(!getIntent().getBooleanExtra("showViewInWeb", false))
-        	menu.removeItem(R.id.viewInWeb);
-		return true;
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+		
+//        if(!getIntent().getBooleanExtra("showViewInWeb", false))
+        if(viewUri != null && !viewUri.equals(""))
+        	inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
+       // 	menu.removeItem(R.id.blackboard_d);
 		 
 	}
 	@Override
@@ -253,12 +263,8 @@ public class BlackboardDownloadableItemFragment extends SherlockFragment impleme
     	int id = item.getItemId();
     	switch(id)
     	{
-	    	case android.R.id.home:
-	            // app icon in action bar clicked; go home
-	           super.onBackPressed();
-	           break;
-	    	case R.id.viewInWeb:
-	    		showAreYouSureDlg(BlackboardDownloadableItemActivity.this);
+	    	case R.id.dlable_item_view_in_web:
+	    		showAreYouSureDlg(getSherlockActivity());
 	    		break;
     	}
     	return false;
@@ -280,15 +286,20 @@ public class BlackboardDownloadableItemFragment extends SherlockFragment impleme
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 				
-				Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardDownloadableItemActivity.this,BlackboardExternalItemActivity.class);
+				
+				((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardDownloadableItemFragment.this, 
+						BlackboardExternalItemFragment.newInstance(viewUri, courseID, courseName, itemName, false));
+				
+				
+		/*		Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardDownloadableItemActivity.this,BlackboardExternalItemActivity.class);
 	    		web.putExtra("itemName", getIntent().getStringExtra("itemName"));
 	    		web.putExtra("coursename", getIntent().getStringExtra("coursename"));
-	    		startActivity(web);
+	    		startActivity(web);*/
 			}		
 		});
 		alertBuilder.setTitle("View on Blackboard");
 		alertBuilder.show();
-	} */
+	}
 	
 	private void completeUISetup()
 	{
@@ -296,11 +307,14 @@ public class BlackboardDownloadableItemFragment extends SherlockFragment impleme
 		{
 			msv.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 
+				@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 				@Override
 				public void onGlobalLayout() {
 					
-					Log.d("MyScrollView", "scrollable: " + msv.canScroll());
-					msv.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+					if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) 
+						msv.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+					else 
+						msv.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 					
 					if(!msv.canScroll())
 						msv.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 0));
@@ -546,4 +560,5 @@ public class BlackboardDownloadableItemFragment extends SherlockFragment impleme
 	public boolean isFromDashboard() {
 		return getArguments().getBoolean("fromDashboard");
 	}
+
 }

@@ -60,7 +60,7 @@ import com.nasageek.utexasutilities.model.BBClass;
 import com.nasageek.utexasutilities.model.CourseMapItem;
 
 
-public class BlackboardCourseMapFragment extends SherlockFragment implements BlackboardFragment {
+public class BlackboardCourseMapFragment extends BlackboardFragment {
 	
 	private DefaultHttpClient httpclient;
 	private LinearLayout cm_pb_ll;
@@ -109,7 +109,8 @@ public class BlackboardCourseMapFragment extends SherlockFragment implements Bla
 		bbID = getArguments().getString("courseID");
 		folderName = getArguments().getString("folderName");
 		viewUri = getArguments().getString("viewUri");
-
+		setHasOptionsMenu(true);
+		
 		if(getString(R.string.coursemap_nest_intent).equals(getArguments().getString("action")))
 		{
 			mainList = (ArrayList<ParcelablePair<CourseMapItem, ArrayList>>) getArguments().getSerializable("mainList");
@@ -130,8 +131,8 @@ public class BlackboardCourseMapFragment extends SherlockFragment implements Bla
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	{	
 		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
-		actionbar.setDisplayShowCustomEnabled(true);
-		actionbar.setDisplayShowTitleEnabled(false);
+	//	actionbar.setDisplayShowCustomEnabled(true);
+	//	actionbar.setDisplayShowTitleEnabled(false);
 		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_TITLE);
 		actionbar.setCustomView(inflater.inflate(R.layout.action_bar_title_subtitle, null));
 		
@@ -308,32 +309,28 @@ public class BlackboardCourseMapFragment extends SherlockFragment implements Bla
 	{
 		return bbID;
 	}
-/*	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-		MenuInflater inflater = this.getSupportMenuInflater();
-        inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
-        //return true only if not top-level
-        //there is no "nice" page for the coursemap viewable in a browser
-        return itemNumber != -1; 
-		 
+		menu.clear();
+		//show the menu only if not top-level
+		//there is no "nice" page for the top-level coursemap viewable in a browser
+        if(itemNumber != -1)
+        	inflater.inflate(R.menu.blackboard_course_map_menu, menu);
+	 
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
     	int id = item.getItemId();
     	switch(id)
-    	{
-	    	case android.R.id.home:
-	            // app icon in action bar clicked; go home
-	            super.onBackPressed();
-	            break;
-	    	case R.id.viewInWeb:
-	    		showAreYouSureDlg(CourseMapActivity.this);
+    	{	
+	    	case R.id.course_map_view_in_web:
+	    		showAreYouSureDlg(getSherlockActivity());
 	    		break;
     	}
     	return false;
-	}*/
+	}
 	@Override
 	public void onSaveInstanceState(Bundle icicle) 
 	{
@@ -341,7 +338,7 @@ public class BlackboardCourseMapFragment extends SherlockFragment implements Bla
 //		icicle.putString("courseid", getIntent().getStringExtra("courseid"));
 //		icicle.putString("coursename", getIntent().getStringExtra("coursename"));
 	}
-/*	private void showAreYouSureDlg(Context con)
+	private void showAreYouSureDlg(Context con)
 	{
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(con);
 		alertBuilder.setMessage("Would you like to view this item on the Blackboard website?");
@@ -357,15 +354,19 @@ public class BlackboardCourseMapFragment extends SherlockFragment implements Bla
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 				
-				Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),CourseMapActivity.this,BlackboardExternalItemActivity.class);
+				((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardCourseMapFragment.this, 
+						BlackboardExternalItemFragment.newInstance(viewUri, bbID, courseName, folderName, false));
+				
+			/*	Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),CourseMapActivity.this,BlackboardExternalItemActivity.class);
 	    		web.putExtra("itemName", getIntent().getStringExtra("folderName")); //will be used as SubTitle
 	    		web.putExtra("coursename", getIntent().getStringExtra("coursename")); //will be used as Title
-	    		startActivity(web);
+	    		startActivity(web);*/
+	    		
 			}		
 		});
 		alertBuilder.setTitle("View on Blackboard");
 		alertBuilder.show();
-	}*/
+	}
 	@Override
 	public String getCourseName() {
 		return getArguments().getString("courseName");

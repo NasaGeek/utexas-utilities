@@ -36,7 +36,7 @@
             android:textSize="13sp" />
     </LinearLayout>
 
-    <com.viewpagerindicator.TabPageIndicator
+    <com.viewpagerindicator.MyTabPageIndicator
         android:id="@+id/titles"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
