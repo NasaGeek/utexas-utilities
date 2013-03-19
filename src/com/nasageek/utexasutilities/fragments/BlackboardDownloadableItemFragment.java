@@ -77,8 +77,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	public BlackboardDownloadableItemFragment() {}
 	
 	public static BlackboardDownloadableItemFragment newInstance(String contentID,
-			String courseID, String courseName, String itemName, String viewUri, Boolean fromDashboard)
-	{
+			String courseID, String courseName, String itemName, String viewUri, Boolean fromDashboard) {
 		BlackboardDownloadableItemFragment bmif = new BlackboardDownloadableItemFragment();
 		
 		Bundle args = new Bundle();
@@ -94,8 +93,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	}
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
 		
@@ -117,14 +115,10 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	}
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
-	{
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)  {
 		final View vg = inflater.inflate(R.layout.blackboard_dlable_item_layout, container, false);
 		
-		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
-		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
-		actionbar.setTitle(getArguments().getString("courseName"));
-		actionbar.setSubtitle(getArguments().getString("itemName"));
+		setupActionBar();
 		
 		dlableItems = (ListView) vg.findViewById(R.id.dlable_item_list);
 		dlil_pb_ll = (LinearLayout) vg.findViewById(R.id.blackboard_dl_items_progressbar_ll);
@@ -143,8 +137,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 				
 				AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getSherlockActivity());
 				alertBuilder.setMessage("Would you like to download this attached file?").
-				setNegativeButton("No", new DialogInterface.OnClickListener()
-				{
+				setNegativeButton("No", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.dismiss();
@@ -155,15 +148,13 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 					@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 					public void onClick(DialogInterface dialog, int which) {
 
-						if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) 
-						{	 
+						if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {	 
 							Intent downloadAttachment = new Intent(getSherlockActivity(), AttachmentDownloadService.class);
 							downloadAttachment.putExtra("fileName", item.getFileName());
 							downloadAttachment.putExtra("url", item.getDlUri());
 							getSherlockActivity().startService(downloadAttachment);			
 						}	
-						else if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-						{ 	
+						else if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) { 	
 							final DownloadManager manager = (DownloadManager) getSherlockActivity().getSystemService(Service.DOWNLOAD_SERVICE);
 	
 							onNotificationClick=new BroadcastReceiver() {
@@ -209,8 +200,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 					    	 Crittercism.leaveBreadcrumb("Attachment Downloaded (>=3.0)");
 					       	 Toast.makeText(getSherlockActivity(), "Download started, item should appear in the \"Download\" folder on your external storage.", Toast.LENGTH_LONG).show();
 						 }	 
-						 else
-						 {
+						 else {
 							 AlertDialog.Builder build = new AlertDialog.Builder(getSherlockActivity());
 							 build.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
 								
@@ -240,8 +230,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	}
 	
 	@Override
-	public void onDestroy()
-	{
+	public void onDestroy() {
 		super.onDestroy();
 		if(onNotificationClick != null)
 			getSherlockActivity().unregisterReceiver(onNotificationClick);
@@ -258,8 +247,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		 
 	}
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
+	public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
     	switch(id)
     	{
@@ -301,10 +289,15 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		alertBuilder.show();
 	}
 	
-	private void completeUISetup()
-	{
-		if(msv.getViewTreeObserver().isAlive())
-		{
+	private void setupActionBar() {
+		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+		actionbar.setTitle(getArguments().getString("courseName"));
+		actionbar.setSubtitle(getArguments().getString("itemName"));
+	}
+	
+	private void completeUISetup() {
+		if(msv.getViewTreeObserver().isAlive()) {
 			msv.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 
 				@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -324,8 +317,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 				}
 			});
 		}
-		if(("".equals(content) || "No description".equals(content)) && getSherlockActivity() != null)
-		{	
+		if(("".equals(content) || "No description".equals(content)) && getSherlockActivity() != null) {	
 			content = "No description";
 			TypedValue tv = new TypedValue();
 			if(getSherlockActivity().getTheme().resolveAttribute(android.R.attr.textColorTertiary, tv, true))	
@@ -335,20 +327,17 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 			}			
 		}
 	}
-	private class fetchData extends AsyncTask<String, Object, Object[]>
-	{
+	private class fetchData extends AsyncTask<String, Object, Object[]> {
 		private DefaultHttpClient client;
 		private String errorMsg;
 		
 		
-		public fetchData(DefaultHttpClient client)
-		{
+		public fetchData(DefaultHttpClient client) {
 			this.client = client;
 		}
 		
 		@Override
-		protected void onPreExecute()
-		{
+		protected void onPreExecute() {
 			dlil_pb_ll.setVisibility(View.VISIBLE);
 			dlil_etv.setVisibility(View.GONE);
 			contentDescription.setVisibility(View.GONE);
@@ -356,8 +345,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		}
 		
 		@Override
-		protected Object[] doInBackground(String... params)
-		{
+		protected Object[] doInBackground(String... params) {
 			String contentid = params[0];
 			
 			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/contentDetail?content_id="+contentid+"&course_id="+getArguments().getString("courseID"));
@@ -412,10 +400,8 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 			return result;
 		}
 		@Override
-		protected void onPostExecute(Object... result)
-		{
-			if(!this.isCancelled())
-	    	{				
+		protected void onPostExecute(Object... result) {
+			if(!this.isCancelled()) {				
 				content = Html.fromHtml(Html.fromHtml(((String) result[0]).replaceAll("<!--.*?-->", "")).toString()).toString().trim();
 				completeUISetup();
 
@@ -430,8 +416,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	    	}
 		}		
 		@Override
-		protected void onCancelled(Object... o)
-		{
+		protected void onCancelled(Object... o) {
 			dlil_etv.setText(errorMsg);
 			
 			dlil_etv.setVisibility(View.VISIBLE);
@@ -442,15 +427,13 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		
 		
 	}
-	private class dlableItemAdapter extends ArrayAdapter<bbFile>
-	{
+	private class dlableItemAdapter extends ArrayAdapter<bbFile> {
 		private Context con;
 		private ArrayList<bbFile> items;
 		LayoutInflater li;
 		
 		
-		public dlableItemAdapter(Context c, ArrayList<bbFile> items)
-		{
+		public dlableItemAdapter(Context c, ArrayList<bbFile> items) {
 			super(c,0,items);
 			con = c;
 			this.items=items;
@@ -470,18 +453,15 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 			return 0;
 		}
 		@Override
-		public boolean areAllItemsEnabled()
-		{
+		public boolean areAllItemsEnabled() {
 			return true;
 		}
 		@Override
-		public boolean isEnabled(int i)
-		{
+		public boolean isEnabled(int i) {
 			return true;
 		}
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent)
-		{
+		public View getView(int position, View convertView, ViewGroup parent) {
 			bbFile item = items.get(position);
 			ViewGroup lin = (ViewGroup) convertView;
 			
@@ -501,8 +481,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		}
 	}
 	
-	private class bbFile
-	{
+	private class bbFile {
 		private String name;
 		private String size;
 		private String dlUri;
@@ -510,8 +489,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		private String fileName;
 		
 		
-		public bbFile(String name, String fileName, String size, String dlUri, String viewUri)
-		{
+		public bbFile(String name, String fileName, String size, String dlUri, String viewUri) {
 			this.name=name;
 			this.fileName=fileName;
 			this.size=size;
@@ -536,12 +514,10 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		public void setDlUri(String dlUri) {
 			this.dlUri = dlUri;
 		}
-		public String getViewUri()
-		{
+		public String getViewUri() {
 			return viewUri;
 		}
-		public String getFileName()
-		{
+		public String getFileName() {
 			return fileName;
 		}
 	}
@@ -559,6 +535,11 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	@Override
 	public boolean isFromDashboard() {
 		return getArguments().getBoolean("fromDashboard");
+	}
+
+	@Override
+	public void onPanesScrolled() {
+		setupActionBar();		
 	}
 
 }

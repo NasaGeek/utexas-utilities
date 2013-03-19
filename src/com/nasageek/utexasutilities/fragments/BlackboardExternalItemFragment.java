@@ -27,6 +27,7 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
 	private TextView absTitle;
 	private TextView absSubtitle;
 //	private WebView wv;
+	private View absView;
 	
 	public BlackboardExternalItemFragment() {}
 	
@@ -61,14 +62,8 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	{
-		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
-		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_TITLE);
-		actionbar.setCustomView(inflater.inflate(R.layout.action_bar_title_subtitle, null));
-		absTitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_title);
-		absSubtitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_subtitle);
-
-		absTitle.setText(getArguments().getString("courseName"));
-		absSubtitle.setText(getArguments().getString("itemName"));
+		absView = inflater.inflate(R.layout.action_bar_title_subtitle, null);
+		setupActionBar();
 		
 		//TODO: figure out how to save state of the WebView
 		final WebView wv = new WebView(getSherlockActivity());
@@ -85,6 +80,16 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
 
 		wv.loadUrl(getArguments().getString("url"));
 		return wv;
+	}
+	private void setupActionBar() {
+		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_TITLE);
+		actionbar.setCustomView(absView);
+		absTitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_title);
+		absSubtitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_subtitle);
+
+		absTitle.setText(getArguments().getString("courseName"));
+		absSubtitle.setText(getArguments().getString("itemName"));
 	}
 	@Override
 	public String getBbid() {	
@@ -104,6 +109,11 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		menu.clear();     
+	}
+
+	@Override
+	public void onPanesScrolled() {
+		setupActionBar();	
 	}
 
 

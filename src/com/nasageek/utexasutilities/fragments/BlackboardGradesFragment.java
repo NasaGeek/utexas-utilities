@@ -58,8 +58,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 	
 	public BlackboardGradesFragment() {}
 	
-	public static BlackboardGradesFragment newInstance(String courseID, String courseName, String viewUri, boolean fromDashboard)
-	{
+	public static BlackboardGradesFragment newInstance(String courseID, String courseName, String viewUri, boolean fromDashboard) {
 		BlackboardGradesFragment bgf = new BlackboardGradesFragment();
 		
 		Bundle args = new Bundle();
@@ -73,8 +72,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 	}
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
 		courseID = getArguments().getString("courseID");
@@ -94,17 +92,12 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 	}
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
-	{
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)  {
 		//TODO: check type of container, should we get the current index from container or parent activity?
 		
 		final View vg = inflater.inflate(R.layout.blackboard_grades_layout, container, false);
 		
-		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
-		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
-		actionbar.setTitle(courseName);
-		actionbar.setSubtitle("Grades");
-		
+		setupActionBar();
 		g_pb_ll = (LinearLayout) vg.findViewById(R.id.grades_progressbar_ll);
 		glv = (ListView) vg.findViewById(R.id.gradesListView);
 		getv = (TextView) vg.findViewById(R.id.grades_error);
@@ -113,8 +106,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		glv.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				bbGrade grade = (bbGrade) arg0.getAdapter().getItem(arg2);
 				
 				Dialog dlg = new Dialog(getSherlockActivity(),R.style.Theme_Sherlock_Light_Dialog);
@@ -146,8 +138,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		});
 			
 		//there should always be at least 2 grades, so checking for 0 is a valid way to see if it couldn't load last time
-		if(grades.size() == 0)
-		{	
+		if(grades.size() == 0) {	
 			fetch = new fetchGradesTask(httpclient);
 			fetch.execute();
 		}
@@ -168,8 +159,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
+	public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
     	switch(id)
     	{
@@ -179,12 +169,10 @@ public class BlackboardGradesFragment extends BlackboardFragment {
     	}
     	return false;
 	}
-	private void showAreYouSureDlg(Context con)
-	{
+	private void showAreYouSureDlg(Context con) {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(con);
 		alertBuilder.setMessage("Would you like to view this item on the Blackboard website?");
-		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
-		{
+		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 
@@ -193,8 +181,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 			}
 		});
 		
-		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() 
-		{
+		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener()  {
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 	
@@ -210,6 +197,12 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		});
 		alertBuilder.setTitle("View on Blackboard");
 		alertBuilder.show();
+	}
+	private void setupActionBar() {
+		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+		actionbar.setTitle(courseName);
+		actionbar.setSubtitle("Grades");
 	}
 	
 	@Override
@@ -227,37 +220,31 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		return getArguments().getBoolean("fromDashboard");
 	}
 	
-	private class fetchGradesTask extends AsyncTask<Object,Void,ArrayList<bbGrade>>
-	{
+	private class fetchGradesTask extends AsyncTask<Object,Void,ArrayList<bbGrade>> {
 		private DefaultHttpClient client;
 		private String errorMsg;
 		
-		public fetchGradesTask(DefaultHttpClient client)
-		{
+		public fetchGradesTask(DefaultHttpClient client) {
 			this.client = client;
 		}
 		
 		@Override
-		protected void onPreExecute()
-		{
+		protected void onPreExecute() {
 			g_pb_ll.setVisibility(View.VISIBLE);
     		glv.setVisibility(View.GONE);
     		getv.setVisibility(View.GONE);
 		}
 		
 		@Override
-		protected ArrayList<bbGrade> doInBackground(Object... params)
-		{
+		protected ArrayList<bbGrade> doInBackground(Object... params) {
 
 			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=GRADES&course_id="+courseID);
 	    	String pagedata="";
 
-	    	try
-			{
+	    	try {
 				HttpResponse response = client.execute(hget);
 		    	pagedata = EntityUtils.toString(response.getEntity());
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				errorMsg = "UTilities could not fetch this course's grades";
 				cancel(true);
 				e.printStackTrace();
@@ -268,8 +255,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 	    	Pattern gradeItemPattern = Pattern.compile("<grade-item.*?/>",Pattern.DOTALL);
 	    	Matcher gradeItemMatcher = gradeItemPattern.matcher(pagedata);
 	    	
-	    	while(gradeItemMatcher.find())
-	    	{
+	    	while(gradeItemMatcher.find()) {
 	    		String gradeData = gradeItemMatcher.group();
 	    		Pattern namePattern = Pattern.compile("name=\"(.*?)\"");
 		    	Matcher nameMatcher = namePattern.matcher(gradeData);
@@ -280,8 +266,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		    	Pattern commentPattern = Pattern.compile("comments=\"(.*?)\"",Pattern.DOTALL);
 		    	Matcher commentMatcher = commentPattern.matcher(gradeData);
 		    	
-		    	if(nameMatcher.find() && pointsMatcher.find() && gradeMatcher.find())
-		    	{	
+		    	if(nameMatcher.find() && pointsMatcher.find() && gradeMatcher.find()) {	
 		    		data.add(new bbGrade(nameMatcher.group(1).replace("&amp;", "&"),gradeMatcher.group(1),pointsMatcher.group(1), commentMatcher.find() ? Html.fromHtml(Html.fromHtml(commentMatcher.group(1)).toString()).toString() 
 		    																													  : "No comments"));
 		    	}
@@ -289,10 +274,8 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 			return data;
 		}
 		@Override
-		protected void onPostExecute(ArrayList<bbGrade> result)
-		{
-			if(!this.isCancelled())
-	    	{
+		protected void onPostExecute(ArrayList<bbGrade> result) {
+			if(!this.isCancelled()) {
 				grades.addAll(result);
 				gradeAdapter.notifyDataSetChanged();
 				
@@ -302,8 +285,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 	    	}
 		}	
 		@Override
-		protected void onCancelled()
-		{
+		protected void onCancelled() {
 			getv.setText(errorMsg);
 			
 			g_pb_ll.setVisibility(View.GONE);
@@ -318,8 +300,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		private ArrayList<bbGrade> items;
 		private LayoutInflater li;
 		
-		public GradesAdapter(Context c, ArrayList<bbGrade> items)
-		{
+		public GradesAdapter(Context c, ArrayList<bbGrade> items) {
 			super(c,0,items);
 			con = c;
 			this.items=items;
@@ -341,18 +322,15 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 			return 0;
 		}
 		@Override
-		public boolean areAllItemsEnabled()
-		{
+		public boolean areAllItemsEnabled() {
 			return true;
 		}
 		@Override
-		public boolean isEnabled(int i)
-		{
+		public boolean isEnabled(int i) {
 			return true;
 		}
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent)
-		{
+		public View getView(int position, View convertView, ViewGroup parent) {
 			bbGrade grade = items.get(position);
 			
 			String title = grade.getName();
@@ -383,37 +361,29 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		}
 	}
 
-	class bbGrade
-	{
+	class bbGrade {
 		String name, grade, pointsPossible, comment;
 		
-		public bbGrade(String name, String grade, String pointsPossible, String comment)
-		{
+		public bbGrade(String name, String grade, String pointsPossible, String comment) {
 			this.name = name;
 			this.grade = grade;
 			this.pointsPossible = pointsPossible;
 			this.comment = comment;
 		}
-		public String getName()
-		{
+		public String getName() {
 			return name;
 		}
-		public String getComment()
-		{
+		public String getComment() {
 			return comment;
 		}
-		public Number getNumGrade()
-		{
-			if(!grade.equals("-"))
-			{
+		public Number getNumGrade() {
+			if(!grade.equals("-")) {
 				String temp = grade.replaceAll("[^\\d\\.]*", "");
-				if(temp.equals(""))
-				{
+				if(temp.equals("")) {
 					return -2;
 				}
 				double d = Double.parseDouble(temp);
-				if(d == Math.floor(d))
-				{
+				if(d == Math.floor(d)) {
 					return (int)d;
 				}
 				else
@@ -422,26 +392,27 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 			else
 				return -1;
 		}
-		public String getGrade()
-		{
+		public String getGrade() {
 			return grade;
 		}
-		public String getPointsPossible()
-		{
+		public String getPointsPossible() {
 			return pointsPossible;
 		}
-		public Number getNumPointsPossible()
-		{
+		public Number getNumPointsPossible() {
 			String temp = pointsPossible.replaceAll("[^\\d\\.]*", "");
 			double d = Double.parseDouble(temp);
-			if(d == Math.floor(d))
-			{
+			if(d == Math.floor(d)) {
 				return (int)d;
 			}
 			else
 				return d;
 		}
 	
+	}
+
+	@Override
+	public void onPanesScrolled() {
+		setupActionBar();	
 	}
 
 	

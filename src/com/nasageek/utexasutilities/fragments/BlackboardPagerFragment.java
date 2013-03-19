@@ -9,17 +9,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.Utility;
-import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnFragmentMenuChangedListener;
+import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
 import com.viewpagerindicator.TabPageIndicator;
 
 
-public class BlackboardPagerFragment extends SherlockFragment implements OnFragmentMenuChangedListener {
+public class BlackboardPagerFragment extends SherlockFragment implements OnPanesScrolledListener {
 	
 	private MultiPanePagerAdapter mPagerAdapter;
 	private ViewPager pager;
@@ -70,8 +71,11 @@ public class BlackboardPagerFragment extends SherlockFragment implements OnFragm
 	}
 	
 	@Override
-	public void onFragmentMenuChanged() {
-		getSherlockActivity().supportInvalidateOptionsMenu();
+	public void onPanesScrolled() {
+		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+		actionbar.setTitle("Blackboard");
+		actionbar.setSubtitle(null);
 	}
 
 

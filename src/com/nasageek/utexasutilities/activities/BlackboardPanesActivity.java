@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.MenuItem;
 import com.mapsaurus.paneslayout.PanesActivity;
 import com.mapsaurus.paneslayout.PanesLayout;
 import com.mapsaurus.paneslayout.PanesLayout.OnIndexChangedListener;
@@ -22,8 +23,7 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 	private int lastCompleteIndex = 0;
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		actionbar = getSupportActionBar();
@@ -56,6 +56,11 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 	public void updateFragment(Fragment f) {	
 		// nothing special happening to fragments
 	}
+/*	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (mDelegate.onOptionsItemSelected(item)) return true;
+		return super.onOptionsItemSelected(item);
+	}*/
 	
 	private class BlackboardPaneSizer implements PaneSizer {
 		private static final int BLACKBOARD_PAGER_PANE_TYPE = 0;
@@ -102,17 +107,19 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 			else return false;
 		}
 	}
-
 	@Override
-	public void onIndexChanged(int firstIndex, int lastIndex,
-			int firstCompleteIndex, int lastCompleteIndex) {
+	public void onIndexChanged(int firstIndex, int lastIndex, int firstCompleteIndex, int lastCompleteIndex) {
 		
 		if (firstCompleteIndex == 0)
-			getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-		else getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+			getSupportActionBar().setHomeButtonEnabled(false);//DisplayHomeAsUpEnabled(false);
+		else {
+			getSupportActionBar().setHomeButtonEnabled(true);
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 		
+		Fragment currentFragment = getFragment(lastCompleteIndex);
 		if(lastCompleteIndex != this.lastCompleteIndex) {
-			if((OnFragmentMenuChangedListener)getFragment(lastCompleteIndex) != null) {
+			if(currentFragment != null) {
 				this.lastCompleteIndex = lastCompleteIndex;
 				for(int i = 0; i < panes.getNumPanes(); i++) {
 					if(i == lastCompleteIndex)
@@ -120,12 +127,13 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 					else
 						getFragment(i).setHasOptionsMenu(false);
 				}
-//				((OnFragmentMenuChangedListener)getFragment(lastCompleteIndex)).onFragmentMenuChanged();
+				if(currentFragment.isAdded())
+					((OnPanesScrolledListener)currentFragment).onPanesScrolled();
 			}
 		}
 	}
 
-	public interface OnFragmentMenuChangedListener {	
-		public void onFragmentMenuChanged();
+	public interface OnPanesScrolledListener {	
+		public void onPanesScrolled();
 	}
 }

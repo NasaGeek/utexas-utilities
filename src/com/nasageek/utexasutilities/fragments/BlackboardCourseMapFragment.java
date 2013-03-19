@@ -77,6 +77,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	
 	private TextView absTitle;
 	private TextView absSubtitle;
+	private View absView;
 	
 	public BlackboardCourseMapFragment() {}
 	
@@ -130,29 +131,18 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	{	
-		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
-	//	actionbar.setDisplayShowCustomEnabled(true);
-	//	actionbar.setDisplayShowTitleEnabled(false);
-		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_TITLE);
-		actionbar.setCustomView(inflater.inflate(R.layout.action_bar_title_subtitle, null));
+		absView = inflater.inflate(R.layout.action_bar_title_subtitle, null);
 		
-		absTitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_title);
-		absSubtitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_subtitle);
 		
+		setupActionBar();
 		
 		
 		final View vg = inflater.inflate(R.layout.coursemap_layout, container, false);
 
 		cm_pb_ll = (LinearLayout) vg.findViewById(R.id.coursemap_progressbar_ll);
 		cmlv = (ListView) vg.findViewById(R.id.coursemap_listview);
-//		coursemaplinlay = (LinearLayout) vg.findViewById(R.id.coursemap_linlay);
 		failure_view = (TextView) vg.findViewById(R.id.coursemap_error);
 		
-		absSubtitle.setText(folderName);	
-		if(folderName != null)
-		{	
-			absTitle.setText(courseName);
-		}
 		
 		cmlv.setOnItemClickListener(new OnItemClickListener() {
 			
@@ -296,17 +286,32 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		
 	}
 	
+	private void setupActionBar() {
+		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+	//	actionbar.setDisplayShowCustomEnabled(true);
+	//	actionbar.setDisplayShowTitleEnabled(false);
+		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_TITLE);
+		actionbar.setCustomView(absView);
+		
+		absTitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_title);
+		absSubtitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_subtitle);
+		
+		absSubtitle.setText(folderName);	
+		if(folderName != null)
+		{	
+			absTitle.setText(courseName);
+		}
+	}
+	
 	@Override
-	public void onDestroy()
-	{
+	public void onDestroy() {
 		super.onDestroy();
 		if(fetch!=null)
 			fetch.cancel(true);
 	}
 	
 	@Override
-	public String getBbid()
-	{
+	public String getBbid() {
 		return bbID;
 	}
 	@Override
@@ -320,8 +325,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	 
 	}
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
+	public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
     	switch(id)
     	{	
@@ -332,14 +336,12 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
     	return false;
 	}
 	@Override
-	public void onSaveInstanceState(Bundle icicle) 
-	{
+	public void onSaveInstanceState(Bundle icicle) {
 		super.onSaveInstanceState(icicle);
 //		icicle.putString("courseid", getIntent().getStringExtra("courseid"));
 //		icicle.putString("coursename", getIntent().getStringExtra("coursename"));
 	}
-	private void showAreYouSureDlg(Context con)
-	{
+	private void showAreYouSureDlg(Context con) {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(con);
 		alertBuilder.setMessage("Would you like to view this item on the Blackboard website?");
 		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
@@ -377,8 +379,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		return getArguments().getBoolean("fromDashboard");
 	}
 	
-	private class fetchCoursemapTask extends AsyncTask<Object,Void,ArrayList>
-	{
+	private class fetchCoursemapTask extends AsyncTask<Object,Void,ArrayList> {
 		private DefaultHttpClient client;
 		private String failureMessage = "";
 		
@@ -463,5 +464,10 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
     		cmlv.setVisibility(View.GONE);
 			failure_view.setVisibility(View.VISIBLE); 
 		}
+	}
+
+	@Override
+	public void onPanesScrolled() {
+		setupActionBar();
 	}
 }

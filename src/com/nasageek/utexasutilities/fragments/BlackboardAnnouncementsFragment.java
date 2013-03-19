@@ -53,8 +53,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 	
 	public BlackboardAnnouncementsFragment() {}
 	
-	public static BlackboardAnnouncementsFragment newInstance(String courseID, String courseName, String viewUri, Boolean fromDashboard)
-	{
+	public static BlackboardAnnouncementsFragment newInstance(String courseID, String courseName, String viewUri, Boolean fromDashboard) {
 		BlackboardAnnouncementsFragment baf = new BlackboardAnnouncementsFragment();
 		
 		Bundle args = new Bundle();
@@ -69,8 +68,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 	
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
 		courseID = getArguments().getString("courseID");
@@ -89,15 +87,10 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 	}
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
-	{
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)  {
 		final View vg = inflater.inflate(R.layout.blackboard_announcements_layout, container, false);
 		
-		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
-		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
-		actionbar.setTitle(getArguments().getString("courseName"));
-		actionbar.setSubtitle("Announcements");
-		
+		setupActionBar();
 		a_pb_ll = (LinearLayout) vg.findViewById(R.id.announcements_progressbar_ll);
     	alv     = (ListView)     vg.findViewById(R.id.announcementsListView);
     	atv     = (TextView)     vg.findViewById(R.id.no_announcements_textview);
@@ -106,8 +99,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
     	alv.setEmptyView(atv);
     	alv.setAdapter(announceAdapter);
  
-    	if(announcements.size() == 0 && !noAnnouncements)
-    	{	
+    	if(announcements.size() == 0 && !noAnnouncements) {	
     		fetch = new fetchAnnouncementsTask(httpclient);
 	    	fetch.execute();
     	}
@@ -115,6 +107,12 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
     	return vg;
 	}
 	
+	private void setupActionBar() {
+		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+		actionbar.setTitle(getArguments().getString("courseName"));
+		actionbar.setSubtitle("Announcements");	
+	}
 	@Override
 	public String getBbid() {	
 		return getArguments().getString("courseID");
@@ -142,23 +140,19 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
+	public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
-    	switch(id)
-    	{
+    	switch(id) {
 	    	case R.id.announcements_view_in_web:
 	    		showAreYouSureDlg(getSherlockActivity());
 	    		break;
     	}
     	return false;
 	}
-	private void showAreYouSureDlg(Context con)
-	{
+	private void showAreYouSureDlg(Context con) {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(con);
 		alertBuilder.setMessage("Would you like to view this item on the Blackboard website?");
-		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
-		{
+		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 
@@ -167,8 +161,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 			}
 		});
 		
-		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() 
-		{
+		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 	
@@ -185,18 +178,15 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 		alertBuilder.show();
 	}	
 	
-	private class fetchAnnouncementsTask extends AsyncTask<Object,Void,ArrayList<bbAnnouncement>>
-	{
+	private class fetchAnnouncementsTask extends AsyncTask<Object,Void,ArrayList<bbAnnouncement>> {
 		private DefaultHttpClient client;
 		private String errorMsg;
 		
-		public fetchAnnouncementsTask(DefaultHttpClient client)
-		{
+		public fetchAnnouncementsTask(DefaultHttpClient client) {
 			this.client = client;
 		}
 		@Override
-		protected void onPreExecute()
-		{
+		protected void onPreExecute() {
 			a_pb_ll.setVisibility(View.VISIBLE);
 			alv.setVisibility(View.GONE);
 			atv.setVisibility(View.GONE);
@@ -209,12 +199,10 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=ANNOUNCEMENTS&course_id="+getArguments().getString("courseID"));
 	    	String pagedata="";
 
-	    	try
-			{
+	    	try {
 				HttpResponse response = client.execute(hget);
 		    	pagedata = EntityUtils.toString(response.getEntity());
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				errorMsg = "UTilities could not fetch this course's announcements";
 				e.printStackTrace();
 				cancel(true);
@@ -226,17 +214,14 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 	    	Pattern announcementPattern = Pattern.compile("<announcement .*?subject=\"(.*?)\".*?startdate=\"(.*?)\".*?>(.*?)</announcement>",Pattern.DOTALL);
 	    	Matcher announcementMatcher = announcementPattern.matcher(pagedata);
 	    	
-	    	while(announcementMatcher.find())
-	    	{
+	    	while(announcementMatcher.find()) {
 	    		data.add(new bbAnnouncement(announcementMatcher.group(1),announcementMatcher.group(2),announcementMatcher.group(3)));
 	    	}
 			return data;
 		}
 		@Override
-		protected void onPostExecute(ArrayList<bbAnnouncement> result)
-		{
-			if(!this.isCancelled())
-	    	{
+		protected void onPostExecute(ArrayList<bbAnnouncement> result) {
+			if(!this.isCancelled()) {
 				a_pb_ll.setVisibility(View.GONE);
 				etv.setVisibility(View.GONE);
 			//	if(!result.isEmpty())
@@ -256,8 +241,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 	    	}
 		}
 		@Override
-		protected void onCancelled()
-		{
+		protected void onCancelled() {
 			etv.setText(errorMsg);
 			a_pb_ll.setVisibility(View.GONE);
 			alv.setVisibility(View.GONE);
@@ -272,8 +256,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 		private ArrayList<bbAnnouncement> items;
 		private LayoutInflater li;
 		
-		public AnnouncementsAdapter(Context c, ArrayList<bbAnnouncement> items)
-		{
+		public AnnouncementsAdapter(Context c, ArrayList<bbAnnouncement> items) {
 			super(c,0,items);
 			con = c;
 			this.items=items;
@@ -295,18 +278,15 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 			return 0;
 		}
 		@Override
-		public boolean areAllItemsEnabled()
-		{
+		public boolean areAllItemsEnabled() {
 			return true;
 		}
 		@Override
-		public boolean isEnabled(int i)
-		{
+		public boolean isEnabled(int i) {
 			return false;
 		}
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent)
-		{
+		public View getView(int position, View convertView, ViewGroup parent) {
 			bbAnnouncement announce = items.get(position);
 			
 			String subject = announce.getSubject();
@@ -330,28 +310,28 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 		}
 	}
 	
-	class bbAnnouncement
-	{
+	class bbAnnouncement {
 		private String subject, date, body;
 		
-		public bbAnnouncement(String subject, String date, String body)
-		{
+		public bbAnnouncement(String subject, String date, String body) {
 			 this.subject = subject;
 			 this.date = date;
 			 this.body = body;
 		}
-		public String getSubject()
-		{
+		public String getSubject() {
 			return subject;
 		}
-		public String getFormattedDate()
-		{
+		public String getFormattedDate() {
 			return date.substring(0,date.indexOf('T'));
 		}
-		public String getFormattedBody()
-		{
+		public String getFormattedBody() {
 			return Html.fromHtml(Html.fromHtml(body).toString()).toString();
 		}
+	}
+
+	@Override
+	public void onPanesScrolled() {
+		setupActionBar();
 	}
 	
 }
