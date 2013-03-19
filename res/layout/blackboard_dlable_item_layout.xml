@@ -18,7 +18,8 @@ up correctly in hierarchy-viewer -->
     <include
         android:id="@+id/blackboard_dl_items_progressbar_ll"
         android:layout_gravity="center"
-        layout="@layout/loading_content_layout" />
+        layout="@layout/loading_content_layout"
+        android:visibility="gone"  />
 
     <include
         android:id="@+id/blackboard_dl_error"
@@ -62,8 +63,7 @@ up correctly in hierarchy-viewer -->
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:textIsSelectable="true"
-            android:textSize="15sp"
-            android:visibility="gone" />
+            android:textSize="15sp" />
     </com.nasageek.utexasutilities.MyScrollView>
 
     <ImageView

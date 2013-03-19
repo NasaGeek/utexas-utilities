@@ -8,7 +8,8 @@
 
     <include
         android:id="@+id/announcements_progressbar_ll"
-        layout="@layout/loading_content_layout" />
+        layout="@layout/loading_content_layout"
+        android:visibility="gone" />
 
     <include
         android:id="@+id/announcements_error"
@@ -19,16 +20,16 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@android:color/transparent"
-        android:cacheColorHint="@android:color/transparent"
-        android:visibility="gone" />
+        android:cacheColorHint="@android:color/transparent" />
 
-    <!-- pad this a little on the right and left? -->
     <TextView
         android:id="@+id/no_announcements_textview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_gravity="center"
         android:gravity="center"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:text="There are currently no announcements for this course."
         android:textSize="20sp"
         android:visibility="gone" />

@@ -427,8 +427,10 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    	while(classMatcher.find())
 	    	{
 	    		String classContent = classMatcher.group();
+	    		
 	    		String uniqueid="", classid="", classname="";
-	    		String [] buildings=null, rooms=null, days=null, times=null;
+	    		String[] buildings=null, rooms=null, days=null, times=null;
+	    		
 	    		Pattern classAttPattern = Pattern.compile("<td >(.*?)</td>",Pattern.DOTALL);
 	    		Matcher classAttMatcher = classAttPattern.matcher(classContent);
 	    		if(classAttMatcher.find())

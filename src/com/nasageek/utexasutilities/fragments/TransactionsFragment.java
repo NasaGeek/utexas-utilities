@@ -84,11 +84,11 @@ public class TransactionsFragment extends SherlockFragment
 	{
 		vg =  inflater.inflate(R.layout.transactions_fragment_layout, container, false);
 		
-		tlv = (AmazingListView) vg.findViewById(R.id.transactions_listview);
-		t_pb_ll = (LinearLayout) vg.findViewById(R.id.trans_progressbar_ll);
-		etv = (TextView) vg.findViewById(R.id.trans_error);
+		tlv              = (AmazingListView) vg.findViewById(R.id.transactions_listview);
+		t_pb_ll          = (LinearLayout) vg.findViewById(R.id.trans_progressbar_ll);
+		etv              = (TextView) vg.findViewById(R.id.trans_error);
 		balanceLabelView = (TextView) vg.findViewById(R.id.balance_label_tv);
-		balanceView = (TextView) vg.findViewById(R.id.balance_tv);
+		balanceView      = (TextView) vg.findViewById(R.id.balance_tv);
 		
 /*		if(TransactionType.Bevo.equals(mType))
 			balanceLabelView.setText("Bevo Bucks ");
@@ -110,6 +110,7 @@ public class TransactionsFragment extends SherlockFragment
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		setRetainInstance(true);
 		
 	//	parentAct = this.getSherlockActivity();
 		
@@ -119,7 +120,6 @@ public class TransactionsFragment extends SherlockFragment
 		if(getArguments() != null) {
 			mType = (TransactionType) getArguments().getSerializable("type");
 		}
-		setRetainInstance(true);
 		
 		if(TransactionType.Bevo.equals(mType))
 			postdata.add(new BasicNameValuePair("sRequestSw","B"));

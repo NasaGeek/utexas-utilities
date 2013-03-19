@@ -1,4 +1,4 @@
- package com.nasageek.utexasutilities.activities;
+ package com.nasageek.utexasutilities.fragments;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -28,85 +28,131 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 
 
-public class BlackboardAnnouncementsActivity extends SherlockActivity 
-{
-	private ActionBar actionbar;
+public class BlackboardAnnouncementsFragment extends BlackboardFragment {
+	
 	private LinearLayout a_pb_ll;
 	private ListView alv;
 	private TextView atv;
 	private TextView etv;
 	private DefaultHttpClient httpclient;
 	private fetchAnnouncementsTask fetch;
+	private AnnouncementsAdapter announceAdapter;
+	private ArrayList<bbAnnouncement> announcements;
+	private boolean noAnnouncements = false;
+	private String courseID, courseName, viewUri;
+	private boolean fromDashboard;	
+	
+	public BlackboardAnnouncementsFragment() {}
+	
+	public static BlackboardAnnouncementsFragment newInstance(String courseID, String courseName, String viewUri, Boolean fromDashboard) {
+		BlackboardAnnouncementsFragment baf = new BlackboardAnnouncementsFragment();
+		
+		Bundle args = new Bundle();
+        args.putString("courseID", courseID);
+        args.putString("courseName", courseName);
+        args.putString("viewUri", viewUri);
+        args.putBoolean("fromDashboard", fromDashboard);
+        baf.setArguments(args);
+        
+        return baf;
+	}
+	
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.blackboard_announcements_layout);
-		
-		a_pb_ll = (LinearLayout) findViewById(R.id.announcements_progressbar_ll);
-    	alv = (ListView) findViewById(R.id.announcementsListView);
-    	atv = (TextView) findViewById(R.id.no_announcements_textview);
-    	etv = (TextView) findViewById(R.id.announcements_error);
-    	
-    	actionbar = getSupportActionBar();
-    	actionbar.setTitle(getIntent().getStringExtra("coursename"));
-    	actionbar.setSubtitle("Announcements");
-		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-		actionbar.setHomeButtonEnabled(true);
-		actionbar.setDisplayHomeAsUpEnabled(true);
-		
-		alv.setEmptyView(atv);
+		setRetainInstance(true);
+		courseID = getArguments().getString("courseID");
+		courseName = getArguments().getString("courseName");
+		viewUri = getArguments().getString("viewUri");
+		setHasOptionsMenu(true);
+		announcements = new ArrayList<bbAnnouncement>();
+		announceAdapter = new AnnouncementsAdapter(getSherlockActivity(), announcements);
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
-		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(this,httpclient));
+		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(),httpclient));
     	cookie.setDomain("courses.utexas.edu");
     	httpclient.getCookieStore().addCookie(cookie);
     	
-    	fetch = new fetchAnnouncementsTask(httpclient);
-    	fetch.execute();
 	}
 	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) 
-	{	
-		MenuInflater inflater = this.getSupportMenuInflater();
-        inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
-        if(!getIntent().getBooleanExtra("showViewInWeb", false))
-        	menu.removeItem(R.id.viewInWeb);
-		return true;	 
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)  {
+		final View vg = inflater.inflate(R.layout.blackboard_announcements_layout, container, false);
+		
+		setupActionBar();
+		a_pb_ll = (LinearLayout) vg.findViewById(R.id.announcements_progressbar_ll);
+    	alv     = (ListView)     vg.findViewById(R.id.announcementsListView);
+    	atv     = (TextView)     vg.findViewById(R.id.no_announcements_textview);
+    	etv     = (TextView)     vg.findViewById(R.id.announcements_error);
+    	
+    	alv.setEmptyView(atv);
+    	alv.setAdapter(announceAdapter);
+ 
+    	if(announcements.size() == 0 && !noAnnouncements) {	
+    		fetch = new fetchAnnouncementsTask(httpclient);
+	    	fetch.execute();
+    	}
+    	
+    	return vg;
+	}
+	
+	private void setupActionBar() {
+		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+		actionbar.setTitle(getArguments().getString("courseName"));
+		actionbar.setSubtitle("Announcements");	
+	}
+	@Override
+	public String getBbid() {	
+		return getArguments().getString("courseID");
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
+	public String getCourseName() {
+		return getArguments().getString("courseName");
+	}
+	
+	@Override
+	public boolean isFromDashboard() {
+		return getArguments().getBoolean("fromDashboard");
+	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {	
+        
+		menu.clear();
+		
+    //    if(!getIntent().getBooleanExtra("showViewInWeb", false))
+        if(viewUri != null && !viewUri.equals(""))
+        	inflater.inflate(R.menu.blackboard_announcements_menu, menu);
+    //    	menu.removeItem(R.id.announcements_view_in_web);	 
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
-    	switch(id)
-    	{
-	    	case android.R.id.home:
-	            // app icon in action bar clicked; go home
-	            super.onBackPressed();
-	            break;
-	    	case R.id.viewInWeb:
-	    		showAreYouSureDlg(BlackboardAnnouncementsActivity.this);
+    	switch(id) {
+	    	case R.id.announcements_view_in_web:
+	    		showAreYouSureDlg(getSherlockActivity());
 	    		break;
     	}
     	return false;
 	}
-	private void showAreYouSureDlg(Context con)
-	{
+	private void showAreYouSureDlg(Context con) {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(con);
 		alertBuilder.setMessage("Would you like to view this item on the Blackboard website?");
-		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
-		{
+		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 
@@ -115,42 +161,48 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 			}
 		});
 		
-		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() 
-		{
+		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 	
-				Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardAnnouncementsActivity.this,BlackboardExternalItemActivity.class);
+				((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardAnnouncementsFragment.this, 
+						BlackboardExternalItemFragment.newInstance(viewUri, courseID, courseName, "Announcements", false));
+				
+			/*	Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardAnnouncementsActivity.this,BlackboardExternalItemActivity.class);
 	    		web.putExtra("itemName", "Announcements");
 	    		web.putExtra("coursename", getIntent().getStringExtra("coursename"));
-	    		startActivity(web);
+	    		startActivity(web);*/
 			}		
 		});
 		alertBuilder.setTitle("View on Blackboard");
 		alertBuilder.show();
 	}	
-	private class fetchAnnouncementsTask extends AsyncTask<Object,Void,ArrayList<bbAnnouncement>>
-	{
+	
+	private class fetchAnnouncementsTask extends AsyncTask<Object,Void,ArrayList<bbAnnouncement>> {
 		private DefaultHttpClient client;
 		private String errorMsg;
 		
-		public fetchAnnouncementsTask(DefaultHttpClient client)
-		{
+		public fetchAnnouncementsTask(DefaultHttpClient client) {
 			this.client = client;
+		}
+		@Override
+		protected void onPreExecute() {
+			a_pb_ll.setVisibility(View.VISIBLE);
+			alv.setVisibility(View.GONE);
+			atv.setVisibility(View.GONE);
+			etv.setVisibility(View.GONE);
 		}
 
 		@Override
 		protected ArrayList<bbAnnouncement> doInBackground(Object... params)
 		{
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=ANNOUNCEMENTS&course_id="+getIntent().getStringExtra("courseid"));
+			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=ANNOUNCEMENTS&course_id="+getArguments().getString("courseID"));
 	    	String pagedata="";
 
-	    	try
-			{
+	    	try {
 				HttpResponse response = client.execute(hget);
 		    	pagedata = EntityUtils.toString(response.getEntity());
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				errorMsg = "UTilities could not fetch this course's announcements";
 				e.printStackTrace();
 				cancel(true);
@@ -162,22 +214,22 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	    	Pattern announcementPattern = Pattern.compile("<announcement .*?subject=\"(.*?)\".*?startdate=\"(.*?)\".*?>(.*?)</announcement>",Pattern.DOTALL);
 	    	Matcher announcementMatcher = announcementPattern.matcher(pagedata);
 	    	
-	    	while(announcementMatcher.find())
-	    	{
+	    	while(announcementMatcher.find()) {
 	    		data.add(new bbAnnouncement(announcementMatcher.group(1),announcementMatcher.group(2),announcementMatcher.group(3)));
 	    	}
 			return data;
 		}
 		@Override
-		protected void onPostExecute(ArrayList<bbAnnouncement> result)
-		{
-			if(!this.isCancelled())
-	    	{
+		protected void onPostExecute(ArrayList<bbAnnouncement> result) {
+			if(!this.isCancelled()) {
 				a_pb_ll.setVisibility(View.GONE);
 				etv.setVisibility(View.GONE);
 			//	if(!result.isEmpty())
-			//	{
-					alv.setAdapter(new AnnouncementsAdapter(BlackboardAnnouncementsActivity.this,result));
+			//	{					
+					announcements.addAll(result);
+					if(announcements.size() == 0)
+						noAnnouncements = true;
+					announceAdapter.notifyDataSetChanged();
 				//	alv.setVisibility(View.VISIBLE);
 				//	atv.setVisibility(View.GONE);
 			/*	}
@@ -189,8 +241,7 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 	    	}
 		}
 		@Override
-		protected void onCancelled()
-		{
+		protected void onCancelled() {
 			etv.setText(errorMsg);
 			a_pb_ll.setVisibility(View.GONE);
 			alv.setVisibility(View.GONE);
@@ -205,8 +256,7 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 		private ArrayList<bbAnnouncement> items;
 		private LayoutInflater li;
 		
-		public AnnouncementsAdapter(Context c, ArrayList<bbAnnouncement> items)
-		{
+		public AnnouncementsAdapter(Context c, ArrayList<bbAnnouncement> items) {
 			super(c,0,items);
 			con = c;
 			this.items=items;
@@ -228,18 +278,15 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 			return 0;
 		}
 		@Override
-		public boolean areAllItemsEnabled()
-		{
+		public boolean areAllItemsEnabled() {
 			return true;
 		}
 		@Override
-		public boolean isEnabled(int i)
-		{
+		public boolean isEnabled(int i) {
 			return false;
 		}
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent)
-		{
+		public View getView(int position, View convertView, ViewGroup parent) {
 			bbAnnouncement announce = items.get(position);
 			
 			String subject = announce.getSubject();
@@ -263,28 +310,28 @@ public class BlackboardAnnouncementsActivity extends SherlockActivity
 		}
 	}
 	
-	class bbAnnouncement
-	{
+	class bbAnnouncement {
 		private String subject, date, body;
 		
-		public bbAnnouncement(String subject, String date, String body)
-		{
+		public bbAnnouncement(String subject, String date, String body) {
 			 this.subject = subject;
 			 this.date = date;
 			 this.body = body;
 		}
-		public String getSubject()
-		{
+		public String getSubject() {
 			return subject;
 		}
-		public String getFormattedDate()
-		{
+		public String getFormattedDate() {
 			return date.substring(0,date.indexOf('T'));
 		}
-		public String getFormattedBody()
-		{
+		public String getFormattedBody() {
 			return Html.fromHtml(Html.fromHtml(body).toString()).toString();
 		}
+	}
+
+	@Override
+	public void onPanesScrolled() {
+		setupActionBar();
 	}
 	
 }

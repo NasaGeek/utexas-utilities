@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.foound.widget.AmazingAdapter;
-import com.nasageek.utexasutilities.Pair;
+import com.nasageek.utexasutilities.ParcelablePair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.model.BBClass;
 
@@ -18,11 +18,11 @@ public class BBClassAdapter extends AmazingAdapter
 {
 	private Context con;
 	private ArrayList<BBClass> classes;
-	private ArrayList<Pair<String,ArrayList<BBClass>>> all;
+	private ArrayList<ParcelablePair<String,ArrayList<BBClass>>> all;
 	private LayoutInflater li;
 	private Boolean longform;
 	
-	public BBClassAdapter(Context con, ArrayList<Pair<String,ArrayList<BBClass>>> objects)
+	public BBClassAdapter(Context con, ArrayList<ParcelablePair<String,ArrayList<BBClass>>> objects)
 	{
 		all = objects;
 		li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);	

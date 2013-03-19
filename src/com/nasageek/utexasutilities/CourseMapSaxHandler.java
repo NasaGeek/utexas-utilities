@@ -72,14 +72,14 @@ public class CourseMapSaxHandler extends DefaultHandler {
 	        	   {
 	        		   host="https://courses.utexas.edu";
 	        	   }
-	        	   content.add(new Pair(new CourseMapItem(atts.getValue("name"),host+atts.getValue("viewurl").replace("&amp;","&"),atts.getValue("contentid"),atts.getValue("linktype")),new ArrayList()));
+	        	   content.add(new ParcelablePair(new CourseMapItem(atts.getValue("name"),host+atts.getValue("viewurl").replace("&amp;","&"),atts.getValue("contentid"),atts.getValue("linktype")),new ArrayList()));
 	           }
 	           folderDepth++;
 	           
 	      } else if (localName.equals("children")) { 
 	          this.in_childrentag = true;
 	          recLists.push(content);
-	          content= (ArrayList) ((Pair) (content.get(content.size()-1))).second;
+	          content= (ArrayList) ((ParcelablePair) (content.get(content.size()-1))).second;
 	      }
 	 } 
 

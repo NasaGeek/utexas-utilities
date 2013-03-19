@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,12 +26,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.crittercism.app.Crittercism;
 import com.foound.widget.AmazingListView;
+import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.mapsaurus.paneslayout.PanesActivity;
 import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.Pair;
+import com.nasageek.utexasutilities.ParcelablePair;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.activities.CourseMapActivity;
 import com.nasageek.utexasutilities.adapters.BBClassAdapter;
 import com.nasageek.utexasutilities.model.BBClass;
 
@@ -41,11 +44,10 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 	private TextView bbtv;
 	private AmazingListView bblv;
 	private ArrayList<BBClass> classList;
-	private ArrayList<Pair<String,ArrayList<BBClass>>> classSectionList;
-	private fetchClassesTask fetch;
-//	public static String currentBBCourseId;
-//	public static String currentBBCourseName;
-	
+	private ArrayList<ParcelablePair<String,ArrayList<BBClass>>> classSectionList;
+	private fetchClassesTask fetch;	
+	private ArrayList<ParcelablePair<String, ArrayList<BBClass>>> classes;
+	private BBClassAdapter classAdapter;
 	
 	public BlackboardCourseListFragment() {}
 	
@@ -59,14 +61,15 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 		return f;
 	}
 	
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
     	classList = new ArrayList<BBClass>();
-    	classSectionList = new ArrayList<Pair<String,ArrayList<BBClass>>>();
+    	if(savedInstanceState == null)
+    		classSectionList = new ArrayList<ParcelablePair<String,ArrayList<BBClass>>>();
+    	else
+    		classSectionList = savedInstanceState.getParcelableArrayList("classSectionList");
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
@@ -74,18 +77,16 @@ public class BlackboardCourseListFragment extends SherlockFragment {
     	cookie.setDomain("courses.utexas.edu");
     	httpclient.getCookieStore().addCookie(cookie);
     	
-    	//TODO: where to callll, also, helper?  -  helper for what? shit I don't remember writing this...
-    	fetch = new fetchClassesTask(httpclient);
+    	classAdapter = new BBClassAdapter(getSherlockActivity(), classSectionList);
+ 
     	
-    	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		else
-			fetch.execute();
-		
+    	
+			
     	Crittercism.leaveBreadcrumb("Loaded BlackboardActivity");
 	}
 
 	
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{	
@@ -94,11 +95,72 @@ public class BlackboardCourseListFragment extends SherlockFragment {
     	bb_pb_ll = (LinearLayout) vg.findViewById(R.id.blackboard_progressbar_ll);
     	bblv = (AmazingListView) vg.findViewById(R.id.blackboard_class_listview);
     	bbtv = (TextView) vg.findViewById (R.id.blackboard_error);
+    			
+		bblv.setAdapter(classAdapter);
+		bblv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, bblv, false));		
+		bblv.setOnItemClickListener(new OnItemClickListener() {
+			
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				//TODO: figure out course id stuff here
+		//		Intent classLaunch = new Intent(getString(R.string.coursemap_intent), null, getSherlockActivity(), CourseMapActivity.class);
+				BBClass bbclass = (BBClass)(parent.getItemAtPosition(position));
+		/*		classLaunch.putExtra("courseid", bbclass.getBbid());
+				classLaunch.setData(Uri.parse((bbclass).getBbid()));
+				classLaunch.putExtra("folderName", "Course Map");
+				classLaunch.putExtra("coursename", bbclass.getCourseId());
+				classLaunch.putExtra("showViewInWeb", true);
+				startActivity(classLaunch);*/
+				SherlockFragmentActivity act = getSherlockActivity();
+				Fragment topFragment = null;
+				if(act != null && act instanceof PanesActivity)
+				{	
+					topFragment = ((PanesActivity)act).getTopFragment();
+					//we're on a tablet, PanesActivity acts a bit odd with them
+					if(((PanesActivity)act).getMenuFragment() == topFragment)
+						topFragment = null;
+				}
+				//don't re-add the current displayed course, instead just show it
+				if(act != null && act instanceof FragmentLauncher)
+				{	
+					if( topFragment == null || 
+					  ( topFragment != null && topFragment instanceof BlackboardFragment && 
+					  (!((BlackboardFragment)topFragment).getBbid().equals(bbclass.getBbid())) || ((BlackboardFragment)topFragment).isFromDashboard()))
+					{	((FragmentLauncher)act).addFragment(BlackboardCourseListFragment.this.getParentFragment(), 					
+								BlackboardCourseMapFragment.newInstance(getString(R.string.coursemap_intent), null, bbclass.getBbid(), bbclass.getCourseId(), "Course Map", "", -1, false));
+						
+					
+								
+					}
+					else if(act instanceof PanesActivity)
+						((PanesActivity) act).showContent();
+				}		
+			}
+		});
+		
+		//TODO: where to callll, also, helper?  -  helper for what? shit I don't remember writing this...
+		if(classSectionList.size() == 0)
+    	{
+	    	fetch = new fetchClassesTask(httpclient);
+	    	
+	    	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			else
+				fetch.execute();
+    	}
 
 		return vg;
 	}
 	
-	private class fetchClassesTask extends AsyncTask<Object,Void,String>
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+		outState.putParcelableArrayList("classSectionList", classSectionList);
+	}
+	
+	private class fetchClassesTask extends AsyncTask<Object,Void,ArrayList<ParcelablePair<String, ArrayList<BBClass>>>>
 	{
 		private DefaultHttpClient client;
 		private String errorMsg;
@@ -109,7 +171,15 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 		}
 		
 		@Override
-		protected String doInBackground(Object... params)
+		protected void onPreExecute()
+		{
+			bb_pb_ll.setVisibility(View.VISIBLE);
+			bbtv.setVisibility(View.GONE);
+    		bblv.setVisibility(View.GONE);
+		}
+		
+		@Override
+		protected ArrayList<ParcelablePair<String, ArrayList<BBClass>>> doInBackground(Object... params)
 		{
 			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
 	    	String pagedata="";
@@ -132,75 +202,54 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 	    	while(class_matcher.find())
 	    	{
 	    		classList.add(new BBClass(class_matcher.group(2).replace("&amp;","&"),class_matcher.group(1).replace("&amp;","&"),class_matcher.group(3)));	
-	    	}
+	    	}	    	
+	    	//build the sectioned list now
+	    	String currentCategory="";
+    		ArrayList<BBClass> sectionList=null;
+			ArrayList<ParcelablePair<String, ArrayList<BBClass>>> tempClassSectionList = new ArrayList<ParcelablePair<String,ArrayList<BBClass>>>();
+    		for(int i = 0; i<classList.size(); i++)
+    		{
+    			//first course is always in a new category (the first category)
+				if(i==0)
+    			{	
+    				currentCategory = classList.get(i).getSemester();
+    				sectionList = new ArrayList<BBClass>();
+    				sectionList.add(classList.get(i));
+    			}
+				//if the current course is not part of the current category or we're on the last course
+				//weird stuff going on here depending on if we're at the end of the course list
+    			else if(!classList.get(i).getSemester().equals(currentCategory) || i == classList.size()-1)
+    			{
+    				
+    				if(i == classList.size()-1)
+    					sectionList.add(classList.get(i));
+    					
+    				tempClassSectionList.add(new ParcelablePair<String, ArrayList<BBClass>>(currentCategory, sectionList));
+    				
+    				currentCategory = classList.get(i).getSemester();
+    				sectionList=new ArrayList<BBClass>();
+    				
+    				if(i != classList.size()-1)
+    					sectionList.add(classList.get(i));
+    			}
+				//otherwise just add to the current category
+    			else
+    			{
+    				sectionList.add(classList.get(i));
+    			}  			
+    		}
 	    	
-			return pagedata;
+			return tempClassSectionList;
 		}
 		@Override
-		protected void onPostExecute(String result)
-		{
-			//build the list of courses here
-			if(!this.isCancelled()) // not necessary
-	    	{
-	    		String currentCategory="";
-	    		ArrayList<BBClass> sectionList=null;
-				for(int i = 0; i<classList.size(); i++)
-	    		{
-	    			//first course is always in a new category (the first category)
-					if(i==0)
-	    			{	
-	    				currentCategory = classList.get(i).getSemester();
-	    				sectionList = new ArrayList<BBClass>();
-	    				sectionList.add(classList.get(i));
-	    			}
-					//if the current course is not part of the current category or we're on the last course
-					//weird stuff going on here depending on if we're at the end of the course list
-	    			else if(!classList.get(i).getSemester().equals(currentCategory) || i == classList.size()-1)
-	    			{
-	    				
-	    				if(i == classList.size()-1)
-	    					sectionList.add(classList.get(i));
-	    					
-	    				classSectionList.add(new Pair<String, ArrayList<BBClass>>(currentCategory,sectionList));
-	    				
-	    				currentCategory = classList.get(i).getSemester();
-	    				sectionList=new ArrayList<BBClass>();
-	    				
-	    				if(i != classList.size()-1)
-	    					sectionList.add(classList.get(i));
-	    			}
-					//otherwise just add to the current category
-	    			else
-	    			{
-	    				sectionList.add(classList.get(i));
-	    			}
-	    			
-	    		}
-				
-				bblv.setAdapter(new BBClassAdapter(getSherlockActivity(),classSectionList));
-				bblv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, bblv, false));
-				
-				bblv.setOnItemClickListener(new OnItemClickListener() {
-					
-					@Override
-					public void onItemClick(AdapterView<?> parent, View view, int position,
-							long id) {
-						//TODO: figure out course id stuff here
-						Intent classLaunch = new Intent(getString(R.string.coursemap_intent), null, getSherlockActivity(), CourseMapActivity.class);
-						BBClass bbclass = (BBClass)(parent.getItemAtPosition(position));
-						classLaunch.putExtra("courseid", bbclass.getBbid());
-						classLaunch.setData(Uri.parse((bbclass).getBbid()));
-						classLaunch.putExtra("folderName", "Course Map");
-						classLaunch.putExtra("coursename", bbclass.getCourseId());
-						classLaunch.putExtra("showViewInWeb", true);
-						startActivity(classLaunch);
-					} 
-				});
-				
-				bb_pb_ll.setVisibility(View.GONE);
-				bbtv.setVisibility(View.GONE);
-	    		bblv.setVisibility(View.VISIBLE);
-	    	}	
+		protected void onPostExecute(ArrayList<ParcelablePair<String, ArrayList<BBClass>>> result)
+		{	    		
+			classSectionList.addAll(result);
+			classAdapter.notifyDataSetChanged();
+			
+			bb_pb_ll.setVisibility(View.GONE);
+			bbtv.setVisibility(View.GONE);
+    		bblv.setVisibility(View.VISIBLE);	
 		}
 		@Override
 		protected void onCancelled()
@@ -218,18 +267,4 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 		if(fetch!=null)
 			fetch.cancel(true);
 	}
-/*	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-    	int id = item.getItemId();
-    	switch(id)
-    	{
-	    	case android.R.id.home:
-	            // app icon in action bar clicked; go home
-	            super.onBackPressed();
-	            break;
-    	}
-    	return false;
-	}*/
-
 }

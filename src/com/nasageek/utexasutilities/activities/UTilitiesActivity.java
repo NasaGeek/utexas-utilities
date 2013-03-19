@@ -15,6 +15,7 @@ import android.preference.PreferenceManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -50,7 +51,6 @@ public class UTilitiesActivity extends SherlockActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       
         
  /*       if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
         {
@@ -64,6 +64,7 @@ public class UTilitiesActivity extends SherlockActivity {
         	.build());
         	
         }*/
+       
         Crittercism.init(getApplicationContext(), "4fed1764be790e4597000001");
         
    /*     try {
@@ -98,7 +99,7 @@ public class UTilitiesActivity extends SherlockActivity {
     	final Intent map 		= new Intent(this, CampusMapActivity.class);
     	final Intent data 		= new Intent(this, DataUsageActivity.class);
     	final Intent menu 		= new Intent(this, MenuActivity.class);
-    	final Intent blackboard = new Intent(this, BlackboardActivity.class);
+    	final Intent blackboard = new Intent(this, BlackboardPanesActivity.class);
 
     	message = Toast.makeText(this, R.string.login_first, Toast.LENGTH_SHORT);
     	
@@ -117,7 +118,7 @@ public class UTilitiesActivity extends SherlockActivity {
          	"has been wiped for security purposes and you will need to re-enter it.")
         			.setCancelable(true)
         			.setPositiveButton("Ok", null);
-        	AlertDialog passwordcleared = passwordcleared_builder.create();
+        	AlertDialog passwordcleared = passwordcleared_builder.create(); 
         	passwordcleared.show();
          }
     	
@@ -126,7 +127,7 @@ public class UTilitiesActivity extends SherlockActivity {
         	AlertDialog.Builder nologin_builder = new AlertDialog.Builder(this);
         	nologin_builder.setMessage("This is your first time running UTilities; why don't you try logging in to get the most use out of the app?")
         			.setCancelable(false)
-        			.setPositiveButton("Ok!", new DialogInterface.OnClickListener() {
+        			.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     loadSettings();
                 }
@@ -150,6 +151,7 @@ public class UTilitiesActivity extends SherlockActivity {
         
         final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
         schedulebutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) schedulebutton.getDrawable()));
+        schedulebutton.setOnFocusChangeListener(new imageButtonFocusListener());
         schedulebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	
@@ -183,6 +185,7 @@ public class UTilitiesActivity extends SherlockActivity {
         
         final ImageButton balancebutton = (ImageButton) findViewById(R.id.balance_button);
 		balancebutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) balancebutton.getDrawable()));
+        balancebutton.setOnFocusChangeListener(new imageButtonFocusListener());
         balancebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	if(settings.getBoolean("loginpref", false))
@@ -214,6 +217,7 @@ public class UTilitiesActivity extends SherlockActivity {
         
         final ImageButton mapbutton = (ImageButton) findViewById(R.id.map_button);
 		mapbutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) mapbutton.getDrawable()));
+        mapbutton.setOnFocusChangeListener(new imageButtonFocusListener());
         mapbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	startActivity(map);		
@@ -222,6 +226,7 @@ public class UTilitiesActivity extends SherlockActivity {
         
         final ImageButton databutton = (ImageButton) findViewById(R.id.data_button);
 		databutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) databutton.getDrawable()));
+        databutton.setOnFocusChangeListener(new imageButtonFocusListener());
         databutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             
@@ -256,6 +261,7 @@ public class UTilitiesActivity extends SherlockActivity {
         
         final ImageButton menubutton = (ImageButton) findViewById(R.id.menu_button);
 		menubutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) menubutton.getDrawable()));
+        menubutton.setOnFocusChangeListener(new imageButtonFocusListener());
         menubutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {        
            		startActivity(menu);	          		
@@ -265,6 +271,7 @@ public class UTilitiesActivity extends SherlockActivity {
         
         final ImageButton blackboardbutton = (ImageButton) findViewById(R.id.blackboard_button);
 		blackboardbutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) blackboardbutton.getDrawable()));
+        blackboardbutton.setOnFocusChangeListener(new imageButtonFocusListener());
         blackboardbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	
@@ -297,6 +304,17 @@ public class UTilitiesActivity extends SherlockActivity {
             
         });
     }
+	private class imageButtonFocusListener implements OnFocusChangeListener
+	{
+		@Override
+		public void onFocusChange(View v, boolean hasFocus) {
+			if(hasFocus)
+				((TransitionDrawable)((ImageButton)v).getDrawable()).startTransition(BUTTON_ANIMATION_DURATION);
+			else
+				((TransitionDrawable)((ImageButton)v).getDrawable()).reverseTransition(BUTTON_ANIMATION_DURATION);
+			
+		}
+	}
 	
 	private class imageButtonTouchListener implements OnTouchListener
 	{
@@ -309,6 +327,7 @@ public class UTilitiesActivity extends SherlockActivity {
     	}
     	@Override
     	public boolean onTouch(View v, MotionEvent event) {
+    		
     		
     		switch(event.getActionMasked())
     		{
@@ -433,7 +452,7 @@ public class UTilitiesActivity extends SherlockActivity {
     }
     public void login()
     {
-    	SecurePreferences sp = new SecurePreferences(UTilitiesActivity.this,"com.nasageek.utexasutilities.password","lalalawhatanicekey", false);
+    	SecurePreferences sp = new SecurePreferences(UTilitiesActivity.this,"com.nasageek.utexasutilities.password", false);
     	if(settings.getBoolean("loginpref", false))
     	{
     		if( !settings.contains("eid") || 

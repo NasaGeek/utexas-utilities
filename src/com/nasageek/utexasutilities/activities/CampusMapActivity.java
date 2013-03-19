@@ -916,7 +916,6 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	            			});	
     		AlertDialog opendirections = opendirections_builder.create();
         	opendirections.show();   
-		}
-    	
+		}	
     }
 }

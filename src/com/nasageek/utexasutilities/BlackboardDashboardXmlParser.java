@@ -17,7 +17,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import com.nasageek.utexasutilities.model.BBClass;
 import com.nasageek.utexasutilities.model.FeedItem;
 
-import android.util.Pair;
 import android.util.TimingLogger;
 import android.util.Xml;
 
@@ -28,7 +27,7 @@ public class BlackboardDashboardXmlParser {
 	//need this so we don't instantiate it every time we make a new FeedItem
 	private SimpleDateFormat feedItemDateFormat;
 	
-	public List<Pair<String, List<FeedItem>>> parse(InputStream in) throws XmlPullParserException, IOException
+	public List<ParcelablePair<String, List<FeedItem>>> parse(InputStream in) throws XmlPullParserException, IOException
 	{
 		try {
 			XmlPullParser parser = Xml.newPullParser();
@@ -40,7 +39,7 @@ public class BlackboardDashboardXmlParser {
 			in.close();
 		}
 	}
-	public List<Pair<String, List<FeedItem>>> parse(Reader in) throws XmlPullParserException, IOException
+	public List<ParcelablePair<String, List<FeedItem>>> parse(Reader in) throws XmlPullParserException, IOException
 	{
 		try {
 			XmlPullParser parser = Xml.newPullParser();
@@ -58,7 +57,7 @@ public class BlackboardDashboardXmlParser {
 	 * easy to understand to calling classes with minimal code duplication.  This is where the actual 
 	 * parsing occurs.
 	 */
-	private List<Pair<String, List<FeedItem>>> actuallyParse(XmlPullParser parser) throws XmlPullParserException, IOException
+	private List<ParcelablePair<String, List<FeedItem>>> actuallyParse(XmlPullParser parser) throws XmlPullParserException, IOException
 	{
 		tl = new TimingLogger("Dashboard", "Parser");
 		
@@ -69,7 +68,7 @@ public class BlackboardDashboardXmlParser {
 		//want to show most recent date at top and ListView's stackFromBottom is broken by AmazingListView
 		Collections.reverse(feeditems);
 		tl.addSplit("Collections.reverse()");
-		List<Pair<String, List<FeedItem>>> categorizedList = new ArrayList<Pair<String, List<FeedItem>>>();
+		List<ParcelablePair<String, List<FeedItem>>> categorizedList = new ArrayList<ParcelablePair<String, List<FeedItem>>>();
 		String currentCategory="";
 		ArrayList<FeedItem> sectionList=null;
 		DateFormat df = SimpleDateFormat.getDateInstance();
@@ -89,7 +88,7 @@ public class BlackboardDashboardXmlParser {
 				if(i == feeditems.size()-1)
 					sectionList.add(feeditems.get(i));
 					
-				categorizedList.add(new Pair<String, List<FeedItem>>(currentCategory,sectionList));
+				categorizedList.add(new ParcelablePair<String, List<FeedItem>>(currentCategory,sectionList));
 				
 				currentCategory = df.format(feeditems.get(i).getDate());
 				sectionList=new ArrayList<FeedItem>();

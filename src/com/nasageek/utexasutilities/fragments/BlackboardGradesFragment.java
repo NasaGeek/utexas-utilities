@@ -1,4 +1,4 @@
-package com.nasageek.utexasutilities.activities;
+package com.nasageek.utexasutilities.fragments;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -17,8 +17,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,48 +35,81 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
-import com.nasageek.utexasutilities.R.menu;
-import com.nasageek.utexasutilities.R.style;
 
-public class BlackboardGradesActivity extends SherlockActivity 
-{
-	private ActionBar actionbar;
+public class BlackboardGradesFragment extends BlackboardFragment {
+	
 	private LinearLayout g_pb_ll;
 	private ListView glv;
 	private TextView getv;
+	
+	private String courseID, courseName, viewUri;
 	private DefaultHttpClient httpclient;
 	private fetchGradesTask fetch;
 	
+	private ArrayList<bbGrade> grades;
+	private GradesAdapter gradeAdapter;
+	
+	public BlackboardGradesFragment() {}
+	
+	public static BlackboardGradesFragment newInstance(String courseID, String courseName, String viewUri, boolean fromDashboard) {
+		BlackboardGradesFragment bgf = new BlackboardGradesFragment();
+		
+		Bundle args = new Bundle();
+        args.putString("courseID", courseID);
+        args.putString("courseName", courseName);
+        args.putString("viewUri", viewUri);
+        args.putBoolean("fromDashboard", fromDashboard);
+        bgf.setArguments(args);
+        
+        return bgf;
+	}
+	
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.blackboard_grades_layout);
-		actionbar = getSupportActionBar();
-		actionbar.setHomeButtonEnabled(true);
-		actionbar.setDisplayHomeAsUpEnabled(true);
-		actionbar.setTitle(getIntent().getStringExtra("coursename"));
-		actionbar.setSubtitle("Grades");
+		setRetainInstance(true);
+		courseID = getArguments().getString("courseID");
+		courseName = getArguments().getString("courseName");
+		viewUri = getArguments().getString("viewUri");
+		setHasOptionsMenu(true);
 		
-		g_pb_ll = (LinearLayout)findViewById(R.id.grades_progressbar_ll);
-		glv = (ListView) findViewById(R.id.gradesListView);
-		getv = (TextView) findViewById(R.id.grades_error);
+		grades = new ArrayList<bbGrade>();
+		gradeAdapter = new GradesAdapter(getSherlockActivity(), grades);
 		
+		httpclient = ConnectionHelper.getThreadSafeClient();
+		httpclient.getCookieStore().clear();
+		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(),httpclient));
+		cookie.setDomain("courses.utexas.edu");
+		httpclient.getCookieStore().addCookie(cookie);
+			
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)  {
+		//TODO: check type of container, should we get the current index from container or parent activity?
+		
+		final View vg = inflater.inflate(R.layout.blackboard_grades_layout, container, false);
+		
+		setupActionBar();
+		g_pb_ll = (LinearLayout) vg.findViewById(R.id.grades_progressbar_ll);
+		glv = (ListView) vg.findViewById(R.id.gradesListView);
+		getv = (TextView) vg.findViewById(R.id.grades_error);
+		
+		glv.setAdapter(gradeAdapter);
 		glv.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				bbGrade grade = (bbGrade) arg0.getAdapter().getItem(arg2);
 				
-				Dialog dlg = new Dialog(BlackboardGradesActivity.this,R.style.Theme_Sherlock_Light_Dialog);
+				Dialog dlg = new Dialog(getSherlockActivity(),R.style.Theme_Sherlock_Light_Dialog);
 				dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				dlg.setContentView(R.layout.grade_info_dialog);
 				dlg.setTitle("Grade Info");
@@ -103,52 +136,43 @@ public class BlackboardGradesActivity extends SherlockActivity
 			}
 			
 		});
-		
-		
-		httpclient = ConnectionHelper.getThreadSafeClient();
-		httpclient.getCookieStore().clear();
-		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(this,httpclient));
-		cookie.setDomain("courses.utexas.edu");
-		httpclient.getCookieStore().addCookie(cookie);
-	
-		fetch = new fetchGradesTask(httpclient);
-		fetch.execute();
+			
+		//there should always be at least 2 grades, so checking for 0 is a valid way to see if it couldn't load last time
+		if(grades.size() == 0) {	
+			fetch = new fetchGradesTask(httpclient);
+			fetch.execute();
+		}
+
+		return vg;
 		
 	}
 	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		
-		MenuInflater inflater = this.getSupportMenuInflater();
-        inflater.inflate(R.menu.blackboard_dlable_item_menu, menu);
-        if(!getIntent().getBooleanExtra("showViewInWeb", false))
-        	menu.removeItem(R.id.viewInWeb);
-		return true;
+		menu.clear();
+  //      if(!getIntent().getBooleanExtra("showViewInWeb", false))
+        if(viewUri != null && !viewUri.equals(""))	
+        	inflater.inflate(R.menu.blackboard_grades_menu, menu);
+       // 	menu.removeItem(R.id.viewInWeb);
 		 
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
+	public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
     	switch(id)
     	{
-	    	case android.R.id.home:
-	            // app icon in action bar clicked; go home
-	           super.onBackPressed();
-	           break;
-	    	case R.id.viewInWeb:
-	    		showAreYouSureDlg(BlackboardGradesActivity.this);
+	    	case R.id.grades_view_in_web:
+	    		showAreYouSureDlg(getSherlockActivity());
 	    		break;
     	}
     	return false;
 	}
-	private void showAreYouSureDlg(Context con)
-	{
+	private void showAreYouSureDlg(Context con) {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(con);
 		alertBuilder.setMessage("Would you like to view this item on the Blackboard website?");
-		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
-		{
+		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 
@@ -157,42 +181,70 @@ public class BlackboardGradesActivity extends SherlockActivity
 			}
 		});
 		
-		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() 
-		{
+		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener()  {
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 	
-				Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardGradesActivity.this,BlackboardExternalItemActivity.class);
+				((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardGradesFragment.this, 
+					BlackboardExternalItemFragment.newInstance(viewUri, courseID, courseName, "Grades", false));
+				
+				
+		/*		Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardGradesActivity.this,BlackboardExternalItemActivity.class);
 	    		web.putExtra("itemName", "Grades");
 	    		web.putExtra("coursename", getIntent().getStringExtra("coursename"));
-	    		startActivity(web);
+	    		startActivity(web);*/
 			}		
 		});
 		alertBuilder.setTitle("View on Blackboard");
 		alertBuilder.show();
 	}
-	private class fetchGradesTask extends AsyncTask<Object,Void,ArrayList<bbGrade>>
-	{
+	private void setupActionBar() {
+		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+		actionbar.setTitle(courseName);
+		actionbar.setSubtitle("Grades");
+	}
+	
+	@Override
+	public String getBbid() {	
+		return getArguments().getString("courseID");
+	}
+
+	@Override
+	public String getCourseName() {
+		return getArguments().getString("courseName");
+	}
+	
+	@Override
+	public boolean isFromDashboard() {
+		return getArguments().getBoolean("fromDashboard");
+	}
+	
+	private class fetchGradesTask extends AsyncTask<Object,Void,ArrayList<bbGrade>> {
 		private DefaultHttpClient client;
 		private String errorMsg;
 		
-		public fetchGradesTask(DefaultHttpClient client)
-		{
+		public fetchGradesTask(DefaultHttpClient client) {
 			this.client = client;
 		}
 		
 		@Override
-		protected ArrayList<bbGrade> doInBackground(Object... params)
-		{
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=GRADES&course_id="+getIntent().getStringExtra("courseid"));
+		protected void onPreExecute() {
+			g_pb_ll.setVisibility(View.VISIBLE);
+    		glv.setVisibility(View.GONE);
+    		getv.setVisibility(View.GONE);
+		}
+		
+		@Override
+		protected ArrayList<bbGrade> doInBackground(Object... params) {
+
+			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=GRADES&course_id="+courseID);
 	    	String pagedata="";
 
-	    	try
-			{
+	    	try {
 				HttpResponse response = client.execute(hget);
 		    	pagedata = EntityUtils.toString(response.getEntity());
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				errorMsg = "UTilities could not fetch this course's grades";
 				cancel(true);
 				e.printStackTrace();
@@ -203,8 +255,7 @@ public class BlackboardGradesActivity extends SherlockActivity
 	    	Pattern gradeItemPattern = Pattern.compile("<grade-item.*?/>",Pattern.DOTALL);
 	    	Matcher gradeItemMatcher = gradeItemPattern.matcher(pagedata);
 	    	
-	    	while(gradeItemMatcher.find())
-	    	{
+	    	while(gradeItemMatcher.find()) {
 	    		String gradeData = gradeItemMatcher.group();
 	    		Pattern namePattern = Pattern.compile("name=\"(.*?)\"");
 		    	Matcher nameMatcher = namePattern.matcher(gradeData);
@@ -215,8 +266,7 @@ public class BlackboardGradesActivity extends SherlockActivity
 		    	Pattern commentPattern = Pattern.compile("comments=\"(.*?)\"",Pattern.DOTALL);
 		    	Matcher commentMatcher = commentPattern.matcher(gradeData);
 		    	
-		    	if(nameMatcher.find() && pointsMatcher.find() && gradeMatcher.find())
-		    	{	
+		    	if(nameMatcher.find() && pointsMatcher.find() && gradeMatcher.find()) {	
 		    		data.add(new bbGrade(nameMatcher.group(1).replace("&amp;", "&"),gradeMatcher.group(1),pointsMatcher.group(1), commentMatcher.find() ? Html.fromHtml(Html.fromHtml(commentMatcher.group(1)).toString()).toString() 
 		    																													  : "No comments"));
 		    	}
@@ -224,12 +274,10 @@ public class BlackboardGradesActivity extends SherlockActivity
 			return data;
 		}
 		@Override
-		protected void onPostExecute(ArrayList<bbGrade> result)
-		{
-			if(!this.isCancelled())
-	    	{
-				
-				glv.setAdapter(new GradesAdapter(BlackboardGradesActivity.this,result));
+		protected void onPostExecute(ArrayList<bbGrade> result) {
+			if(!this.isCancelled()) {
+				grades.addAll(result);
+				gradeAdapter.notifyDataSetChanged();
 				
 				g_pb_ll.setVisibility(View.GONE);
 				getv.setVisibility(View.GONE);
@@ -237,8 +285,7 @@ public class BlackboardGradesActivity extends SherlockActivity
 	    	}
 		}	
 		@Override
-		protected void onCancelled()
-		{
+		protected void onCancelled() {
 			getv.setText(errorMsg);
 			
 			g_pb_ll.setVisibility(View.GONE);
@@ -253,8 +300,7 @@ public class BlackboardGradesActivity extends SherlockActivity
 		private ArrayList<bbGrade> items;
 		private LayoutInflater li;
 		
-		public GradesAdapter(Context c, ArrayList<bbGrade> items)
-		{
+		public GradesAdapter(Context c, ArrayList<bbGrade> items) {
 			super(c,0,items);
 			con = c;
 			this.items=items;
@@ -276,19 +322,15 @@ public class BlackboardGradesActivity extends SherlockActivity
 			return 0;
 		}
 		@Override
-		public boolean areAllItemsEnabled()
-		{
+		public boolean areAllItemsEnabled() {
 			return true;
 		}
 		@Override
-		public boolean isEnabled(int i)
-		{
+		public boolean isEnabled(int i) {
 			return true;
 		}
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent)
-		{
-			
+		public View getView(int position, View convertView, ViewGroup parent) {
 			bbGrade grade = items.get(position);
 			
 			String title = grade.getName();
@@ -319,37 +361,29 @@ public class BlackboardGradesActivity extends SherlockActivity
 		}
 	}
 
-	class bbGrade
-	{
+	class bbGrade {
 		String name, grade, pointsPossible, comment;
 		
-		public bbGrade(String name, String grade, String pointsPossible, String comment)
-		{
+		public bbGrade(String name, String grade, String pointsPossible, String comment) {
 			this.name = name;
 			this.grade = grade;
 			this.pointsPossible = pointsPossible;
 			this.comment = comment;
 		}
-		public String getName()
-		{
+		public String getName() {
 			return name;
 		}
-		public String getComment()
-		{
+		public String getComment() {
 			return comment;
 		}
-		public Number getNumGrade()
-		{
-			if(!grade.equals("-"))
-			{
+		public Number getNumGrade() {
+			if(!grade.equals("-")) {
 				String temp = grade.replaceAll("[^\\d\\.]*", "");
-				if(temp.equals(""))
-				{
+				if(temp.equals("")) {
 					return -2;
 				}
 				double d = Double.parseDouble(temp);
-				if(d == Math.floor(d))
-				{
+				if(d == Math.floor(d)) {
 					return (int)d;
 				}
 				else
@@ -358,20 +392,16 @@ public class BlackboardGradesActivity extends SherlockActivity
 			else
 				return -1;
 		}
-		public String getGrade()
-		{
+		public String getGrade() {
 			return grade;
 		}
-		public String getPointsPossible()
-		{
+		public String getPointsPossible() {
 			return pointsPossible;
 		}
-		public Number getNumPointsPossible()
-		{
+		public Number getNumPointsPossible() {
 			String temp = pointsPossible.replaceAll("[^\\d\\.]*", "");
 			double d = Double.parseDouble(temp);
-			if(d == Math.floor(d))
-			{
+			if(d == Math.floor(d)) {
 				return (int)d;
 			}
 			else
@@ -379,5 +409,11 @@ public class BlackboardGradesActivity extends SherlockActivity
 		}
 	
 	}
+
+	@Override
+	public void onPanesScrolled() {
+		setupActionBar();	
+	}
+
 	
 }

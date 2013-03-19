@@ -30,7 +30,7 @@
         <item name="android:textColor">#FF555555</item>
     </style>
     
-    <style name="Theme.UTilities" parent="@style/Theme.Sherlock.Light.ForceOverflow">
+    <style name="Theme.UTilities" parent="@style/Theme.Sherlock.Light">
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
         <item name="vpiTitlePageIndicatorStyle">@style/CustomTitlePageIndicator</item>
         <item name="android:windowBackground">@drawable/background_holo_light</item>
