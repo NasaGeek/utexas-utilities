@@ -28,16 +28,21 @@ public class ParcelablePair<F,S> implements Serializable, Parcelable {
 		
 	};
 	
-	public ParcelablePair(F first, S second) 
-	{
+	public ParcelablePair(F first, S second) {
 		this.first = first;
 		this.second = second;	
 	}
 
+	@SuppressWarnings("unchecked")
 	public ParcelablePair(Parcel source) {
 		
-		first = (F) source.readValue(null);
-		second = (S) source.readValue(null);
+		try {
+			first = (F) source.readValue(Class.forName(source.readString()).getClassLoader());
+			second = (S) source.readValue(Class.forName(source.readString()).getClassLoader());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new IllegalStateException("Could not find class when unparcelling.");
+		}
 	}
 
 	@Override
@@ -47,7 +52,9 @@ public class ParcelablePair<F,S> implements Serializable, Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(first.getClass().getName());
 		dest.writeValue(first);
+		dest.writeString(second.getClass().getName());
 		dest.writeValue(second);
 	}
 	

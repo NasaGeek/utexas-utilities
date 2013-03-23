@@ -13,9 +13,7 @@ import org.apache.http.util.EntityUtils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
+import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -27,8 +25,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -74,6 +70,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 		courseID = getArguments().getString("courseID");
 		courseName = getArguments().getString("courseName");
 		viewUri = getArguments().getString("viewUri");
+		fromDashboard = getArguments().getBoolean("fromDashboard");
 		setHasOptionsMenu(true);
 		announcements = new ArrayList<bbAnnouncement>();
 		announceAdapter = new AnnouncementsAdapter(getSherlockActivity(), announcements);
@@ -115,17 +112,17 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 	}
 	@Override
 	public String getBbid() {	
-		return getArguments().getString("courseID");
+		return courseID;
 	}
 
 	@Override
 	public String getCourseName() {
-		return getArguments().getString("courseName");
+		return courseName;
 	}
 	
 	@Override
 	public boolean isFromDashboard() {
-		return getArguments().getBoolean("fromDashboard");
+		return fromDashboard;
 	}
 	
 	@Override

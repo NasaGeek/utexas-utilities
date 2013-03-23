@@ -16,7 +16,7 @@
  */
 
 package com.viewpagerindicator;
-// Quick note, this is in the com.viewpagerindicator packer so it can sneak a peak at IcsLinearLayout
+// Quick note, this is in the com.viewpagerindicator package so it can sneak a peak at IcsLinearLayout
 
 import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.IcsLinearLayout;

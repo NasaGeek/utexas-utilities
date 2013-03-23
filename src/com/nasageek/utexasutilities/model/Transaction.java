@@ -7,7 +7,7 @@ public class Transaction implements Parcelable {
 
 	private String cost, reason, date;
 	
-	public static Parcelable.Creator<Transaction> CREATOR = new Parcelable.Creator<Transaction>(){
+	public static Parcelable.Creator<Transaction> CREATOR = new Parcelable.Creator<Transaction>() {
 
 		@Override
 		public Transaction createFromParcel(Parcel source) {
@@ -21,29 +21,24 @@ public class Transaction implements Parcelable {
 		
 	};
 	
-	public Transaction(Parcel in)
-	{
+	public Transaction(Parcel in) {
 		reason = in.readString();
 		cost = in.readString();
 		date = in.readString();
 	}
 	
-	public Transaction(String reason, String cost, String date)
-	{
+	public Transaction(String reason, String cost, String date) {
 		this.reason = reason;
 		this.cost = cost;
 		this.date = date;
 	}
-	public String getReason()
-	{
+	public String getReason() {
 		return this.reason;
 	}
-	public String getCost()
-	{
+	public String getCost() {
 		return this.cost;
 	}
-	public String getDate()
-	{
+	public String getDate() {
 		return this.date;
 	}
 	@Override

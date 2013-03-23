@@ -14,7 +14,7 @@ import org.apache.http.util.EntityUtils;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
+import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;

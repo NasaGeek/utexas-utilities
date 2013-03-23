@@ -2,6 +2,7 @@ package com.nasageek.utexasutilities.activities;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
@@ -34,11 +35,7 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 		actionbar.setTitle("Blackboard");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		
-		int screenSize = (getResources().getConfiguration().screenLayout
-				& Configuration.SCREENLAYOUT_SIZE_MASK);
-
-		if (screenSize == Configuration.SCREENLAYOUT_SIZE_LARGE ||
-				screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+		if (getResources().getBoolean(com.mapsaurus.paneslayout.R.bool.largeScreen)) {
 			panes = (PanesLayout) findViewById(R.id.panes);
 			panes.setOnIndexChangedListener(this);
 		}
@@ -135,14 +132,15 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 			else return false;
 		}
 	}
+	
+	//getting slightly strange data at times, look into it
 	@Override
 	public void onIndexChanged(int firstIndex, int lastIndex, int firstCompleteIndex, int lastCompleteIndex) {
 		
 		if (firstCompleteIndex == 0) {
 			getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 			getSupportActionBar().setHomeButtonEnabled(false);
-		}
-		else {
+		} else {
 			getSupportActionBar().setHomeButtonEnabled(true);
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		}

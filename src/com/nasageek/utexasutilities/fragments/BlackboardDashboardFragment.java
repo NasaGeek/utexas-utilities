@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -21,11 +22,11 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.AsyncTask;
+import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Debug;
 import android.preference.PreferenceManager;
-import android.util.Pair;
 import android.util.TimingLogger;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -45,6 +46,8 @@ import com.nasageek.utexasutilities.BlackboardDashboardXmlParser;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.ParcelablePair;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.SectionedParcelableList;
+import com.nasageek.utexasutilities.model.BBClass;
 import com.nasageek.utexasutilities.model.FeedItem;
 
 public class BlackboardDashboardFragment extends SherlockFragment {
@@ -57,14 +60,14 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 	private fetchDashboardTask fetch;
 	private boolean longform;
 
-	private ArrayList<ParcelablePair<String, List<FeedItem>>> feedList;
+	private HashMap<String, BBClass> courses;
+	private List<ParcelablePair<String, List<FeedItem>>> feedList;
 	private BlackboardDashboardAdapter bda;
 				
 		
 	public BlackboardDashboardFragment() { }
 	
-	public static BlackboardDashboardFragment newInstance(String title)
-	{
+	public static BlackboardDashboardFragment newInstance(String title) {
 		BlackboardDashboardFragment f = new BlackboardDashboardFragment();
 
         Bundle args = new Bundle();
@@ -80,12 +83,12 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 		tl = new TimingLogger("Dashboard", "loadTime");
 				
 		longform = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean("blackboard_class_longform", false);
-		
 		if(savedInstanceState == null)
 			feedList = new ArrayList<ParcelablePair<String,List<FeedItem>>>();
-		else
-			feedList = savedInstanceState.getParcelableArrayList("feedList");
-		
+		else {
+			feedList = (List<ParcelablePair<String, List<FeedItem>>>) ((SectionedParcelableList) savedInstanceState.getParcelable("feedList")).getList();
+			courses = (HashMap<String, BBClass>) savedInstanceState.getSerializable("courses");
+		}
 		bda = new BlackboardDashboardAdapter(feedList);
 		
 			
@@ -118,11 +121,10 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 				FeedItem fi = (FeedItem) parent.getAdapter().getItem(position);
 				String courseid = fi.getBbId();
 				String contentid = fi.getContentId();
-				String coursename = fi.getCourseId();
+				String coursename = courses.get(fi.getBbId()).getCourseId();
 				String message = fi.getMessage();
 				
-				if("Grades".equals(fi.getType()))
-				{		
+				if("Grades".equals(fi.getType())) {		
 			/*		final Intent gradesLaunch = new Intent(null, null, getSherlockActivity(), BlackboardGradesActivity.class);
 		//			gradesLaunch.putExtra("viewUri", url);
 				//TODO: fetch coursemap for viewurl
@@ -136,8 +138,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 					((FragmentLauncher)act).addFragment(BlackboardDashboardFragment.this.getParentFragment(), 
 							BlackboardGradesFragment.newInstance(courseid, coursename, "", true));
 				}
-				else if("Content".equals(fi.getType()))
-				{
+				else if("Content".equals(fi.getType())) {
 				/*	final Intent bbItemLaunch = new Intent(null, null, getSherlockActivity(), BlackboardDownloadableItemActivity.class);
 					bbItemLaunch.putExtra("contentid", contentid);
 					
@@ -152,8 +153,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 					((FragmentLauncher)act).addFragment(BlackboardDashboardFragment.this.getParentFragment(), 
 							BlackboardDownloadableItemFragment.newInstance(contentid, courseid, coursename, message, "", true));
 				}
-				else if("Announcement".equals(fi.getType()))
-				{
+				else if("Announcement".equals(fi.getType())) {
 					//TODO: figure out how to seek to a specific announcement
 			/*		final Intent announcementsLaunch = new Intent(null, null, getSherlockActivity(), BlackboardAnnouncementsActivity.class);
 			//		announcementsLaunch.putExtra("viewUri", url); TODO
@@ -165,8 +165,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 					((FragmentLauncher)act).addFragment(BlackboardDashboardFragment.this.getParentFragment(), 
 							BlackboardAnnouncementsFragment.newInstance(courseid, coursename, "", true));
 				}
-				else if("Courses".equals(fi.getType()))
-				{
+				else if("Courses".equals(fi.getType())) {
 		/*			final Intent classLaunch = new Intent(getString(R.string.coursemap_intent), null, getSherlockActivity(), CourseMapActivity.class);
 					classLaunch.putExtra("courseid", fi.getBbId());
 					classLaunch.setData(Uri.parse(fi.getBbId()));
@@ -181,8 +180,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 			}
 		});
 		
-		if(feedList.size() == 0)
-		{	
+		if(feedList.size() == 0) {	
 			fetch = new fetchDashboardTask(httpclient);
 			
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -202,10 +200,10 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 	}
 	
 	@Override
-	public void onSaveInstanceState(Bundle outState)
-	{
+	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putParcelableArrayList("feedList", feedList);
+		outState.putParcelable("feedList", new SectionedParcelableList<FeedItem>(feedList, FeedItem.class));
+		outState.putSerializable("courses", courses);
 	}
 	
 	public void refresh()
@@ -229,28 +227,24 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 		private String errorMsg = "";
 		private List<ParcelablePair<String, List<FeedItem>>> tempFeedList;
 		
-		public fetchDashboardTask(DefaultHttpClient client)
-		{
+		public fetchDashboardTask(DefaultHttpClient client) {
 			this.client = client;
 		}
 		
 		@Override
-		protected void onPreExecute()
-		{
+		protected void onPreExecute() {
 			d_pb_ll.setVisibility(View.VISIBLE);
     		dlv.setVisibility(View.GONE);
 			etv.setVisibility(View.GONE); 
 		}
 		
 		@Override
-		protected List<ParcelablePair<String, List<FeedItem>>> doInBackground(String... params)
-		{
+		protected List<ParcelablePair<String, List<FeedItem>>> doInBackground(String... params) {
 	    	String pagedata="";
 	    	String bbAuthCookie = params[0];		
 	    	tempFeedList = new ArrayList<ParcelablePair<String, List<FeedItem>>>();
 	    	
-	    	if(Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) 
-	    	{
+	    	if(Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
 		    	URL location;
 		    	HttpsURLConnection conn = null;
 				try {
@@ -261,7 +255,9 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 					conn.setDoInput(true);
 					conn.connect();
 					InputStream in = conn.getInputStream();
-					tempFeedList = new BlackboardDashboardXmlParser().parse(in);
+					BlackboardDashboardXmlParser parser = new BlackboardDashboardXmlParser();
+					tempFeedList = parser.parse(in);
+					courses = parser.getCourses();
 					in.close();
 					tl.addSplit("XML downloaded");
 					
@@ -280,13 +276,14 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 					if(conn != null)
 						conn.disconnect();
 				}
-	    	}
-	    	else {
+	    	} else {
 		    	try {
 		    		HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/dashboard?course_type=COURSE&with_notifications=true");
 		    		HttpResponse response = client.execute(hget);
 			    	pagedata = EntityUtils.toString(response.getEntity());
-			    	tempFeedList = new BlackboardDashboardXmlParser().parse(new StringReader(pagedata));
+			    	BlackboardDashboardXmlParser parser = new BlackboardDashboardXmlParser();
+			    	tempFeedList = parser.parse(new StringReader(pagedata));
+			    	courses = parser.getCourses();
 			    	
 				} catch (IOException e) {
 					errorMsg = "UTilities could not fetch your Blackboard Dashboard";
@@ -307,17 +304,12 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 		@Override
 		protected void onPostExecute(List<ParcelablePair<String, List<FeedItem>>> result) {
 			//	dlv.setAdapter(new BlackboardDashboardAdapter(result));
-			if(result != null) {
-				feedList.addAll(tempFeedList);
-				bda.notifyDataSetChanged();
-				tl.addSplit("Adapter created");
-				d_pb_ll.setVisibility(View.GONE);
-    			dlv.setVisibility(View.VISIBLE);
-    			etv.setVisibility(View.GONE);
-			} else {
-				errorMsg = "UTilities could not fetch your Blackboard Dashboard";
-				onCancelled(null);
-			}	
+			feedList.addAll(tempFeedList);
+			bda.notifyDataSetChanged();
+			tl.addSplit("Adapter created");
+			d_pb_ll.setVisibility(View.GONE);
+			dlv.setVisibility(View.VISIBLE);
+			etv.setVisibility(View.GONE);	
 		}
 		@Override
 		protected void onCancelled(List<ParcelablePair<String, List<FeedItem>>> result) {
@@ -333,8 +325,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 		
 		private List<ParcelablePair<String, List<FeedItem>>> items;
 		
-		public BlackboardDashboardAdapter(List<ParcelablePair<String, List<FeedItem>>> items)
-		{
+		public BlackboardDashboardAdapter(List<ParcelablePair<String, List<FeedItem>>> items) {
 			this.items = items;
 		}
 		
@@ -389,6 +380,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 			View res = convertView;
 			if (res == null) res = getSherlockActivity().getLayoutInflater().inflate(R.layout.dashboard_item_view, null);
 			FeedItem fi = getItem(position);
+			BBClass course = courses.get(fi.getBbId());
 			
 			TextView courseName = (TextView) res.findViewById(R.id.d_course_name);
 			TextView contentType = (TextView) res.findViewById(R.id.d_content_type);
@@ -396,13 +388,12 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 
 			if(!longform) {
 				//TODO: make this look nice for malformed classes
-				if(!"".equals(fi.getCourseId()))
-					courseName.setText(fi.getCourseId()+ " - " + fi.getName()+ " ("+fi.getBbClass().getUnique()+")");
+				if(!"".equals(course.getCourseId()))
+					courseName.setText(course.getCourseId()+ " - " + course.getName()+ " ("+course.getUnique()+")");
 				else
-					courseName.setText(fi.getName()+ " ("+fi.getBbClass().getUnique()+")");
-			}
-			else {
-				courseName.setText(fi.getBbClass().getFullName());
+					courseName.setText(course.getName()+ " ("+course.getUnique()+")");
+			} else {
+				courseName.setText(course.getFullName());
 			}
 			
 			contentType.setText(fi.getType());
@@ -416,8 +407,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 					message.setTextColor(arr.getColor(0, Color.BLACK));
 					courseName.setTextColor(arr.getColor(0, Color.BLACK));
 				}
-			}
-			else {	
+			} else {	
 				message.setTextColor(Color.BLACK);
 				courseName.setTextColor(Color.BLACK);
 			}

@@ -18,7 +18,7 @@ import org.apache.http.protocol.HTTP;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.os.AsyncTask;
+import com.nasageek.utexasutilities.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;

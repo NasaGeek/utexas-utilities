@@ -24,11 +24,11 @@ public class BlackboardDashboardXmlParser {
 
 	private HashMap<String, BBClass> courses;
 	private TimingLogger tl;
+	private boolean feedParsed = false;
 	//need this so we don't instantiate it every time we make a new FeedItem
 	private SimpleDateFormat feedItemDateFormat;
 	
-	public List<ParcelablePair<String, List<FeedItem>>> parse(InputStream in) throws XmlPullParserException, IOException
-	{
+	public List<ParcelablePair<String, List<FeedItem>>> parse(InputStream in) throws XmlPullParserException, IOException {
 		try {
 			XmlPullParser parser = Xml.newPullParser();
 			parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -39,8 +39,7 @@ public class BlackboardDashboardXmlParser {
 			in.close();
 		}
 	}
-	public List<ParcelablePair<String, List<FeedItem>>> parse(Reader in) throws XmlPullParserException, IOException
-	{
+	public List<ParcelablePair<String, List<FeedItem>>> parse(Reader in) throws XmlPullParserException, IOException {
 		try {
 			XmlPullParser parser = Xml.newPullParser();
 			parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -57,8 +56,7 @@ public class BlackboardDashboardXmlParser {
 	 * easy to understand to calling classes with minimal code duplication.  This is where the actual 
 	 * parsing occurs.
 	 */
-	private List<ParcelablePair<String, List<FeedItem>>> actuallyParse(XmlPullParser parser) throws XmlPullParserException, IOException
-	{
+	private List<ParcelablePair<String, List<FeedItem>>> actuallyParse(XmlPullParser parser) throws XmlPullParserException, IOException {
 		tl = new TimingLogger("Dashboard", "Parser");
 		
 		List<FeedItem> feeditems = readDashboard(parser); 
@@ -72,19 +70,16 @@ public class BlackboardDashboardXmlParser {
 		String currentCategory="";
 		ArrayList<FeedItem> sectionList=null;
 		DateFormat df = SimpleDateFormat.getDateInstance();
-		for(int i = 0; i<feeditems.size(); i++)
-		{
+		for(int i = 0; i<feeditems.size(); i++) {
 			//first FeedItem is always in a new category (the first category)
-			if(i==0)
-			{	
+			if(i==0) {	
 				currentCategory = df.format(feeditems.get(i).getDate());
 				sectionList = new ArrayList<FeedItem>();
 				sectionList.add(feeditems.get(i));
 			}
 			//if the current course is not part of the current category or we're on the last course
 			//weird stuff going on here depending on if we're at the end of the list
-			else if(!df.format(feeditems.get(i).getDate()).equals(currentCategory) || i == feeditems.size()-1)
-			{
+			else if(!df.format(feeditems.get(i).getDate()).equals(currentCategory) || i == feeditems.size()-1) {
 				if(i == feeditems.size()-1)
 					sectionList.add(feeditems.get(i));
 					
@@ -97,19 +92,18 @@ public class BlackboardDashboardXmlParser {
 					sectionList.add(feeditems.get(i));
 			}
 			//otherwise just add to the current category
-			else
-			{
+			else {
 				sectionList.add(feeditems.get(i));
 			}
 			
 		}
 		tl.addSplit("CategorizedList created");
 	//	tl.dumpToLog();
+		feedParsed = true;
 		return categorizedList;
 	}
 	
-	private List<FeedItem> readDashboard(XmlPullParser parser) throws XmlPullParserException, IOException
-	{		
+	private List<FeedItem> readDashboard(XmlPullParser parser) throws XmlPullParserException, IOException {		
 		feedItemDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
 		
 		courses = new HashMap<String, BBClass>();
@@ -118,18 +112,15 @@ public class BlackboardDashboardXmlParser {
 		parser.nextTag();
 		
 		parser.require(XmlPullParser.START_TAG, null, "courses");
-		while(parser.next() != XmlPullParser.END_DOCUMENT)
-		{
+		while(parser.next() != XmlPullParser.END_DOCUMENT) {
 			if(parser.getEventType() != XmlPullParser.START_TAG)
 				continue;
 			String name = parser.getName();
-			if(name.equals("course"))
-			{	BBClass clz = readCourse(parser);
+			if(name.equals("course")) {	
+				BBClass clz = readCourse(parser);
 				if(clz != null)
 					courses.put(clz.getBbid(), clz);
-			}
-			else if(name.equals("feeditem"))
-			{
+			} else if(name.equals("feeditem")) {
 				FeedItem item = readFeedItem(parser);
 				if(item != null)
 					feed.add(item);
@@ -138,8 +129,7 @@ public class BlackboardDashboardXmlParser {
 		return feed;
 	}
 	
-	private BBClass readCourse(XmlPullParser parser) throws XmlPullParserException, IOException
-	{
+	private BBClass readCourse(XmlPullParser parser) throws XmlPullParserException, IOException {
 		parser.require(XmlPullParser.START_TAG, null, "course");
 		
 		String name = parser.getAttributeValue(null, "name");
@@ -152,8 +142,7 @@ public class BlackboardDashboardXmlParser {
 		while(parser.next() != XmlPullParser.END_TAG){};
 		return new BBClass(name, bbid, fullcourseid);
 	}
-	private FeedItem readFeedItem(XmlPullParser parser) throws XmlPullParserException, IOException
-	{
+	private FeedItem readFeedItem(XmlPullParser parser) throws XmlPullParserException, IOException {
 		parser.require(XmlPullParser.START_TAG, null, "feeditem");
 		//if sourcetype="AN" then it is a notification
 		
@@ -173,12 +162,18 @@ public class BlackboardDashboardXmlParser {
 //		String id = parser.getAttributeValue(null, "contentid");
 		//TODO sourceid?
 		while(parser.next() != XmlPullParser.END_TAG){};
-		return new FeedItem(type, message, contentid, courses.get(courseid), sourcetype, date, feedItemDateFormat);
+		return new FeedItem(type, message, contentid, courseid, sourcetype, date, feedItemDateFormat);
+	}
+	
+	public HashMap<String,BBClass> getCourses() {
+		if(feedParsed)
+			return courses;
+		else
+			throw new IllegalStateException("You must parse the feed before you can call getCourses()");
 	}
 	
 	//unused, will remove later
-	private void skip(XmlPullParser parser) throws XmlPullParserException, IOException
-	{
+	private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
 		if(parser.getEventType() != XmlPullParser.START_TAG)
 			throw new IllegalStateException();
 		int depth = 1;
@@ -195,6 +190,4 @@ public class BlackboardDashboardXmlParser {
 			}
 		}
 	}
-	
-
 }

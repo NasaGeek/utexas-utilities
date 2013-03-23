@@ -14,7 +14,7 @@ import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.AsyncTask;
+import com.nasageek.utexasutilities.AsyncTask;
 import android.util.Log;
 
 public class BuildingDatabase extends SQLiteOpenHelper {

@@ -16,7 +16,7 @@ import org.apache.http.util.EntityUtils;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.res.TypedArray;
-import android.os.AsyncTask;
+import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -41,8 +41,7 @@ import com.nasageek.utexasutilities.model.Transaction;
 
 //TODO: last transaction doesn't show when loading dialog is present at the bottom, low priority fix
 
-public class TransactionsFragment extends SherlockFragment
-{
+public class TransactionsFragment extends SherlockFragment {
 	private DefaultHttpClient httpclient;
 	private LinearLayout t_pb_ll;
 	private AmazingListView tlv;
@@ -59,16 +58,14 @@ public class TransactionsFragment extends SherlockFragment
 	private String balance = "";
 	private fetchTransactionDataTask fetch;
 	
-	public enum TransactionType
-	{
+	public enum TransactionType {
 		Bevo, Dinein;
 	}
 	private TransactionType mType;
 	
 	public TransactionsFragment() { }
 	
-	public static TransactionsFragment newInstance(String title, TransactionType type)
-	{
+	public static TransactionsFragment newInstance(String title, TransactionType type) {
 		TransactionsFragment f = new TransactionsFragment();
 
         Bundle args = new Bundle();
@@ -80,8 +77,7 @@ public class TransactionsFragment extends SherlockFragment
 	}
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		vg =  inflater.inflate(R.layout.transactions_fragment_layout, container, false);
 		
 		tlv              = (AmazingListView) vg.findViewById(R.id.transactions_listview);
@@ -107,19 +103,11 @@ public class TransactionsFragment extends SherlockFragment
 
 	}
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
-		
-	//	parentAct = this.getSherlockActivity();
-		
+
 		postdata = new ArrayList<BasicNameValuePair>();
-		
-		//for now we're going to assume having arguments means we're using the pager
-		if(getArguments() != null) {
-			mType = (TransactionType) getArguments().getSerializable("type");
-		}
 		
 		if(TransactionType.Bevo.equals(mType))
 			postdata.add(new BasicNameValuePair("sRequestSw","B"));
@@ -134,25 +122,15 @@ public class TransactionsFragment extends SherlockFragment
 		ta = new TransactionAdapter(getSherlockActivity(), this, transactionlist);
 
 	}
-/*	@Override 
-	public void onInflate(Activity activity, AttributeSet attrs, Bundle savedInstanceState) {
-        super.onInflate(activity, attrs, savedInstanceState);
-
-        TypedArray a = activity.obtainStyledAttributes(attrs, R.styleable.TransactionsFragment);
-        
-        //setting the title isn't really necessary because title is not used when inflating from xml
-  //     Bundle args = new Bundle();
-  //      args.putString("title", a.getText(R.styleable.TransactionsFragment_label).toString());
-  //      setArguments(args);
-        
-        mType = a.getInt(R.styleable.TransactionsFragment_transactionsType, 0) == 1 
-        										? TransactionType.Dinein
-        										: TransactionType.Bevo;
-        a.recycle();
-    }*/
+	
+	@Override
+	public void onSaveInstanceState(Bundle out) {
+		super.onSaveInstanceState(out);
+		out.putParcelableArrayList("transactions", transactionlist);
+	}
+	
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public void parser(boolean refresh)
-	{
+	public void parser(boolean refresh) {
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
 		
@@ -175,8 +153,7 @@ public class TransactionsFragment extends SherlockFragment
 		if(fetch!=null)
 			fetch.cancel(true);
 	}
-	public void refresh()
-	{
+	public void refresh() {
 	//	tlv.setVisibility(View.GONE);
 	//	etv.setVisibility(View.GONE);
 	//	t_pb_ll.setVisibility(View.VISIBLE);
@@ -197,21 +174,18 @@ public class TransactionsFragment extends SherlockFragment
 		ta.resetPage();
 		tlv.setSelectionFromTop(0, 0);
 	}
-	private class fetchTransactionDataTask extends AsyncTask<Object,Void,Character>
-	{
+	private class fetchTransactionDataTask extends AsyncTask<Object,Void,Character> {
 		private DefaultHttpClient client;
 		private boolean refresh;
 		private String errorMsg;
 		private ArrayList<Transaction> tempTransactionList;
 		
-		public fetchTransactionDataTask(DefaultHttpClient client, boolean refresh)
-		{
+		public fetchTransactionDataTask(DefaultHttpClient client, boolean refresh) {
 			this.client = client;
 			this.refresh = refresh;
 		}
 		@Override
-		protected void onPreExecute()
-		{
+		protected void onPreExecute() {
 			//only show the loading view if we're loading the first page of transactions or refreshing
 			if(ta.page == 1 || refresh)
 			{
@@ -223,13 +197,11 @@ public class TransactionsFragment extends SherlockFragment
 			}
 		}
 		@Override
-		protected Character doInBackground(Object... params)
-		{
+		protected Character doInBackground(Object... params) {
 			HttpPost hpost = new HttpPost("https://utdirect.utexas.edu/hfis/transactions.WBX");
 	    	String pagedata="";
 	    	tempTransactionList = new ArrayList<Transaction>();
-	    	try
-			{
+	    	try {
 				hpost.setEntity(new UrlEncodedFormEntity(postdata));
 				HttpResponse response = client.execute(hpost);
 		    	pagedata = EntityUtils.toString(response.getEntity());
@@ -240,8 +212,7 @@ public class TransactionsFragment extends SherlockFragment
 				cancel(true);
 				return null;
 			}
-	    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>"))
-	    	{
+	    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
 				errorMsg = "You've been logged out of UTDirect, back out and log in again.";
 				ConnectionHelper.logout(getSherlockActivity());
 				cancel(true);
@@ -260,17 +231,15 @@ public class TransactionsFragment extends SherlockFragment
 	    	Pattern balancePattern = Pattern.compile("\"right\">\\s*(.*)</td>\\s*</tr");
 	    	Matcher balanceMatcher = balancePattern.matcher(pagedata);
 	    	
-	    	if(balanceMatcher.find() && ta.page == 1)
-	    	{
+	    	if(balanceMatcher.find() && ta.page == 1) {
 	    		balance = balanceMatcher.group(1);	
 	    	}
-	    	while(reasonMatcher.find() && costMatcher.find() && dateMatcher.find() && !this.isCancelled())
-	    	{
+	    	while(reasonMatcher.find() && costMatcher.find() && dateMatcher.find() && !this.isCancelled()) {
 	    		Transaction tran = new Transaction(reasonMatcher.group(1).trim(), costMatcher.group(1).replaceAll("\\s",""), dateMatcher.group(1));
 	    		tempTransactionList.add(tran);
 	    	}
-	    	if(pagedata.contains("<form name=\"next\"") && !this.isCancelled()) //check for additional pages
-	    	{
+	    	//check for additional pages
+	    	if(pagedata.contains("<form name=\"next\"") && !this.isCancelled()) {
 	    		Pattern namePattern = Pattern.compile("sNameFL\".*?value=\"(.*?)\"");
 	    		Matcher nameMatcher = namePattern.matcher(pagedata);
 	    		Pattern nextTransPattern = Pattern.compile("nexttransid\".*?value=\"(.*?)\"");
