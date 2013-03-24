@@ -109,7 +109,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	private HashMap<String, Polyline> polylineMap;
 	private GoogleMap mMap;
 	
-	private static final LatLng UT_TOWER = new LatLng(30.285706,-97.739423);
+	private static final LatLng UT_TOWER = new LatLng(30.285706, -97.739423);
 
 	public enum Route {
 		No_Overlay(0,"No Bus Route Overlay"),
@@ -182,8 +182,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 		final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(actionbar.getThemedContext(), android.R.layout.simple_spinner_item, Route.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         
-        actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() 
-        {
+        actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() {
         	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
         		if(checkReady())
         			loadRoute(((Route) spinner.getAdapter().getItem(itemPosition)).getCode());
@@ -192,8 +191,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
         });
        
         mapView = getSupportFragmentManager().findFragmentById(R.id.map).getView();
-        if(mapView.getViewTreeObserver().isAlive())
-        {
+        if(mapView.getViewTreeObserver().isAlive()) {
         	mapView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 				@SuppressLint("NewApi")
 				@SuppressWarnings("deprecation")
@@ -222,12 +220,10 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 
         String[] stopsa=null;
         String[] kml = null;
-		try
-		{	
+		try {	
 			kml = am.list("kml");
 			stopsa = am.list("stops");
-		} catch (IOException e1)
-		{
+		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
         stops_al = Arrays.asList(stopsa);
@@ -239,7 +235,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
         routeid = ((Route) spinner.getAdapter().getItem(Integer.parseInt(settings.getString("default_bus_route", "0")))).getCode();
         
         actionbar.setSelectedNavigationItem(Integer.parseInt(settings.getString("default_bus_route", "0")));
-        try{
+        try {
 
             // create the factory
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -255,23 +251,20 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
             // get our data via the url class
             if(!"0".equals(routeid))
             	loadRoute(routeid);
-        }
-        catch(Exception e){
+        } catch(Exception e) {
      //   	Log.d("KML","Problem parsing route kml");
         }
 
-    	try
-        {
+    	try {
     		BuildingSaxHandler builSaxHandler = new BuildingSaxHandler();
             // assign our handler
             xmlreader.setContentHandler(builSaxHandler);
     		InputSource is = new InputSource(am.open("buildings.kml"));
         	xmlreader.parse(is);
         	buildingDataSet = builSaxHandler.getParsedData();
-        }
-        catch(Exception e)
-        {
+        } catch(Exception e) {
     //    	Log.d("Error parsing buildings.kml",e.toString());
+        	e.printStackTrace();
         }
 			
 	    handleIntent(getIntent());
@@ -300,8 +293,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
         });*/
         Crittercism.leaveBreadcrumb("Loaded CampusMapActivity");
     }
-	private void setupMapIfNeeded()
-	{
+	private void setupMapIfNeeded() {
 		// Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
@@ -313,17 +305,14 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
             }
         }
 	}
-	private void setupMap()
-	{
+	private void setupMap() {
 		mMap.setMyLocationEnabled(true);
 		mMap.setInfoWindowAdapter(new StopInfoAdapter());
 		mMap.setOnInfoWindowClickListener(new InfoClickListener());
 	}
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		if(requestCode == 0 && resultCode == 0)
-		{
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(requestCode == 0 && resultCode == 0) {
 			locationSetup();
 		}
 	}
@@ -334,14 +323,12 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	 * false to just animate to building; should only be true when you are entering the map from 
 	 * an entry point other than the dashboard
 	 **/
-	public void loadBuildingOverlay(boolean autoZoom)
-	{
+	public void loadBuildingOverlay(boolean autoZoom) {
 		int foundCount = 0;
 		llbuilder = LatLngBounds.builder();
 		
-        for(Placemark pm : buildingDataSet)
-        {
-        	if(buildingIdList.contains(pm.getTitle()))//	buildingId.equalsIgnoreCase(pm.getTitle()))
+        for(Placemark pm : buildingDataSet) {
+        	if(buildingIdList.contains(pm.getTitle()))//	buildingId.equalsIgnoreCase(pm.getTitle())) 
         	{
         		LatLng buildingLatLng = new LatLng(Double.valueOf(pm.getCoordinates().split(",")[1].trim()), 
         										   Double.valueOf(pm.getCoordinates().split(",")[0].trim()));
@@ -370,8 +357,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
         		} 		
         	}
        }
-       if(buildingIdList.size() > 1)
-       {
+       if(buildingIdList.size() > 1) {
     	   mSetCameraToBounds = true;
        }
 //       if(!buildingId.equals("") && !buildingFound) Toast.makeText(this, "That building could not be found", Toast.LENGTH_SHORT).show();
@@ -398,23 +384,17 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
   			}
   		}*/	
 	}
-	private void locationSetup()
-	{
+	private void locationSetup() {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         Criteria crit = new Criteria();
         locProvider = locationManager.getBestProvider(crit, true);
-        if(locProvider == null)
-        {
-        	if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
-        	{	
+        if(locProvider == null) {
+        	if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {	
         		locProvider = locationManager.getProvider(LocationManager.NETWORK_PROVIDER).getName();
         	}
-        	else if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-        	{
+        	else if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
         		locProvider = locationManager.getProvider(LocationManager.GPS_PROVIDER).getName();
-        	}
-        	else
-        	{
+        	} else {
         		AlertDialog.Builder noproviders_builder = new AlertDialog.Builder(this);
         		noproviders_builder.setMessage("You don't have any location services enabled. If you want to see your " +
         				"location you'll need to enable at least one in the Location menu of your device's Settings.  " +
@@ -437,8 +417,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
             	noproviders.show();   
         	}	
         }
-        if(locProvider!=null)
-        {
+        if(locProvider!=null) {
         	locationListener = new LocationListener() {
 	            public void onLocationChanged(Location location) {
 	              // Called when a new location is found by the network location provider.
@@ -459,53 +438,40 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	        
 	        lastKnownLocation = locationManager.getLastKnownLocation(locProvider);
         } 
-        if(checkReady())
-        {
-	    	if(mMap.getMyLocation() != null && settings.getBoolean("starting_location", true))
-	        {
+        if(checkReady()) {
+	    	if(mMap.getMyLocation() != null && settings.getBoolean("starting_location", true)) {
 	        	mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mMap.getMyLocation().getLatitude(),mMap.getMyLocation().getLongitude()), 16f));
-	        }
-	        else if(lastKnownLocation != null && settings.getBoolean("starting_location", true))
-	        {
+	        } else if(lastKnownLocation != null && settings.getBoolean("starting_location", true)) {
 	        	mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation.getLatitude(),lastKnownLocation.getLongitude()), 16f));
-	        }
-	        else
-	        {
+	        } else {
 	        	mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(UT_TOWER, 16f));
 	        }
         }
 	}
-	public void onSaveInstanceState(Bundle savedInstanceState)
-	{
+	public void onSaveInstanceState(Bundle savedInstanceState) {
 	//	savedInstanceState.putString("buildingId", buildingId);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 	@Override
-	public void onNewIntent(Intent intent) 
-	{
+	public void onNewIntent(Intent intent) {
 	    setIntent(intent);
 	    handleIntent(intent);  
 	}
-	private void handleIntent(Intent intent) 
-	{
-	    if(checkReady())
-	    {
-	    	if (Intent.ACTION_SEARCH.equals(intent.getAction())) 
-	    	{
+	private void handleIntent(Intent intent) {
+	    if(checkReady()) {
+	    	if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 		      buildingIdList.add(intent.getStringExtra(SearchManager.QUERY).toUpperCase(Locale.ENGLISH));
 		//      buildingId = intent.getStringExtra(SearchManager.QUERY);
 		      loadBuildingOverlay(false); //IDs gotten from search, no need to zoom
 		    }
-		    else if(getString(R.string.building_intent).equals(intent.getAction()))
-		    {
+		    else if(getString(R.string.building_intent).equals(intent.getAction())) {
 		    	if(!intent.hasExtra("buildings")) //didn't come from an external activity
 		    	{
 		    		buildingIdList.add(intent.getDataString());
 		    		loadBuildingOverlay(false); //IDs from search suggestions, no auto-zoom
 		    		
 		    	}
-		    	else
-		    	{
+		    	else {
 		    		buildingIdList.addAll(intent.getStringArrayListExtra("buildings"));
 		    		loadBuildingOverlay(true); //IDs from external source, we should auto-zoom
 		    	}
@@ -514,8 +480,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 		    }
 	    }    
 	}
-	public void search(String q)
-	{
+	public void search(String q) {
 //		buildingId = q;
 		buildingIdList.add(q.toUpperCase(Locale.ENGLISH));
 	}
@@ -524,24 +489,20 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	 * 
 	 * @param fid - the route id to load
 	 */
-	public void loadRoute(String fid)
-	{
+	public void loadRoute(String fid) {
 		//remove any currently showing routes and return
-		if("0".equals(fid)) 
-		{
-			for(String id : polylineMap.keySet())
-			{
+		if("0".equals(fid)) {
+			for(String id : polylineMap.keySet()) {
 				polylineMap.get(id).remove();
 			}
-			for(String id : stopMarkerMap.keySet())
-			{
+			for(String id : stopMarkerMap.keySet()) {
 				stopMarkerMap.get(id).remove();
 			}
 			polylineMap.clear();
 			stopMarkerMap.clear();
 			return;
 		}
-		try{
+		try {
 			
 			InputSource is = new InputSource(am.open("kml/"+kml_al.get(kml_al.indexOf(fid+".kml"))));
 	        // perform the synchronous parse           
@@ -567,14 +528,12 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 			String[] stops = data.toString().split("\n");
 			
 			//clear the stops from the old route
-			for(String id : stopMarkerMap.keySet())
-			{
+			for(String id : stopMarkerMap.keySet()) {
 				stopMarkerMap.get(id).remove();
 			}
 			stopMarkerMap.clear();
 			
-			for(int x = 0; x<stops.length-1; x++)
-			{
+			for(int x = 0; x<stops.length-1; x++) {
 				String coor = stops[x].split("\t")[0];
 				
 				Marker stopMarker = mMap.addMarker(new MarkerOptions()
@@ -604,12 +563,10 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	     return true;
 	 }
     @Override
-	public void onResume()
-	{
+	public void onResume() {
 		super.onResume();
 		setupMapIfNeeded();
-		if(mMap != null)
-		{
+		if(mMap != null) {
 			mMap.getUiSettings().setCompassEnabled(true);
 			mMap.getUiSettings().setMyLocationButtonEnabled(true);
 		}
@@ -617,12 +574,10 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 			locationManager.requestLocationUpdates(locProvider, 0, 0, locationListener);
 	}
 	@Override
-	public void onPause()
-	{
+	public void onPause() {
 		super.onPause();
 
-		if(mMap != null)
-		{
+		if(mMap != null) {
 			mMap.getUiSettings().setCompassEnabled(false);
 			mMap.getUiSettings().setMyLocationButtonEnabled(false);
 		}
@@ -647,8 +602,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	 * @param navSet     Navigation set bean that holds the route information, incl. geo pos
 	 * @param color      Color in which to draw the lines
 	 */
-	public void drawPath(NavigationDataSet navSet, int color) 
-	{
+	public void drawPath(NavigationDataSet navSet, int color) {
 		//clear the old route
 		for(String id : polylineMap.keySet())
 		{

@@ -4,7 +4,9 @@ package com.nasageek.utexasutilities.activities;
 import java.util.List;
 import java.util.Vector;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -79,6 +81,9 @@ public class BalanceActivity extends SherlockFragmentActivity
         	tabIndicator.setSelectAll(true);
 
 		tabIndicator.setViewPager(pager);
+		
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		pager.setCurrentItem(Integer.parseInt(sp.getString("default_balance_tab", "0")));
     }
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)

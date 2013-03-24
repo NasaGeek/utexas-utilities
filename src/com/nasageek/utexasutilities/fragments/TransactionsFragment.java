@@ -55,7 +55,7 @@ public class TransactionsFragment extends SherlockFragment {
 
 	private View vg;
 	
-	private String balance = "";
+	private String balance;
 	private fetchTransactionDataTask fetch;
 	
 	public enum TransactionType {
@@ -114,10 +114,14 @@ public class TransactionsFragment extends SherlockFragment {
 		else if(TransactionType.Dinein.equals(mType))
 			postdata.add(new BasicNameValuePair("rRequestSw","B"));
 		
-		if(savedInstanceState == null)
+		if(savedInstanceState == null) {
 			transactionlist = new ArrayList<Transaction>();
-		else
+			balance = "";
+		}
+		else {
 			transactionlist = savedInstanceState.getParcelableArrayList("transactions");
+			balance = savedInstanceState.getString("balance");
+		}
 		
 		ta = new TransactionAdapter(getSherlockActivity(), this, transactionlist);
 
@@ -127,6 +131,7 @@ public class TransactionsFragment extends SherlockFragment {
 	public void onSaveInstanceState(Bundle out) {
 		super.onSaveInstanceState(out);
 		out.putParcelableArrayList("transactions", transactionlist);
+		out.putString("balance", balance);
 	}
 	
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)

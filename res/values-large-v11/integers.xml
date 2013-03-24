@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="balance_num_visible_pages">2</integer>
-    <integer name="menu_num_visible_pages">3</integer>
+    <integer name="balance_num_visible_pages">1</integer>
+    <integer name="menu_num_visible_pages">1</integer>
     <integer name="blackboard_pager_width_percentage">75</integer>
     <integer name="blackboard_external_item_width_percentage">75</integer>
     <integer name="blackboard_content_width_percentage">75</integer>

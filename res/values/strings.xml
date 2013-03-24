@@ -219,5 +219,23 @@ If the Work includes a "NOTICE" text file as part of its distribution, then any 
     	<item>stripehour</item>
     	<item>stripehalf</item>
     </string-array>
+    
+     <string-array name="blackboard_tabs_array">
+        <item>Course List</item>
+        <item>Dashboard</item>
+    </string-array>
+    <string-array name="blackboard_tabs_value_array">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    
+    <string-array name="balance_tabs_array">
+        <item>Dine In</item>
+        <item>Bevo Bucks</item>
+    </string-array> 
+    <string-array name="balance_tabs_value_array">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
 </resources>
 

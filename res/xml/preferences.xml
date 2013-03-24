@@ -42,8 +42,17 @@
             android:entries="@array/schedule_background_array"
             android:entryValues="@array/schedule_background_value_array"
             android:key="schedule_background_style"
-            android:title="Background Style"
-            android:summary="%s" />
+            android:summary="%s"
+            android:title="Background Style" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Balance" >
+        <com.nasageek.utexasutilities.FixedListPreference
+            android:key="default_balance_tab"
+            android:defaultValue="0"
+            android:entries="@array/balance_tabs_array"
+            android:entryValues="@array/balance_tabs_value_array"
+            android:summary="%s"
+            android:title="Default Balance Tab" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Campus Map" >
         <CheckBoxPreference
@@ -52,55 +61,64 @@
             android:summaryOff="Map currently centers on UT Tower."
             android:summaryOn="Map currently centers on your location."
             android:title="Center on My Location" />
-        <com.nasageek.utexasutilities.FixedListPreference 
+
+        <com.nasageek.utexasutilities.FixedListPreference
             android:id="@+id/default_map_bus_route"
             android:defaultValue="0"
             android:entries="@array/routes_array"
             android:entryValues="@array/routes_value_array"
             android:key="default_bus_route"
-            android:title="Default Bus Route"
-            android:summary="%s"/>
+            android:summary="%s"
+            android:title="Default Bus Route" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Menu">
+    <PreferenceCategory android:title="Menu" >
         <com.nasageek.utexasutilities.FixedListPreference
             android:id="@+id/default_menu_restaurant"
             android:defaultValue="0"
             android:entries="@array/restaurants_array"
             android:entryValues="@array/restaurants_value_array"
             android:key="default_restaurant"
-            android:title="Default Restaurant" 
-            android:summary="%s"/>
+            android:summary="%s"
+            android:title="Default Restaurant" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Blackboard">
+    <PreferenceCategory android:title="Blackboard" >
+        <com.nasageek.utexasutilities.FixedListPreference
+            android:defaultValue="0"
+            android:entries="@array/blackboard_tabs_array"
+            android:entryValues="@array/blackboard_tabs_value_array"
+            android:key="default_blackboard_tab"
+            android:summary="%s"
+            android:title="Default Blackboard Tab" />
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="blackboard_class_longform"
             android:summary="@string/preference_blackboard_class_longform_summary"
-            android:title="Use raw class names"/>
+            android:title="Use raw class names" />
     </PreferenceCategory>
-	<PreferenceCategory android:title="Privacy" >
+    <PreferenceCategory android:title="Privacy" >
         <CheckBoxPreference
-            android:defaultValue="true"
             android:id="@+id/sendcrashes"
+            android:defaultValue="true"
             android:key="sendcrashes"
-            android:title="Auto-send crash reports"
-            android:summary="@string/preference_sendcrashes_summary"/>
+            android:summary="@string/preference_sendcrashes_summary"
+            android:title="Auto-send crash reports" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Miscellaneous">
+    <PreferenceCategory android:title="Miscellaneous" >
         <Preference
             android:id="@+id/about"
             android:key="about"
-            android:title="About UTilities"
-            />
+            android:title="About UTilities" />
     </PreferenceCategory>
-    <PreferenceScreen android:title="Experimental"
+
+    <PreferenceScreen
         android:enabled="false"
-        android:selectable="false">
-        <Preference 
+        android:selectable="false"
+        android:title="Experimental" >
+        <Preference
             android:id="@+id/update_stops"
             android:key="update_stops"
             android:title="Update Bus Stops" />
     </PreferenceScreen>
-	    
-    
+
 </PreferenceScreen>

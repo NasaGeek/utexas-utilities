@@ -3,7 +3,9 @@ package com.nasageek.utexasutilities.fragments;
 import java.util.List;
 import java.util.Vector;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,6 +66,9 @@ public class BlackboardPagerFragment extends SherlockFragment implements OnPanes
         
         pager.setAdapter(mPagerAdapter);
 		tabIndicator.setViewPager(pager);
+		
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity());
+		pager.setCurrentItem(Integer.parseInt(sp.getString("default_blackboard_tab", "0")));
 
     }
 	@Override
