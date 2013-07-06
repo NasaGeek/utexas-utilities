@@ -14,8 +14,14 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+
 import com.nasageek.utexasutilities.AsyncTask;
+
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -164,9 +170,10 @@ public class BlackboardGradesFragment extends BlackboardFragment {
     	}
     	return false;
 	}
-	private void showAreYouSureDlg(Context con) {
+	private void showAreYouSureDlg(final Context con) {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(con);
-		alertBuilder.setMessage("Would you like to view this item on the Blackboard website?");
+		alertBuilder.setMessage("Would you like to view this item on the Blackboard website? (you might need to log in again if" +
+				" you have disabled the embedded browser)");
 		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -180,8 +187,16 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 	
-				((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardGradesFragment.this, 
-					BlackboardExternalItemFragment.newInstance(viewUri, courseID, courseName, "Grades", false));
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(con);
+				if(sp.getBoolean("embedded_browser", true)) {
+					((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardGradesFragment.this, 
+							BlackboardExternalItemFragment.newInstance(viewUri, courseID, courseName, "Grades", false));
+				}
+				else {
+					Intent i = new Intent(Intent.ACTION_VIEW);  
+					i.setData(Uri.parse(viewUri));  
+					startActivity(i);
+				}
 				
 				
 		/*		Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardGradesActivity.this,BlackboardExternalItemActivity.class);

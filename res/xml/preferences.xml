@@ -47,10 +47,10 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="Balance" >
         <com.nasageek.utexasutilities.FixedListPreference
-            android:key="default_balance_tab"
             android:defaultValue="0"
             android:entries="@array/balance_tabs_array"
             android:entryValues="@array/balance_tabs_value_array"
+            android:key="default_balance_tab"
             android:summary="%s"
             android:title="Default Balance Tab" />
     </PreferenceCategory>
@@ -109,6 +109,12 @@
             android:id="@+id/about"
             android:key="about"
             android:title="About UTilities" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="embedded_browser"
+            android:summary="External links will be opened in the default browser otherwise"
+            android:title="Use embedded browser" />
     </PreferenceCategory>
 
     <PreferenceScreen

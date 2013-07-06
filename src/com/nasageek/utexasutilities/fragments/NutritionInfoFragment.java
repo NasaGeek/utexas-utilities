@@ -22,45 +22,36 @@ import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 
-public class BlackboardExternalItemFragment extends BlackboardFragment {
+public class NutritionInfoFragment extends SherlockFragment {
 	
 	private TextView absTitle;
 	private TextView absSubtitle;
 //	private WebView wv;
 	private View absView;
 	
-	public BlackboardExternalItemFragment() {}
+	public NutritionInfoFragment() {}
 	
-	public static BlackboardExternalItemFragment newInstance(String url, String courseID, String courseName, String itemName, boolean fromDashboard) {
-		BlackboardExternalItemFragment beif = new BlackboardExternalItemFragment();
+	public static NutritionInfoFragment newInstance(String url) {
+		NutritionInfoFragment nif = new NutritionInfoFragment();
 		
 		Bundle args = new Bundle();
 		args.putString("url", url);
-        args.putString("courseID", courseID);
-        args.putString("courseName", courseName);
-        args.putString("itemName", itemName);
-        args.putBoolean("fromDashboard", fromDashboard);
-        beif.setArguments(args);
         
-        return beif;
+        nif.setArguments(args);
+        
+        return nif;
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
-		setHasOptionsMenu(true);			
-		CookieSyncManager.createInstance(getSherlockActivity());
-		CookieManager man = CookieManager.getInstance();
-		man.setCookie("courses.utexas.edu", "s_session_id="+ConnectionHelper.getBBAuthCookie(getSherlockActivity(), ConnectionHelper.getThreadSafeClient()));
-		
-		CookieSyncManager.getInstance().sync();
+		setRetainInstance(true);			
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		absView = inflater.inflate(R.layout.action_bar_title_subtitle, null);
-		setupActionBar();
+	//	setupActionBar();
 		
 		//TODO: figure out how to save state of the WebView
 		final WebView wv = new WebView(getSherlockActivity());
@@ -86,29 +77,5 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
 
 		absTitle.setText(getArguments().getString("courseName"));
 		absSubtitle.setText(getArguments().getString("itemName"));
-	}
-	@Override
-	public String getBbid() {	
-		return getArguments().getString("courseID");
-	}
-
-	@Override
-	public String getCourseName() {
-		return getArguments().getString("courseName");
-	}
-	
-	@Override
-	public boolean isFromDashboard() {
-		return getArguments().getBoolean("fromDashboard");
-	}	
-	
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		menu.clear();     
-	}
-
-	@Override
-	public void onPanesScrolled() {
-		setupActionBar();	
 	}
 }

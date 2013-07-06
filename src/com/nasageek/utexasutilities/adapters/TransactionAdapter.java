@@ -15,8 +15,7 @@ import com.nasageek.utexasutilities.fragments.TransactionsFragment;
 import com.nasageek.utexasutilities.model.Transaction;
 
 
-public class TransactionAdapter extends AmazingAdapter
-{
+public class TransactionAdapter extends AmazingAdapter {
 	private Context con;
 	private ArrayList<Boolean> areHeaders;
 	private ArrayList<Transaction> transactions;
@@ -25,28 +24,24 @@ public class TransactionAdapter extends AmazingAdapter
 	boolean isSectionHeader;
 	private TransactionsFragment frag;
 	
-	public TransactionAdapter(Context c, TransactionsFragment frag, ArrayList<Transaction> transactions)
-	{
+	public TransactionAdapter(Context c, TransactionsFragment frag, ArrayList<Transaction> transactions) {
 		con = c;
 		this.transactions = transactions;
 		this.frag = frag;
 		areHeaders = new ArrayList<Boolean>();
 		li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
-		for(int i = 0; i<transactions.size(); i++)
-		{
+		//just call updateHeaders() here? Did I duplicate this for a reason?
+		for(int i = 0; i<transactions.size(); i++) {
 			String date = transactions.get(i).getDate();
-			if(i == 0)
-			{
+			if(i == 0) {
 				currentDate = date;
 				areHeaders.add(true);
 			}
-			else if(currentDate.equals(date))
-			{
+			else if(currentDate.equals(date)) {
 				areHeaders.add(false);
 			}
-			else 
-			{
+			else {
 				areHeaders.add(true);
 				currentDate=date;
 			}
@@ -64,20 +59,17 @@ public class TransactionAdapter extends AmazingAdapter
 		return position;
 	}
 	@Override
-	public boolean areAllItemsEnabled()
-	{
+	public boolean areAllItemsEnabled() {
 		return true;
 	}
 	@Override
-	public boolean isEnabled(int i)
-	{
+	public boolean isEnabled(int i) {
 		return false;
 	}
 	
 	//TODO: fix crash on refresh when in the middle of a scroll
 	@Override
-	public View getAmazingView(int position, View convertView, ViewGroup parent)
-	{
+	public View getAmazingView(int position, View convertView, ViewGroup parent) {
 		
 /*		if(position == transactions.size() - 1)
 			return new View(con);*/
@@ -89,14 +81,12 @@ public class TransactionAdapter extends AmazingAdapter
 		
 		ViewGroup lin = (ViewGroup) convertView;
 	
-		if (areHeaders.size() == transactions.size() && areHeaders.get(position))
-		{
+		if (areHeaders.size() == transactions.size() && areHeaders.get(position)) {
 			lin =(ViewGroup)li.inflate(R.layout.trans_item_header_view,null,false);
 			TextView dateview = (TextView) lin.findViewById(R.id.list_item_section_text);
 			dateview.setText(date);
 		}
-		else
-		{
+		else {
 			lin = (ViewGroup)li.inflate(R.layout.trans_item_view,null,false);
 		}
 		
@@ -107,32 +97,26 @@ public class TransactionAdapter extends AmazingAdapter
 
 		return (View)lin;
 	}
-	public void updateHeaders()
-	{
+	public void updateHeaders() {
 		areHeaders.clear();
-		for(int i = 0; i<transactions.size(); i++)
-		{
+		for(int i = 0; i<transactions.size(); i++) {
 			String date = transactions.get(i).getDate();
-			if(i == 0)
-			{
+			if(i == 0) {
 				currentDate = date;
 				areHeaders.add(true);
 			}
-			else if(currentDate.equals(date))
-			{
+			else if(currentDate.equals(date)) {
 				areHeaders.add(false);
 			}
-			else 
-			{
+			else  {
 				areHeaders.add(true);
 				currentDate=date;
 			}
 		}	
 	}
-	protected View getLoadingView(ViewGroup parent)
-	{
+	protected View getLoadingView(ViewGroup parent) {
 		if (con != null) {
-		      LayoutInflater inflater=
+		      LayoutInflater inflater =
 		          (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		      return inflater.inflate(R.layout.loading_content_layout, parent, false);
 		}
@@ -142,8 +126,7 @@ public class TransactionAdapter extends AmazingAdapter
 	@Override
 	protected void onNextPageRequested(int page) {
 		
-		if(super.automaticNextPageLoading)
-		{	
+		if(super.automaticNextPageLoading) {	
 			nextPage();
 		//	Log.d("TransactionAdapter","Page requested!");
 			frag.parser(false);

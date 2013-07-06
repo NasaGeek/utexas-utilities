@@ -84,6 +84,8 @@
         
         <activity android:name=".activities.MenuActivity" ></activity>
         
+        <activity android:name=".activities.NutritionInfoActivity" ></activity>
+        
                  	
         <provider android:name="com.nasageek.utexasutilities.BuildingProvider"
          	      android:authorities="com.nasageek.utexasutilities.buildingprovider" />

@@ -11,10 +11,16 @@ import org.apache.http.util.EntityUtils;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+
+import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,9 +35,9 @@ import com.foound.widget.AmazingAdapter;
 import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.activities.NutritionInfoActivity;
 
-public class MenuFragment extends SherlockFragment
-{
+public class MenuFragment extends SherlockFragment {
 	private DefaultHttpClient httpclient;
 	private ArrayList<Pair<String,ArrayList<food>>> listOfLists;
 	private AmazingListView mlv;
@@ -44,8 +50,7 @@ public class MenuFragment extends SherlockFragment
 
 	public MenuFragment() {}
 	
-	public static MenuFragment newInstance(String title, String restId)
-	{
+	public static MenuFragment newInstance(String title, String restId) {
 		MenuFragment f = new MenuFragment();
 		Bundle args = new Bundle();
         args.putString("title", title);
@@ -56,11 +61,9 @@ public class MenuFragment extends SherlockFragment
 	}
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{	
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {	
 		View vg = inflater.inflate(R.layout.menu_fragment_layout, container, false);
 		
-
 		m_pb_ll = (LinearLayout) vg.findViewById(R.id.menu_progressbar_ll);
         mlv = (AmazingListView) vg.findViewById(R.id.menu_listview);
         metv = (TextView) vg.findViewById(R.id.menu_error);
@@ -73,8 +76,7 @@ public class MenuFragment extends SherlockFragment
 		return vg;
 	}
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
 		setRetainInstance(true);
 		restId = getArguments().getString("restId");
@@ -83,15 +85,36 @@ public class MenuFragment extends SherlockFragment
         mAdapter = new MenuAdapter(listOfLists);
 	}
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public void updateView(String restId, Boolean update)
-	{
+	public void updateView(String restId, Boolean update) {
 		this.restId = restId;
 
         mlv.setAdapter(mAdapter);
         mlv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, mlv, false));
+        mlv.setOnItemClickListener(new OnItemClickListener() {
+			
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		    	
+				String url ="http://129.116.62.55/foodpro/"+((food)(arg0.getItemAtPosition(arg2))).nutritionLink;  
+				
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity());
+				if(sp.getBoolean("embedded_browser", true)) {
+					
+					Intent i = new Intent(getSherlockActivity(), NutritionInfoActivity.class);
+					i.putExtra("url", url);
+					i.putExtra("title", ((food)arg0.getItemAtPosition(arg2)).name);
+					startActivity(i);
+				}
+				else {
+					Intent i = new Intent(Intent.ACTION_VIEW);  
+					i.setData(Uri.parse(url));  
+					startActivity(i);
+				}
+			
+			}
+		});
         
-        if(listOfLists.size() == 0 || update)
-        {	
+        if(listOfLists.size() == 0 || update) {	
         	listOfLists.clear();
         	fetchMTask = new fetchMenuTask(httpclient);
 		
@@ -102,33 +125,28 @@ public class MenuFragment extends SherlockFragment
         }
 	}
 	@Override
-	public void onDestroy()
-	{
+	public void onDestroy() {
 		super.onDestroy();
 		if(fetchMTask!=null)
 			fetchMTask.cancel(true);
 	}
-	private class fetchMenuTask extends AsyncTask<Object,Integer,String>
-	{
+	private class fetchMenuTask extends AsyncTask<Object,Integer,String> {
 		private DefaultHttpClient client;
 		private String meal;
 		private String errorMsg;
 		private ArrayList<Pair<String,ArrayList<food>>> tempListOfLists;
 		
-		public fetchMenuTask(DefaultHttpClient client)
-		{
+		public fetchMenuTask(DefaultHttpClient client) {
 			this.client = client;
 		}
 		
 		@Override
-		protected void onPreExecute()
-		{
+		protected void onPreExecute() {
 			m_pb_ll.setVisibility(View.VISIBLE);
 			mlv.setVisibility(View.GONE);
 		}
 		@Override
-		protected String doInBackground(Object... params)
-		{ 
+		protected String doInBackground(Object... params) { 
 			ArrayList<String> categories = new ArrayList<String>();
 			ArrayList<food> foodList = new ArrayList<food>();
 			tempListOfLists = new ArrayList<Pair<String,ArrayList<food>>>();
@@ -145,30 +163,25 @@ public class MenuFragment extends SherlockFragment
 			HttpGet hget = new HttpGet(location);
 	    	String pagedata="";
 	    	
-	    	try
-			{
+	    	try {
 				HttpResponse response = client.execute(hget);
 		    	pagedata = EntityUtils.toString(response.getEntity());
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				errorMsg = "UTilities could not fetch this menu";
 				cancel(true);
 				e.printStackTrace();
 				return null;
 			}
-	    	if(pagedata.contains("No Data Available"))
-	    	{
+	    	if(pagedata.contains("No Data Available")) {
 	    		foodList.add(new food("",""));
 	    		listOfLists.add(new Pair<String,ArrayList<food>>("No Food Offered at this Time",foodList));
 	    		return meal;
 	    	}
-	    	else
-	    	{
+	    	else {
 	    		//have to leave in the lookahead so the regex matches don't overlap
 		    	Pattern catPattern = Pattern.compile("<div class=\'pickmenucolmenucat\'.*?(?=<div class='pickmenucolmenucat'|</html>)", Pattern.DOTALL);
 		    	Matcher catMatcher = catPattern.matcher(pagedata);
-		    	while(catMatcher.find())
-		    	{
+		    	while(catMatcher.find()) {
 		    		String categoryData = catMatcher.group();
 		    		foodList = new ArrayList<food>();
 		    		
@@ -199,21 +212,9 @@ public class MenuFragment extends SherlockFragment
 	    	return meal;
 		}
 		@Override
-		protected void onPostExecute(String result)
-		{
+		protected void onPostExecute(String result) {
 			listOfLists.addAll(tempListOfLists);
 			mAdapter.notifyDataSetChanged();
-			mlv.setOnItemClickListener(new OnItemClickListener() {
-			
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		    	
-				String url ="http://129.116.62.55/foodpro/"+((food)(arg0.getItemAtPosition(arg2))).nutritionLink;  
-				Intent i = new Intent(Intent.ACTION_VIEW);  
-				i.setData(Uri.parse(url));  
-				startActivity(i);
-				}
-			});
 			
 	//		if(getSherlockActivity() != null) //was getting a NPE here probably from leaving the activity while the menu was loading
 	//			mlv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, mlv, false));
@@ -223,8 +224,7 @@ public class MenuFragment extends SherlockFragment
 			metv.setVisibility(View.GONE);
 		}
 		@Override
-		protected void onCancelled()
-		{
+		protected void onCancelled() {
 			metv.setText(errorMsg);
 			metv.setVisibility(View.VISIBLE);
 			mlv.setVisibility(View.GONE);	
@@ -232,22 +232,18 @@ public class MenuFragment extends SherlockFragment
 		}
 	}
 
-	class food
-	{
+	class food {
 		String name;
 		String nutritionLink;
 		
-		public food(String name, String nutritionLink)
-		{
+		public food(String name, String nutritionLink) {
 			this.name = name;
 			this.nutritionLink = nutritionLink;
 		}
-		public String getName()
-		{
+		public String getName() {
 			return name;
 		}
-		public String getLink()
-		{
+		public String getLink() {
 			return nutritionLink;
 		}
 	}
@@ -255,8 +251,7 @@ public class MenuFragment extends SherlockFragment
 	class MenuAdapter extends AmazingAdapter {
 		private ArrayList<Pair<String, ArrayList<food>>> all;
 
-		public MenuAdapter(ArrayList<Pair<String, ArrayList<food>>> all)
-		{
+		public MenuAdapter(ArrayList<Pair<String, ArrayList<food>>> all) {
 			this.all = all;
 		}
 		

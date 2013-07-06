@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.net.Uri;
@@ -28,6 +29,7 @@ import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
 import android.util.TypedValue;
@@ -257,26 +259,31 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
     	}
     	return false;
 	}
-	private void showAreYouSureDlg(Context con)
-	{
+	private void showAreYouSureDlg(final Context con) {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(con);
-		alertBuilder.setMessage("Would you like to view this item on the Blackboard website?");
-		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
-		{
+		alertBuilder.setMessage("Would you like to view this item on the Blackboard website? (you might need to log in again if" +
+				" you have disabled the embedded browser)");
+		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
 			}
 		});
 		
-		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() 
-		{
+		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 				
-				
-				((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardDownloadableItemFragment.this, 
-						BlackboardExternalItemFragment.newInstance(viewUri, courseID, courseName, itemName, false));
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(con);
+				if(sp.getBoolean("embedded_browser", true)) {
+					((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardDownloadableItemFragment.this, 
+							BlackboardExternalItemFragment.newInstance(viewUri, courseID, courseName, itemName, false));
+				}
+				else {
+					Intent i = new Intent(Intent.ACTION_VIEW);  
+					i.setData(Uri.parse(viewUri));  
+					startActivity(i);
+				}
 				
 				
 		/*		Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardDownloadableItemActivity.this,BlackboardExternalItemActivity.class);

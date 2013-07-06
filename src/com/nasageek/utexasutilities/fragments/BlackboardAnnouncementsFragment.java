@@ -13,8 +13,14 @@ import org.apache.http.util.EntityUtils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+
 import com.nasageek.utexasutilities.AsyncTask;
+
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -146,9 +152,10 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
     	}
     	return false;
 	}
-	private void showAreYouSureDlg(Context con) {
+	private void showAreYouSureDlg(final Context con) {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(con);
-		alertBuilder.setMessage("Would you like to view this item on the Blackboard website?");
+		alertBuilder.setMessage("Would you like to view this item on the Blackboard website? (you might need to log in again if" +
+				" you have disabled the embedded browser)");
 		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -162,8 +169,16 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 	
-				((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardAnnouncementsFragment.this, 
-						BlackboardExternalItemFragment.newInstance(viewUri, courseID, courseName, "Announcements", false));
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(con);
+				if(sp.getBoolean("embedded_browser", true)) {
+					((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardAnnouncementsFragment.this, 
+							BlackboardExternalItemFragment.newInstance(viewUri, courseID, courseName, "Announcements", false));
+				}
+				else {
+					Intent i = new Intent(Intent.ACTION_VIEW);  
+					i.setData(Uri.parse(viewUri));  
+					startActivity(i);
+				}
 				
 			/*	Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),BlackboardAnnouncementsActivity.this,BlackboardExternalItemActivity.class);
 	    		web.putExtra("itemName", "Announcements");

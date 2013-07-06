@@ -92,8 +92,7 @@ public class MenuActivity extends SherlockFragmentActivity {
 	private int previousItem;
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.menu_layout);
 		
@@ -104,8 +103,7 @@ public class MenuActivity extends SherlockFragmentActivity {
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionbar.setHomeButtonEnabled(true);
 		actionbar.setDisplayHomeAsUpEnabled(true);
-		
-		
+			
         final Spinner spinner = new Spinner(this);
         spinner.setPromptId(R.string.restaurantprompt);
 		final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(actionbar.getThemedContext(), android.R.layout.simple_spinner_item, Restaurant.values());
@@ -118,37 +116,36 @@ public class MenuActivity extends SherlockFragmentActivity {
         	previousItem = 0;
         initialisePaging(((Restaurant)spinner.getAdapter().getItem(previousItem)).code+"");	
         
-        actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() 
-        {
+        actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() {
         	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 
         		Restaurant r = (Restaurant)spinner.getAdapter().getItem(itemPosition);
         		
         		String restId = r.getCode();
-         		if(!"0".equals(restId) && itemPosition != previousItem)
-         		{	
-         			String[] times = ((Restaurant)spinner.getAdapter().getItem(itemPosition)).getTimes();
-         			
-         			if(!r.allDay)
-         			{
-	         			((TextView)findViewById(R.id.breakfast_times)).setText(times[0]);
-	         			((TextView)findViewById(R.id.lunch_times)).setText(times[1]);
-	         			((TextView)findViewById(R.id.dinner_times)).setText(times[2]);
-         			}
-         			else
-         			{
-         				((TextView)findViewById(R.id.breakfast_times)).setText("");
-	         			((TextView)findViewById(R.id.lunch_times)).setText(times[0]);
-	         			((TextView)findViewById(R.id.dinner_times)).setText("");
-         			}
-         			
-         			((MenuFragment)mPagerAdapter.getItem(0)).updateView(restId, true);
-         			((MenuFragment)mPagerAdapter.getItem(1)).updateView(restId, true);
-         			((MenuFragment)mPagerAdapter.getItem(2)).updateView(restId, true);
+         		
+        		if(!"0".equals(restId)) {	         			
+        			String[] times = ((Restaurant)spinner.getAdapter().getItem(itemPosition)).getTimes();
+        			if(!r.allDay) {
+        				((TextView)findViewById(R.id.breakfast_times)).setText(times[0]);
+        				((TextView)findViewById(R.id.lunch_times)).setText(times[1]);
+        				((TextView)findViewById(R.id.dinner_times)).setText(times[2]);
+        			}
+        			else {
+        				((TextView)findViewById(R.id.breakfast_times)).setText("");
+        				((TextView)findViewById(R.id.lunch_times)).setText(times[0]);
+        				((TextView)findViewById(R.id.dinner_times)).setText("");
+        			}
+       
+        			if(itemPosition != previousItem) {
+        				
+	        			((MenuFragment)mPagerAdapter.getItem(0)).updateView(restId, true);
+	         			((MenuFragment)mPagerAdapter.getItem(1)).updateView(restId, true);
+	         			((MenuFragment)mPagerAdapter.getItem(2)).updateView(restId, true);
          			
          			previousItem = -1;
-
-         		}	
+        			}
+         		}
+        		
         		return true;
         	}
         });
@@ -194,14 +191,12 @@ public class MenuActivity extends SherlockFragmentActivity {
 		pager.setOffscreenPageLimit(2);
     }
 	@Override
-	public void onSaveInstanceState(Bundle out)
-	{
+	public void onSaveInstanceState(Bundle out) {
 		super.onSaveInstanceState(out);
 		out.putInt("spinner_selection", actionbar.getSelectedNavigationIndex());
 	}
 	@Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
     	switch(id)
     	{

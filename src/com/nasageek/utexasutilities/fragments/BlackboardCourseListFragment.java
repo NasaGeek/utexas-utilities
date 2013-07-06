@@ -110,16 +110,14 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 				startActivity(classLaunch);*/
 				SherlockFragmentActivity act = getSherlockActivity();
 				Fragment topFragment = null;
-				if(act != null && act instanceof PanesActivity)
-				{	
+				if(act != null && act instanceof PanesActivity) {	
 					topFragment = ((PanesActivity)act).getTopFragment();
 					//we're on a tablet, PanesActivity acts a bit odd with them
 					if(((PanesActivity)act).getMenuFragment() == topFragment)
 						topFragment = null;
 				}
 				//don't re-add the current displayed course, instead just show it
-				if(act != null && act instanceof FragmentLauncher)
-				{	
+				if(act != null && act instanceof FragmentLauncher) {	
 					if( topFragment == null || 
 					  ( topFragment != null && topFragment instanceof BlackboardFragment && 
 					  (!((BlackboardFragment)topFragment).getBbid().equals(bbclass.getBbid())) || ((BlackboardFragment)topFragment).isFromDashboard()))

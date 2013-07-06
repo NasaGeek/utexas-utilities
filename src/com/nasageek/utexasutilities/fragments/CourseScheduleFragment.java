@@ -78,8 +78,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View vg =  inflater.inflate(R.layout.course_schedule_fragment_layout, container, false);
 			
 		sd = (WrappingSlidingDrawer) vg.findViewById(R.id.drawer);
@@ -113,16 +112,14 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		return vg;	
 	}
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 		parentAct = this.getSherlockActivity();
 		semId = getArguments().getString("semId");
 	}
 	@Override
-	public void onResume()
-	{
+	public void onResume() {
 		super.onResume();
 		if(ca != null)
 			ca.updateTime();
@@ -130,8 +127,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			gv.invalidateViews(); 		
 	}
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) 
-	{
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		this.mMenu = menu;
 		menu.removeItem(R.id.map_all_classes);
 	    inflater.inflate(R.menu.schedule_menu, menu);  
@@ -143,36 +139,29 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		out.putParcelableArrayList("classList", classList);
 	}*/
 	@Override
-	public void onDestroy()
-	{
+	public void onDestroy() {
 		super.onDestroy();
 		if(fetch!=null)
 			fetch.cancel(true);
 	}
 	@Override
-	public void onPrepareOptionsMenu(Menu menu)
-	{
-		if(classList == null || classList.size() == 0)
-		{
+	public void onPrepareOptionsMenu(Menu menu) {
+		if(classList == null || classList.size() == 0) {
 			menu.findItem(R.id.map_all_classes).setEnabled(false);
 			menu.findItem(R.id.export_schedule).setEnabled(false);
 		}
-		else
-		{
+		else {
 			menu.findItem(R.id.map_all_classes).setEnabled(true);
 			menu.findItem(R.id.export_schedule).setEnabled(true);
 		}
 	}
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-    {
+	public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
-    	switch(id)
-    	{
+    	switch(id) {
     	case R.id.map_all_classes:
     		//check to see if we're done loading the schedules (the ClassAdapter is initialized in onPostExecute)
-    		if(ca != null)
-    		{
+    		if(ca != null) {
     			//populate an array with the buildings IDs of all of the user's classtimes
 	    		ArrayList<String> buildings = new ArrayList<String>();
 	    		
@@ -189,11 +178,9 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 				break;
     		}
     	case R.id.export_schedule:
-    		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    		{
+    		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
     			//check to see if we're done loading the schedules (the ClassAdapter is initialized in onPostExecute)
-    			if(ca != null)
-	    		{	
+    			if(ca != null) {	
     				FragmentManager fm = parentAct.getSupportFragmentManager();
     		        DoubleDatePickerDialogFragment ddpDlg = DoubleDatePickerDialogFragment.newInstance(classList);
     		        ddpDlg.show(fm, "fragment_double_date_picker");
@@ -209,28 +196,23 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
     }
 	
 	@Override
-	public ActionMode getActionMode()
-	{
+	public ActionMode getActionMode() {
 		return mode;
 	}
 	@Override
-	public void onDrawerClosed()
-	{
+	public void onDrawerClosed() {
 		((ImageView)(sd.getHandle())).setImageResource(R.drawable.ic_expand_half);
 	}
 	@Override
-	public void onDrawerOpened()
-	{
+	public void onDrawerOpened() {
 		((ImageView)(sd.getHandle())).setImageResource(R.drawable.ic_collapse_half);
 	}
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-	{
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		sd.close();
 		current_clt = (Classtime) parent.getItemAtPosition(position);
 		
-		if(current_clt!=null)
-		{
+		if(current_clt!=null) {
 			mode = parentAct.startActionMode(new ScheduleActionMode());
 			sd.setVisibility(View.VISIBLE);
 			
@@ -266,27 +248,23 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    sd.open();    
 		}
 		//they clicked an empty cell
-		else
-		{	
+		else {	
 			if(mode!=null)
 				mode.finish();
 			sd.setVisibility(View.INVISIBLE);
 		}
 	}
-	private class parseTask extends AsyncTask<Object,String,Integer>
-	{
+	private class parseTask extends AsyncTask<Object,String,Integer> {
 		private DefaultHttpClient client;
 		private String errorMsg;
 		private boolean classParseIssue = false;
 		
-		public parseTask(DefaultHttpClient client)
-		{
+		public parseTask(DefaultHttpClient client) {
 			this.client = client;
 		}
 		@Override
-		protected void onPreExecute()
-		{
-			pb_ll.setVisibility(GridView.VISIBLE);
+		protected void onPreExecute() {
+			pb_ll.setVisibility(LinearLayout.VISIBLE);
 			gv.setVisibility(GridView.GONE);
 			
 			client.getCookieStore().clear();
@@ -297,8 +275,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			
 		}
 		@Override
-		protected void onProgressUpdate(String...params)
-		{
+		protected void onProgressUpdate(String...params) {
 			Bundle args = new Bundle(2);
 	        args.putString("title", params[0].trim());
 	        args.putString("semId", params[1]);
@@ -306,15 +283,13 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			((ScheduleActivity)parentAct).getAdapter().notifyDataSetChanged();
 			((ScheduleActivity)parentAct).getIndicator().notifyDataSetChanged();
 		}
-		private String convertStreamToString(InputStream is)
-		{
+		private String convertStreamToString(InputStream is) {
 			Scanner s = new Scanner(is, "iso-8859-1").useDelimiter("\\A");
 			return s.hasNext() ? s.next() : "";
 		}
 		
 		@Override
-		protected Integer doInBackground(Object... params)
-		{
+		protected Integer doInBackground(Object... params) {
 	//"stateful" stuff, I'll get it figured out in the next release
 	//		if(classList == null)
 				classList = new ArrayList<UTClass>();
@@ -323,8 +298,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			
 	    	String pagedata="";
 
-	    	if(Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) 
-	    	{
+	    	if(Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
 	    		URL location;
 	    		HttpsURLConnection conn = null;
 	    		
@@ -333,8 +307,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 					location = new URL("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId);
 					conn = (HttpsURLConnection) location.openConnection();
 					
-					if(getSherlockActivity() == null)
-					{	
+					if(getSherlockActivity() == null) {	
 						cancel(true);
 						errorMsg = "";
 						return -1;
@@ -369,13 +342,11 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    	else
 	    	{	
 	    		HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId);
-				try
-		    	{
+				try {
 					HttpResponse res = client.execute(hget);
 		    		pagedata = EntityUtils.toString(res.getEntity());
 		    	}
-		    	catch(Exception e)
-		    	{
+		    	catch(Exception e) {
 		    		e.printStackTrace();
 		    		errorMsg = "UTilities could not fetch your class listing";
 		    		cancel(true);
@@ -383,8 +354,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		    	}
 	    	}
 	    	
-	    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>"))
-	    	{
+	    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
 				errorMsg = "You've been logged out of UTDirect, back out and log in again.";
 				if(parentAct != null)
 					ConnectionHelper.logout(parentAct);
@@ -395,8 +365,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    	Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
 	    	
 	    	//TODO: un-hardcode this eventually! Shouldn't be too hard to figure out the dropdown size
-	    	if(semSelectMatcher.find() && parentAct != null && ((ScheduleActivity)parentAct).getFragments().size()<3)
-	    	{
+	    	if(semSelectMatcher.find() && parentAct != null && ((ScheduleActivity)parentAct).getFragments().size()<3) {
 	    		Pattern semesterPattern = Pattern.compile("<option.*?value=\"(\\d*)\"\\s*>([\\w\\s]*?)</option>", Pattern.DOTALL);
 	    		Matcher semesterMatcher = semesterPattern.matcher(semSelectMatcher.group());
 	    		while(semesterMatcher.find())
@@ -415,8 +384,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    	
 	    	if(matcher3.find())
 	    		pagedata = matcher3.group(0);
-	    	else
-	    	{
+	    	else {
 	    		//if no <table>, user probably isn't enrolled for semester
 	    		return 0;
 	    	}
@@ -424,31 +392,31 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    	Matcher classMatcher = classPattern.matcher(pagedata);
 	    	int classCount = 0, colorCount = 0;
 	    	
-	    	while(classMatcher.find())
-	    	{
+	    	while(classMatcher.find()) {
 	    		String classContent = classMatcher.group();
 	    		
 	    		String uniqueid="", classid="", classname="";
 	    		String[] buildings=null, rooms=null, days=null, times=null;
+	    		boolean dropped = false;
 	    		
 	    		Pattern classAttPattern = Pattern.compile("<td >(.*?)</td>",Pattern.DOTALL);
 	    		Matcher classAttMatcher = classAttPattern.matcher(classContent);
 	    		if(classAttMatcher.find())
 	    			uniqueid = classAttMatcher.group(1);
-	    		else
-	    		{	classParseIssue = true;
+	    		else {	
+	    			classParseIssue = true;
 	    			continue;
 	    		}
 	    		if(classAttMatcher.find())
 	    			classid = classAttMatcher.group(1);
-	    		else
-	    		{	classParseIssue = true;
+	    		else {	
+	    			classParseIssue = true;
 	    			continue;
 	    		}
 	    		if(classAttMatcher.find())
 	    			classname =  classAttMatcher.group(1);
-	    		else
-	    		{	classParseIssue = true;
+	    		else {	
+	    			classParseIssue = true;
 	    			continue;
 	    		}
 	    		if(classAttMatcher.find())
@@ -457,57 +425,63 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    			for(int i = 0; i<buildings.length; i++)
 	    				buildings[i] = buildings[i].replaceAll("<.*?>", "").trim();
 	    		}
-	    		else
-	    		{	classParseIssue = true;
+	    		else {	
+	    			classParseIssue = true;
 	    			continue;
 	    		}
-	    		if(classAttMatcher.find())
-	    		{
+	    		if(classAttMatcher.find()) {
 	    			rooms = classAttMatcher.group(1).split("<br />");
 	    			for(int i = 0; i<rooms.length; i++)
 	    				rooms[i] = rooms[i].trim();
 	    		}
-	    		else
-	    		{	classParseIssue = true;
+	    		else {	
+	    			classParseIssue = true;
 	    			continue;
 	    		}
-	    		if(classAttMatcher.find())
-	    		{	
+	    		if(classAttMatcher.find()) {	
 	    			days = classAttMatcher.group(1).split("<br />");
 	    			//Thursday represented by H so I can treat all days as characters
 	    			for(int a = 0; a<days.length;a++) days[a] = days[a].replaceAll("TH", "H").trim();
 	    		}
-	    		else
-	    		{	classParseIssue = true;
+	    		else {	
+	    			classParseIssue = true;
 	    			continue;
 	    		}
-	    		if(classAttMatcher.find())
-	    		{
+	    		if(classAttMatcher.find()) {
 	    			times = classAttMatcher.group(1).replaceAll("- ", "-").split("<br />");	
 	    			for(int i = 0; i<times.length; i++)
 	    				times[i] = times[i].trim();
 	    		}
-	    		else
-	    		{	classParseIssue = true;
+	    		else {	
+	    			classParseIssue = true;
 	    			continue;
 	    		}
-	    		classList.add(new UTClass(uniqueid,classid,classname,buildings, rooms, days, times, semId, colors[colorCount]));
-	    		colorCount = (colorCount == colors.length-1) ? 0 : colorCount+1;
-	    		classCount++;
+	    		if(classAttMatcher.find()) {	// check remarks for Dropped class
+	    			String remark = classAttMatcher.group(1);
+	    			if (remark.contains("Dropped")) {
+	    				dropped = true;
+	    			}
+	    		}
+	    		else {	
+	    			classParseIssue = true;
+	    			continue;
+	    		}	
+	    		if(!dropped) {
+		    		classList.add(new UTClass(uniqueid, classid, classname, buildings, rooms, days, times, semId, colors[colorCount]));
+		    		colorCount = (colorCount == colors.length - 1) ? 0 : colorCount + 1;
+		    		classCount++;
+	    		}
 	    	}
 	    	return Integer.valueOf(classCount);
 			
 		}
-		//TODO: nullchecks everywhere, figure out what the real problem is
+		//TODO: nullchecks everywhere, figure out what the real problem is -- pretty sure it was because of stupid broken AsyncTask on <2.3
 		@Override
-		protected void onPostExecute(Integer result)
-		{
+		protected void onPostExecute(Integer result) {
 			pb_ll.setVisibility(View.GONE);
 
-			if(result != null && result >= 0)
-			{	
-				if(result.intValue()==0)
-				{	
+			if(result != null && result >= 0) {	
+				if(result.intValue()==0) {	
 					daylist.setVisibility(View.GONE);
 					nc_tv.setText("You aren't enrolled for this semester.");
 					nc_tv.setVisibility(View.VISIBLE);
@@ -516,13 +490,15 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 					setMenuItemsEnabled(false);
 					return;
 				}
-				else
-				{	
-					ca = new ClassAdapter(parentAct,sd,sdll,ci_iv,ci_tv,semId, classList);
+				else {	
+					ca = new ClassAdapter(parentAct, sd, sdll, ci_iv, ci_tv, semId, classList);
 					ca.updateTime(); // not really necessary
 	
 					gv.setOnItemClickListener(CourseScheduleFragment.this);
 				    gv.setAdapter(ca);
+				    
+				    //scrolls down to the users earliest class
+				    gv.setSelection(ca.getEarliestClassPos());
 	
 					gv.setVisibility(GridView.VISIBLE);
 					daylist.setVisibility(View.VISIBLE);
@@ -533,8 +509,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 					Crittercism.leaveBreadcrumb("Loaded schedule from web");
 				}
 			}
-			else
-			{
+			else {
 				errorMsg = "UTilities could not fetch your class listing";
 				etv.setText(errorMsg);
 				etv.setVisibility(View.VISIBLE);
@@ -549,8 +524,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 				Toast.makeText(parentAct, "One or more classes could not be parsed correctly, try emailing the dev ;)", Toast.LENGTH_LONG).show();
 		}
 		@Override
-		protected void onCancelled()
-		{
+		protected void onCancelled() {
 			etv.setText(errorMsg);
 			etv.setVisibility(View.VISIBLE);
 			pb_ll.setVisibility(View.GONE);
@@ -561,10 +535,9 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			setMenuItemsEnabled(false);
 		}
 		
-		private void setMenuItemsEnabled(boolean enable)
-		{
-			if(mMenu != null)
-			{	if(mMenu.findItem(R.id.map_all_classes) != null)
+		private void setMenuItemsEnabled(boolean enable) {
+			if(mMenu != null) {	
+				if(mMenu.findItem(R.id.map_all_classes) != null)
 					mMenu.findItem(R.id.map_all_classes).setEnabled(enable);
 				if(mMenu.findItem(R.id.export_schedule) != null)
 					mMenu.findItem(R.id.export_schedule).setEnabled(enable);
@@ -573,23 +546,19 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	}
 	private final class ScheduleActionMode implements ActionMode.Callback {
         @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) 
-        {
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.setTitle("Class Info");
             MenuInflater inflater = parentAct.getSupportMenuInflater();
             inflater.inflate(R.menu.schedule_action_mode, menu);
             return true;
         }
         @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu)
-        {
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             return false;
         }
         @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item)
-        {
-            switch(item.getItemId())
-            {
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch(item.getItemId()) {
             	case R.id.locate_class:
             		ArrayList<String> building = new ArrayList<String>();
             		Intent map = new Intent(getString(R.string.building_intent), null, parentAct, CampusMapActivity.class);

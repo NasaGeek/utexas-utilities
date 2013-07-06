@@ -98,8 +98,8 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View vg =  inflater.inflate(R.layout.blackboard_dashboard_fragment, container, false);
 		
-		String bbAuthCookie = ConnectionHelper.getBBAuthCookie(getSherlockActivity(),httpclient);
 		httpclient = ConnectionHelper.getThreadSafeClient();
+		String bbAuthCookie = ConnectionHelper.getBBAuthCookie(getSherlockActivity(),httpclient);
 		httpclient.getCookieStore().clear();
 		BasicClientCookie cookie = new BasicClientCookie("s_session_id", bbAuthCookie);
     	cookie.setDomain("courses.utexas.edu");

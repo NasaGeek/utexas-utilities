@@ -56,6 +56,7 @@ import com.nasageek.utexasutilities.CourseMapSaxHandler;
 import com.nasageek.utexasutilities.ParcelablePair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.adapters.CourseMapAdapter;
+import com.nasageek.utexasutilities.fragments.MenuFragment.food;
 import com.nasageek.utexasutilities.model.BBClass;
 import com.nasageek.utexasutilities.model.CourseMapItem;
 
@@ -82,8 +83,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	public BlackboardCourseMapFragment() {}
 	
 	public static BlackboardCourseMapFragment newInstance(String action, ArrayList<ParcelablePair<CourseMapItem, ArrayList>> mainList, 
-			String courseID, String courseName, String folderName, String viewUri, int itemNumber, boolean fromDashboard)
-	{
+			String courseID, String courseName, String folderName, String viewUri, int itemNumber, boolean fromDashboard) {
 		BlackboardCourseMapFragment bcmf = new BlackboardCourseMapFragment();
 		
 		Bundle args = new Bundle();
@@ -101,8 +101,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	}
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
 		itemNumber=-1;
@@ -112,8 +111,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		viewUri = getArguments().getString("viewUri");
 		setHasOptionsMenu(true);
 		
-		if(getString(R.string.coursemap_nest_intent).equals(getArguments().getString("action")))
-		{
+		if(getString(R.string.coursemap_nest_intent).equals(getArguments().getString("action"))) {
 			mainList = (ArrayList<ParcelablePair<CourseMapItem, ArrayList>>) getArguments().getSerializable("mainList");
 			itemNumber = getArguments().getInt("itemNumber");		
 		}
@@ -129,20 +127,16 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	}
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
-	{	
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {	
 		absView = inflater.inflate(R.layout.action_bar_title_subtitle, null);
 		
-		
 		setupActionBar();
-		
 		
 		final View vg = inflater.inflate(R.layout.coursemap_layout, container, false);
 
 		cm_pb_ll = (LinearLayout) vg.findViewById(R.id.coursemap_progressbar_ll);
 		cmlv = (ListView) vg.findViewById(R.id.coursemap_listview);
 		failure_view = (TextView) vg.findViewById(R.id.coursemap_error);
-		
 		
 		cmlv.setOnItemClickListener(new OnItemClickListener() {
 			
@@ -179,8 +173,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 					
 					
 				}
-				else if(linkType.equals("resource/x-bb-file") || linkType.equals("resource/x-bb-document"))
-				{
+				else if(linkType.equals("resource/x-bb-file") || linkType.equals("resource/x-bb-document")) {
 					String contentid = mainList.get(position).first.getContentId();
 			/*		Intent bbItemLaunch = new Intent(null, null, CourseMapActivity.this, BlackboardDownloadableItemActivity.class);
 					bbItemLaunch.putExtra("contentid", contentid);
@@ -204,8 +197,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 							BlackboardDownloadableItemFragment.newInstance(contentid, bbID, courseName, itemName, url, false));
 					
 				}
-				else if(linkType.equals("resource/x-bb-externallink"))
-				{
+				else if(linkType.equals("resource/x-bb-externallink")) {
 					//((TextView)(actionbar.getCustomView())).setText((((TextView) actionbar.getCustomView()).getText()) + "/" + mainList.get(position).first.split("\\^")[0]);	
 					Intent exItemLaunch = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
 
@@ -217,8 +209,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 							BlackboardExternalItemFragment.newInstance(Uri.parse(url), courseID, courseName)); */
 					
 				}
-				else if(linkType.equals("student_gradebook"))
-				{
+				else if(linkType.equals("student_gradebook")) {
 			/*		Intent gradesLaunch = new Intent(null, null, CourseMapActivity.this, BlackboardGradesActivity.class);
 					gradesLaunch.putExtra("viewUri", url);
 					gradesLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
@@ -230,8 +221,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 							BlackboardGradesFragment.newInstance(bbID, courseName, url, false));
 					
 				}
-				else if(linkType.equals("announcements"))
-				{
+				else if(linkType.equals("announcements")) {
 		/*			Intent announcementsLaunch = new Intent(null, null, CourseMapActivity.this, BlackboardAnnouncementsActivity.class);
 					announcementsLaunch.putExtra("viewUri", url);
 					announcementsLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
@@ -269,14 +259,12 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		});
 		
 		//ONLY DO IF TOP LEVEL
-		if(itemNumber==-1 && mainList == null)
-		{
+		if(itemNumber==-1 && mainList == null) {
 			fetch = new fetchCoursemapTask(httpclient);
 			fetch.execute();
 		}
 		//now we've got the whole course tree, navigate as necessary
-		else if(mainList!= null && mainList.size() != 0)
-		{	
+		else if(mainList!= null && mainList.size() != 0) {	
 			cmlv.setAdapter(new CourseMapAdapter(getSherlockActivity(),mainList));
 			cm_pb_ll.setVisibility(View.GONE);
 	    	cmlv.setVisibility(View.VISIBLE);
@@ -341,25 +329,32 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 //		icicle.putString("courseid", getIntent().getStringExtra("courseid"));
 //		icicle.putString("coursename", getIntent().getStringExtra("coursename"));
 	}
-	private void showAreYouSureDlg(Context con) {
+	private void showAreYouSureDlg(final Context con) {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(con);
-		alertBuilder.setMessage("Would you like to view this item on the Blackboard website?");
-		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
-		{
+		alertBuilder.setMessage("Would you like to view this item on the Blackboard website? (you might need to log in again if" +
+				" you have disabled the embedded browser)");
+		alertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {				
 				dialog.dismiss();
 			}
 		});
-		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() 
-		{
+		alertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 				
-				((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardCourseMapFragment.this, 
-						BlackboardExternalItemFragment.newInstance(viewUri, bbID, courseName, folderName, false));
-				
-			/*	Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),CourseMapActivity.this,BlackboardExternalItemActivity.class);
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(con);
+				if(sp.getBoolean("embedded_browser", true)) {
+					((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardCourseMapFragment.this, 
+							BlackboardExternalItemFragment.newInstance(viewUri, bbID, courseName, folderName, false));
+				}
+				else {
+					Intent i = new Intent(Intent.ACTION_VIEW);  
+					i.setData(Uri.parse(viewUri));  
+					startActivity(i);
+				}
+
+				/*	Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),CourseMapActivity.this,BlackboardExternalItemActivity.class);
 	    		web.putExtra("itemName", getIntent().getStringExtra("folderName")); //will be used as SubTitle
 	    		web.putExtra("coursename", getIntent().getStringExtra("coursename")); //will be used as Title
 	    		startActivity(web);*/
@@ -383,38 +378,33 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		private DefaultHttpClient client;
 		private String failureMessage = "";
 		
-		public fetchCoursemapTask(DefaultHttpClient client)
-		{
+		public fetchCoursemapTask(DefaultHttpClient client) {
 			this.client = client;
 		}
 		
 		@Override
-		protected void onPreExecute()
-		{
+		protected void onPreExecute() {
 			cm_pb_ll.setVisibility(View.VISIBLE);
     		cmlv.setVisibility(View.GONE);
 			failure_view.setVisibility(View.GONE);
 		}
 		
 		@Override
-		protected ArrayList doInBackground(Object... params)
-		{
+		protected ArrayList doInBackground(Object... params) {
 			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseMap?course_id="+bbID);
 	    	String pagedata="";
 
-	    	try
-			{
+	    	try {
 				HttpResponse response = client.execute(hget);
 		    	pagedata = EntityUtils.toString(response.getEntity());
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				failureMessage = "UTilities could not fetch this course map";
 				e.printStackTrace();
 				cancel(true);
 				return null;
 			}
 
-	    	 try{
+	    	 try {
 
 	             // create the factory
 	             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -444,10 +434,8 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 			return mainList;
 		}
 		@Override
-		protected void onPostExecute(ArrayList result)
-		{
-			if(!this.isCancelled())
-	    	{
+		protected void onPostExecute(ArrayList result) {
+			if(!this.isCancelled()) {
 				if(getSherlockActivity() != null)
 					cmlv.setAdapter(new CourseMapAdapter(getSherlockActivity(),result));
 				
@@ -457,8 +445,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	    	}
 		}
 		@Override
-		protected void onCancelled()
-		{
+		protected void onCancelled() {
 			failure_view.setText(failureMessage);
 			cm_pb_ll.setVisibility(View.GONE);
     		cmlv.setVisibility(View.GONE);

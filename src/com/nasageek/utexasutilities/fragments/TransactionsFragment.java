@@ -120,6 +120,10 @@ public class TransactionsFragment extends SherlockFragment {
 		}
 		else {
 			transactionlist = savedInstanceState.getParcelableArrayList("transactions");
+			//someone was crashing with a null transactionlist, shouldn't be happening
+			//but this should fix it regardless
+			if(transactionlist == null)
+				transactionlist = new ArrayList<Transaction>();
 			balance = savedInstanceState.getString("balance");
 		}
 		
@@ -217,6 +221,7 @@ public class TransactionsFragment extends SherlockFragment {
 				cancel(true);
 				return null;
 			}
+	    	//TODO: automatically log them back in
 	    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
 				errorMsg = "You've been logged out of UTDirect, back out and log in again.";
 				ConnectionHelper.logout(getSherlockActivity());
@@ -251,8 +256,7 @@ public class TransactionsFragment extends SherlockFragment {
 	    		Matcher nextTransMatcher = nextTransPattern.matcher(pagedata);
 	    		Pattern dateTimePattern = Pattern.compile("sStartDateTime\".*?value=\"(.*?)\"");
 	    		Matcher dateTimeMatcher = dateTimePattern.matcher(pagedata);
-	    		if(nameMatcher.find() && nextTransMatcher.find() && dateTimeMatcher.find() && !this.isCancelled())
-	    		{	
+	    		if(nameMatcher.find() && nextTransMatcher.find() && dateTimeMatcher.find() && !this.isCancelled()) {	
 	    			postdata.clear();
 			    	postdata.add(new BasicNameValuePair("sNameFL",nameMatcher.group(1)));
 			    	postdata.add(new BasicNameValuePair("nexttransid",nextTransMatcher.group(1)));
@@ -280,9 +284,7 @@ public class TransactionsFragment extends SherlockFragment {
 		    	View v = tlv.getChildAt(0);
 		    	int top = (v == null) ? 0 : v.getTop();
 	    		if(result == 'm')
-	    		{
 	    			ta.notifyMayHaveMorePages();
-	    		}
 	    		if(result == 'n')
 	    			ta.notifyNoMorePages();
 	    		if(!refresh)
@@ -290,23 +292,18 @@ public class TransactionsFragment extends SherlockFragment {
 	    		else
 	    			tlv.setSelection(0);
 
-	    		
-				
 	    		balanceView.setText(balance);
 	    		
 	    		t_pb_ll.setVisibility(View.GONE);
 	    		etv.setVisibility(View.GONE);
 				tlv.setVisibility(View.VISIBLE);
 				balanceLabelView.setVisibility(View.VISIBLE);
-				balanceView.setVisibility(View.VISIBLE);
-	    		
+				balanceView.setVisibility(View.VISIBLE);	
 	    	} 	
 		}
 		@Override
-		protected void onCancelled(Character nullIfError)
-		{
-			if(nullIfError == null)
-			{
+		protected void onCancelled(Character nullIfError){
+			if(nullIfError == null){
 				if(ta.page == 1) //if the first page fails just hide everything
 				{	
 					//etv off center, not sure if worth hiding the balance stuff to get it centered
@@ -319,6 +316,8 @@ public class TransactionsFragment extends SherlockFragment {
 				}
 				else //on later pages we should let them see what's already loaded
 				{
+					//got an NPE here, seems like a race condition where cancel is called externally, and for some
+					//reason null is returned (shouldn't be the case) not worth looking into right now
 					Toast.makeText(getSherlockActivity(), errorMsg, Toast.LENGTH_SHORT).show();
 					ta.notifyNoMorePages();
 					ta.notifyDataSetChanged();
