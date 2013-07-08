@@ -27,6 +27,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.crittercism.app.Crittercism;
+import com.nasageek.utexasutilities.ChangeLog;
 import com.nasageek.utexasutilities.ChangeableContextTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
@@ -142,12 +143,16 @@ public class UTilitiesActivity extends SherlockActivity {
         	Utility.commit(settings.edit().putBoolean("firstRun", false));
         	Utility.id(this);
         }
+    	else {
+    		ChangeLog cl = new ChangeLog(this);
+	        if(cl.isFirstRun())
+	        	cl.getLogDialog().show();
+    	}
 
         if(settings.getBoolean("autologin", false) && !ConnectionHelper.cookieHasBeenSet() && !ConnectionHelper.isLoggingIn())
-        {
         	login(); 
-        }
-        
+
+       
         
         final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
         schedulebutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) schedulebutton.getDrawable()));
