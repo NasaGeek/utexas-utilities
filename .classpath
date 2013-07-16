@@ -9,7 +9,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/crittercism_v3_0_0_crashonly.jar"/>
 	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="com/nasageek/utexasutilities/testing/" kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="output" path="bin/classes"/>

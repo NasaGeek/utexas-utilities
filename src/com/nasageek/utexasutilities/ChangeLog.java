@@ -296,7 +296,7 @@ public class ChangeLog {
                         });
 
         if (!full) {
-            // Show "More…" button if we're only displaying a partial change log.
+            // Show "More" button if we're only displaying a partial change log.
             builder.setNegativeButton(R.string.changelog_show_full,
                     new DialogInterface.OnClickListener() {
                         @Override

@@ -26,23 +26,13 @@ public class CourseMapSaxHandler extends DefaultHandler {
 	 private ArrayList content;
 
 	
-
-	 public CourseMapSaxHandler()
-	 {
+	 public CourseMapSaxHandler() {
 		 super();
 		 
 	 }
-	 // =========================================================== 
-	 // Getter & Setter 
-	 // =========================================================== 
-
 	 public ArrayList getParsedData() {
 	      return this.top; 
 	 } 
-
-	 // =========================================================== 
-	 // Methods 
-	 // =========================================================== 
 	 @Override 
 	 public void startDocument() throws SAXException { 
 	      this.top = new ArrayList();
@@ -64,12 +54,12 @@ public class CourseMapSaxHandler extends DefaultHandler {
 	 public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException { 
 	      if (localName.equals("map-item")) { 
 	           this.in_maptag = true;
-	           if(atts.getValue("linktype")!=null && !atts.getValue("linktype").equals("DIVIDER"))
-	           {
+	           //maybe I should just check for a non-null viewurl, I suppose this works for the time being, though
+	           //TODO: actually include SUBHEADERs as non-clickable list items instead of ignoring them
+	           if(atts.getValue("linktype") != null && !atts.getValue("linktype").equals("DIVIDER") && !atts.getValue("linktype").equals("SUBHEADER")) {
 	        	   String host = "";
 	        	   Boolean blackboardItem = false;
-	        	   if(!(atts.getValue("viewurl").contains("http://") || atts.getValue("viewurl").contains("https://")))
-	        	   {
+	        	   if(!(atts.getValue("viewurl").contains("http://") || atts.getValue("viewurl").contains("https://"))) {
 	        		   host="https://courses.utexas.edu";
 	        	   }
 	        	   content.add(new ParcelablePair(new CourseMapItem(atts.getValue("name"),host+atts.getValue("viewurl").replace("&amp;","&"),atts.getValue("contentid"),atts.getValue("linktype")),new ArrayList()));
@@ -90,8 +80,7 @@ public class CourseMapSaxHandler extends DefaultHandler {
 	           throws SAXException { 
 	       if (localName.equals("map-item")) {
 	    	   folderDepth--;
-	    	   if(folderDepth==0)
-	    	   {
+	    	   if(folderDepth == 0) {
 	    		   this.in_maptag = false; 
 	    	   }
 	       } else if (localName.equals("children")) { 

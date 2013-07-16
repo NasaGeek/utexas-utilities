@@ -108,7 +108,7 @@ public class TransactionsFragment extends SherlockFragment {
 		setRetainInstance(true);
 
 		postdata = new ArrayList<BasicNameValuePair>();
-		
+		mType = (TransactionType) getArguments().getSerializable("type");
 		if(TransactionType.Bevo.equals(mType))
 			postdata.add(new BasicNameValuePair("sRequestSw","B"));
 		else if(TransactionType.Dinein.equals(mType))

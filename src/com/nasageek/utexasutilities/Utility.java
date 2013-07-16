@@ -30,8 +30,7 @@ public class Utility {
 	
     
 	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
-	public static void commit(SharedPreferences.Editor editor)
-	{
+	public static void commit(SharedPreferences.Editor editor) {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
 			editor.apply();
 		else
@@ -181,8 +180,7 @@ public class Utility {
      * necessary fragment tags for the purpose of restoring them
      */
     
-    public static String makeFragmentName(int viewId, int position)
-	{
+    public static String makeFragmentName(int viewId, int position) {
     	return "android:switcher:" + viewId + ":" + position;
 	}
 }

@@ -94,6 +94,8 @@ public class BBClass implements Parcelable {
 		 */
 	//	if(this.name.contains("("))
 		
+		
+		//the course ID seems to relatively consistently be the last 2 tokens in the full ID, maybe just pull those out
 		this.bbid = bbid;
 		this.fullName = name;
 		this.fullcourseid = fullcourseid;

@@ -77,10 +77,8 @@ public class UTilitiesActivity extends SherlockActivity {
         }*/
         
         final ChangeableContextTask[] loginTasks = (ChangeableContextTask[]) getLastNonConfigurationInstance();
-        if(loginTasks != null)
-        {    
-        	for(ChangeableContextTask at : loginTasks)
-	        {
+        if(loginTasks != null) {    
+        	for(ChangeableContextTask at : loginTasks) {
 	        	if(at != null)
 	        		at.setContext(this);
 	        }
@@ -109,8 +107,7 @@ public class UTilitiesActivity extends SherlockActivity {
     	dataCheck 		= (ImageView) findViewById(R.id.dataCheck);
     	blackboardCheck = (ImageView) findViewById(R.id.blackboardCheck);
     	
-    	if(!settings.contains("encryptedpassword") && settings.contains("firstRun") && settings.contains("password"))
-         {
+    	if(!settings.contains("encryptedpassword") && settings.contains("firstRun") && settings.contains("password")) {
          	Utility.commit(settings.edit().remove("password"));
          	Utility.commit(settings.edit().putBoolean("encryptedpassword", true));
          	Utility.commit(settings.edit().putBoolean("autologin", false));
@@ -123,8 +120,7 @@ public class UTilitiesActivity extends SherlockActivity {
         	passwordcleared.show();
          }
     	
-    	if(!settings.contains("firstRun"))
-        {
+    	if(!settings.contains("firstRun")) {
         	AlertDialog.Builder nologin_builder = new AlertDialog.Builder(this);
         	nologin_builder.setMessage("This is your first time running UTilities; why don't you try logging in to get the most use out of the app?")
         			.setCancelable(false)
@@ -146,7 +142,7 @@ public class UTilitiesActivity extends SherlockActivity {
     	else {
     		ChangeLog cl = new ChangeLog(this);
 	        if(cl.isFirstRun())
-	        	cl.getLogDialog().show();
+	        	cl.getFullLogDialog().show();
     	}
 
         if(settings.getBoolean("autologin", false) && !ConnectionHelper.cookieHasBeenSet() && !ConnectionHelper.isLoggingIn())
@@ -160,23 +156,18 @@ public class UTilitiesActivity extends SherlockActivity {
         schedulebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	
-            	if(settings.getBoolean("loginpref", false))
-            	{
-            		if(!ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.isLoggingIn())
-	            	{
+            	if(settings.getBoolean("loginpref", false)) {
+            		if(!ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
 	            		message.setText(R.string.login_first);
 	                	message.setDuration(Toast.LENGTH_SHORT);
 	            		message.show();
 	            	}
-	            	else
-	            	{
+	            	else {
 	            		startActivity(schedule);
 	            	}
             	}
-            	else
-            	{
-            		if(!ConnectionHelper.cookieHasBeenSet())
-	            	{
+            	else {
+            		if(!ConnectionHelper.cookieHasBeenSet()) {
             			Intent login_intent = new Intent(UTilitiesActivity.this, LoginActivity.class);
             			login_intent.putExtra("activity", schedule.getComponent().getClassName());
             			login_intent.putExtra("service", 'u');
@@ -193,11 +184,9 @@ public class UTilitiesActivity extends SherlockActivity {
         balancebutton.setOnFocusChangeListener(new imageButtonFocusListener());
         balancebutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-            	if(settings.getBoolean("loginpref", false))
-            	{
+            	if(settings.getBoolean("loginpref", false)) {
             		if(!ConnectionHelper.cookieHasBeenSet() || 
-        			ConnectionHelper.isLoggingIn() ) 
-	            	{
+        			ConnectionHelper.isLoggingIn() ) {
 	            		message.setText(R.string.login_first);
 	                	message.setDuration(Toast.LENGTH_SHORT);
 	            		message.show();
@@ -205,10 +194,8 @@ public class UTilitiesActivity extends SherlockActivity {
 	            	else
 	            		startActivity(balance);
             	}
-            	else
-            	{
-            		if(!ConnectionHelper.cookieHasBeenSet()) 
-	            	{
+            	else {
+            		if(!ConnectionHelper.cookieHasBeenSet()) {
             			Intent login_intent = new Intent(UTilitiesActivity.this, LoginActivity.class);
             			login_intent.putExtra("activity", balance.getComponent().getClassName());
             			login_intent.putExtra("service", 'u');
@@ -235,24 +222,18 @@ public class UTilitiesActivity extends SherlockActivity {
         databutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             
-            	if(settings.getBoolean("loginpref", false))
-            	{
-            	
-	            	if(!ConnectionHelper.PNACookieHasBeenSet() || ConnectionHelper.isLoggingIn())
-	            	{
+            	if(settings.getBoolean("loginpref", false)) {
+	            	if(!ConnectionHelper.PNACookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
 	            		message.setText(R.string.login_pna_first);
 	                	message.setDuration(Toast.LENGTH_SHORT);
 	            		message.show();
 	            	}
-	            	else
-	            	{
+	            	else {
 	            		startActivity(data);
 	            	}
             	}
-            	else
-            	{
-            		if(!ConnectionHelper.PNACookieHasBeenSet())
-            		{
+            	else {
+            		if(!ConnectionHelper.PNACookieHasBeenSet()) {
             			Intent login_intent = new Intent(UTilitiesActivity.this, LoginActivity.class);
             			login_intent.putExtra("activity", data.getComponent().getClassName());
             			login_intent.putExtra("service", 'p');
@@ -280,23 +261,18 @@ public class UTilitiesActivity extends SherlockActivity {
         blackboardbutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
             	
-            	if(settings.getBoolean("loginpref", false))
-            	{
-	            	if(!ConnectionHelper.bbCookieHasBeenSet() || ConnectionHelper.isLoggingIn())
-	            	{
+            	if(settings.getBoolean("loginpref", false)) {
+	            	if(!ConnectionHelper.bbCookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
 	            		message.setText(R.string.login_bb_first);
 	                	message.setDuration(Toast.LENGTH_SHORT);
 	            		message.show();
 	            	}
-	            	else
-	            	{
+	            	else {
 	            		startActivity(blackboard);
 	            	}
             	}
-            	else
-            	{
-            		if(!ConnectionHelper.bbCookieHasBeenSet())
-            		{
+            	else {
+            		if(!ConnectionHelper.bbCookieHasBeenSet()) {
             			Intent login_intent = new Intent(UTilitiesActivity.this, LoginActivity.class);
             			login_intent.putExtra("activity", blackboard.getComponent().getClassName());
             			login_intent.putExtra("service", 'b');
@@ -309,8 +285,7 @@ public class UTilitiesActivity extends SherlockActivity {
             
         });
     }
-	private class imageButtonFocusListener implements OnFocusChangeListener
-	{
+	private class imageButtonFocusListener implements OnFocusChangeListener {
 		@Override
 		public void onFocusChange(View v, boolean hasFocus) {
 			if(hasFocus)
@@ -321,31 +296,26 @@ public class UTilitiesActivity extends SherlockActivity {
 		}
 	}
 	
-	private class imageButtonTouchListener implements OnTouchListener
-	{
+	private class imageButtonTouchListener implements OnTouchListener {
 		private boolean buttonPressed = false;
     	private TransitionDrawable crossfade;
     	
-    	public imageButtonTouchListener(TransitionDrawable transDrawable)
-    	{
+    	public imageButtonTouchListener(TransitionDrawable transDrawable) {
     		crossfade = transDrawable;
     	}
     	@Override
     	public boolean onTouch(View v, MotionEvent event) {
     		
     		
-    		switch(event.getActionMasked())
-    		{
+    		switch(event.getActionMasked()) {
     		case MotionEvent.ACTION_DOWN:
-    			if(!buttonPressed)
-    			{
+    			if(!buttonPressed) {
     				buttonPressed = true;
     				crossfade.startTransition(BUTTON_ANIMATION_DURATION);
     			}
     			break;
     		case MotionEvent.ACTION_UP:
-    			if(buttonPressed)
-    			{	
+    			if(buttonPressed) {	
     				buttonPressed = false;
     				crossfade.reverseTransition(BUTTON_ANIMATION_DURATION);
     			}
@@ -353,13 +323,10 @@ public class UTilitiesActivity extends SherlockActivity {
     		case MotionEvent.ACTION_MOVE:
     			final int[] states = v.getDrawableState();
     			boolean pressedStateFound = false;
-    			for(int state : states)
-    			{
-    				if(state == android.R.attr.state_pressed)
-    				{
+    			for(int state : states) {
+    				if(state == android.R.attr.state_pressed) {
     					pressedStateFound = true;
-    					if(!buttonPressed)
-    					{	
+    					if(!buttonPressed) {	
     						buttonPressed = true;
     						crossfade.startTransition(BUTTON_ANIMATION_DURATION);
     					}
@@ -390,37 +357,30 @@ public class UTilitiesActivity extends SherlockActivity {
         MenuInflater inflater = this.getSupportMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         
-        if(settings.getBoolean("loginpref", false))
-        {	
-        	if(!ConnectionHelper.isLoggingIn())
-	    	{
-		        if(ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.bbCookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet())
-		    	{
+        if(settings.getBoolean("loginpref", false)) {	
+        	if(!ConnectionHelper.isLoggingIn()) {
+		        if(ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.bbCookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet()) {
 		    		menu.removeGroup(R.id.log);
 		    		menu.add(R.id.log, 11, Menu.NONE, "Log out");
 		    		MenuItem item = menu.findItem(11);
 		    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		    	}
-		    	else if(!ConnectionHelper.cookieHasBeenSet() || !ConnectionHelper.bbCookieHasBeenSet() || !ConnectionHelper.PNACookieHasBeenSet())
-		    	{
+		    	else if(!ConnectionHelper.cookieHasBeenSet() || !ConnectionHelper.bbCookieHasBeenSet() || !ConnectionHelper.PNACookieHasBeenSet()) {
 		    		menu.removeGroup(R.id.log);
 		    		menu.add(R.id.log, R.id.login, Menu.NONE, "Log in");
 		    		MenuItem item = menu.findItem(R.id.login);
 		    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		    	}	
 	    	}
-	    	else if(ConnectionHelper.isLoggingIn())
-	    	{
+	    	else if(ConnectionHelper.isLoggingIn()) {
 	    		menu.removeGroup(R.id.log);
 	    		menu.add(R.id.log, CANCEL_LOGIN_MENU_ID, Menu.NONE, "Cancel");
 	    		MenuItem item = menu.findItem(CANCEL_LOGIN_MENU_ID);
 	    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 	    	}
         }
-        else
-        {
-        	if(ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.bbCookieHasBeenSet() || ConnectionHelper.PNACookieHasBeenSet())
-	    	{
+        else {
+        	if(ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.bbCookieHasBeenSet() || ConnectionHelper.PNACookieHasBeenSet()) {
 	    		menu.removeGroup(R.id.log);
 	    		menu.add(R.id.log, LOGOUT_MENU_ID, Menu.NONE, "Log out");
 	    		MenuItem item = menu.findItem(LOGOUT_MENU_ID);
@@ -432,11 +392,9 @@ public class UTilitiesActivity extends SherlockActivity {
         return true;
     }
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
-    	switch(id)
-    	{
+    	switch(id) {
     		case R.id.login:login();invalidateOptionsMenu();break;
     		case R.id.settings:loadSettings();break;
     		case LOGOUT_MENU_ID:logout();invalidateOptionsMenu();break;
@@ -445,32 +403,26 @@ public class UTilitiesActivity extends SherlockActivity {
     	return true;
     }
     @Override
-    public Object onRetainNonConfigurationInstance()
-    {
+    public Object onRetainNonConfigurationInstance() {
     	return new ChangeableContextTask[] {bblt, lt, plt};
     }
 
-    public void loadSettings()
-    {
+    public void loadSettings() {
     	final Intent pref_intent = new Intent(this, Preferences.class);
     	startActivity(pref_intent);
     }
-    public void login()
-    {
+    public void login() {
     	SecurePreferences sp = new SecurePreferences(UTilitiesActivity.this,"com.nasageek.utexasutilities.password", false);
-    	if(settings.getBoolean("loginpref", false))
-    	{
+    	if(settings.getBoolean("loginpref", false)) {
     		if( !settings.contains("eid") || 
       				!sp.containsKey("password") || 
       				 settings.getString("eid", "error").equals("") ||
-      				 sp.getString("password").equals("") )
-			{	
+      				 sp.getString("password").equals("") ) {	
   				message.setText("Please enter your credentials to log in");
       			message.setDuration(Toast.LENGTH_LONG);
       			message.show();
 			}
-           	else
-           	{
+    		else {
            		message.setText("Logging in...");
          		message.setDuration(Toast.LENGTH_SHORT);
          		message.show();
@@ -501,14 +453,12 @@ public class UTilitiesActivity extends SherlockActivity {
       			}
            	}
     	}
-    	else
-    	{
+    	else {
 	    	Intent login_intent = new Intent(this, LoginActivity.class);
 	    	startActivity(login_intent);
     	}
     }
-    public void cancelLogin()
-    {
+    public void cancelLogin() {
     	if(lt!=null)
     		lt.cancel(true);
    		if(plt!=null)
@@ -519,61 +469,49 @@ public class UTilitiesActivity extends SherlockActivity {
     	ConnectionHelper.logout(this);
     	setSupportProgressBarIndeterminateVisibility(false);
     }
-    public void logout()
-    {
+    public void logout() {
     	ConnectionHelper.logout(this);
     	resetChecks();
     	message.setText("You have been successfully logged out");
     	message.show();
     }
-    public void onResume()
-    {
+    public void onResume() {
     	super.onResume();
     	invalidateOptionsMenu();
     	resetChecks();	
     }
-    public void onPause()
-    {
+    public void onPause() {
     	super.onPause();
     	if(nologin != null)
     		if(nologin.isShowing())
     			nologin.dismiss();	
     }
-    private void resetChecks()
-    {
-    	if(settings.getBoolean("loginpref", false))
-    	{	
+    private void resetChecks() {
+    	if(settings.getBoolean("loginpref", false)) {	
     		scheduleCheck.setVisibility(View.GONE);
     		balanceCheck.setVisibility(View.GONE);
     		dataCheck.setVisibility(View.GONE);
     		blackboardCheck.setVisibility(View.GONE);
     	}
-        else
-        {
-        	if(!ConnectionHelper.cookieHasBeenSet())
-        	{	
+        else {
+        	if(!ConnectionHelper.cookieHasBeenSet()) {	
         		scheduleCheck.setImageResource(R.drawable.ic_done_translucent);
         		balanceCheck.setImageResource(R.drawable.ic_done_translucent);
         	}
-        	else
-    		{
+        	else {
         		scheduleCheck.setImageResource(R.drawable.ic_done);
         		balanceCheck.setImageResource(R.drawable.ic_done);
     		}
-        	if(!ConnectionHelper.bbCookieHasBeenSet())
-        	{	
+        	if(!ConnectionHelper.bbCookieHasBeenSet()) {	
         		blackboardCheck.setImageResource(R.drawable.ic_done_translucent);
         	}
-        	else
-    		{
+        	else {
         		blackboardCheck.setImageResource(R.drawable.ic_done);
     		}
-        	if(!ConnectionHelper.PNACookieHasBeenSet())
-        	{	
+        	if(!ConnectionHelper.PNACookieHasBeenSet()) {	
         		dataCheck.setImageResource(R.drawable.ic_done_translucent);
         	}
-        	else
-    		{
+        	else {
         		dataCheck.setImageResource(R.drawable.ic_done);
         	}
         	scheduleCheck.setVisibility(View.VISIBLE);

@@ -1267,6 +1267,20 @@ Rehabilitative Services</a></li>
     </Point>
   </Placemark>
 
+  <Placemark id="GDC">
+    <name>Gates Dell Complex</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.736742, 30.286327</coordinates>
+    </Point>
+  </Placemark>
+  
   <Placemark id="GEA">
     <name>Mary E. Gearing Hall</name>
     <visibility>0</visibility> 
@@ -2364,6 +2378,23 @@ Rehabilitative Services</a></li>
     </Point>
   </Placemark>
 
+  <Placemark id="POB">
+    <name>Peter O'Donnell Jr. Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    <![CDATA[
+	<img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/pob.jpg" border="0" alt="" />
+    ]]>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.73659,30.28685</coordinates>
+    </Point>
+  </Placemark>
+  
   <Placemark id="PPA">
     <name>Hal C. Weaver Power Plant Annex</name>
     <visibility>0</visibility> 

@@ -1,4 +1,4 @@
-package com.nasageek.utexasutilities.activities;
+package com.nasageek.utexasutilities.testing;
 
 import android.accounts.AccountAuthenticatorActivity;
 

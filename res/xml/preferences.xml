@@ -56,7 +56,7 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="Campus Map" >
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="starting_location"
             android:summaryOff="Map currently centers on UT Tower."
             android:summaryOn="Map currently centers on your location."
@@ -105,16 +105,18 @@
             android:title="Auto-send crash reports" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Miscellaneous" >
-        <Preference
-            android:id="@+id/about"
-            android:key="about"
-            android:title="About UTilities" />
-
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="embedded_browser"
             android:summary="External links will be opened in the default browser otherwise"
             android:title="Use embedded browser" />
+        
+        <Preference
+            android:id="@+id/about"
+            android:key="about"
+            android:title="About UTilities" />
+
+        
     </PreferenceCategory>
 
     <PreferenceScreen

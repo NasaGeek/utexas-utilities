@@ -391,7 +391,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		
 		@Override
 		protected ArrayList doInBackground(Object... params) {
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseMap?course_id="+bbID);
+			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseMap?course_id=" + bbID);
 	    	String pagedata="";
 
 	    	try {

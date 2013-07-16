@@ -59,7 +59,7 @@ public class CourseMapAdapter extends ArrayAdapter<ParcelablePair<CourseMapItem,
 		ParcelablePair<CourseMapItem, ArrayList> item = items.get(position);
 		
 		String title = item.first.getName();
-		if(item.second.size()==0)
+		if(item.second.size() == 0)
 			isFolder = false;
 		
 		ViewGroup lin = (ViewGroup) convertView;
