@@ -141,14 +141,13 @@ public class UTilitiesActivity extends SherlockActivity {
         }
     	else {
     		ChangeLog cl = new ChangeLog(this);
+    	
 	        if(cl.isFirstRun())
 	        	cl.getFullLogDialog().show();
     	}
 
         if(settings.getBoolean("autologin", false) && !ConnectionHelper.cookieHasBeenSet() && !ConnectionHelper.isLoggingIn())
-        	login(); 
-
-       
+        	login();
         
         final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
         schedulebutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) schedulebutton.getDrawable()));
