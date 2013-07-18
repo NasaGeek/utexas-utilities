@@ -41,7 +41,6 @@ public class BuildingDatabase extends SQLiteOpenHelper {
 	public BuildingDatabase(Context con) {
 		super(con, TABLE_NAME, null, 1);
 		mContext = con;
-		// TODO Auto-generated constructor stub
 	}
 
 	
@@ -131,7 +130,6 @@ public class BuildingDatabase extends SQLiteOpenHelper {
     }
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		// TODO Auto-generated method stub
 		db.execSQL(TABLE_CREATE);
 
 	}
@@ -172,13 +170,11 @@ public class BuildingDatabase extends SQLiteOpenHelper {
 		@Override
 		protected Object doInBackground(Object... arg0)
 		{
-			// TODO Auto-generated method stub
 			try
 			{
 				sqldb = getWritableDatabase();
 			} catch (Exception e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return null;

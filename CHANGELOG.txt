@@ -136,11 +136,11 @@ Fixed crash on stops with detours
 Fixed Blackboard downloads getting wrong file names
 Other bug fixes
 
-Versioncode 17 - 1.86v2
+Versioncode 17, 19 - 1.86v2
 
 Fixed 2.2 crash on viewing blackboard attachments
 
-Versioncode 18 - 1.9
+Versioncode 18, 20 - 1.9
 
 Tablet interface for Menus and Balances, more to come
 Improved login speed
@@ -148,15 +148,15 @@ Tweaked sizes of lots of list items to make them a bit more "touchable"
 Blackboard notification dashboard added
 Lots of tweaking
 
-Versioncode 19 - 1.91
+Versioncode 21 - 1.91
 
 Fixed crash for some users viewing Blackboard
 
-Versioncode 20 - 1.92
+Versioncode 22 - 1.92
 
 Fixed crash for some users with early classes
 
-Versioncode 21 - 1.99
+Versioncode 23 - 1.99
 
 Tablet interface and revamped phone interface for Blackboard
 Option to choose default Blackboard and Balance tab
@@ -165,5 +165,7 @@ External links can now either be opened in the app or in the default browser.  N
 Added GDC and POB to map
 Fixed inability to show certain University Extension courses (thanks for the email!)
 
+Versioncode 24 - 1.99.1
 
+Fix navigation bug in Blackboard
 

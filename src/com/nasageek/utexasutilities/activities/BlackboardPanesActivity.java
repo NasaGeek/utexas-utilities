@@ -136,15 +136,7 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 	//getting slightly strange data at times, look into it
 	@Override
 	public void onIndexChanged(int firstIndex, int lastIndex, int firstCompleteIndex, int lastCompleteIndex) {
-		
-		if (firstCompleteIndex == 0) {
-			getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-			getSupportActionBar().setHomeButtonEnabled(false);
-		} else {
-			getSupportActionBar().setHomeButtonEnabled(true);
-			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		}
-		
+
 		Fragment currentFragment = getFragment(lastCompleteIndex);
 		if(lastCompleteIndex != this.lastCompleteIndex) {
 			if(currentFragment != null) {
