@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.acra.ACRA;
+import org.acra.collector.CrashReportData;
+import org.acra.sender.ReportSender;
+import org.acra.sender.ReportSenderException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -36,12 +40,15 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -73,7 +80,9 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	private CourseMapSaxHandler courseMapSaxHandler;
 	private int itemNumber;
 	private ArrayList<ParcelablePair<CourseMapItem, ArrayList>> mainList;
-	private TextView failure_view;
+	private LinearLayout failure_ll;
+	private TextView failure_tv;
+	private Button failure_button;
 	private String bbID, courseName, folderName, viewUri;
 	
 	private TextView absTitle;
@@ -104,7 +113,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
-		itemNumber=-1;
+		itemNumber = -1;
 		courseName = getArguments().getString("courseName");
 		bbID = getArguments().getString("courseID");
 		folderName = getArguments().getString("folderName");
@@ -120,23 +129,22 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
-		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(),httpclient));
+		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient));
 		cookie.setDomain("courses.utexas.edu");
 		httpclient.getCookieStore().addCookie(cookie);
-	
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {	
 		absView = inflater.inflate(R.layout.action_bar_title_subtitle, null);
-		
 		setupActionBar();
-		
 		final View vg = inflater.inflate(R.layout.coursemap_layout, container, false);
 
 		cm_pb_ll = (LinearLayout) vg.findViewById(R.id.coursemap_progressbar_ll);
 		cmlv = (ListView) vg.findViewById(R.id.coursemap_listview);
-		failure_view = (TextView) vg.findViewById(R.id.coursemap_error);
+		failure_ll = (LinearLayout) vg.findViewById(R.id.coursemap_error);
+		failure_button = (Button) vg.findViewById(R.id.button_send_data);
+		failure_tv = (TextView) vg.findViewById(R.id.tv_failure);
 		
 		cmlv.setOnItemClickListener(new OnItemClickListener() {
 			
@@ -169,9 +177,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 					
 					((FragmentLauncher)act).addFragment(BlackboardCourseMapFragment.this, 
 							BlackboardCourseMapFragment.newInstance(getString(R.string.coursemap_nest_intent), 
-									mainList.get(position).second, bbID, courseName, path, url, position, false));
-					
-					
+									mainList.get(position).second, bbID, courseName, path, url, position, false));					
 				}
 				else if(linkType.equals("resource/x-bb-file") || linkType.equals("resource/x-bb-document")) {
 					String contentid = mainList.get(position).first.getContentId();
@@ -246,7 +252,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 					startActivity(bbItemLaunch);*/
 					
 					String itemName = "";
-					if(itemNumber == -1 )//top-level, don't copy "Course Map"
+					if(itemNumber == -1 ) //top-level, don't copy "Course Map"
 						itemName = mainList.get(position).first.getName(); //will be used as Subtitle
 					else
 						itemName = absSubtitle.getText() + "/" + mainList.get(position).first.getName(); //Subtitle
@@ -259,19 +265,18 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		});
 		
 		//ONLY DO IF TOP LEVEL
-		if(itemNumber==-1 && mainList == null) {
+		if(itemNumber == -1 && mainList == null) {
 			fetch = new fetchCoursemapTask(httpclient);
 			fetch.execute();
 		}
 		//now we've got the whole course tree, navigate as necessary
-		else if(mainList!= null && mainList.size() != 0) {	
-			cmlv.setAdapter(new CourseMapAdapter(getSherlockActivity(),mainList));
+		else if(mainList != null && mainList.size() != 0) {	
+			cmlv.setAdapter(new CourseMapAdapter(getSherlockActivity(), mainList));
 			cm_pb_ll.setVisibility(View.GONE);
 	    	cmlv.setVisibility(View.VISIBLE);
 		}		
 		
 		return vg;
-		
 	}
 	
 	private void setupActionBar() {
@@ -285,10 +290,8 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		absSubtitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_subtitle);
 		
 		absSubtitle.setText(folderName);	
-		if(folderName != null)
-		{	
+		if(folderName != null)	
 			absTitle.setText(courseName);
-		}
 	}
 	
 	@Override
@@ -297,7 +300,6 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		if(fetch!=null)
 			fetch.cancel(true);
 	}
-	
 	@Override
 	public String getBbid() {
 		return bbID;
@@ -315,8 +317,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
-    	switch(id)
-    	{	
+    	switch(id) {	
 	    	case R.id.course_map_view_in_web:
 	    		showAreYouSureDlg(getSherlockActivity());
 	    		break;
@@ -367,16 +368,17 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	@Override
 	public String getCourseName() {
 		return getArguments().getString("courseName");
-	}
-	
+	}	
 	@Override
 	public boolean isFromDashboard() {
 		return getArguments().getBoolean("fromDashboard");
-	}
-	
+	}	
 	private class fetchCoursemapTask extends AsyncTask<Object,Void,ArrayList> {
 		private DefaultHttpClient client;
 		private String failureMessage = "";
+		private String pagedata;
+		private Exception ex;
+		private Boolean showButton = false;
 		
 		public fetchCoursemapTask(DefaultHttpClient client) {
 			this.client = client;
@@ -386,9 +388,8 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		protected void onPreExecute() {
 			cm_pb_ll.setVisibility(View.VISIBLE);
     		cmlv.setVisibility(View.GONE);
-			failure_view.setVisibility(View.GONE);
-		}
-		
+			failure_ll.setVisibility(View.GONE);
+		}	
 		@Override
 		protected ArrayList doInBackground(Object... params) {
 			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseMap?course_id=" + bbID);
@@ -426,6 +427,9 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	         }
 	         catch(Exception e){
 	        	 failureMessage = "UTilities could not parse the downloaded Blackboard data.";
+	        	 ex = e;
+	        	 this.pagedata = pagedata;
+	        	 showButton = true;
 	        	 e.printStackTrace();
 	        	 cancel(true);
 	        	 return null;	        	 
@@ -437,19 +441,43 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		protected void onPostExecute(ArrayList result) {
 			if(!this.isCancelled()) {
 				if(getSherlockActivity() != null)
-					cmlv.setAdapter(new CourseMapAdapter(getSherlockActivity(),result));
+					cmlv.setAdapter(new CourseMapAdapter(getSherlockActivity(), result));
 				
 				cm_pb_ll.setVisibility(View.GONE);
 	    		cmlv.setVisibility(View.VISIBLE);
-	    		failure_view.setVisibility(View.GONE);
+	    		failure_ll.setVisibility(View.GONE);
 	    	}
 		}
 		@Override
 		protected void onCancelled() {
-			failure_view.setText(failureMessage);
+			failure_tv.setText(failureMessage);
+			failure_button.setText("Send anonymous information about this course to help improve UTilities.");
+			failure_button.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					if(pagedata != null && ex != null) {
+						SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity().getBaseContext()); 
+						if(!sp.getBoolean("acra.enable", true))
+							ACRA.getErrorReporter().setEnabled(true);
+						ACRA.getErrorReporter().putCustomData("xmldata", pagedata);
+			        	ACRA.getErrorReporter().handleException(ex);
+			        	ACRA.getErrorReporter().removeCustomData("xmldata");
+			        	if(!sp.getBoolean("acra.enable", true))
+			        		ACRA.getErrorReporter().setEnabled(false);
+			        	Toast.makeText(getSherlockActivity(), "Data is being sent, thanks for helping out!", Toast.LENGTH_SHORT).show();
+					} else {
+						Toast.makeText(getSherlockActivity(), "Couldn't send the course data for some reason :(", Toast.LENGTH_SHORT).show();
+					}
+					v.setVisibility(View.INVISIBLE);
+					
+					
+				}
+			});
 			cm_pb_ll.setVisibility(View.GONE);
     		cmlv.setVisibility(View.GONE);
-			failure_view.setVisibility(View.VISIBLE); 
+    		if(showButton) failure_button.setVisibility(View.VISIBLE);
+			failure_ll.setVisibility(View.VISIBLE); 
 		}
 	}
 

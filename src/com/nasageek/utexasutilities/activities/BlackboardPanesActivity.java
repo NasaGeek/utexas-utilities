@@ -52,10 +52,7 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 //		addFragment(null, BlackboardCourseListFragment.newInstance("Course List"));
 		
 	}
-	@Override
-	public void updateFragment(Fragment f) {	
-		// nothing special happening to fragments
-	}
+	
 /*	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (mDelegate.onOptionsItemSelected(item)) return true;

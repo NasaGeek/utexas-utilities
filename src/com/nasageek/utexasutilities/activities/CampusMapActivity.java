@@ -42,6 +42,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.v4.widget.SearchViewCompat;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -60,7 +61,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.crittercism.app.Crittercism;
+//import com.crittercism.app.Crittercism;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
@@ -140,7 +141,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	    }
 
 	    public String getCode() {
-	      return code+"";
+	      return code + "";
 	    }
 	    public String fullName()
 	    {
@@ -159,7 +160,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
         setupMapIfNeeded();
 
         settings = PreferenceManager.getDefaultSharedPreferences(this);
-        this.savedInstanceState= savedInstanceState;
+        this.savedInstanceState = savedInstanceState;
         buildingIdList = new ArrayList<String>();
         
    //     buildingId="";
@@ -291,7 +292,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
         		return;
         	}
         });*/
-        Crittercism.leaveBreadcrumb("Loaded CampusMapActivity");
+        //Crittercism.leaveBreadcrumb("Loaded CampusMapActivity");
     }
 	private void setupMapIfNeeded() {
 		// Do a null check to confirm that we have not already instantiated the map.
@@ -617,8 +618,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 		    String[] lngLat = pairs[0].split(","); // lngLat[0]=longitude lngLat[1]=latitude lngLat[2]=height
 		        
 	        try 
-	        {
-	            
+	        { 
 	            PolylineOptions routeOptions = new PolylineOptions();
 	            for(int i = 0; i < pairs.length; i++)
 	            {
@@ -630,7 +630,6 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	            			.width(5f);
 	            Polyline routePolyline = mMap.addPolyline(routeOptions);
 	            polylineMap.put(routePolyline.getId(), routePolyline);
-
 	        } 
 		    catch (NumberFormatException e) 
 		    {
@@ -642,39 +641,36 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     public boolean onCreateOptionsMenu(Menu menu) {
     	MenuInflater inflater = this.getSupportMenuInflater();
         inflater.inflate(R.menu.map_menu, menu);
+        
         return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
     	int id = item.getItemId();
-    	switch(id)
-    	{  	
+    	switch(id) {  	
 	    	case android.R.id.home:
 	            // app icon in action bar clicked; go home
 	            super.onBackPressed();
 	            break;
 	            
     		case R.id.search:
+    			SearchManager sm = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+
     			onSearchRequested();
     			break;
     		case R.id.showAllBuildings:
     			
-    			if(checkReady())
-    			{	
-    				if(item.isChecked())
-	    			{	
-	    				for(String mID : buildingMarkerMap.keySet())
-	    				{
+    			if(checkReady()) {	
+    				if(item.isChecked()) {	
+	    				for(String mID : buildingMarkerMap.keySet()) {
 	    					buildingMarkerMap.get(mID).remove();
 	    				}
 	    				buildingMarkerMap.clear();
 	    				item.setChecked(false);
 	    			}
-	    			else if(!item.isChecked())
-	    			{
-	    				for(Placemark pm : buildingDataSet.getPlacemarks())
-	    		        {		
+	    			else if(!item.isChecked()) {
+	    				for(Placemark pm : buildingDataSet.getPlacemarks()) {		
 	    					Marker buildingMarker = mMap.addMarker(new MarkerOptions()
 	    		        		.position(new LatLng(Double.valueOf(pm.getCoordinates().split(",")[1].trim()), Double.valueOf(pm.getCoordinates().split(",")[0].trim())))
 	    						.draggable(false)
@@ -692,15 +688,13 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     	return true;
     }
     
-    class StopInfoAdapter implements InfoWindowAdapter 
-    {
+    class StopInfoAdapter implements InfoWindowAdapter {
     	private LinearLayout infoLayout;
     	private TextView infoTitle, infoSnippet;
     	private ImageView tapMeIndicator;
     	
     	
-    	public StopInfoAdapter()
-    	{
+    	public StopInfoAdapter() {
     		infoLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.info_window_layout, null);
     		infoTitle = (TextView) infoLayout.findViewById(R.id.iw_title);
     		infoSnippet = (TextView) infoLayout.findViewById(R.id.iw_snippet);
@@ -712,11 +706,9 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     	@Override
     	public View getInfoContents(Marker marker) {
     		
-    		switch(marker.getTitle().charAt(0))
-    		{
+    		switch(marker.getTitle().charAt(0)) {
     		case '*': //'*' for stop
-    			if(infoTitle.getText().equals("") || !(infoTitle.getText()+"").contains(marker.getTitle().substring(1)))
-	    		{	
+    			if(infoTitle.getText().equals("") || !(infoTitle.getText()+"").contains(marker.getTitle().substring(1))) {	
 	    			//Span for bolding the title
 	    			SpannableString title = new SpannableString(marker.getTitle().substring(1));
 	    			title.setSpan(new StyleSpan(Typeface.BOLD), 0, marker.getTitle().substring(1).length(), 0);
@@ -751,13 +743,11 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     		return null;
     	}
     	
-    	private class checkStopTask extends AsyncTask<Object,Void,String>
-    	{
+    	private class checkStopTask extends AsyncTask<Object,Void,String> {
     		Marker stopMarker;
     		
     		@Override
-    		protected String doInBackground(Object... params)
-    		{
+    		protected String doInBackground(Object... params) {
     			int i = (Integer)params[0];
     			stopMarker = (Marker)params[1];
     			String times="Oops! There are no specified times\nfor this stop on capmetro.org ";
@@ -766,12 +756,10 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     			
     			HttpResponse response=null;
     			String request = "http://www.capmetro.org/planner/s_service.asp?tool=NB&stopid="+i;
-    			try
-    			{
+    			try {
     				response = httpclient.execute(new HttpGet(request));
     				data = EntityUtils.toString(response.getEntity());
-    			} catch (Exception e)
-    			{
+    			} catch (Exception e) {
     				times = "CapMetro.org could not be reached;\ntry checking your internet connection ";
     				e.printStackTrace();
     				return times;
@@ -779,23 +767,19 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     			Pattern pattern = Pattern.compile("<b>\\d+</b>-(.*?) <span.*?</span></div>", Pattern.DOTALL);
     			Matcher matcher = pattern.matcher(data);
     		//	ArrayList<String> times = new ArrayList();
-    			while(matcher.find())
-    			{
+    			while(matcher.find()) {
     				Pattern pattern2 = Pattern.compile("<b>(\\d+)</b>");
     			//	Log.d("ROUTE", matcher.group());
     				Matcher matcher2 = pattern2.matcher(matcher.group(0));
 
-    				if(matcher2.find())
-    				{	
+    				if(matcher2.find()) {	
     			//		String a = matcher2.group(1);
-    					if(matcher2.group(1).equals(routeid))
-    					{
+    					if(matcher2.group(1).equals(routeid)) {
     						times = "";
     						
     						Pattern pattern3 = Pattern.compile("<span.*?>(.*?)</span>");
     						Matcher matcher3 = pattern3.matcher(matcher.group(0));
-    						while(matcher3.find())
-    						{
+    						while(matcher3.find()) {
     							if(!matcher3.group(1).equals("[PDF]"))
     								times+=matcher3.group(1)+"\n";
     						}
@@ -811,14 +795,12 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     			
     			return times;
     		}
-    		protected void onPostExecute(String times) 
-    		{
-    			if((infoSnippet.getText()+"").contains("Loading"))
-    			{	
+    		protected void onPostExecute(String times) {
+    			if((infoSnippet.getText()+"").contains("Loading")) {	
     				//fix issue with InfoWindow "cycling" if the user taps other markers while
     				//a marker's InfoWindow is loading data.
-    				if(stopMarker.isInfoWindowShown())
-    				{	infoSnippet.setText(times.substring(0,times.length()-1));
+    				if(stopMarker.isInfoWindowShown()) {	
+    					infoSnippet.setText(times.substring(0,times.length()-1));
     					stopMarker.showInfoWindow();
     				}
     			}
@@ -826,11 +808,9 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     	}	
     }
     
-    class InfoClickListener implements OnInfoWindowClickListener
-    {
+    class InfoClickListener implements OnInfoWindowClickListener {
 		@Override
-		public void onInfoWindowClick(final Marker marker) 
-		{
+		public void onInfoWindowClick(final Marker marker) {
 			String markerType = "location";
 			if(marker.getTitle().charAt(0) == '^')
 				markerType = "building";
@@ -853,8 +833,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 							else if(lastKnownLocation != null)
 								myLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 							
-							if(myLocation != null)
-							{	
+							if(myLocation != null) {	
 								Intent intent = new Intent(android.content.Intent.ACTION_VIEW, 
 								Uri.parse("http://maps.google.com/maps?saddr="+myLocation.latitude+","+myLocation.longitude+ "&daddr=" +marker.getPosition().latitude+","+marker.getPosition().longitude + "&dirflg=w"));
 								startActivity(intent);
@@ -865,9 +844,9 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 					})
         			.setNegativeButton("No", new DialogInterface.OnClickListener() {
 	                    public void onClick(DialogInterface dialog, int id) {               
-		                       dialog.cancel(); 
-		                    }
-	            			});	
+		                   dialog.cancel(); 
+		                }
+	            	});	
     		AlertDialog opendirections = opendirections_builder.create();
         	opendirections.show();   
 		}	

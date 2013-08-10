@@ -30,6 +30,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -48,6 +49,8 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 	
 	private LinearLayout g_pb_ll;
 	private ListView glv;
+	
+	private LinearLayout gell;
 	private TextView getv;
 	
 	private String courseID, courseName, viewUri;
@@ -101,7 +104,10 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		setupActionBar();
 		g_pb_ll = (LinearLayout) vg.findViewById(R.id.grades_progressbar_ll);
 		glv = (ListView) vg.findViewById(R.id.gradesListView);
-		getv = (TextView) vg.findViewById(R.id.grades_error);
+		
+		gell = (LinearLayout) vg.findViewById(R.id.grades_error);
+		getv = (TextView) vg.findViewById(R.id.tv_failure);
+		
 		
 		glv.setAdapter(gradeAdapter);
 		glv.setOnItemClickListener(new OnItemClickListener() {
@@ -242,7 +248,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		protected void onPreExecute() {
 			g_pb_ll.setVisibility(View.VISIBLE);
     		glv.setVisibility(View.GONE);
-    		getv.setVisibility(View.GONE);
+    		gell.setVisibility(View.GONE);
 		}
 		
 		@Override
@@ -290,7 +296,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 				gradeAdapter.notifyDataSetChanged();
 				
 				g_pb_ll.setVisibility(View.GONE);
-				getv.setVisibility(View.GONE);
+				gell.setVisibility(View.GONE);
 	    		glv.setVisibility(View.VISIBLE);
 	    	}
 		}	
@@ -300,7 +306,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 			
 			g_pb_ll.setVisibility(View.GONE);
     		glv.setVisibility(View.GONE);
-    		getv.setVisibility(View.VISIBLE);
+    		gell.setVisibility(View.VISIBLE);
 		}
 	}
 

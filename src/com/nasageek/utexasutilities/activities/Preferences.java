@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.crittercism.app.Crittercism;
+//import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
@@ -71,7 +71,7 @@ public class Preferences extends SherlockPreferenceActivity{
 			
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				if((Boolean)newValue==false)
+				if((Boolean)newValue == false)
 					autologin.setChecked(false);
 				return true;
 			}
@@ -128,13 +128,13 @@ public class Preferences extends SherlockPreferenceActivity{
         	passwordfield.setEnabled(true);      
         }
         
-        final CheckBoxPreference sendcrashes = (CheckBoxPreference)findPreference("sendcrashes");
+        final CheckBoxPreference sendcrashes = (CheckBoxPreference)findPreference("acra.enable");
         sendcrashes.setOnPreferenceChangeListener(new OnPreferenceChangeListener() 
         {	
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) 
 			{
-				Crittercism.setOptOutStatus(!(Boolean)newValue);
+				//Crittercism.setOptOutStatus(!(Boolean)newValue);
 				return true;
 			}
 		});
@@ -144,7 +144,7 @@ public class Preferences extends SherlockPreferenceActivity{
 			
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				final Intent about_intent = new Intent(Preferences.this, AboutMeActivity.class);
+				final Intent about_intent = null;//new Intent(Preferences.this, AboutMeActivity.class);
 				startActivity(about_intent);
 				return true;
 			}

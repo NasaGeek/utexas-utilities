@@ -45,6 +45,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 	private ListView alv;
 	private TextView atv;
 	private TextView etv;
+	private LinearLayout ell;
 	private DefaultHttpClient httpclient;
 	private fetchAnnouncementsTask fetch;
 	private AnnouncementsAdapter announceAdapter;
@@ -97,7 +98,8 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 		a_pb_ll = (LinearLayout) vg.findViewById(R.id.announcements_progressbar_ll);
     	alv     = (ListView)     vg.findViewById(R.id.announcementsListView);
     	atv     = (TextView)     vg.findViewById(R.id.no_announcements_textview);
-    	etv     = (TextView)     vg.findViewById(R.id.announcements_error);
+    	etv     = (TextView)     vg.findViewById(R.id.tv_failure);
+    	ell		= (LinearLayout) vg.findViewById(R.id.announcements_error);
     	
     	alv.setEmptyView(atv);
     	alv.setAdapter(announceAdapter);
@@ -202,12 +204,11 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 			a_pb_ll.setVisibility(View.VISIBLE);
 			alv.setVisibility(View.GONE);
 			atv.setVisibility(View.GONE);
-			etv.setVisibility(View.GONE);
+			ell.setVisibility(View.GONE);
 		}
 
 		@Override
-		protected ArrayList<bbAnnouncement> doInBackground(Object... params)
-		{
+		protected ArrayList<bbAnnouncement> doInBackground(Object... params) {
 			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=ANNOUNCEMENTS&course_id="+getArguments().getString("courseID"));
 	    	String pagedata="";
 
@@ -235,7 +236,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 		protected void onPostExecute(ArrayList<bbAnnouncement> result) {
 			if(!this.isCancelled()) {
 				a_pb_ll.setVisibility(View.GONE);
-				etv.setVisibility(View.GONE);
+				ell.setVisibility(View.GONE);
 			//	if(!result.isEmpty())
 			//	{					
 					announcements.addAll(result);
@@ -258,7 +259,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 			a_pb_ll.setVisibility(View.GONE);
 			alv.setVisibility(View.GONE);
 			atv.setVisibility(View.GONE);
-			etv.setVisibility(View.VISIBLE);
+			ell.setVisibility(View.VISIBLE);
 		}
 	}
 

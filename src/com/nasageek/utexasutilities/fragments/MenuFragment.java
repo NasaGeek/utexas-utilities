@@ -43,6 +43,7 @@ public class MenuFragment extends SherlockFragment {
 	private AmazingListView mlv;
 	private LinearLayout m_pb_ll;
 	private TextView metv;
+	private LinearLayout mell;
 	private fetchMenuTask fetchMTask;
 	private String restId;
 	private MenuAdapter mAdapter;
@@ -66,13 +67,12 @@ public class MenuFragment extends SherlockFragment {
 		
 		m_pb_ll = (LinearLayout) vg.findViewById(R.id.menu_progressbar_ll);
         mlv = (AmazingListView) vg.findViewById(R.id.menu_listview);
-        metv = (TextView) vg.findViewById(R.id.menu_error);
+        metv = (TextView) vg.findViewById(R.id.tv_failure);
+        mell = (LinearLayout) vg.findViewById(R.id.menu_error);
         
         if(restId.equals("0"))
-			return vg;
-        
+			return vg; 
 		updateView(restId, false);
-
 		return vg;
 	}
 	@Override
@@ -143,6 +143,7 @@ public class MenuFragment extends SherlockFragment {
 		@Override
 		protected void onPreExecute() {
 			m_pb_ll.setVisibility(View.VISIBLE);
+			mell.setVisibility(View.GONE);
 			mlv.setVisibility(View.GONE);
 		}
 		@Override
@@ -154,11 +155,10 @@ public class MenuFragment extends SherlockFragment {
 			String location = "";
 			
 			//Special case for JCM, which combines Lunch and Dinner
-			if(restId.equals("05") && (meal.equals("Lunch")||meal.equals("Dinner")))
-				location = "http://129.116.62.55/foodpro/pickMenu.asp?locationNum="+params[0]+"&mealName=Lunch/Dinner";
+			if(restId.equals("05") && (meal.equals("Lunch") || meal.equals("Dinner")))
+				location = "http://129.116.62.55/foodpro/pickMenu.asp?locationNum=" + params[0] + "&mealName=Lunch/Dinner";
 			else
-				location = "http://129.116.62.55/foodpro/pickMenu.asp?locationNum="+params[0]+"&mealName="+meal;
-			
+				location = "http://129.116.62.55/foodpro/pickMenu.asp?locationNum=" + params[0] + "&mealName=" + meal;
 
 			HttpGet hget = new HttpGet(location);
 	    	String pagedata="";
@@ -197,11 +197,10 @@ public class MenuFragment extends SherlockFragment {
 		    		
 		    		//This pattern is glitchy on a Nexus S 4G running CM10.1 nightly
 		    		//Seems to activate Pattern.DOTALL by default. Set flags to 0 to try and mitigate?
-		    		Pattern foodPattern = Pattern.compile("<a href=.*?\">(\\w.*?)</a>",0);
+		    		Pattern foodPattern = Pattern.compile("<a href=.*?\">(\\w.*?)</a>", 0);
 		    		Matcher foodMatcher = foodPattern.matcher(categoryData);
 		    		
-		    		while(foodMatcher.find() && nutritionLinkMatcher.find())
-		    		{
+		    		while(foodMatcher.find() && nutritionLinkMatcher.find()) {
 		    			foodList.add(new food(foodMatcher.group(1),nutritionLinkMatcher.group(1)));
 		    		}	
 		    		tempListOfLists.add(new Pair<String,ArrayList<food>>(catNameMatcher.group(1),foodList));	
@@ -214,19 +213,15 @@ public class MenuFragment extends SherlockFragment {
 		@Override
 		protected void onPostExecute(String result) {
 			listOfLists.addAll(tempListOfLists);
-			mAdapter.notifyDataSetChanged();
-			
-	//		if(getSherlockActivity() != null) //was getting a NPE here probably from leaving the activity while the menu was loading
-	//			mlv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, mlv, false));
-			
+			mAdapter.notifyDataSetChanged();	
 			mlv.setVisibility(View.VISIBLE);	
 			m_pb_ll.setVisibility(View.GONE);
-			metv.setVisibility(View.GONE);
+			mell.setVisibility(View.GONE);
 		}
 		@Override
 		protected void onCancelled() {
 			metv.setText(errorMsg);
-			metv.setVisibility(View.VISIBLE);
+			mell.setVisibility(View.VISIBLE);
 			mlv.setVisibility(View.GONE);	
 			m_pb_ll.setVisibility(View.GONE);
 		}

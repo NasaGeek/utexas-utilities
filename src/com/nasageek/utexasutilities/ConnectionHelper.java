@@ -25,7 +25,7 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.crittercism.app.Crittercism;
+//import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.activities.Preferences;
 import com.nasageek.utexasutilities.activities.UTilitiesActivity;
 
@@ -147,7 +147,7 @@ public class ConnectionHelper {
 		
 		Utility.commit(edit);
 		loggingIn = false;
-		Crittercism.leaveBreadcrumb("Logged out");
+		//Crittercism.leaveBreadcrumb("Logged out");
 		
 	}
 	public static boolean isLoggingIn() {
@@ -167,19 +167,16 @@ public class ConnectionHelper {
 		else {
 			List<Cookie> cooklist = client.getCookieStore().getCookies();
 		    	
-	    	for(int i = 0; i<cooklist.size(); i++)
-	    	{
-	    	//	Log.d("COOKIE", cooklist.get(i).getValue()+"");
-	    		if(cooklist.get(i).getName().equals("AUTHCOOKIE"))
-	    		{	
+	    	for(int i = 0; i<cooklist.size(); i++) {
+	    		if(cooklist.get(i).getName().equals("AUTHCOOKIE")) {	
 	    			PNAAuthCookie = cooklist.get(i).getValue();
 	    			Utility.commit(settings.edit().putString("pna_auth_cookie", PNAAuthCookie));
 	    			PNACookieHasBeenSet = true;
 	    			return PNAAuthCookie;
 	    		}
 	    	}
-//	    	Log.e("CREDS", "Error authenticating credentials");
 			Toast.makeText(con, "Something went wrong during login, try checking your UT EID and Password and try again.", Toast.LENGTH_LONG).show();
+			resetPNACookie(con);
 			PNALoggedIn = false;
 			Log.d("PNACOOKIE", "Login failed");
 			return "";
@@ -199,11 +196,8 @@ public class ConnectionHelper {
 		else {
 			List<Cookie> cooklist = client.getCookieStore().getCookies();
 		    	
-		    	for(int i = 0; i<cooklist.size(); i++)
-		    	{
-		    	//	Log.d("COOKIE", cooklist.get(i).getValue()+"");
-		    		if(cooklist.get(i).getName().equals("SC") && !cooklist.get(i).getValue().equals("NONE"))
-		    		{	
+		    	for(int i = 0; i<cooklist.size(); i++) {
+		    		if(cooklist.get(i).getName().equals("SC") && !cooklist.get(i).getValue().equals("NONE")) {	
 		    			authCookie = cooklist.get(i).getValue();
 		    			Utility.commit(settings.edit().putString("utd_auth_cookie", authCookie));
 		    			cookieHasBeenSet = true;
@@ -211,8 +205,8 @@ public class ConnectionHelper {
 		    		}
 		    	}
 		    	
-	//	    	Log.e("CREDS", "Error authenticating credentials");
 				Toast.makeText(con, "Something went wrong during login, try checking your UT EID and Password and try again.", Toast.LENGTH_LONG).show();
+				resetCookie(con);
 				loggedIn = false;
 				Log.d("COOKIE", "Login failed");
 				return "";
@@ -232,11 +226,8 @@ public class ConnectionHelper {
 		else {
 			List<Cookie> cooklist = client.getCookieStore().getCookies();
 		    	
-	    	for(int i = 0; i<cooklist.size(); i++)
-	    	{
-	    	//	Log.d("COOKIE", cooklist.get(i).getValue()+"");
-	    		if(cooklist.get(i).getName().equals("s_session_id"))
-	    		{	
+	    	for(int i = 0; i<cooklist.size(); i++) {
+	    		if(cooklist.get(i).getName().equals("s_session_id")) {	
 	    			bbAuthCookie = cooklist.get(i).getValue();
 	    			Utility.commit(settings.edit().putString("bb_auth_cookie", bbAuthCookie));
 	    			bbCookieHasBeenSet = true;
@@ -244,8 +235,8 @@ public class ConnectionHelper {
 	    		}
 	    	}
 	    	
-//	    	Log.e("CREDS", "Error authenticating credentials");
 			Toast.makeText(con, "Something went wrong during Blackboard login, try checking your UT EID and Password and try again.", Toast.LENGTH_LONG).show();
+			resetBBCookie(con);
 			bbLoggedIn = false;
 			Log.d("BBCOOKIE", "Login failed");
 			return "";
@@ -358,7 +349,7 @@ public class ConnectionHelper {
 				}
 				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
-				Crittercism.leaveBreadcrumb("Logged in (persistent)");
+				//Crittercism.leaveBreadcrumb("Logged in (persistent)");
 			}
 		}
 		public void setContext(Context con) {
@@ -427,7 +418,7 @@ public class ConnectionHelper {
 				}
 				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
-				Crittercism.leaveBreadcrumb("Logged in (persistent)");
+				//Crittercism.leaveBreadcrumb("Logged in (persistent)");
 			}
 		}
 		public void setContext(Context con) {
@@ -493,7 +484,7 @@ public class ConnectionHelper {
 				}
 				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
-				Crittercism.leaveBreadcrumb("Logged in (persistent)");
+				//Crittercism.leaveBreadcrumb("Logged in (persistent)");
 			}
 		}
 		public void setContext(Context con) {
@@ -504,8 +495,6 @@ public class ConnectionHelper {
 				((SherlockActivity)context).setSupportProgressBarIndeterminateVisibility(false);
 			else if(context.getClass().equals(Preferences.class))
 				((SherlockPreferenceActivity)context).setSupportProgressBarIndeterminateVisibility(false);
-		}
-		
-	}
-    
+		}		
+	} 
 }

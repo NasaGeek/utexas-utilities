@@ -8,6 +8,7 @@
     <string name="routeprompt">Select Route Overlay</string>
     <string name="restaurantprompt">Select a Restaurant</string>
     <string name="semesterprompt">Select a Semester</string>
+    <string name="map_search_hint">Search building name or code, e.g., PCL, UTC</string>
     <string name="building_intent">BUILDING</string>
     <string name="coursemap_intent">COURSE_BBID</string>
     <string name="coursemap_nest_intent">COURSEMAP_ITEM</string>
@@ -21,6 +22,7 @@
     <string name="login_pna_first">Please log in before using this feature</string>
     <string name="preference_blackboard_class_longform_summary">Check this if Blackboard crashes on launch, might fix it.</string>
     <string name="preference_sendcrashes_summary">Help me help you! No personal information will be sent.</string>
+    <string name="button_send_data">Send anonymous information about my courses to help improve UTilities.</string>
     <string name="thankskevin">Also, a huge thanks to fellow UT student, Kevin Lin, for providing many of the graphical assets for this application.  It would be an ugly jumble of gray buttons if not for him.</string>
     <string name="library_license_link">Open Source Licenses and Legal Notices</string>
     <string name="privacy_policy_link">Privacy Policy</string>

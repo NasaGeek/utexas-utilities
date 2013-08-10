@@ -34,7 +34,7 @@ import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.crittercism.app.Crittercism;
+//import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
@@ -53,6 +53,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 	public ActionMode mode;
 	private TextView netv;
 	private TextView eetv;
+	private LinearLayout ell;
 	String semId;
 	
 	@Override
@@ -79,22 +80,17 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 		pb_ll = (LinearLayout) vg.findViewById(R.id.examschedule_progressbar_ll);
 		examlistview = (ListView) vg.findViewById(R.id.examschedule_listview);
 		netv = (TextView) vg.findViewById(R.id.no_exams);
-		eetv = (TextView) vg.findViewById(R.id.examschedule_error);
+		ell = (LinearLayout) vg.findViewById(R.id.examschedule_error);
+		eetv = (TextView) vg.findViewById(R.id.tv_failure);
 		
-		if(!ConnectionHelper.cookieHasBeenSet())
-		{	
+		if(!ConnectionHelper.cookieHasBeenSet()) {	
 			pb_ll.setVisibility(View.GONE);
 			login_first.setVisibility(View.VISIBLE);
 		}
 		else
-		{
 			parser();
-		}
-		
 	}
-	public void parser()
-	{
-
+	public void parser() {
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
 		
@@ -104,59 +100,50 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     	
     	new fetchExamDataTask(httpclient).execute();
 	}
-	public ActionMode getActionMode()
-	{
+	public ActionMode getActionMode() {
 		return mode;
 	}
-	private class fetchExamDataTask extends AsyncTask<Object,Void,Character>
-	{
+	private class fetchExamDataTask extends AsyncTask<Object,Void,Character> {
 		private DefaultHttpClient client;
 		private String errorMsg;
 		
-		public fetchExamDataTask(DefaultHttpClient client)
-		{
+		public fetchExamDataTask(DefaultHttpClient client) {
 			this.client = client;
 		}
 		@Override
-		protected void onPreExecute()
-		{
+		protected void onPreExecute() {
 			pb_ll.setVisibility(View.VISIBLE);
 			examlistview.setVisibility(View.GONE);
 			netv.setVisibility(View.GONE);
+			ell.setVisibility(View.GONE);
 		}
 		@Override
-		protected Character doInBackground(Object... params)
-		{
+		protected Character doInBackground(Object... params) {
 			HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registrar/exam_schedule.WBX");
 	    	String pagedata="";
 
-	    	try
-			{
+	    	try	{
 				HttpResponse response = client.execute(hget);
 		    	pagedata = EntityUtils.toString(response.getEntity());
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				errorMsg = "UTilities could not fetch your exam schedule";
 				cancel(true);
 				e.printStackTrace();
 				return 'e';
 			}
-	    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>"))
-	    	{
+	    	if(pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
 				errorMsg = "You've been logged out of UTDirect, back out and log in again.";
 				if(parentAct != null)
 					ConnectionHelper.logout(parentAct);
 				cancel(true);
 				return 'e';
 	    	}
-
-	    	if(pagedata.contains("will be available approximately three weeks"))// || !tempId.equals(semId))
+	    	if(pagedata.contains("will be available approximately three weeks"))// || !tempId.equals(semId)) 
 	    	{	
 	    		noExams = true;
 	    		return 'c';
 	    	}
-	    	else if(pagedata.contains("Our records indicate that you are not enrolled for the current semester."))
-	    	{
+	    	else if(pagedata.contains("Our records indicate that you are not enrolled for the current semester.")) {
 	    		noExams = true;
 	    		return 'b';
 	    	}
@@ -165,8 +152,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 	    	Pattern rowpattern = Pattern.compile("<tr >.*?</tr>",Pattern.DOTALL);
 	    	Matcher rowmatcher = rowpattern.matcher(pagedata);
 	    	
-	    	while(rowmatcher.find())
-	    	{
+	    	while(rowmatcher.find()) {
 	    		String rowstring = "";
 	    		String row = rowmatcher.group();
 	    		if(row.contains("Unique") || row.contains("Home Page"))
@@ -174,41 +160,32 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 	    		
 	    		Pattern fieldpattern = Pattern.compile("<td.*?>(.*?)</td>",Pattern.DOTALL);
 	    		Matcher fieldmatcher = fieldpattern.matcher(row);
-	    		while(fieldmatcher.find())
-	    		{
+	    		while(fieldmatcher.find()) {
 	    			String field = fieldmatcher.group(1).replace("&nbsp;"," ").trim().replace("\t","");
 	    			Spanned span = Html.fromHtml(field);
 	    			String out = span.toString();
 	    			rowstring +=out+"^";
 	    			
-	    		}
-	    	
+	    		} 	
 	    		examlist.add(rowstring);
 	    	}
-	    	
 	    	return ' ';
 		}
 		@Override
-		protected void onPostExecute(Character result)
-		{
-			if(!noExams)
-			{
+		protected void onPostExecute(Character result) {
+			if(!noExams) {
 				ea = new ExamAdapter(parentAct, examlist);
 				examlistview.setAdapter(ea);
 				examlistview.setOnItemClickListener(ea);
 				examlistview.setVisibility(View.VISIBLE);
-			}
-			else
-			{
+			} else {
 				//TODO: check for null here? or figure out why result would be null to begin with
-				switch(result)
-				{
+				switch(result) {
 					case 'c':netv.setText("'Tis not the season for exams.\nTry back later!\n(about 3 weeks before they begin)");break;
 					case 'b':netv.setText("You aren't enrolled for the current semester.");break;
 					//this should never be executed, anytime dIB returns 'e' it should go to onCancelled
 					case 'e':netv.setText("There was a problem loading the exam schedule.\nPlease try again.");break;
 				}
-	    		
 	    		netv.setVisibility(View.VISIBLE);
 			}
 			pb_ll.setVisibility(View.GONE);
@@ -223,7 +200,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 			pb_ll.setVisibility(View.GONE);
 			examlistview.setVisibility(View.GONE);
 			login_first.setVisibility(View.GONE);
-			eetv.setVisibility(View.VISIBLE);
+			ell.setVisibility(View.VISIBLE);
 			
 		}
 	}
@@ -289,7 +266,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 				catch(ArrayIndexOutOfBoundsException ex)
 				{
 					ex.printStackTrace();
-					Crittercism.leaveBreadcrumb("Exam parse error "+Arrays.toString(examdata));
+					//Crittercism.leaveBreadcrumb("Exam parse error "+Arrays.toString(examdata));
 					
 				}
 				String course = "";

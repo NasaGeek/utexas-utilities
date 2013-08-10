@@ -26,7 +26,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
-import com.crittercism.app.Crittercism;
+//import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.ChangeLog;
 import com.nasageek.utexasutilities.ChangeableContextTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
@@ -66,7 +66,7 @@ public class UTilitiesActivity extends SherlockActivity {
         	
         }*/
        
-        Crittercism.init(getApplicationContext(), "4fed1764be790e4597000001");
+        //Crittercism.init(getApplicationContext(), "4fed1764be790e4597000001");
         
    /*     try {
         	File httpCacheDir = new File(getCacheDir(), "http");
@@ -83,8 +83,9 @@ public class UTilitiesActivity extends SherlockActivity {
 	        		at.setContext(this);
 	        }
         }
+                
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
-        Crittercism.setOptOutStatus(!settings.getBoolean("sendcrashes", true));
+        //Crittercism.setOptOutStatus(!settings.getBoolean("sendcrashes", true));
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         
         setContentView(R.layout.main);

@@ -52,7 +52,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.crittercism.app.Crittercism;
+//import com.crittercism.app.Crittercism;
 import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.AttachmentDownloadService;
 import com.nasageek.utexasutilities.ConnectionHelper;
@@ -67,6 +67,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	private TextView contentDescription;
 	private LinearLayout dlil_pb_ll;
 	private TextView dlil_etv;
+	private LinearLayout dlil_ell;
 	private DefaultHttpClient client;
 	private BroadcastReceiver onNotificationClick;
 	private ArrayList<bbFile> attachments;
@@ -124,7 +125,8 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		
 		dlableItems = (ListView) vg.findViewById(R.id.dlable_item_list);
 		dlil_pb_ll = (LinearLayout) vg.findViewById(R.id.blackboard_dl_items_progressbar_ll);
-		dlil_etv = (TextView) vg.findViewById(R.id.blackboard_dl_error);
+		dlil_ell = (LinearLayout) vg.findViewById(R.id.blackboard_dl_error);
+		dlil_etv = (TextView) vg.findViewById(R.id.tv_failure);
 		contentDescription = (TextView) vg.findViewById(R.id.content_description);
 		msv = (MyScrollView) vg.findViewById(R.id.scroll_content_description);
 		
@@ -159,14 +161,15 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 						else if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) { 	
 							final DownloadManager manager = (DownloadManager) getSherlockActivity().getSystemService(Service.DOWNLOAD_SERVICE);
 	
-							onNotificationClick=new BroadcastReceiver() {
+							onNotificationClick = new BroadcastReceiver() {
 							    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 								public void onReceive(Context con, Intent intent) {
 							    	final String action = intent.getAction();
+							    	DownloadManager notifmanager = (DownloadManager) con.getSystemService(Service.DOWNLOAD_SERVICE);
 							    	if(DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action))
 							    	{
 							    		long[] dlIDs = intent.getLongArrayExtra(DownloadManager.EXTRA_NOTIFICATION_CLICK_DOWNLOAD_IDS);
-							    		Uri downloadedFile = manager.getUriForDownloadedFile(dlIDs[0]);
+							    		Uri downloadedFile = notifmanager.getUriForDownloadedFile(dlIDs[0]);
 							    		//not sure when dlIDs will ever have >1 member, so let's just assume only 1 member
 							    		//TODO: need to confirm when dlIDs might be >1
 							    		if(downloadedFile != null) //make sure file isn't still downloading
@@ -199,7 +202,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 					    	 
 					    	 final long dlID = manager.enqueue(request);
 					    	 
-					    	 Crittercism.leaveBreadcrumb("Attachment Downloaded (>=3.0)");
+					    	 //Crittercism.leaveBreadcrumb("Attachment Downloaded (>=3.0)");
 					       	 Toast.makeText(getSherlockActivity(), "Download started, item should appear in the \"Download\" folder on your external storage.", Toast.LENGTH_LONG).show();
 						 }	 
 						 else {
@@ -235,7 +238,12 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	public void onDestroy() {
 		super.onDestroy();
 		if(onNotificationClick != null)
-			getSherlockActivity().unregisterReceiver(onNotificationClick);
+			try {
+				getSherlockActivity().unregisterReceiver(onNotificationClick);
+				onNotificationClick = null;
+			} catch(IllegalArgumentException e) { //if it's already been unregistered
+				e.printStackTrace();
+			}
 	}
 	
 	@Override
@@ -251,8 +259,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
-    	switch(id)
-    	{
+    	switch(id) {
 	    	case R.id.dlable_item_view_in_web:
 	    		showAreYouSureDlg(getSherlockActivity());
 	    		break;
@@ -327,8 +334,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		if(("".equals(content) || "No description".equals(content)) && getSherlockActivity() != null) {	
 			content = "No description";
 			TypedValue tv = new TypedValue();
-			if(getSherlockActivity().getTheme().resolveAttribute(android.R.attr.textColorTertiary, tv, true))	
-			{	
+			if(getSherlockActivity().getTheme().resolveAttribute(android.R.attr.textColorTertiary, tv, true)) {	
 				TypedArray arr = getSherlockActivity().obtainStyledAttributes(tv.resourceId, new int[] {android.R.attr.textColorTertiary});
 				contentDescription.setTextColor(arr.getColor(0, Color.BLACK));
 			}			
@@ -346,7 +352,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		@Override
 		protected void onPreExecute() {
 			dlil_pb_ll.setVisibility(View.VISIBLE);
-			dlil_etv.setVisibility(View.GONE);
+			dlil_ell.setVisibility(View.GONE);
 			contentDescription.setVisibility(View.GONE);
     		dlableItems.setVisibility(View.GONE);
 		}
@@ -358,12 +364,10 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/contentDetail?content_id="+contentid+"&course_id="+getArguments().getString("courseID"));
 	    	String pagedata="";
 
-	    	try
-			{
+	    	try {
 				HttpResponse response = client.execute(hget);
 		    	pagedata = EntityUtils.toString(response.getEntity());
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				errorMsg = "UTilities could not fetch this download";
 				cancel(true);
 				e.printStackTrace();
@@ -375,17 +379,14 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	    	Pattern contentPattern = Pattern.compile("<body>(.*?)</body>",Pattern.DOTALL);
 	    	Matcher contentMatcher = contentPattern.matcher(pagedata);
 	    	if(contentMatcher.find())
-	    	{
 	    		content = contentMatcher.group(1);
-	    	}
 	    	else
 	    		content = "No description";
 	    	
 	       	Pattern attachmentPattern = Pattern.compile("<attachment.*?/>");
 	    	Matcher attachmentMatcher = attachmentPattern.matcher(pagedata);
 	    	
-	    	while(attachmentMatcher.find())
-	    	{
+	    	while(attachmentMatcher.find()) {
 	    		String attachData = attachmentMatcher.group();
 	    		Pattern namePattern = Pattern.compile("linkLabel=\"(.*?)\"");
 		    	Matcher nameMatcher = namePattern.matcher(attachData);
@@ -426,7 +427,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		protected void onCancelled(Object... o) {
 			dlil_etv.setText(errorMsg);
 			
-			dlil_etv.setVisibility(View.VISIBLE);
+			dlil_ell.setVisibility(View.VISIBLE);
 			dlil_pb_ll.setVisibility(View.GONE);
 			contentDescription.setVisibility(View.GONE);
     		dlableItems.setVisibility(View.GONE);

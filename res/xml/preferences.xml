@@ -100,7 +100,7 @@
         <CheckBoxPreference
             android:id="@+id/sendcrashes"
             android:defaultValue="true"
-            android:key="sendcrashes"
+            android:key="acra.enable"
             android:summary="@string/preference_sendcrashes_summary"
             android:title="Auto-send crash reports" />
     </PreferenceCategory>

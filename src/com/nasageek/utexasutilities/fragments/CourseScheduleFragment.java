@@ -40,7 +40,7 @@ import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.crittercism.app.Crittercism;
+//import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
@@ -66,6 +66,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	private TextView ci_tv;
 	private TextView nc_tv;
 	private TextView etv;
+	private LinearLayout ell;
 	
 	private ArrayList<UTClass> classList;
 	private Classtime current_clt;
@@ -86,7 +87,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    
 	    ci_iv = (ImageView) vg.findViewById(R.id.class_info_color);
 	    ci_tv = (TextView) vg.findViewById(R.id.class_info_text);
-	    etv = (TextView) vg.findViewById(R.id.schedule_error);
+	    ell = (LinearLayout) vg.findViewById(R.id.schedule_error);
+	    etv = (TextView) vg.findViewById(R.id.tv_failure);
 	    
 	    pb_ll = (LinearLayout) vg.findViewById(R.id.schedule_progressbar_ll);
 	    nc_tv = (TextView) vg.findViewById(R.id.no_courses);
@@ -266,6 +268,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		protected void onPreExecute() {
 			pb_ll.setVisibility(LinearLayout.VISIBLE);
 			gv.setVisibility(GridView.GONE);
+			ell.setVisibility(View.GONE);
 			
 			client.getCookieStore().clear();
 			
@@ -365,7 +368,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    	Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
 	    	
 	    	//TODO: un-hardcode this eventually! Shouldn't be too hard to figure out the dropdown size
-	    	if(semSelectMatcher.find() && parentAct != null && ((ScheduleActivity)parentAct).getFragments().size()<3) {
+	    	if(semSelectMatcher.find() && parentAct != null && ((ScheduleActivity)parentAct).getFragments().size() < 3) {
 	    		Pattern semesterPattern = Pattern.compile("<option.*?value=\"(\\d*)\"\\s*>([\\w\\s]*?)</option>", Pattern.DOTALL);
 	    		Matcher semesterMatcher = semesterPattern.matcher(semSelectMatcher.group());
 	    		while(semesterMatcher.find())
@@ -506,7 +509,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 					setMenuItemsEnabled(true);
 					if(!parentAct.isFinishing())
 				    	Toast.makeText(parentAct, "Tap a class to see its information.", Toast.LENGTH_SHORT).show();
-					Crittercism.leaveBreadcrumb("Loaded schedule from web");
+					//Crittercism.leaveBreadcrumb("Loaded schedule from web");
 				}
 			}
 			else {
@@ -526,7 +529,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		@Override
 		protected void onCancelled() {
 			etv.setText(errorMsg);
-			etv.setVisibility(View.VISIBLE);
+			ell.setVisibility(View.VISIBLE);
 			pb_ll.setVisibility(View.GONE);
 			daylist.setVisibility(View.GONE);
 			nc_tv.setVisibility(View.GONE);

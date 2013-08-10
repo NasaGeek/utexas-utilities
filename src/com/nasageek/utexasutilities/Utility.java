@@ -65,40 +65,44 @@ public class Utility {
         out.close();
     }
     
-    public static void updateBusStops(Context con) throws IOException
-	{
-    	new StopParseTask().execute(con);
+    public static void updateBusStops(Context con) throws IOException {
+    	new StopParseTask(con).execute();
 	}
     
     //TODO: check resulting files against regex to confirm they are correct?
-    static class StopParseTask extends AsyncTask<Context, Void, Void>
+    static class StopParseTask extends AsyncTask<Void, Void, Void>
     {
     	String errorText;
     	Context con;
     	
+    	public StopParseTask(Context con) {
+    		this.con = con;
+    	}
+    	
     	@Override
-		protected Void doInBackground(Context... cons) {
+    	protected void onPreExecute() {
+    		Toast.makeText(con, "Fetching stops", Toast.LENGTH_SHORT).show();
+    	}
+    	
+    	@Override
+		protected Void doInBackground(Void...v) {
 			
 			int [] routes = {640, 641, 642, 651, 652, 653, 656, 661, 663, 670, 671, 672, 675, 680, 681, 684, 685};
 			
-			con = cons[0];
 			//FileOutputStream fos = con.openFileOutput("stops", Context.MODE_PRIVATE);
 			File folder = con.getDir("stops", Context.MODE_PRIVATE);
 
 			DefaultHttpClient client = ConnectionHelper.getThreadSafeClient();
-			for(int route : routes)
-			{	
+			for(int route : routes) {	
 		//		BufferedOutputStream bos = new BufferedOutputStream(con.openFileOutput(route+"_stops.txt", Context.MODE_PRIVATE));
 
 		    	HttpGet hget = new HttpGet("http://www.capmetro.org/schedulemap-ut.aspx?f1="+route+"&map=stops");
 		    	String pagedata = "";
 				
-				try
-				{
+				try {
 					HttpResponse response = client.execute(hget);
 			    	pagedata = EntityUtils.toString(response.getEntity());
-				} catch (Exception e)
-				{
+				} catch (Exception e) {
 					errorText = "Connection to CapMetro failed.";
 					cancel(true);
 					e.printStackTrace();
@@ -115,20 +119,20 @@ public class Utility {
 					e.printStackTrace();
 					return null;
 				}
-
-				Pattern scriptPattern = Pattern.compile("<script type=\"text/javascript\">.*?/\\* <!\\[CDATA\\[ \\*/.*function initMap()", Pattern.DOTALL);
+				//out of date as of 7/27/2013
+				//Pattern scriptPattern = Pattern.compile("<script type=\"text/javascript\">.*?/\\* <!\\[CDATA\\[ \\*/.*function initMap()", Pattern.DOTALL);
+				Pattern scriptPattern = Pattern.compile("var markers = \\[(.*?)\\];", Pattern.DOTALL);
 				Matcher scriptMatcher = scriptPattern.matcher(pagedata);
-				if(scriptMatcher.find())
-				{	
-					String script = scriptMatcher.group();
+				if(scriptMatcher.find()) {	
+					String script = scriptMatcher.group(1);
 					
 					Pattern coordPattern = Pattern.compile("(30\\.\\d*);(-97\\.\\d*);");
 		            Matcher coordMatcher = coordPattern.matcher(script);
 		            
-		            Pattern namePattern = Pattern.compile("Stop Name: (.*?)</b>");
+		            Pattern namePattern = Pattern.compile("Stop Name - (.*?)</b>");
 		            Matcher nameMatcher = namePattern.matcher(script);
 		            
-		            Pattern idPattern = Pattern.compile("Stop ID: (\\d*)");
+		            Pattern idPattern = Pattern.compile("Stop ID - (\\d*)");
 		            Matcher idMatcher = idPattern.matcher(script);
 		            
 		            try {
@@ -150,8 +154,7 @@ public class Utility {
 						return null;
 					}
 				}
-				else
-				{	
+				else {	
 					errorText = "Stop data could not be found on CapMetro.";
 					cancel(true);
 					return null;

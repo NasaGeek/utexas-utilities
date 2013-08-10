@@ -5,15 +5,12 @@
     android:gravity="center"
     android:orientation="vertical"
     android:visibility="gone" >
-
-	<RelativeLayout 
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent">	   
+   
     	<TextView
 	        android:id="@+id/tv_failure"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:layout_centerInParent="true"
+	        android:layout_gravity="center"
 	        android:gravity="center"
 	        android:paddingLeft="10dp"
 	        android:paddingRight="10dp"
@@ -24,11 +21,9 @@
 	        android:id="@+id/button_send_data"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_below="@id/tv_failure"
+	        android:layout_gravity="center"
 	        android:gravity="center"
 	        android:layout_margin="40dp"
-	        android:layout_centerHorizontal="true"
 	        android:text="@string/button_send_data"
 	        android:visibility="gone" />
-	</RelativeLayout>
 </LinearLayout>

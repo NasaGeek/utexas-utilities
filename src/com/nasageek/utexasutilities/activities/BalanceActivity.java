@@ -14,7 +14,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.crittercism.app.Crittercism;
+//import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
@@ -48,7 +48,7 @@ public class BalanceActivity extends SherlockFragmentActivity
 		actionbar.setHomeButtonEnabled(true);
 		actionbar.setDisplayHomeAsUpEnabled(true);
 		
-		Crittercism.leaveBreadcrumb("BalanceActivity entered");
+		//Crittercism.leaveBreadcrumb("BalanceActivity entered");
 	}
     private void initialisePaging() 
     {

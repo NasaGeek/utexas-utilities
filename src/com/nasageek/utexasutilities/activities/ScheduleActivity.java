@@ -21,7 +21,7 @@ import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.crittercism.app.Crittercism;
+//import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.adapters.MyFragmentPagerAdapter;
@@ -102,7 +102,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements ViewPa
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 	    actionbar.setHomeButtonEnabled(true);
 	    actionbar.setDisplayHomeAsUpEnabled(true);
-	    Crittercism.leaveBreadcrumb("Entered ScheduleActivity");
+	    //Crittercism.leaveBreadcrumb("Entered ScheduleActivity");
 		
 /*		spinner = new Spinner(this);
         spinner.setPromptId(R.string.semesterprompt);

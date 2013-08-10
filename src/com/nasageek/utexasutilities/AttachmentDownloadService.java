@@ -23,7 +23,7 @@ import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
-import com.crittercism.app.Crittercism;
+//import com.crittercism.app.Crittercism;
 
 @SuppressLint("NewApi")
 public class AttachmentDownloadService extends IntentService {
@@ -114,6 +114,6 @@ public class AttachmentDownloadService extends IntentService {
         // TODO:  .build(); really should do this, but don't want to break anything
         .getNotification();
        	((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(fileName, 1123, n);
-       	Crittercism.leaveBreadcrumb("Attachment Downloaded (<3.0)");
+       	//Crittercism.leaveBreadcrumb("Attachment Downloaded (<3.0)");
     }
 }

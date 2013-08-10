@@ -49,6 +49,7 @@ public class TransactionsFragment extends SherlockFragment {
 	private TransactionAdapter ta;
 	private TextView balanceLabelView, balanceView;
 	private TextView etv;
+	private LinearLayout ell;
 	
 	private List<BasicNameValuePair> postdata;
 //	private SherlockFragmentActivity parentAct;
@@ -82,7 +83,8 @@ public class TransactionsFragment extends SherlockFragment {
 		
 		tlv              = (AmazingListView) vg.findViewById(R.id.transactions_listview);
 		t_pb_ll          = (LinearLayout) vg.findViewById(R.id.trans_progressbar_ll);
-		etv              = (TextView) vg.findViewById(R.id.trans_error);
+		etv              = (TextView) vg.findViewById(R.id.tv_failure);
+		ell              = (LinearLayout) vg.findViewById(R.id.trans_error);
 		balanceLabelView = (TextView) vg.findViewById(R.id.balance_label_tv);
 		balanceView      = (TextView) vg.findViewById(R.id.balance_tv);
 		
@@ -166,8 +168,7 @@ public class TransactionsFragment extends SherlockFragment {
 	//	tlv.setVisibility(View.GONE);
 	//	etv.setVisibility(View.GONE);
 	//	t_pb_ll.setVisibility(View.VISIBLE);
-		if(fetch!=null)
-		{	fetch.cancel(true);
+		if(fetch!=null) {	fetch.cancel(true);
 			fetch = null;
 		}
 		transactionlist.clear();
@@ -200,7 +201,7 @@ public class TransactionsFragment extends SherlockFragment {
 			{
 				t_pb_ll.setVisibility(View.VISIBLE);
 				tlv.setVisibility(View.GONE);
-				etv.setVisibility(View.GONE);
+				ell.setVisibility(View.GONE);
 				balanceLabelView.setVisibility(View.GONE);
 				balanceView.setVisibility(View.GONE);
 			}
@@ -214,8 +215,7 @@ public class TransactionsFragment extends SherlockFragment {
 				hpost.setEntity(new UrlEncodedFormEntity(postdata));
 				HttpResponse response = client.execute(hpost);
 		    	pagedata = EntityUtils.toString(response.getEntity());
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				e.printStackTrace();
 				errorMsg = "UTilities could not fetch transaction data.  Try refreshing.";
 				cancel(true);
@@ -272,10 +272,8 @@ public class TransactionsFragment extends SherlockFragment {
 	    		return 'n';
 		}
 		@Override
-		protected void onPostExecute(Character result)
-		{
-			if (!this.isCancelled())
-	    	{
+		protected void onPostExecute(Character result) {
+			if (!this.isCancelled()) {
 				transactionlist.addAll(tempTransactionList);
 				ta.notifyDataSetChanged();
 				ta.updateHeaders();
@@ -295,27 +293,25 @@ public class TransactionsFragment extends SherlockFragment {
 	    		balanceView.setText(balance);
 	    		
 	    		t_pb_ll.setVisibility(View.GONE);
-	    		etv.setVisibility(View.GONE);
+	    		ell.setVisibility(View.GONE);
 				tlv.setVisibility(View.VISIBLE);
 				balanceLabelView.setVisibility(View.VISIBLE);
 				balanceView.setVisibility(View.VISIBLE);	
 	    	} 	
 		}
 		@Override
-		protected void onCancelled(Character nullIfError){
-			if(nullIfError == null){
-				if(ta.page == 1) //if the first page fails just hide everything
-				{	
+		protected void onCancelled(Character nullIfError) {
+			if(nullIfError == null) {
+				if(ta.page == 1) { //if the first page fails just hide everything	
 					//etv off center, not sure if worth hiding the balance stuff to get it centered
 					etv.setText(errorMsg);
 					t_pb_ll.setVisibility(View.GONE);
 					tlv.setVisibility(View.GONE);
 					balanceLabelView.setVisibility(View.GONE);
 					balanceView.setVisibility(View.GONE);
-					etv.setVisibility(View.VISIBLE);
+					ell.setVisibility(View.VISIBLE);
 				}
-				else //on later pages we should let them see what's already loaded
-				{
+				else { //on later pages we should let them see what's already loaded
 					//got an NPE here, seems like a race condition where cancel is called externally, and for some
 					//reason null is returned (shouldn't be the case) not worth looking into right now
 					Toast.makeText(getSherlockActivity(), errorMsg, Toast.LENGTH_SHORT).show();
