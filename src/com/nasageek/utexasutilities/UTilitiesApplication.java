@@ -14,8 +14,8 @@ import org.acra.ReportField;
 	      httpMethod = org.acra.sender.HttpSender.Method.PUT,
 	      reportType = org.acra.sender.HttpSender.Type.JSON,
 	      formUri = "http://utexasutilities.iriscouch.com/acra-utexasutilities/_design/acra-storage/_update/report",
-	      formUriBasicAuthLogin = "testreporter",
-	      formUriBasicAuthPassword = "testreporterpassword1"
+	      formUriBasicAuthLogin = "releasereporter",
+	      formUriBasicAuthPassword = "raebpcorterpxayszsword"
 	  )
 
 public class UTilitiesApplication extends Application {

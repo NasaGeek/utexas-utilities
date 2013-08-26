@@ -157,18 +157,6 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 				
 				if(mainList.get(position).second.size() != 0) //a folder was clicked
 				{	
-	/*				Intent courseMapLaunch = new Intent(getString(R.string.coursemap_nest_intent), Uri.parse(position+""), CourseMapActivity.this, CourseMapActivity.class);
-					courseMapLaunch.putExtra("mainList", mainList.get(position).second);
-					if(itemNumber == -1 )//top-level, don't copy "Course Map"
-						courseMapLaunch.putExtra("folderName", mainList.get(position).first.getName());
-					else //chain onto the current folder name for "breadcrumbs"
-						courseMapLaunch.putExtra("folderName", absSubtitle.getText() + "/" + mainList.get(position).first.getName());
-					courseMapLaunch.putExtra("viewUri", mainList.get(position).first.getViewUrl());
-					courseMapLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
-					courseMapLaunch.putExtra("coursename", getIntent().getStringExtra("coursename"));
-					courseMapLaunch.putExtra("showViewInWeb", true);
-					startActivity(courseMapLaunch);*/
-					
 					String path = "";
 					if(itemNumber == -1 )//top-level, don't copy "Course Map"
 						path = mainList.get(position).first.getName();
@@ -181,18 +169,6 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 				}
 				else if(linkType.equals("resource/x-bb-file") || linkType.equals("resource/x-bb-document")) {
 					String contentid = mainList.get(position).first.getContentId();
-			/*		Intent bbItemLaunch = new Intent(null, null, CourseMapActivity.this, BlackboardDownloadableItemActivity.class);
-					bbItemLaunch.putExtra("contentid", contentid);
-					if(itemNumber == -1 )//top-level, don't copy "Course Map"
-						bbItemLaunch.putExtra("itemName", mainList.get(position).first.getName()); //will be used as Subtitle
-					else
-						bbItemLaunch.putExtra("itemName", absSubtitle.getText() + "/" + mainList.get(position).first.getName()); //Subtitle
-					bbItemLaunch.putExtra("viewUri", url);
-					bbItemLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
-					bbItemLaunch.putExtra("coursename", getIntent().getStringExtra("coursename"));
-					bbItemLaunch.putExtra("showViewInWeb", true);
-					startActivity(bbItemLaunch);*/
-					
 					String itemName = "";
 					if(itemNumber == -1 )//top-level, don't copy "Course Map"
 						itemName = mainList.get(position).first.getName(); //will be used as Subtitle
@@ -204,53 +180,22 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 					
 				}
 				else if(linkType.equals("resource/x-bb-externallink")) {
-					//((TextView)(actionbar.getCustomView())).setText((((TextView) actionbar.getCustomView()).getText()) + "/" + mainList.get(position).first.split("\\^")[0]);	
 					Intent exItemLaunch = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
 
 					exItemLaunch.putExtra("courseid", bbID);
 					exItemLaunch.putExtra("coursename", courseName);
-					startActivity(exItemLaunch);
-					//actionbar.setTitle(actionbar.getTitle()+"/"+mainList.get(position).first.split("\\^")[0]);
-			/*	((FragmentLauncher)act).addFragment(BlackboardCourseMapFragment.this, 
-							BlackboardExternalItemFragment.newInstance(Uri.parse(url), courseID, courseName)); */
-					
+					startActivity(exItemLaunch);	
 				}
 				else if(linkType.equals("student_gradebook")) {
-			/*		Intent gradesLaunch = new Intent(null, null, CourseMapActivity.this, BlackboardGradesActivity.class);
-					gradesLaunch.putExtra("viewUri", url);
-					gradesLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
-					gradesLaunch.putExtra("coursename", getIntent().getStringExtra("coursename"));
-					gradesLaunch.putExtra("showViewInWeb", true);
-					startActivity(gradesLaunch);*/
-					
 					((FragmentLauncher)act).addFragment(BlackboardCourseMapFragment.this, 
-							BlackboardGradesFragment.newInstance(bbID, courseName, url, false));
-					
+							BlackboardGradesFragment.newInstance(bbID, courseName, url, false));	
 				}
-				else if(linkType.equals("announcements")) {
-		/*			Intent announcementsLaunch = new Intent(null, null, CourseMapActivity.this, BlackboardAnnouncementsActivity.class);
-					announcementsLaunch.putExtra("viewUri", url);
-					announcementsLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
-					announcementsLaunch.putExtra("coursename", getIntent().getStringExtra("coursename"));
-					announcementsLaunch.putExtra("showViewInWeb", true);
-					startActivity(announcementsLaunch);*/
-					
+				else if(linkType.equals("announcements")) {		
 					((FragmentLauncher)act).addFragment(BlackboardCourseMapFragment.this, 
-							BlackboardAnnouncementsFragment.newInstance(bbID, courseName, url, false));
-					
+							BlackboardAnnouncementsFragment.newInstance(bbID, courseName, url, false));		
 				}
 				else //default to webview
 				{
-		/*			Intent bbItemLaunch = new Intent(null, Uri.parse(url), CourseMapActivity.this, BlackboardExternalItemActivity.class);
-					bbItemLaunch.putExtra("mainList", mainList.get(position).second);
-					if(itemNumber == -1 )//top-level, don't copy "Course Map"
-						bbItemLaunch.putExtra("itemName", mainList.get(position).first.getName()); //will be used as Subtitle
-					else
-						bbItemLaunch.putExtra("itemName", absSubtitle.getText() + "/" + mainList.get(position).first.getName()); //Subtitle
-					bbItemLaunch.putExtra("courseid", getIntent().getStringExtra("courseid"));
-					bbItemLaunch.putExtra("coursename", getIntent().getStringExtra("coursename")); //will be used as Title
-					startActivity(bbItemLaunch);*/
-					
 					String itemName = "";
 					if(itemNumber == -1 ) //top-level, don't copy "Course Map"
 						itemName = mainList.get(position).first.getName(); //will be used as Subtitle
@@ -258,8 +203,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 						itemName = absSubtitle.getText() + "/" + mainList.get(position).first.getName(); //Subtitle
 					
 					((FragmentLauncher)act).addFragment(BlackboardCourseMapFragment.this, 
-							BlackboardExternalItemFragment.newInstance(url, bbID, courseName, itemName, false));
-					
+							BlackboardExternalItemFragment.newInstance(url, bbID, courseName, itemName, false));	
 				}
 			}
 		});
@@ -306,13 +250,11 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	}
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
 		menu.clear();
 		//show the menu only if not top-level
 		//there is no "nice" page for the top-level coursemap viewable in a browser
         if(itemNumber != -1)
-        	inflater.inflate(R.menu.blackboard_course_map_menu, menu);
-	 
+        	inflater.inflate(R.menu.blackboard_course_map_menu, menu); 
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -323,12 +265,6 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	    		break;
     	}
     	return false;
-	}
-	@Override
-	public void onSaveInstanceState(Bundle icicle) {
-		super.onSaveInstanceState(icicle);
-//		icicle.putString("courseid", getIntent().getStringExtra("courseid"));
-//		icicle.putString("coursename", getIntent().getStringExtra("coursename"));
 	}
 	private void showAreYouSureDlg(final Context con) {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(con);
@@ -354,12 +290,10 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 					i.setData(Uri.parse(viewUri));  
 					startActivity(i);
 				}
-
 				/*	Intent web = new Intent(null,Uri.parse(getIntent().getStringExtra("viewUri")),CourseMapActivity.this,BlackboardExternalItemActivity.class);
 	    		web.putExtra("itemName", getIntent().getStringExtra("folderName")); //will be used as SubTitle
 	    		web.putExtra("coursename", getIntent().getStringExtra("coursename")); //will be used as Title
-	    		startActivity(web);*/
-	    		
+	    		startActivity(web);*/	    		
 			}		
 		});
 		alertBuilder.setTitle("View on Blackboard");

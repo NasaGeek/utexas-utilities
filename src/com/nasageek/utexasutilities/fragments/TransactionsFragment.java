@@ -197,8 +197,7 @@ public class TransactionsFragment extends SherlockFragment {
 		@Override
 		protected void onPreExecute() {
 			//only show the loading view if we're loading the first page of transactions or refreshing
-			if(ta.page == 1 || refresh)
-			{
+			if(ta.page == 1 || refresh) {
 				t_pb_ll.setVisibility(View.VISIBLE);
 				tlv.setVisibility(View.GONE);
 				ell.setVisibility(View.GONE);

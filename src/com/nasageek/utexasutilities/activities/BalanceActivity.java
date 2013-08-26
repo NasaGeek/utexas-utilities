@@ -23,8 +23,7 @@ import com.nasageek.utexasutilities.fragments.TransactionsFragment.TransactionTy
 import com.viewpagerindicator.MyTabPageIndicator;
 import com.viewpagerindicator.TabPageIndicator;
 
-public class BalanceActivity extends SherlockFragmentActivity
-{	
+public class BalanceActivity extends SherlockFragmentActivity {	
 
 	private ActionBar actionbar;
 	private MultiPanePagerAdapter mPagerAdapter;	   
@@ -32,8 +31,7 @@ public class BalanceActivity extends SherlockFragmentActivity
 	private int pagesDisplayed;
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.balance_layout);
 
@@ -50,8 +48,7 @@ public class BalanceActivity extends SherlockFragmentActivity
 		
 		//Crittercism.leaveBreadcrumb("BalanceActivity entered");
 	}
-    private void initialisePaging() 
-    {
+    private void initialisePaging() {
     	
     	List<SherlockFragment> fragments = new Vector<SherlockFragment>();
         /**
@@ -86,12 +83,10 @@ public class BalanceActivity extends SherlockFragmentActivity
 		pager.setCurrentItem(Integer.parseInt(sp.getString("default_balance_tab", "0")));
     }
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
+	public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
     	super.onOptionsItemSelected(item);
-    	switch(id)
-    	{
+    	switch(id) {
 	    	case android.R.id.home:
 	            // app icon in action bar clicked; go home
 	           super.onBackPressed();
@@ -100,8 +95,7 @@ public class BalanceActivity extends SherlockFragmentActivity
 	        //was getting weird disappearing menu buttons when I had them in the fragments 
 	        //TODO: should at least do this with an interface
 	    	case R.id.balance_refresh:
-	    		if(pagesDisplayed > 1)
-	    		{	
+	    		if(pagesDisplayed > 1) {	
 	    			((TransactionsFragment) ((MultiPanePagerAdapter) pager.getAdapter()).getItem(0)).refresh();
 	    			((TransactionsFragment) ((MultiPanePagerAdapter) pager.getAdapter()).getItem(1)).refresh();
 	    		}
@@ -112,8 +106,7 @@ public class BalanceActivity extends SherlockFragmentActivity
     	return false;
 	}
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) 
-	{
+	public boolean onCreateOptionsMenu(Menu menu) {
 	    super.onCreateOptionsMenu(menu);
 		getSupportMenuInflater().inflate(R.menu.balance_menu, menu);
 	    return true;
