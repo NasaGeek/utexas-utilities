@@ -163,10 +163,11 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 							    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 								public void onReceive(Context con, Intent intent) {
 							    	final String action = intent.getAction();
+							    	DownloadManager notifmanager = (DownloadManager) con.getSystemService(Service.DOWNLOAD_SERVICE);
 							    	if(DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action))
 							    	{
 							    		long[] dlIDs = intent.getLongArrayExtra(DownloadManager.EXTRA_NOTIFICATION_CLICK_DOWNLOAD_IDS);
-							    		Uri downloadedFile = manager.getUriForDownloadedFile(dlIDs[0]);
+							    		Uri downloadedFile = notifmanager.getUriForDownloadedFile(dlIDs[0]);
 							    		//not sure when dlIDs will ever have >1 member, so let's just assume only 1 member
 							    		//TODO: need to confirm when dlIDs might be >1
 							    		if(downloadedFile != null) //make sure file isn't still downloading
@@ -234,8 +235,14 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if(onNotificationClick != null)
-			getSherlockActivity().unregisterReceiver(onNotificationClick);
+		if(onNotificationClick != null) {
+			try {
+                getSherlockActivity().unregisterReceiver(onNotificationClick);
+                onNotificationClick = null;
+	        } catch(IllegalArgumentException e) { //if it's already been unregistered
+	                e.printStackTrace();
+	        }
+		}
 	}
 	
 	@Override

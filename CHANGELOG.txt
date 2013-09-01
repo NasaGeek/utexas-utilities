@@ -169,3 +169,7 @@ Versioncode 24 - 1.99.1
 
 Fix navigation bug in Blackboard
 
+Versioncode 25 - 1.99.2
+
+Fix bug where DownloadableItemFragment is being destroyed with its BroadcastReceiver not registered
+Fixed another small DownloadableItemFragment bug
