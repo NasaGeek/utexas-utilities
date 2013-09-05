@@ -126,7 +126,9 @@ public class Utility {
 				if(scriptMatcher.find()) {	
 					String script = scriptMatcher.group(1);
 					
-					Pattern coordPattern = Pattern.compile("(30\\.\\d*);(-97\\.\\d*);");
+					//out of date as of 9/1/2013
+					//Pattern coordPattern = Pattern.compile("(30\\.\\d*);(-97\\.\\d*);");
+					Pattern coordPattern = Pattern.compile("lat: (3[0-9]\\.\\d+), lng: (-9[0-9]\\.\\d+),");
 		            Matcher coordMatcher = coordPattern.matcher(script);
 		            
 		            Pattern namePattern = Pattern.compile("Stop Name - (.*?)</b>");
