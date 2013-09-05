@@ -543,7 +543,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 									.draggable(false)
 									.visible(true)
 									.title("*" + stops[x].split("\t")[1])
-									.snippet(stops[x].split("\t")[2]));
+									.snippet(stops[x].split("\t")[2].trim()));
 				stopMarkerMap.put(stopMarker.getId(), stopMarker);
 			}
 				
