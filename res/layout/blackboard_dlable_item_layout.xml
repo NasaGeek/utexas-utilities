@@ -12,6 +12,7 @@ up correctly in hierarchy-viewer -->
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:background="@drawable/background_holo_light"
+    android:clickable="true"
     android:gravity="center_vertical"
     android:orientation="vertical" >
 

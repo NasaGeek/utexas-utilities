@@ -150,7 +150,6 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 			else
 				fetch.execute();
     	}
-
 		return vg;
 	}
 	
@@ -213,7 +212,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 				//weird stuff going on here depending on if we're at the end of the course list
     			else if(!classList.get(i).getSemester().equals(currentCategory) || i == classList.size() - 1) {
     				
-    				if(i == classList.size()-1)
+    				if(i == classList.size() - 1)
     					sectionList.add(classList.get(i));
     					
     				tempClassSectionList.add(new ParcelablePair<String, List<BBClass>>(currentCategory, sectionList));
@@ -221,7 +220,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
     				currentCategory = classList.get(i).getSemester();
     				sectionList=new ArrayList<BBClass>();
     				
-    				if(i != classList.size()-1)
+    				if(i != classList.size() - 1)
     					sectionList.add(classList.get(i));
     			}
 				//otherwise just add to the current category
