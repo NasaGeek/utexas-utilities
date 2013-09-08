@@ -31,13 +31,61 @@
         android:id="@+id/data_error"
         layout="@layout/error_message_view"/>
 
-    <com.androidplot.xy.XYPlot
+    <com.androidplot.xy.XYPlotZoomPan
         android:id="@+id/mySimpleXYPlot"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:visibility="gone"
+        
+        androidPlot.graphWidget.marginBottom="20dp"
+        
+        androidPlot.domainLabel="Date"
+        androidPlot.domainLabelWidget.labelPaint.textSize="13sp"
+        androidPlot.domainLabelWidget.height="30dp"
+        androidPlot.domainLabelWidget.marginTop="3dp"
+        androidPlot.domainLabelWidget.labelPaint.color="#ff000000"
+        androidPlot.domainLabelWidget.labelPaint.antialias="true"
+        androidPlot.graphWidget.domainOriginLinePaint.color="#ff444444"
+        androidPlot.graphWidget.domainOriginLinePaint.antiAlias="true"
+        androidPlot.graphWidget.domainOriginLinePaint.style="stroke"
+      
+        
+        androidPlot.rangeLabel="Data (MB)"
+        androidPlot.rangeLabelWidget.labelPaint.textSize="13sp"
+        androidPlot.rangeLabelWidget.labelPaint.color="#ff000000"
+        androidPlot.rangeLabelWidget.labelPaint.antialias="true"
+        androidPlot.graphWidget.rangeOriginLinePaint.color="#ff444444"
+        androidPlot.graphWidget.rangeOriginLinePaint.antiAlias="true"
+        androidPlot.graphWidget.rangeOriginLinePaint.style="stroke"
+        
+        androidPlot.graphWidget.backgroundPaint.alpha="0"
+        androidPlot.graphWidget.gridBackgroundPaint.color="#ffdddddd"
+        androidPlot.graphWidget.gridBackgroundPaint.style="fill"
+        androidPlot.backgroundPaint.alpha="0"
+        androidPlot.backgroundPaint.style="fill"
+        androidPlot.borderPaint.alpha="0"
+        androidPlot.borderPaint.textAlign="center"
+        
+        androidPlot.legendWidget.height="20dp"
+        androidPlot.legendWidget.textPaint.textSize="12sp"
+        androidPlot.legendWidget.textPaint.color="#ff000000"
+        androidPlot.legendWidget.textPaint.antiAlias="true"
+        
+        androidPlot.graphWidget.domainOriginLabelPaint.textSize="9sp"
+        androidPlot.graphWidget.domainOriginLabelPaint.color="#ff000000"
+        androidPlot.graphWidget.domainOriginLabelPaint.textAlign="left"
+        androidPlot.graphWidget.domainLabelPaint.textSize="9sp"
+        androidPlot.graphWidget.domainLabelPaint.color="#ff000000"
+        androidPlot.graphWidget.domainLabelPaint.textAlign="left"
+        
+        androidPlot.graphWidget.rangeOriginLabelPaint.textSize="9sp"
+        androidPlot.graphWidget.rangeOriginLabelPaint.color="#ff000000"
+        androidPlot.graphWidget.rangeLabelPaint.textSize="9sp"
+        androidPlot.graphWidget.rangeLabelPaint.color="#ff000000"
+        
+        
         title="" />
 
 </LinearLayout>

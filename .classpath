@@ -2,11 +2,6 @@
 <classpath>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="libs/Androidplot-core-0.4.4-release.jar" sourcepath="C:/Users/Chris/Dropbox/Programming/Android/Libs/Androidplot-core-0.4.4-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/Chris/Dropbox/Programming/Android/Libs/Androidplot-core-0.4.4-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry excluding="com/nasageek/utexasutilities/testing/" kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>

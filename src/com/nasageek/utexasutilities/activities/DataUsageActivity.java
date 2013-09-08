@@ -43,19 +43,19 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.androidplot.series.XYSeries;
+import com.androidplot.xy.XYPlot;
+import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.BarFormatter;
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.SimpleXYSeries;
-import com.androidplot.xy.XYPlot;
+import com.androidplot.xy.XYPlotZoomPan;
 import com.androidplot.xy.XYStepMode;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.R.id;
 import com.nasageek.utexasutilities.R.layout;
 
-public class DataUsageActivity extends SherlockActivity implements OnTouchListener
-{
+public class DataUsageActivity extends SherlockActivity implements OnTouchListener {
 	
 	private DefaultHttpClient httpclient;
 	private SharedPreferences settings;
@@ -104,9 +104,11 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 		actionbar.setHomeButtonEnabled(true);
 		actionbar.setDisplayHomeAsUpEnabled(true);
 	
-		graph = (XYPlot) findViewById(R.id.mySimpleXYPlot);
-		graph.setOnTouchListener(this);
-		graph.disableAllMarkup();
+		graph = (XYPlotZoomPan) findViewById(R.id.mySimpleXYPlot);
+		
+		((XYPlotZoomPan)graph).setZoomVertically(false);
+		//graph.setOnTouchListener(this);
+		graph.setMarkupEnabled(false);
 
 
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -157,13 +159,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 							scroll(lastScrolling);
 							lastZooming += (1 - lastZooming) * .2;	//speed of zooming damping
 							zoom(lastZooming);
-							
-							try {
-								graph.postRedraw();
-							} catch (final InterruptedException e) {
-								e.printStackTrace();
-							}
-							// the thread lives until the scrolling and zooming are imperceptible
+							graph.redraw();
 						}
 					}
 				}, 0);break;
@@ -359,13 +355,13 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    	Calendar date = Calendar.getInstance();
 	    	
 	    	//if there's more than a week of data, show just the last week, otherwise show it all
-	    	for(int i = lines.length >= 288 ? lines.length-288 : 0, x=0; i<lines.length; i++,x++) {
+	    	for(int i = lines.length >= 288 ? lines.length-288 : 0, x=0; i<lines.length; i++, x++) {
 	    		String[] entry = lines[i].split(",");
 	    		date.clear();
-	    		try{
+	    		try {
 	    		//TODO: this crashes sometimes on the [2] access, not sure why
 	    		date.set(Integer.parseInt(entry[0].split("/")[0]),
-	    				Integer.parseInt(entry[0].split("/")[1])-1,
+	    				Integer.parseInt(entry[0].split("/")[1]) - 1,
 	    				Integer.parseInt(entry[0].split("/| ")[2]),
 	    				Integer.parseInt(entry[0].split(" |:")[1]),
 	    				Integer.parseInt(entry[0].split(" |:")[2]));
@@ -376,21 +372,21 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 					nfe.printStackTrace();
 					return ' ';
 	    		}
-	    		labels[x]=date.getTimeInMillis();
-	    	
-	    		downdata[x]=(Float.valueOf(entry[1])); 
+	    		
+	    		labels[x] = date.getTimeInMillis();  	
+	    		downdata[x] = (Float.valueOf(entry[1])); 
 	    		
 	    		//psh who needs updata when you can just overlay downdata on top of totaldata?
 	    //		updata[x]=(Float.valueOf(entry[2]));
-	    		totaldata[x]=(Float.valueOf(entry[3]));
+	    		totaldata[x] = (Float.valueOf(entry[3]));
 	    	}	    	
 
 	    	return ' ';
 		}
 		@Override
 		protected void onPostExecute(Character result) {
-			XYSeries series = new SimpleXYSeries(Arrays.asList(labels), Arrays.asList(downdata),  "Downloaded");
-			XYSeries seriestotal = new SimpleXYSeries(Arrays.asList(labels), Arrays.asList(totaldata),  "Uploaded");
+			XYSeries series = new SimpleXYSeries(Arrays.asList(labels), Arrays.asList(downdata), "Downloaded");
+			XYSeries seriestotal = new SimpleXYSeries(Arrays.asList(labels), Arrays.asList(totaldata), "Uploaded");
 			
 	//		LineAndPointFormatter downlineformatter = new LineAndPointFormatter(0xFFFFAD3B, 0xFFFFAD3B, 0xFFFFAD3B);
 	//		LineAndPointFormatter uplineformatter = new LineAndPointFormatter(0xFF388DFF, 0xFF388DFF, 0xFF388DFF);
@@ -402,60 +398,16 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 			downbarformatter.getBorderPaint().setStrokeWidth(0);
 			upbarformatter.getBorderPaint().setStrokeWidth(0);
 			
-			graph.getBackgroundPaint().setAlpha(0);
-			graph.getBorderPaint().setAlpha(0);
-			
-			
-			Paint borderpaint = new Paint();
-			borderpaint.setColor(Color.BLACK);
-			borderpaint.setAntiAlias(true);
-			
-			Paint legendtextpaint = new Paint(borderpaint);
-			borderpaint.setTextAlign(Paint.Align.CENTER);
-	
-			Paint backgroundpaint = new Paint();
-			backgroundpaint.setColor(0xFFDDDDDD);
-			backgroundpaint.setStyle(Style.FILL);
-			
 			Paint gridpaint = new Paint();
 			gridpaint.setColor(Color.DKGRAY);
 			gridpaint.setAntiAlias(true);
 	        gridpaint.setStyle(Paint.Style.STROKE);
 	        
-	        Paint rangepaint = new Paint();
-	        rangepaint.setColor(Color.BLACK);
-	        rangepaint.setStyle(Style.STROKE);
-	        rangepaint.setAntiAlias(true);
-	        rangepaint.setTextAlign(Align.RIGHT);
-			
-	        graph.getGraphWidget().getBackgroundPaint().setAlpha(0);
-			graph.getGraphWidget().setGridLinePaint(gridpaint);
-			graph.getGraphWidget().setGridBackgroundPaint(backgroundpaint);
-			graph.getGraphWidget().setDomainOriginLinePaint(gridpaint);
-			graph.getGraphWidget().setRangeOriginLinePaint(gridpaint);
-			graph.getGraphWidget().setDomainOriginLabelPaint(borderpaint);
-			graph.getGraphWidget().setDomainLabelPaint(borderpaint);
-			graph.getGraphWidget().setRangeLabelPaint(rangepaint);
-			graph.getGraphWidget().setRangeOriginLabelPaint(rangepaint);
-			
-			graph.getLegendWidget().setTextPaint(legendtextpaint);
-			
-			graph.setDomainLabel("Date");
-			graph.getDomainLabelWidget().setMarginTop(3);
-			graph.getDomainLabelWidget().setHeight(30.0f);
-			graph.getDomainLabelWidget().setLabelPaint(borderpaint);
-			graph.getDomainLabelWidget().pack();
-			
-			graph.setRangeLabel("Data (MB)");
-			graph.getRangeLabelWidget().setHeight(20.0f);
-			graph.getRangeLabelWidget().setLabelPaint(borderpaint);
-			graph.getRangeLabelWidget().pack();
-			
+	        graph.getGraphWidget().setDomainGridLinePaint(gridpaint);
+			graph.getGraphWidget().setRangeGridLinePaint(gridpaint);
+
 			graph.addSeries(seriestotal, upbarformatter);
 			graph.addSeries(series, downbarformatter);
-		//	graph.addSeries(seriestotal, uplineformatter);
-		//	graph.addSeries(series, downlineformatter);
-			
 			graph.setTicksPerDomainLabel(4);
 			
 			graph.setDomainStep(XYStepMode.INCREMENT_BY_VAL,1800000);
@@ -479,7 +431,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 			maxXY = new PointD(graph.getCalculatedMaxX().doubleValue(),
 					graph.getCalculatedMaxY().doubleValue()); //initial maximum data point
 			
-			graph.setTicksPerRangeLabel(maxXY.y>61?2:1);
+			graph.setTicksPerRangeLabel(maxXY.y > 61 ? 2 : 1);
 			
 			absMaxX = maxXY.x; //absolute maximum data point
 			//absolute maximum value for the domain boundary minimum
@@ -516,7 +468,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	    	graph.setVisibility(View.VISIBLE);
 	    	d_pb_ll.setVisibility(View.GONE);
 	    	
-	    	Toast.makeText(DataUsageActivity.this, "Swipe up and down to zoom in and out", Toast.LENGTH_SHORT).show();
+	    	//Toast.makeText(DataUsageActivity.this, "Swipe up and down to zoom in and out", Toast.LENGTH_SHORT).show();
 		}
 		@Override
 		protected void onCancelled() {
