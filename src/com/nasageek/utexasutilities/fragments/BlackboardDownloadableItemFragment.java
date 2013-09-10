@@ -175,7 +175,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 							    		if(downloadedFile != null) //make sure file isn't still downloading
 							    		{	
 							    			try {
-							 	    			startActivity(new Intent(Intent.ACTION_VIEW, downloadedFile));
+							 	    			con.startActivity(new Intent(Intent.ACTION_VIEW, downloadedFile));
 							    			}
 						 	    			catch(ActivityNotFoundException ex) {
 							 	    				ex.printStackTrace();
@@ -190,10 +190,14 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	
 							 getSherlockActivity().registerReceiver(onNotificationClick, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
 							  
-							 Uri uri = Uri.parse("https://courses.utexas.edu"+Uri.decode(item.getDlUri()));
+							 Uri uri = Uri.parse("https://courses.utexas.edu" + Uri.decode(item.getDlUri()));
 							 DownloadManager.Request request = new DownloadManager.Request(uri);
 							 
-							 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+							 //fix stupid Honeycomb bug
+							 if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB_MR2)
+								 request.setShowRunningNotification(true);
+							 else	
+								 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 					    	 request.setDescription("Downloading to the Download folder.");
 					    	 request.setTitle(item.getFileName());
 					    	 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getFileName());
