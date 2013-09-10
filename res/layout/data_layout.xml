@@ -31,7 +31,7 @@
         android:id="@+id/data_error"
         layout="@layout/error_message_view"/>
 
-    <com.androidplot.xy.XYPlotZoomPan
+    <com.androidplot.xy.XYPlot
         android:id="@+id/mySimpleXYPlot"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

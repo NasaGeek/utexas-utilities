@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -19,19 +20,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Align;
-import android.graphics.Paint.Style;
 import android.graphics.PointF;
 import com.nasageek.utexasutilities.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -51,18 +46,14 @@ import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.BarFormatter;
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.SimpleXYSeries;
-import com.androidplot.xy.XYPlotZoomPan;
 import com.androidplot.xy.XYStepMode;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.R.id;
-import com.nasageek.utexasutilities.R.layout;
 
-public class DataUsageActivity extends SherlockActivity {
+public class DataUsageActivity extends SherlockActivity implements OnTouchListener {
 	
 	private DefaultHttpClient httpclient;
-	private SharedPreferences settings;
-	private Float[] updata,downdata,totaldata; 
+	private Float[] downdata, totaldata; 
 	private Long[] labels;
 	private XYPlot graph;
 	private ProgressBar mProgress;
@@ -102,11 +93,9 @@ public class DataUsageActivity extends SherlockActivity {
 		actionbar.setHomeButtonEnabled(true);
 		actionbar.setDisplayHomeAsUpEnabled(true);
 	
-		graph = (XYPlotZoomPan) findViewById(R.id.mySimpleXYPlot);
-		
-		((XYPlotZoomPan)graph).setZoomVertically(false);
+		graph = (XYPlot) findViewById(R.id.mySimpleXYPlot);
+		graph.setOnTouchListener(this);
 		graph.setMarkupEnabled(false);
-		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		labels = new Long[288];
 		downdata = new Float[288];
@@ -120,6 +109,93 @@ public class DataUsageActivity extends SherlockActivity {
     	new fetchDataTask(httpclient).execute();
 		new fetchProgressTask(httpclient).execute();
 		
+	}
+	
+	// Definition of the touch states
+	static final private int NONE = 0;
+	static final private int ONE_FINGER_DRAG = 1;
+	private int mode = NONE;
+ 
+	private PointF firstFinger;
+	private float lastScrolling;
+	private float lastZooming;
+ 
+	public boolean onTouch(View arg0, MotionEvent event) {
+		switch(event.getAction() & MotionEvent.ACTION_MASK) {
+			case MotionEvent.ACTION_DOWN: // Start gesture
+				firstFinger = new PointF(event.getX(), event.getY());
+				mode = ONE_FINGER_DRAG;
+				break;
+			case MotionEvent.ACTION_UP:
+			case MotionEvent.ACTION_POINTER_UP:
+				//When the gesture ends, a thread is created to give inertia to the scrolling and zoom 
+				final Timer t = new Timer();
+				t.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						while(Math.abs(lastScrolling) > 1f || Math.abs(lastZooming - 1) > 1.01) {
+							lastScrolling *= .8;	//speed of scrolling damping
+							scroll(lastScrolling);
+							lastZooming += (1 - lastZooming) * .2;	//speed of zooming damping
+							zoom(lastZooming);
+							graph.redraw();
+						}
+					}
+				}, 0);break;
+
+			case MotionEvent.ACTION_MOVE:
+				if (mode == ONE_FINGER_DRAG) {
+					final PointF oldFirstFinger = firstFinger;
+					firstFinger = new PointF(event.getX(), event.getY());
+					lastScrolling = oldFirstFinger.x - firstFinger.x;
+					scroll(lastScrolling);
+					lastZooming = (firstFinger.y - oldFirstFinger.y) / graph.getHeight();
+					if (lastZooming < 0)
+						lastZooming = 1 / (1 - lastZooming);
+					else
+						lastZooming += 1;
+					zoom(lastZooming);
+
+					graph.redraw();
+ 
+				}
+				break;
+		}
+		return true;
+	}
+ 
+	private void zoom(float scale) {
+		final double domainSpan = maxXY.x - minXY.x;
+		final double domainMidPoint = maxXY.x - domainSpan / 2.0f;
+		final double offset = domainSpan * scale / 2.0f;
+		minXY.x = domainMidPoint - offset;
+		maxXY.x = domainMidPoint + offset;
+		checkBoundaries();
+	}
+ 
+	private void scroll(float pan) {
+		final double domainSpan = maxXY.x - minXY.x;
+		final double step = domainSpan / graph.getWidth();
+		final double offset = pan * step;
+		minXY.x += offset;
+		maxXY.x += offset;
+
+		if (minXY.x < absMinX) {	
+			minXY.x = absMinX;
+			maxXY.x -= offset;//(absMinX-minXY.x);
+		}
+		else if (minXY.x > maxNoError)
+			minXY.x = maxNoError;
+		if (maxXY.x > absMaxX) {	
+			maxXY.x = absMaxX;//(maxXY.x-absMaxX);
+			minXY.x -= offset;//(maxXY.x-absMaxX);
+		}
+		else if (maxXY.x < minNoError)
+			maxXY.x = minNoError;
+		if (maxXY.x - minXY.x < minDif)
+			maxXY.x = maxXY.x + (double) (minDif - (maxXY.x - minXY.x));
+
+		graph.setDomainBoundaries(minXY.x, maxXY.x, BoundaryMode.FIXED);
 	}
 	
 	private void checkBoundaries() {
@@ -331,6 +407,8 @@ public class DataUsageActivity extends SherlockActivity {
 	    	graph.redraw();
 	    	graph.setVisibility(View.VISIBLE);
 	    	d_pb_ll.setVisibility(View.GONE);
+	    	
+	    	Toast.makeText(DataUsageActivity.this, "Swipe up and down to zoom in and out", Toast.LENGTH_SHORT).show();		
 	    }
 		@Override
 		protected void onCancelled() {
@@ -376,8 +454,7 @@ public class DataUsageActivity extends SherlockActivity {
 		// create a simple date format that draws on the year portion of our timestamp.
          // see http://download.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
          // for a full description of SimpleDateFormat.
-         private SimpleDateFormat dateFormat = new SimpleDateFormat("E - HH:mm");
-
+         private SimpleDateFormat dateFormat = new SimpleDateFormat("E - HH:mm", Locale.US);
 
          @Override
          public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
