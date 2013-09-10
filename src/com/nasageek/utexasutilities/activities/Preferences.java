@@ -144,7 +144,7 @@ public class Preferences extends SherlockPreferenceActivity{
 			
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				final Intent about_intent = null;//new Intent(Preferences.this, AboutMeActivity.class);
+				final Intent about_intent = new Intent(Preferences.this, AboutMeActivity.class);
 				startActivity(about_intent);
 				return true;
 			}
