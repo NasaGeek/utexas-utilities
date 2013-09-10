@@ -12,6 +12,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.acra.ACRA;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -34,7 +35,9 @@ import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -66,6 +69,7 @@ public class DataUsageActivity extends SherlockActivity {
 	private TextView dataUsedText;
 	private TextView detv;
 	private LinearLayout dell;
+	private Button deb;
 	private String usedText;
 	private LinearLayout d_pb_ll;
 	private ActionBar actionbar;
@@ -91,6 +95,7 @@ public class DataUsageActivity extends SherlockActivity {
 		mProgress = (ProgressBar) findViewById(R.id.percentDataUsed);
 		dell = (LinearLayout) findViewById(R.id.data_error);
 		detv = (TextView) findViewById(R.id.tv_failure);
+		deb = (Button) findViewById(R.id.button_send_data);
 		actionbar = getSupportActionBar();
 		actionbar.setTitle("Data Usage");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -183,6 +188,9 @@ public class DataUsageActivity extends SherlockActivity {
 	private class fetchDataTask extends AsyncTask<Object,Void,Character> {
 		private DefaultHttpClient client;
 		private String errorMsg;
+		private Exception ex;
+		private Boolean showButton = false;
+		private String errorData;
 		
 		public fetchDataTask(DefaultHttpClient client) {
 			this.client = client;
@@ -202,7 +210,7 @@ public class DataUsageActivity extends SherlockActivity {
 				return ' ';
 			}
 			
-	    	String pagedata="";
+	    	String pagedata = "";
 
 	    	try {				
 				HttpResponse response = client.execute(hget);
@@ -240,7 +248,18 @@ public class DataUsageActivity extends SherlockActivity {
 					nfe.printStackTrace();
 					return ' ';
 	    		}
-	    		
+	    		catch(ArrayIndexOutOfBoundsException aibe) {
+	    			errorMsg = "UTilities could not parse your data usage";
+	    			ex = aibe;
+	    			StringBuilder data = new StringBuilder();
+	    			for(String line : lines)
+	    				data.append(line).append("\n");
+	    			errorData = data.toString();
+	    			showButton = true;
+	    			aibe.printStackTrace();
+	    			cancel(true);
+	    			return ' ';
+	    		}
 	    		labels[x] = date.getTimeInMillis();  	
 	    		downdata[x] = (Float.valueOf(entry[1])); 
 	    		
@@ -248,7 +267,6 @@ public class DataUsageActivity extends SherlockActivity {
 	    //		updata[x]=(Float.valueOf(entry[2]));
 	    		totaldata[x] = (Float.valueOf(entry[3]));
 	    	}	    	
-
 	    	return ' ';
 		}
 		@Override
@@ -313,12 +331,33 @@ public class DataUsageActivity extends SherlockActivity {
 	    	graph.redraw();
 	    	graph.setVisibility(View.VISIBLE);
 	    	d_pb_ll.setVisibility(View.GONE);
-	    	}
+	    }
 		@Override
 		protected void onCancelled() {
 			detv.setText(errorMsg);
+			deb.setText("Send anonymous information about your data usage to help improve UTilities.");
+			deb.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if(errorData != null && ex != null) {
+						SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(DataUsageActivity.this.getBaseContext()); 
+						if(!sp.getBoolean("acra.enable", true))
+							ACRA.getErrorReporter().setEnabled(true);
+						ACRA.getErrorReporter().putCustomData("xmldata", errorData);
+			        	ACRA.getErrorReporter().handleException(ex);
+			        	ACRA.getErrorReporter().removeCustomData("xmldata");
+			        	if(!sp.getBoolean("acra.enable", true))
+			        		ACRA.getErrorReporter().setEnabled(false);
+			        	Toast.makeText(DataUsageActivity.this, "Data is being sent, thanks for helping out!", Toast.LENGTH_SHORT).show();
+					} else {
+						Toast.makeText(DataUsageActivity.this, "Couldn't send the course data for some reason :(", Toast.LENGTH_SHORT).show();
+					}
+					v.setVisibility(View.INVISIBLE);	
+				}
+			});
 			d_pb_ll.setVisibility(View.GONE);
 			dell.setVisibility(View.VISIBLE);
+    		if(showButton) deb.setVisibility(View.VISIBLE);
 		}
 	}
 	@Override
