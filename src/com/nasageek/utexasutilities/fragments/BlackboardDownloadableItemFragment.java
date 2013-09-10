@@ -140,18 +140,17 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 				final bbFile item = (bbFile)(parent.getAdapter().getItem(position));
 				
 				AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getSherlockActivity());
-				alertBuilder.setMessage("Would you like to download this attached file?").
-				setNegativeButton("No", new DialogInterface.OnClickListener() {
+				alertBuilder.setMessage("Would you like to download this attached file?")
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.dismiss();
 					}
-				}).
-				setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				})
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 					@Override
 					@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 					public void onClick(DialogInterface dialog, int which) {
-
 						if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {	 
 							Intent downloadAttachment = new Intent(getSherlockActivity(), AttachmentDownloadService.class);
 							downloadAttachment.putExtra("fileName", item.getFileName());
@@ -166,66 +165,60 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 								public void onReceive(Context con, Intent intent) {
 							    	final String action = intent.getAction();
 							    	DownloadManager notifmanager = (DownloadManager) con.getSystemService(Service.DOWNLOAD_SERVICE);
-							    	if(DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action))
-							    	{
+							    	if(DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action)) {
 							    		long[] dlIDs = intent.getLongArrayExtra(DownloadManager.EXTRA_NOTIFICATION_CLICK_DOWNLOAD_IDS);
 							    		Uri downloadedFile = notifmanager.getUriForDownloadedFile(dlIDs[0]);
 							    		//not sure when dlIDs will ever have >1 member, so let's just assume only 1 member
 							    		//TODO: need to confirm when dlIDs might be >1
-							    		if(downloadedFile != null) //make sure file isn't still downloading
-							    		{	
+							    		if(downloadedFile != null) { //make sure file isn't still downloading	
 							    			try {
 							 	    			con.startActivity(new Intent(Intent.ACTION_VIEW, downloadedFile));
-							    			}
-						 	    			catch(ActivityNotFoundException ex) {
+							    			} catch(ActivityNotFoundException ex) {
 							 	    				ex.printStackTrace();
 							 	    				//TODO: let the user know something went wrong?
 							 	    		}
 							    		}
 							    		else
 							    			Toast.makeText(con, "Download could not be opened at this time.", Toast.LENGTH_SHORT).show();
-							    	}
 							    }
-							};
-	
-							 getSherlockActivity().registerReceiver(onNotificationClick, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
+							}
+						};
+							getSherlockActivity().registerReceiver(onNotificationClick, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
 							  
-							 Uri uri = Uri.parse("https://courses.utexas.edu" + Uri.decode(item.getDlUri()));
-							 DownloadManager.Request request = new DownloadManager.Request(uri);
+							Uri uri = Uri.parse("https://courses.utexas.edu" + Uri.decode(item.getDlUri()));
 							 
-							 //fix stupid Honeycomb bug
-							 if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB_MR2)
-								 request.setShowRunningNotification(true);
-							 else	
-								 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-					    	 request.setDescription("Downloading to the Download folder.");
-					    	 request.setTitle(item.getFileName());
-					    	 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getFileName());
-					    	 
-					    	 request.addRequestHeader("Cookie", "s_session_id="+ConnectionHelper.getBBAuthCookie(getSherlockActivity(), client));
-					    	 
-					    	 final long dlID = manager.enqueue(request);
-					    	 
-					    	 //Crittercism.leaveBreadcrumb("Attachment Downloaded (>=3.0)");
-					       	 Toast.makeText(getSherlockActivity(), "Download started, item should appear in the \"Download\" folder on your external storage.", Toast.LENGTH_LONG).show();
+							Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
+							DownloadManager.Request request = new DownloadManager.Request(uri);
+							 
+							//fix stupid Honeycomb bug
+							if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB_MR2)
+								request.setShowRunningNotification(true);
+							else	
+								request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+					    	request.setDescription("Downloading to the Download folder.")
+					    			.setTitle(item.getFileName())
+					    			.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getFileName())
+					    			.addRequestHeader("Cookie", "s_session_id="+ConnectionHelper.getBBAuthCookie(getSherlockActivity(), client));
+					    	
+					    	final long dlID = manager.enqueue(request);
+					    	Toast.makeText(getSherlockActivity(), "Download started, item should appear in the \"Download\" folder on your external storage.", Toast.LENGTH_LONG).show();
 						 }	 
 						 else {
 							 AlertDialog.Builder build = new AlertDialog.Builder(getSherlockActivity());
-							 build.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
-								
+							 build.setNeutralButton("Okay", new DialogInterface.OnClickListener() {	
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
 									dialog.dismiss();	
 								}
-							 }).
-							 setTitle("No External Media").
-							 setMessage("Your external storage media (such as a microSD Card) is currently unavailable; "+
-							 "the download cannot start.").
-							 show();	 
-						 }	
+							 })
+							 .setTitle("No External Media")
+							 .setMessage("Your external storage media (such as a microSD Card) is currently unavailable; "+
+							 "the download cannot start.")
+							 .show();	 
+						}	
 					}
-				}).
-				setTitle("Download Attachment").
+				})
+				.setTitle("Download Attachment").
 				show();
 			}
 		});
@@ -234,7 +227,6 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 			new fetchData(client).execute(getArguments().getString("contentID"));
 		else
 			completeUISetup();
-		
 		return vg;
 	}
 	
