@@ -353,6 +353,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 							return -1;
 						}
 						//TODO: why not just do this in onPreExecute?
+						
+						// TODO: fix crash here when logging in with cache feature enabled on but no login or cache
 						conn.setRequestProperty("Cookie", "SC="+ConnectionHelper.getAuthCookie(getSherlockActivity(),client));
 						
 				//		conn.setUseCaches(true); 
