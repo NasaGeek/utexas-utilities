@@ -1,6 +1,7 @@
 package com.nasageek.utexasutilities.activities;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -22,6 +23,7 @@ import com.actionbarsherlock.view.MenuItem;
 //import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.ScheduleDatabase;
 import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.Utility;
 
@@ -127,6 +129,31 @@ public class Preferences extends SherlockPreferenceActivity{
         	loginfield.setEnabled(true);
         	passwordfield.setEnabled(true);      
         }
+        
+        final CheckBoxPreference cacheSched = (CheckBoxPreference) findPreference("cache_schedule");
+        cacheSched.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				ScheduleDatabase db = new ScheduleDatabase(Preferences.this);
+				boolean check = (Boolean) newValue;
+				
+				try {
+					if (check) {
+						db.createDataBase(false);
+						db.createTable();
+					} else {
+						db.openDataBase();
+						db.deleteTable();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					db.close();
+				}
+				
+				return true;
+			}
+		});
         
         final CheckBoxPreference sendcrashes = (CheckBoxPreference)findPreference("acra.enable");
         sendcrashes.setOnPreferenceChangeListener(new OnPreferenceChangeListener() 

@@ -157,24 +157,27 @@ public class UTilitiesActivity extends SherlockActivity {
             public void onClick(View v) {
             	
             	if(settings.getBoolean("loginpref", false)) {
-            		if(!ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
-	            		message.setText(R.string.login_first);
+            		if (settings.getBoolean("cache_schedule", false) && !ConnectionHelper.isLoggingIn()) {
+            			startActivity(schedule);
+            		} else if (!ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
+            			message.setText(R.string.login_first);
 	                	message.setDuration(Toast.LENGTH_SHORT);
 	            		message.show();
-	            	}
-	            	else {
-	            		startActivity(schedule);
-	            	}
+            		} else {
+            			startActivity(schedule);
+            		}
             	}
             	else {
-            		if(!ConnectionHelper.cookieHasBeenSet()) {
+            		if (settings.getBoolean("cache_schedule", false)) {
+            			startActivity(schedule);
+            		} else if (!ConnectionHelper.cookieHasBeenSet()) {
             			Intent login_intent = new Intent(UTilitiesActivity.this, LoginActivity.class);
             			login_intent.putExtra("activity", schedule.getComponent().getClassName());
             			login_intent.putExtra("service", 'u');
             	    	startActivity(login_intent);
-	            	}
-	            	else
-	            		startActivity(schedule);
+            		} else {
+            			startActivity(schedule);
+            		}
             	}
             }   
         });
