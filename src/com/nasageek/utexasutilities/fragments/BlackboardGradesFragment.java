@@ -116,7 +116,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				bbGrade grade = (bbGrade) arg0.getAdapter().getItem(arg2);
 				
-				Dialog dlg = new Dialog(getSherlockActivity(),R.style.Theme_Sherlock_Light_Dialog);
+				Dialog dlg = new Dialog(getSherlockActivity());
 				dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				dlg.setContentView(R.layout.grade_info_dialog);
 				dlg.setTitle("Grade Info");
