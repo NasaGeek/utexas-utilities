@@ -20,6 +20,7 @@
     <string name="login_first">Please log in before using this feature</string>
     <string name="login_bb_first">Please log in before using this feature</string>
     <string name="login_pna_first">Please log in before using this feature</string>
+    <string name="preference_schedule_cache">(Warning: beta feature!) Check this to store the last accessed schedule so that logging in is not required to view your schedule.</string>
     <string name="preference_blackboard_class_longform_summary">Check this if Blackboard crashes on launch, might fix it.</string>
     <string name="preference_sendcrashes_summary">Help me help you! No personal information will be sent.</string>
     <string name="button_send_data">Send anonymous information about my courses to help improve UTilities.</string>

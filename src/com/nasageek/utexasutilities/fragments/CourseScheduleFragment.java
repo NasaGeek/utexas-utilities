@@ -18,11 +18,16 @@ import org.apache.http.util.EntityUtils;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+
 import com.nasageek.utexasutilities.AsyncTask;
+
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +48,7 @@ import com.actionbarsherlock.view.MenuItem;
 //import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.ScheduleDatabase;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
 import com.nasageek.utexasutilities.activities.ScheduleActivity;
@@ -272,10 +278,13 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			
 			client.getCookieStore().clear();
 			
-	    	BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(parentAct,client));
-	    	cookie.setDomain(".utexas.edu");
-	    	client.getCookieStore().addCookie(cookie);
+			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(parentAct);
 			
+			if (!sp.getBoolean("cache_schedule", false) && !ConnectionHelper.cookieHasBeenSet()) {
+				BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(parentAct,client));
+		    	cookie.setDomain(".utexas.edu");
+		    	client.getCookieStore().addCookie(cookie);
+			}
 		}
 		@Override
 		protected void onProgressUpdate(String...params) {
@@ -300,60 +309,89 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	//			return classList.size();
 			
 	    	String pagedata="";
-
-	    	if(Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
-	    		URL location;
-	    		HttpsURLConnection conn = null;
-	    		
-	    		try {
-
-					location = new URL("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId);
-					conn = (HttpsURLConnection) location.openConnection();
-					
-					if(getSherlockActivity() == null) {	
-						cancel(true);
-						errorMsg = "";
-						return -1;
-					}
-					//TODO: why not just do this in onPreExecute?
-					conn.setRequestProperty("Cookie", "SC="+ConnectionHelper.getAuthCookie(getSherlockActivity(),client));
-					
-			//		conn.setUseCaches(true); 
-			//		conn.setRequestProperty("Cache-Control", "only-if-cached");
-					conn.setRequestMethod("GET");
-					conn.setDoInput(true);
-				/*	if(HttpResponseCache.getInstalled().get(new URI("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId), "GET", conn.getHeaderFields()) != null)
-					{	
-						pagedata = convertStreamToString(HttpResponseCache.getInstalled().get(new URI("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId), "GET", conn.getHeaderFields()).getBody());
-					}
-					else
-					{	*/
-						conn.connect();
-						pagedata = convertStreamToString(conn.getInputStream());
-			//		}
-					
-				} catch (IOException e) {
-					e.printStackTrace();
-		    		errorMsg = "UTilities could not fetch your class listing";
-		    		cancel(true);
-		    		return -1;
-				} finally {
-					if(conn != null)
-						conn.disconnect();
-				}
+	    	
+	    	SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(parentAct);
+	    	ScheduleDatabase db = null;
+	    	
+	    	String eid = sp.getString("eid", "eid_missing");
+	    	boolean getCached;
+	    	
+	    	if (ConnectionHelper.cookieHasBeenSet()) {
+	    		getCached = false;
+	    	} else {
+	    		getCached = sp.getBoolean("cache_schedule", false);
 	    	}
-	    	else
-	    	{	
-	    		HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId);
-				try {
-					HttpResponse res = client.execute(hget);
-		    		pagedata = EntityUtils.toString(res.getEntity());
+	    	
+	    	if (sp.getBoolean("cache_schedule", false)) {
+	    		db = new ScheduleDatabase(parentAct);
+	    		db.openDataBase();
+	    		pagedata = db.getSchedule(eid, semId);
+	    		 
+	    		getCached = getCached && (pagedata != null);
+	    		String dpd = "" + pagedata;
+	    		Log.d("SchedDB", "pagedata is " + dpd.substring(0, Math.min(dpd.length(), 50)));
+	    	}
+
+	    	boolean storePage = sp.getBoolean("cache_schedule", false) && !getCached;
+	    	
+	    	Log.d("SchedDB", "getCached is " + getCached + ", storePage is " + storePage);
+
+	    	// TODO: better way to handle caching - properly store data in DB instead of storing the whole page
+	    	if (!getCached) {
+		    	if(Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
+		    		URL location;
+		    		HttpsURLConnection conn = null;
+		    		
+		    		try {
+	
+						location = new URL("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId);
+						conn = (HttpsURLConnection) location.openConnection();
+						
+						if(getSherlockActivity() == null) {	
+							cancel(true);
+							errorMsg = "";
+							return -1;
+						}
+						//TODO: why not just do this in onPreExecute?
+						conn.setRequestProperty("Cookie", "SC="+ConnectionHelper.getAuthCookie(getSherlockActivity(),client));
+						
+				//		conn.setUseCaches(true); 
+				//		conn.setRequestProperty("Cache-Control", "only-if-cached");
+						conn.setRequestMethod("GET");
+						conn.setDoInput(true);
+					/*	if(HttpResponseCache.getInstalled().get(new URI("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId), "GET", conn.getHeaderFields()) != null)
+						{	
+							pagedata = convertStreamToString(HttpResponseCache.getInstalled().get(new URI("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId), "GET", conn.getHeaderFields()).getBody());
+						}
+						else
+						{	*/
+							conn.connect();
+							pagedata = convertStreamToString(conn.getInputStream());
+				//		}
+						
+					} catch (IOException e) {
+						e.printStackTrace();
+			    		errorMsg = "UTilities could not fetch your class listing";
+			    		cancel(true);
+			    		return -1;
+					} finally {
+						if(conn != null)
+							conn.disconnect();
+					}
 		    	}
-		    	catch(Exception e) {
-		    		e.printStackTrace();
-		    		errorMsg = "UTilities could not fetch your class listing";
-		    		cancel(true);
-		    		return -1;
+		    	else
+		    	{	
+		    		HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId);
+					try {
+						HttpResponse res = client.execute(hget);
+			    		pagedata = EntityUtils.toString(res.getEntity());
+			    	}
+			    	catch(Exception e) {
+			    		e.printStackTrace();
+			    		errorMsg = "UTilities could not fetch your class listing";
+			    		cancel(true);
+			    		return -1;
+			    	}
 		    	}
 	    	}
 	    	
@@ -363,7 +401,14 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 					ConnectionHelper.logout(parentAct);
 				cancel(true);
 				return -1;
+	    	} else if (storePage) {
+	    		db.addSchedule(eid, semId, pagedata);
 	    	}
+	    	
+	    	if (db != null) {
+	    		db.close();
+	    	}
+	    	
 	    	Pattern semSelectPattern = Pattern.compile("<select  name=\"sem\">.*</select>", Pattern.DOTALL);
 	    	Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
 	    	

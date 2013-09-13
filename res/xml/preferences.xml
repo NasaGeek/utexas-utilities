@@ -36,6 +36,12 @@
             android:title="Auto Login" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Schedule" >
+    	<CheckBoxPreference
+            android:defaultValue="false"
+            android:key="cache_schedule"
+            android:title="Cache Schedule"
+            android:summary="@string/preference_schedule_cache" />
+        
         <com.nasageek.utexasutilities.FixedListPreference
             android:id="@+id/schedule_background_style"
             android:defaultValue="checkhour"
