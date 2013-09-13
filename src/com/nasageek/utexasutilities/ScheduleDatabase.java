@@ -4,7 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.util.Log;
 
 /**
@@ -24,6 +25,7 @@ import android.util.Log;
  * 
  * @author Andrew Lin
  */
+@TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class ScheduleDatabase extends SQLiteOpenHelper {
 
 	private static String DB_PATH = "/data/data/com.nasageek.utexasutilities/databases/";
@@ -73,9 +75,7 @@ public class ScheduleDatabase extends SQLiteOpenHelper {
     			Log.d("Schedule DB","New schedule DB copied");
  
     		} catch (IOException e) {
- 
-        		throw new Error("Error copying schedule database");
- 
+    			throw new IOException("Error copying schedule database", e);
         	}
     	}
  
