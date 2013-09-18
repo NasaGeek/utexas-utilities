@@ -2,48 +2,48 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:padding="9dp">
-    	     
-     <View android:id="@+id/strut"
+    android:padding="9dp" >
+
+    <View
+        android:id="@+id/strut"
         android:layout_width="0dp"
-        android:layout_height="0dp" 
-        android:layout_centerHorizontal="true"/> 
-    
-     <TextView 
+        android:layout_height="0dp"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
         android:id="@+id/grade_name"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
-        android:layout_alignRight="@+id/strut"
-    	android:gravity="left"
-    	
-        android:ellipsize="marquee"
-        android:singleLine="true"
-        android:lines="1"
         android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/strut"
+        android:ellipsize="marquee"
+        android:gravity="left"
+        android:lines="1"
         android:scrollHorizontally="true"
-        android:textSize="18sp"/>
-     <TextView 
+        android:singleLine="true"
+        android:textSize="18sp" />
+
+    <TextView
         android:id="@+id/grade_value"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
+        android:layout_alignLeft="@+id/strut"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/strut"
-    	android:gravity="right"
-        android:textSize="18sp"
         android:ellipsize="marquee"
-        android:marqueeRepeatLimit ="marquee_forever"
- 
+        android:gravity="right"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
         android:singleLine="true"
- 
-        android:scrollHorizontally="true"/>
-     <ImageView
-         android:id="@+id/comment_available_img"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_below="@+id/grade_value"
-         android:layout_alignRight="@+id/grade_value"
-         android:src="@drawable/ic_action_comment"/>
+        android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/comment_available_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/grade_value"
+        android:layout_below="@+id/grade_value"
+        android:src="@drawable/ic_action_comment" />
 
 </RelativeLayout>
