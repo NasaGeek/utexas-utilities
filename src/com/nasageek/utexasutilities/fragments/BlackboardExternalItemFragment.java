@@ -19,6 +19,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.mapsaurus.paneslayout.MySlidingPaneLayout;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 
@@ -52,13 +53,18 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
 		setHasOptionsMenu(true);			
 		CookieSyncManager.createInstance(getSherlockActivity());
 		CookieManager man = CookieManager.getInstance();
-		man.setCookie("courses.utexas.edu", "s_session_id="+ConnectionHelper.getBBAuthCookie(getSherlockActivity(), ConnectionHelper.getThreadSafeClient()));
+		man.setCookie("courses.utexas.edu", "s_session_id=" + ConnectionHelper.getBBAuthCookie(getSherlockActivity(), ConnectionHelper.getThreadSafeClient()));
 		
 		CookieSyncManager.getInstance().sync();
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		//if we're on a phone, let the SlidingPaneLayout know that it's got a webview
+		MySlidingPaneLayout mspl = (MySlidingPaneLayout) getSherlockActivity().findViewById(R.id.slidingpane_layout);
+		if(mspl != null) {
+			mspl.setIsShowingWebView(true);
+		}
 		absView = inflater.inflate(R.layout.action_bar_title_subtitle, null);
 		setupActionBar();
 		
@@ -68,8 +74,7 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
 		wv.getSettings().setBuiltInZoomControls(true);
 		wv.setWebViewClient(new WebViewClient() {
 			@Override
-			public boolean shouldOverrideUrlLoading(WebView view, String url)
-			{
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				return false;
 			}
 		});	
