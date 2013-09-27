@@ -13,16 +13,17 @@ import android.widget.TextView;
 import com.foound.widget.AmazingAdapter;
 import com.nasageek.utexasutilities.ParcelablePair;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.model.BBClass;
+import com.nasageek.utexasutilities.model.BBCourse;
+import com.nasageek.utexasutilities.model.Course;
 
 public class BBClassAdapter extends AmazingAdapter {
 	private Context con;
-	private ArrayList<BBClass> classes;
-	private List<ParcelablePair<String, List<BBClass>>> all;
+	private ArrayList<Course> classes;
+	private List<ParcelablePair<String, List<Course>>> all;
 	private LayoutInflater li;
 	private Boolean longform;
 	
-	public BBClassAdapter(Context con, List<ParcelablePair<String, List<BBClass>>> objects) {
+	public BBClassAdapter(Context con, List<ParcelablePair<String, List<Course>>> objects) {
 		all = objects;
 		li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);	
 		longform = PreferenceManager.getDefaultSharedPreferences(con).getBoolean("blackboard_class_longform", false);
@@ -38,7 +39,7 @@ public class BBClassAdapter extends AmazingAdapter {
 	}
 
 	@Override
-	public BBClass getItem(int position) {
+	public Course getItem(int position) {
 		int c = 0;
 		for (int i = 0; i < all.size(); i++) {
 			if (position >= c && position < c + all.get(i).second.size()) {
@@ -55,13 +56,11 @@ public class BBClassAdapter extends AmazingAdapter {
 	}
 
 	@Override
-	public boolean areAllItemsEnabled()
-	{
+	public boolean areAllItemsEnabled() {
 		return true;
 	}
 	@Override
-	public boolean isEnabled(int i)
-	{
+	public boolean isEnabled(int i) {
 		return true;
 	}
 	@Override
@@ -84,51 +83,46 @@ public class BBClassAdapter extends AmazingAdapter {
 		ViewHolder holder;
 		ViewGroup res = (ViewGroup) convertView;
 
-		if (res == null) 
-		{	
+		if (res == null) {	
 			res = (ViewGroup) li.inflate(R.layout.bbclass_item_view, null, false);
 			holder = new ViewHolder();
 			holder.idview = (TextView) res.findViewById(R.id.bb_class_id);
-			holder.nameview= (TextView) res.findViewById(R.id.bb_class_name);
+			holder.nameview = (TextView) res.findViewById(R.id.bb_class_name);
 			res.setTag(holder);
 		}
 		else
 			holder = (ViewHolder) res.getTag();
 		
-		BBClass bbclass = getItem(position);
+		Course course = getItem(position);
 		String name = "", unique = "", id = "";
 		
-		if(!longform)
-		{														
-			if(!bbclass.isFullCourseIdTooShort())	
-			{	
-				if(bbclass.isCourseIdAvailable())
-				{
-					holder.idview.setText(bbclass.getCourseId() + " - " + bbclass.getUnique() + " ");
+		if(course.getType().equals("blackboard")) {
+			if(!longform) {														
+				if(!((BBCourse)course).isFullCourseIdTooShort()) {	
+					if(((BBCourse)course).isCourseIdAvailable()) {
+						holder.idview.setText(course.getCourseCode() + " - " + ((BBCourse)course).getUnique() + " ");
+					}
+					else
+						holder.idview.setText(((BBCourse)course).getUnique());
 				}
-				else
-					holder.idview.setText(bbclass.getUnique());
-				
+				else {
+					holder.idview.setText(course.getCourseCode());
+				}
 			}
-			else
-			{
-				holder.idview.setText(bbclass.getCourseId());
+			else { //probably not even necessary anymore, necessary checking is done in the if-statement	
+				unique = ((BBCourse)course).getFullCourseid();
+				//id not set because unique will contain ID and Unique number
+				holder.idview.setText(unique);		
 			}
-		}
-		else //probably not even necessary anymore, necessary checking is done in the if-statement
-		{	
-			unique = bbclass.getFullCourseid();
-			//id not set because unique will contain ID and Unique number
-			holder.idview.setText(unique);		
+		} else if(course.getType().equals("canvas")) {
+			holder.idview.setText(course.getCourseCode());
 		}
 
-		holder.nameview.setText(bbclass.getName());
-		
+		holder.nameview.setText(course.getName());
 		return res;
 	}
 	
-	class ViewHolder
-	{
+	class ViewHolder {
 		TextView nameview;
 		TextView idview;
 	}

@@ -64,7 +64,7 @@ import com.nasageek.utexasutilities.ParcelablePair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.adapters.CourseMapAdapter;
 import com.nasageek.utexasutilities.fragments.MenuFragment.food;
-import com.nasageek.utexasutilities.model.BBClass;
+import com.nasageek.utexasutilities.model.BBCourse;
 import com.nasageek.utexasutilities.model.CourseMapItem;
 
 
@@ -73,8 +73,8 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	private DefaultHttpClient httpclient;
 	private LinearLayout cm_pb_ll;
 	private ListView cmlv;
-	private ArrayList<BBClass> classList;
-	private ArrayList<ParcelablePair<CourseMapItem,ArrayList<BBClass>>> classSectionList;
+	private ArrayList<BBCourse> classList;
+	private ArrayList<ParcelablePair<CourseMapItem,ArrayList<BBCourse>>> classSectionList;
 	private fetchCoursemapTask fetch;
 	private XMLReader xmlreader;
 	private CourseMapSaxHandler courseMapSaxHandler;

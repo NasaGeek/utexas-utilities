@@ -14,7 +14,7 @@ import java.util.Locale;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import com.nasageek.utexasutilities.model.BBClass;
+import com.nasageek.utexasutilities.model.BBCourse;
 import com.nasageek.utexasutilities.model.FeedItem;
 
 import android.util.TimingLogger;
@@ -22,7 +22,7 @@ import android.util.Xml;
 
 public class BlackboardDashboardXmlParser {
 
-	private HashMap<String, BBClass> courses;
+	private HashMap<String, BBCourse> courses;
 	private TimingLogger tl;
 	private boolean feedParsed = false;
 	//need this so we don't instantiate it every time we make a new FeedItem
@@ -106,7 +106,7 @@ public class BlackboardDashboardXmlParser {
 	private List<FeedItem> readDashboard(XmlPullParser parser) throws XmlPullParserException, IOException {		
 		feedItemDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
 		
-		courses = new HashMap<String, BBClass>();
+		courses = new HashMap<String, BBCourse>();
 		List<FeedItem> feed = new ArrayList<FeedItem>();
 		parser.require(XmlPullParser.START_TAG, null, "mobileresponse");
 		parser.nextTag();
@@ -117,9 +117,9 @@ public class BlackboardDashboardXmlParser {
 				continue;
 			String name = parser.getName();
 			if(name.equals("course")) {	
-				BBClass clz = readCourse(parser);
+				BBCourse clz = readCourse(parser);
 				if(clz != null)
-					courses.put(clz.getBbid(), clz);
+					courses.put(clz.getId(), clz);
 			} else if(name.equals("feeditem")) {
 				FeedItem item = readFeedItem(parser);
 				if(item != null)
@@ -129,7 +129,7 @@ public class BlackboardDashboardXmlParser {
 		return feed;
 	}
 	
-	private BBClass readCourse(XmlPullParser parser) throws XmlPullParserException, IOException {
+	private BBCourse readCourse(XmlPullParser parser) throws XmlPullParserException, IOException {
 		parser.require(XmlPullParser.START_TAG, null, "course");
 		
 		String name = parser.getAttributeValue(null, "name");
@@ -140,11 +140,11 @@ public class BlackboardDashboardXmlParser {
 		if(fullcourseid == null)
 			return null;
 		while(parser.next() != XmlPullParser.END_TAG){};
-		return new BBClass(name, bbid, fullcourseid);
+		return new BBCourse(name, bbid, fullcourseid);
 	}
 	private FeedItem readFeedItem(XmlPullParser parser) throws XmlPullParserException, IOException {
 		parser.require(XmlPullParser.START_TAG, null, "feeditem");
-		//if sourcetype="AN" then it is a notification
+		//if sourcetype=="AN" then it is a notification
 		
 //		String itemid = parser.getAttributeValue(null, "itemid");
 		String type = parser.getAttributeValue(null, "type");
@@ -165,7 +165,7 @@ public class BlackboardDashboardXmlParser {
 		return new FeedItem(type, message, contentid, courseid, sourcetype, date, feedItemDateFormat);
 	}
 	
-	public HashMap<String,BBClass> getCourses() {
+	public HashMap<String,BBCourse> getCourses() {
 		if(feedParsed)
 			return courses;
 		else

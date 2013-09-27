@@ -3,7 +3,7 @@ package com.nasageek.utexasutilities.fragments;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
 
-public abstract class BlackboardFragment extends SherlockFragment implements OnPanesScrolledListener {
+public abstract class BlackboardFragment extends BaseSpiceFragment implements OnPanesScrolledListener {
 
 	abstract String getBbid();
 	

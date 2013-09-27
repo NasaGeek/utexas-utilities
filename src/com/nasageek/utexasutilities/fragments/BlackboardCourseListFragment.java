@@ -19,6 +19,7 @@ import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,9 +42,15 @@ import com.nasageek.utexasutilities.ParcelablePair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SectionedParcelableList;
 import com.nasageek.utexasutilities.adapters.BBClassAdapter;
-import com.nasageek.utexasutilities.model.BBClass;
+import com.nasageek.utexasutilities.model.BBCourse;
+import com.nasageek.utexasutilities.model.Course;
+import com.nasageek.utexasutilities.model.canvas.CanvasCourse;
+import com.nasageek.utexasutilities.requests.CanvasCourseListRequest;
+import com.octo.android.robospice.persistence.DurationInMillis;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
-public class BlackboardCourseListFragment extends SherlockFragment {
+public class BlackboardCourseListFragment extends BaseSpiceFragment {
 	
 	private DefaultHttpClient httpclient;
 	private LinearLayout bb_pb_ll;
@@ -52,11 +59,12 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 	private Button bbeb;
 	
 	private AmazingListView bblv;
-	private ArrayList<BBClass> classList;
-	private List<ParcelablePair<String, List<BBClass>>> classSectionList;
+	private ArrayList<Course> classList;
+	private List<ParcelablePair<String, List<Course>>> classSectionList;
 	private fetchClassesTask fetch;	
 //	private ArrayList<ParcelablePair<String, ArrayList<BBClass>>> classes;
 	private BBClassAdapter classAdapter;
+	private CanvasCourseListRequest canvasCourseListRequest;
 	
 	public BlackboardCourseListFragment() {}
 	
@@ -72,11 +80,12 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-    	classList = new ArrayList<BBClass>();
+    	classList = new ArrayList<Course>();
+    	canvasCourseListRequest = new CanvasCourseListRequest();
     	if(savedInstanceState == null)
-    		classSectionList = new ArrayList<ParcelablePair<String, List<BBClass>>>();
+    		classSectionList = new ArrayList<ParcelablePair<String, List<Course>>>();
     	else
-    		classSectionList = (ArrayList<ParcelablePair<String, List<BBClass>>>) ((SectionedParcelableList) savedInstanceState.getParcelable("classSectionList")).getList();
+    		classSectionList = (ArrayList<ParcelablePair<String, List<Course>>>) ((SectionedParcelableList) savedInstanceState.getParcelable("classSectionList")).getList();
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
@@ -111,7 +120,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 					long id) {
 				//TODO: figure out course id stuff here
 		//		Intent classLaunch = new Intent(getString(R.string.coursemap_intent), null, getSherlockActivity(), CourseMapActivity.class);
-				BBClass bbclass = (BBClass)(parent.getItemAtPosition(position));
+				BBCourse bbclass = (BBCourse)(parent.getItemAtPosition(position));
 		/*		classLaunch.putExtra("courseid", bbclass.getBbid());
 				classLaunch.setData(Uri.parse((bbclass).getBbid()));
 				classLaunch.putExtra("folderName", "Course Map");
@@ -130,9 +139,9 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 				if(act != null && act instanceof FragmentLauncher) {	
 					if( topFragment == null || 
 					  ( topFragment != null && topFragment instanceof BlackboardFragment && 
-					  (!((BlackboardFragment)topFragment).getBbid().equals(bbclass.getBbid())) || ((BlackboardFragment)topFragment).isFromDashboard()))
+					  (!((BlackboardFragment)topFragment).getBbid().equals(bbclass.getId())) || ((BlackboardFragment)topFragment).isFromDashboard()))
 					{	((FragmentLauncher)act).addFragment(BlackboardCourseListFragment.this.getParentFragment(), 					
-								BlackboardCourseMapFragment.newInstance(getString(R.string.coursemap_intent), null, bbclass.getBbid(), bbclass.getCourseId(), "Course Map", "", -1, false));
+								BlackboardCourseMapFragment.newInstance(getString(R.string.coursemap_intent), null, bbclass.getId(), bbclass.getCourseCode(), "Course Map", "", -1, false));
 														
 					}
 					else if(act instanceof PanesActivity)
@@ -148,7 +157,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 	    	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 				fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
-				fetch.execute();
+				fetch.execute();  	
     	}
 		return vg;
 	}
@@ -156,10 +165,35 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putParcelable("classSectionList", new SectionedParcelableList<BBClass>(classSectionList, BBClass.class));
+		outState.putParcelable("classSectionList", new SectionedParcelableList<Course>(classSectionList, Course.class));
 	}
+
+	public final class CanvasCourseListRequestListener implements RequestListener<CanvasCourse.List> {
+
+        @Override
+        public void onRequestFailure(SpiceException spiceException) {
+            Toast.makeText(getSherlockActivity(), "failure", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onRequestSuccess(final CanvasCourse.List result) {
+            int i = 0;
+            //classSectionList guaranteed to be populated, this supposes the two lists are ordered the same
+            //in this case most recent to least
+            for(int j = 0; j < classSectionList.size(); j++) {
+	        	while(i < result.size() && result.get(i).getTermName().equals(classSectionList.get(j).first)) {
+	        		classSectionList.get(j).second.add(result.get(i));
+	        		i++;
+	        	}
+	        	if(j == classSectionList.size() - 1) {
+	        		classSectionList.get(j).second.addAll(result.subList(i, result.size()));
+	        	}
+            }
+            classAdapter.notifyDataSetChanged();
+        }
+    }
 	
-	private class fetchClassesTask extends AsyncTask<Object,Void,ArrayList<ParcelablePair<String, List<BBClass>>>> {
+	private class fetchClassesTask extends AsyncTask<Object, Void, ArrayList<ParcelablePair<String, List<Course>>>> {
 		private DefaultHttpClient client;
 		private String errorMsg;
 		private Exception ex;
@@ -177,7 +211,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 		}
 		
 		@Override
-		protected ArrayList<ParcelablePair<String, List<BBClass>>> doInBackground(Object... params) {
+		protected ArrayList<ParcelablePair<String, List<Course>>> doInBackground(Object... params) {
 			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
 	    	String pagedata="";
 
@@ -195,30 +229,31 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 	    	Matcher class_matcher = class_pattern.matcher(pagedata);
 	    	
 	    	while(class_matcher.find()) {
-	    		classList.add(new BBClass(class_matcher.group(2).replace("&amp;","&"),class_matcher.group(1).replace("&amp;","&"),class_matcher.group(3)));	
+	    		classList.add(new BBCourse(class_matcher.group(2).replace("&amp;","&"),class_matcher.group(1).replace("&amp;","&"),class_matcher.group(3)));	
 	    	}	    	
 	    	//build the sectioned list now
-	    	String currentCategory="";
-    		ArrayList<BBClass> sectionList=null;
-			ArrayList<ParcelablePair<String, List<BBClass>>> tempClassSectionList = new ArrayList<ParcelablePair<String, List<BBClass>>>();
-    		for(int i = 0; i<classList.size(); i++) {
+	    	String currentCategory = "";
+    		ArrayList<Course> sectionList = null;
+			ArrayList<ParcelablePair<String, List<Course>>> tempClassSectionList = new ArrayList<ParcelablePair<String, List<Course>>>();
+
+			for(int i = 0; i < classList.size(); i++) {
     			//first course is always in a new category (the first category)
 				if(i == 0) {	
-    				currentCategory = classList.get(i).getSemester();
-    				sectionList = new ArrayList<BBClass>();
+    				currentCategory = classList.get(i).getTermName();
+    				sectionList = new ArrayList<Course>();
     				sectionList.add(classList.get(i));
     			}
 				//if the current course is not part of the current category or we're on the last course
 				//weird stuff going on here depending on if we're at the end of the course list
-    			else if(!classList.get(i).getSemester().equals(currentCategory) || i == classList.size() - 1) {
+    			else if(!classList.get(i).getTermName().equals(currentCategory) || i == classList.size() - 1) {
     				
     				if(i == classList.size() - 1)
     					sectionList.add(classList.get(i));
     					
-    				tempClassSectionList.add(new ParcelablePair<String, List<BBClass>>(currentCategory, sectionList));
+    				tempClassSectionList.add(new ParcelablePair<String, List<Course>>(currentCategory, sectionList));
     				
-    				currentCategory = classList.get(i).getSemester();
-    				sectionList=new ArrayList<BBClass>();
+    				currentCategory = classList.get(i).getTermName();
+    				sectionList= new ArrayList<Course>();
     				
     				if(i != classList.size() - 1)
     					sectionList.add(classList.get(i));
@@ -228,12 +263,16 @@ public class BlackboardCourseListFragment extends SherlockFragment {
     				sectionList.add(classList.get(i));
     			}  			
     		}
+			
 			return tempClassSectionList;
 		}
 		@Override
-		protected void onPostExecute(ArrayList<ParcelablePair<String, List<BBClass>>> result) {	    		
+		protected void onPostExecute(ArrayList<ParcelablePair<String, List<Course>>> result) {	    		
 			classSectionList.addAll(result);
 			classAdapter.notifyDataSetChanged();
+			//TODO: learn to thread properly :(
+			getSpiceManager().execute(canvasCourseListRequest, "courses", DurationInMillis.ONE_MINUTE * 5, new CanvasCourseListRequestListener());
+			
 			
 			bb_pb_ll.setVisibility(View.GONE);
 			bbell.setVisibility(View.GONE);
@@ -250,7 +289,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if(fetch!=null)
+		if(fetch != null)
 			fetch.cancel(true);
 	}
 }

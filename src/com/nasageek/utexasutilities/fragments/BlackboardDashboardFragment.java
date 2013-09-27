@@ -52,7 +52,7 @@ import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.ParcelablePair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SectionedParcelableList;
-import com.nasageek.utexasutilities.model.BBClass;
+import com.nasageek.utexasutilities.model.BBCourse;
 import com.nasageek.utexasutilities.model.FeedItem;
 
 public class BlackboardDashboardFragment extends SherlockFragment {
@@ -67,7 +67,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 	private fetchDashboardTask fetch;
 	private boolean longform;
 
-	private HashMap<String, BBClass> courses;
+	private HashMap<String, BBCourse> courses;
 	private List<ParcelablePair<String, List<FeedItem>>> feedList;
 	private BlackboardDashboardAdapter bda;
 				
@@ -94,7 +94,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 			feedList = new ArrayList<ParcelablePair<String,List<FeedItem>>>();
 		else {
 			feedList = (List<ParcelablePair<String, List<FeedItem>>>) ((SectionedParcelableList) savedInstanceState.getParcelable("feedList")).getList();
-			courses = (HashMap<String, BBClass>) savedInstanceState.getSerializable("courses");
+			courses = (HashMap<String, BBCourse>) savedInstanceState.getSerializable("courses");
 		}
 		bda = new BlackboardDashboardAdapter(feedList);
 		
@@ -130,7 +130,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 				FeedItem fi = (FeedItem) parent.getAdapter().getItem(position);
 				String courseid = fi.getBbId();
 				String contentid = fi.getContentId();
-				String coursename = courses.get(fi.getBbId()).getCourseId();
+				String coursename = courses.get(fi.getBbId()).getCourseCode();
 				String message = fi.getMessage();
 				
 				if("Grades".equals(fi.getType())) {		
@@ -423,7 +423,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 			View res = convertView;
 			if (res == null) res = getSherlockActivity().getLayoutInflater().inflate(R.layout.dashboard_item_view, null);
 			FeedItem fi = getItem(position);
-			BBClass course = courses.get(fi.getBbId());
+			BBCourse course = courses.get(fi.getBbId());
 			
 			TextView courseName = (TextView) res.findViewById(R.id.d_course_name);
 			TextView contentType = (TextView) res.findViewById(R.id.d_content_type);
@@ -431,8 +431,8 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 
 			if(!longform) {
 				//TODO: make this look nice for malformed classes
-				if(!"".equals(course.getCourseId()))
-					courseName.setText(course.getCourseId()+ " - " + course.getName()+ " ("+course.getUnique()+")");
+				if(!"".equals(course.getCourseCode()))
+					courseName.setText(course.getCourseCode()+ " - " + course.getName()+ " ("+course.getUnique()+")");
 				else
 					courseName.setText(course.getName()+ " ("+course.getUnique()+")");
 			} else {
