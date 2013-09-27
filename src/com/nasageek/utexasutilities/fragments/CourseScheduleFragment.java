@@ -260,6 +260,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 		private DefaultHttpClient client;
 		private String errorMsg;
 		private boolean classParseIssue = false;
+		private String authCookie;
 		
 		public parseTask(DefaultHttpClient client) {
 			this.client = client;
@@ -271,10 +272,12 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 			ell.setVisibility(View.GONE);
 			
 			client.getCookieStore().clear();
+			authCookie = ConnectionHelper.getAuthCookie(parentAct, client);
 			
-	    	BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(parentAct,client));
+	    	BasicClientCookie cookie = new BasicClientCookie("SC", authCookie);
 	    	cookie.setDomain(".utexas.edu");
 	    	client.getCookieStore().addCookie(cookie);
+	    	
 			
 		}
 		@Override
@@ -304,10 +307,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    	if(Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
 	    		URL location;
 	    		HttpsURLConnection conn = null;
-	    		
 	    		try {
-
-					location = new URL("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId);
+					location = new URL("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId);
 					conn = (HttpsURLConnection) location.openConnection();
 					
 					if(getSherlockActivity() == null) {	
@@ -316,7 +317,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 						return -1;
 					}
 					//TODO: why not just do this in onPreExecute?
-					conn.setRequestProperty("Cookie", "SC="+ConnectionHelper.getAuthCookie(getSherlockActivity(),client));
+					conn.setRequestProperty("Cookie", "SC=" + authCookie);
 					
 			//		conn.setUseCaches(true); 
 			//		conn.setRequestProperty("Cache-Control", "only-if-cached");
@@ -344,7 +345,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	    	}
 	    	else
 	    	{	
-	    		HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" +semId);
+	    		HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId);
 				try {
 					HttpResponse res = client.execute(hget);
 		    		pagedata = EntityUtils.toString(res.getEntity());
