@@ -3,9 +3,6 @@ package com.nasageek.utexasutilities;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nasageek.utexasutilities.model.BBClass;
-
-import android.os.Debug;
 import android.os.Parcel;
 import android.os.Parcelable;
 
