@@ -200,7 +200,15 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 					    			.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getFileName())
 					    			.addRequestHeader("Cookie", "s_session_id="+ConnectionHelper.getBBAuthCookie(getSherlockActivity(), client));
 					    	
-					    	final long dlID = manager.enqueue(request);
+					    	try {
+					    		final long dlID = manager.enqueue(request);
+					    	} catch(IllegalArgumentException iae) {
+					    		//fallback for people with messed up Downloads provider
+					    		Intent downloadAttachment = new Intent(getSherlockActivity(), AttachmentDownloadService.class);
+								downloadAttachment.putExtra("fileName", item.getFileName());
+								downloadAttachment.putExtra("url", item.getDlUri());
+								getSherlockActivity().startService(downloadAttachment);
+					    	}
 					    	Toast.makeText(getSherlockActivity(), "Download started, item should appear in the \"Download\" folder on your external storage.", Toast.LENGTH_LONG).show();
 						 }	 
 						 else {
