@@ -29,12 +29,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -44,6 +40,8 @@ import com.actionbarsherlock.view.MenuItem;
 import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.adapters.GradesAdapter;
+import com.nasageek.utexasutilities.model.BBGrade;
 
 public class BlackboardGradesFragment extends BlackboardFragment {
 	
@@ -57,7 +55,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 	private DefaultHttpClient httpclient;
 	private fetchGradesTask fetch;
 	
-	private ArrayList<bbGrade> grades;
+	private ArrayList<BBGrade> grades;
 	private GradesAdapter gradeAdapter;
 	
 	public BlackboardGradesFragment() {}
@@ -84,7 +82,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		viewUri = getArguments().getString("viewUri");
 		setHasOptionsMenu(true);
 		
-		grades = new ArrayList<bbGrade>();
+		grades = new ArrayList<BBGrade>();
 		gradeAdapter = new GradesAdapter(getSherlockActivity(), grades);
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
@@ -114,7 +112,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				bbGrade grade = (bbGrade) arg0.getAdapter().getItem(arg2);
+				BBGrade grade = (BBGrade) arg0.getAdapter().getItem(arg2);
 				
 				Dialog dlg = new Dialog(getSherlockActivity());//,R.style.Theme_Sherlock_Light_Dialog);
 				dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -236,7 +234,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		return getArguments().getBoolean("fromDashboard");
 	}
 	
-	private class fetchGradesTask extends AsyncTask<Object,Void,ArrayList<bbGrade>> {
+	private class fetchGradesTask extends AsyncTask<Object,Void,ArrayList<BBGrade>> {
 		private DefaultHttpClient client;
 		private String errorMsg;
 		
@@ -252,7 +250,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		}
 		
 		@Override
-		protected ArrayList<bbGrade> doInBackground(Object... params) {
+		protected ArrayList<BBGrade> doInBackground(Object... params) {
 
 			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=GRADES&course_id="+courseID);
 	    	String pagedata="";
@@ -266,7 +264,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 				e.printStackTrace();
 				return null;
 			}
-	    	ArrayList<bbGrade> data=new ArrayList<bbGrade>();
+	    	ArrayList<BBGrade> data=new ArrayList<BBGrade>();
 	    	
 	    	Pattern gradeItemPattern = Pattern.compile("<grade-item.*?/>",Pattern.DOTALL);
 	    	Matcher gradeItemMatcher = gradeItemPattern.matcher(pagedata);
@@ -283,14 +281,14 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		    	Matcher commentMatcher = commentPattern.matcher(gradeData);
 		    	
 		    	if(nameMatcher.find() && pointsMatcher.find() && gradeMatcher.find()) {	
-		    		data.add(new bbGrade(nameMatcher.group(1).replace("&amp;", "&"),gradeMatcher.group(1),pointsMatcher.group(1), commentMatcher.find() ? Html.fromHtml(Html.fromHtml(commentMatcher.group(1)).toString()).toString() 
+		    		data.add(new BBGrade(nameMatcher.group(1).replace("&amp;", "&"),gradeMatcher.group(1),pointsMatcher.group(1), commentMatcher.find() ? Html.fromHtml(Html.fromHtml(commentMatcher.group(1)).toString()).toString() 
 		    																													  : "No comments"));
 		    	}
 	    	}
 			return data;
 		}
 		@Override
-		protected void onPostExecute(ArrayList<bbGrade> result) {
+		protected void onPostExecute(ArrayList<BBGrade> result) {
 			if(!this.isCancelled()) {
 				grades.addAll(result);
 				gradeAdapter.notifyDataSetChanged();
@@ -308,122 +306,6 @@ public class BlackboardGradesFragment extends BlackboardFragment {
     		glv.setVisibility(View.GONE);
     		gell.setVisibility(View.VISIBLE);
 		}
-	}
-
-	class GradesAdapter extends ArrayAdapter<bbGrade> {
-	
-		private Context con;
-		private ArrayList<bbGrade> items;
-		private LayoutInflater li;
-		
-		public GradesAdapter(Context c, ArrayList<bbGrade> items) {
-			super(c,0,items);
-			con = c;
-			this.items=items;
-			li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		
-		}
-		public int getCount() {
-
-			return items.size();
-		}
-	
-		public bbGrade getItem(int position) {
-
-			return items.get(position);
-		}
-	
-		public long getItemId(int position) {
-
-			return 0;
-		}
-		@Override
-		public boolean areAllItemsEnabled() {
-			return true;
-		}
-		@Override
-		public boolean isEnabled(int i) {
-			return true;
-		}
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			bbGrade grade = items.get(position);
-			
-			String title = grade.getName();
-			String value = null;
-			if(grade.getNumGrade().equals(-1))
-				value = "-";
-			else if(grade.getNumGrade().equals(-2))
-				value = grade.getGrade();
-			else
-				value = grade.getNumGrade() +"/"+grade.getNumPointsPossible();
-			ViewGroup lin = (ViewGroup) convertView;
-
-			if (lin == null)
-				lin = (RelativeLayout) li.inflate(R.layout.grade_item_view,null,false);
-			
-			TextView gradeName = (TextView) lin.findViewById(R.id.grade_name);
-			TextView gradeValue = (TextView) lin.findViewById(R.id.grade_value);
-			ImageView commentImg = (ImageView) lin.findViewById(R.id.comment_available_img);
-		
-			if(grade.getComment().equals("No comments"))
-				commentImg.setVisibility(View.INVISIBLE);
-			else
-				commentImg.setVisibility(View.VISIBLE);
-			gradeName.setText(title);
-			gradeValue.setText(value);
-	
-			return (View)lin;
-		}
-	}
-
-	class bbGrade {
-		String name, grade, pointsPossible, comment;
-		
-		public bbGrade(String name, String grade, String pointsPossible, String comment) {
-			this.name = name;
-			this.grade = grade;
-			this.pointsPossible = pointsPossible;
-			this.comment = comment;
-		}
-		public String getName() {
-			return name;
-		}
-		public String getComment() {
-			return comment;
-		}
-		public Number getNumGrade() {
-			if(!grade.equals("-")) {
-				String temp = grade.replaceAll("[^\\d\\.]*", "");
-				if(temp.equals("")) {
-					return -2;
-				}
-				double d = Double.parseDouble(temp);
-				if(d == Math.floor(d)) {
-					return (int)d;
-				}
-				else
-					return d;
-			}	
-			else
-				return -1;
-		}
-		public String getGrade() {
-			return grade;
-		}
-		public String getPointsPossible() {
-			return pointsPossible;
-		}
-		public Number getNumPointsPossible() {
-			String temp = pointsPossible.replaceAll("[^\\d\\.]*", "");
-			double d = Double.parseDouble(temp);
-			if(d == Math.floor(d)) {
-				return (int)d;
-			}
-			else
-				return d;
-		}
-	
 	}
 
 	@Override

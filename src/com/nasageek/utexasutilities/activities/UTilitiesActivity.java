@@ -6,9 +6,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+
 import com.nasageek.utexasutilities.AsyncTask;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -26,21 +27,27 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
-//import com.crittercism.app.Crittercism;
+import com.nasageek.utexasutilities.CanvasRetrofitSpiceService;
 import com.nasageek.utexasutilities.ChangeLog;
 import com.nasageek.utexasutilities.ChangeableContextTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.Utility;
-
+import com.nasageek.utexasutilities.model.canvas.OAuthResponse;
+import com.nasageek.utexasutilities.requests.CanvasPostOAuthCodeRequest;
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 public class UTilitiesActivity extends SherlockActivity {
 	
 	private final static int LOGOUT_MENU_ID = 11;
 	private final static int CANCEL_LOGIN_MENU_ID = 12;
+	private final static int CANVAS_LOGIN_REQUEST_CODE = 13;
 	private final static int BUTTON_ANIMATION_DURATION = 90;
-    
+	
+    private boolean shouldAutologin;
 	private SharedPreferences settings;
 	private Toast message;
 	private ImageView scheduleCheck, balanceCheck, dataCheck, blackboardCheck;
@@ -48,11 +55,19 @@ public class UTilitiesActivity extends SherlockActivity {
 	private ConnectionHelper.PNALoginTask plt;
 	private ConnectionHelper.bbLoginTask bblt; 
 	private AlertDialog nologin;
-	 
+	
+	private SpiceManager spiceManager = new SpiceManager(CanvasRetrofitSpiceService.class);
+
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
+        if(savedInstanceState == null) {
+        	shouldAutologin = true;
+        } else {
+        	shouldAutologin = savedInstanceState.getBoolean("shouldAutologin");
+        }
  /*       if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
         {
         	StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
@@ -85,7 +100,6 @@ public class UTilitiesActivity extends SherlockActivity {
         }
                 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
-        //Crittercism.setOptOutStatus(!settings.getBoolean("sendcrashes", true));
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         
         setContentView(R.layout.main);
@@ -139,16 +153,18 @@ public class UTilitiesActivity extends SherlockActivity {
         	nologin.show();
         	Utility.commit(settings.edit().putBoolean("firstRun", false));
         	Utility.id(this);
-        }
-    	else {
+        } else {
     		ChangeLog cl = new ChangeLog(this);
-    	
 	        if(cl.isFirstRun())
 	        	cl.getFullLogDialog().show();
     	}
 
-        if(settings.getBoolean("autologin", false) && !ConnectionHelper.cookieHasBeenSet() && !ConnectionHelper.isLoggingIn())
-        	login();
+        // auto-login, only run on first launch (if it gets rotated, etc, no more auto-login)
+    	// we do this so weirdness doesn't occur when you rotate while logging in and then go back here
+    	if(settings.getBoolean("autologin", false) && !ConnectionHelper.cookieHasBeenSet() && !ConnectionHelper.isLoggingIn() && shouldAutologin) {
+        	shouldAutologin = false;
+    		initLogin();
+    	}
         
         final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
         schedulebutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) schedulebutton.getDrawable()));
@@ -161,12 +177,10 @@ public class UTilitiesActivity extends SherlockActivity {
 	            		message.setText(R.string.login_first);
 	                	message.setDuration(Toast.LENGTH_SHORT);
 	            		message.show();
-	            	}
-	            	else {
+	            	} else {
 	            		startActivity(schedule);
 	            	}
-            	}
-            	else {
+            	} else {
             		if(!ConnectionHelper.cookieHasBeenSet()) {
             			Intent login_intent = new Intent(UTilitiesActivity.this, LoginActivity.class);
             			login_intent.putExtra("activity", schedule.getComponent().getClassName());
@@ -190,11 +204,9 @@ public class UTilitiesActivity extends SherlockActivity {
 	            		message.setText(R.string.login_first);
 	                	message.setDuration(Toast.LENGTH_SHORT);
 	            		message.show();
-	            	}
-	            	else
+	            	} else
 	            		startActivity(balance);
-            	}
-            	else {
+            	} else {
             		if(!ConnectionHelper.cookieHasBeenSet()) {
             			Intent login_intent = new Intent(UTilitiesActivity.this, LoginActivity.class);
             			login_intent.putExtra("activity", balance.getComponent().getClassName());
@@ -221,18 +233,15 @@ public class UTilitiesActivity extends SherlockActivity {
         databutton.setOnFocusChangeListener(new imageButtonFocusListener());
         databutton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-            
             	if(settings.getBoolean("loginpref", false)) {
 	            	if(!ConnectionHelper.PNACookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
 	            		message.setText(R.string.login_pna_first);
 	                	message.setDuration(Toast.LENGTH_SHORT);
 	            		message.show();
-	            	}
-	            	else {
+	            	} else {
 	            		startActivity(data);
 	            	}
-            	}
-            	else {
+            	} else {
             		if(!ConnectionHelper.PNACookieHasBeenSet()) {
             			Intent login_intent = new Intent(UTilitiesActivity.this, LoginActivity.class);
             			login_intent.putExtra("activity", data.getComponent().getClassName());
@@ -306,7 +315,6 @@ public class UTilitiesActivity extends SherlockActivity {
     	@Override
     	public boolean onTouch(View v, MotionEvent event) {
     		
-    		
     		switch(event.getActionMasked()) {
     		case MotionEvent.ACTION_DOWN:
     			if(!buttonPressed) {
@@ -333,8 +341,7 @@ public class UTilitiesActivity extends SherlockActivity {
     					break;
     				}
     			}
-    			if(!pressedStateFound && buttonPressed)
-    			{
+    			if(!pressedStateFound && buttonPressed) {
     				buttonPressed = false;
     				crossfade.reverseTransition(BUTTON_ANIMATION_DURATION);
     			}
@@ -344,14 +351,21 @@ public class UTilitiesActivity extends SherlockActivity {
     	}	
 	}
 
-/*	@Override
-	protected void onStop()
-	{
+	@Override
+	protected void onStart() {
+		spiceManager.start(this);
+		super.onStart();
+	}
+	
+	@Override
+	protected void onStop() {
+		spiceManager.shouldStop();
 		super.onStop();
-		HttpResponseCache cache = HttpResponseCache.getInstalled();
+		
+	/*	HttpResponseCache cache = HttpResponseCache.getInstalled();
 		if(cache != null)
-			cache.flush();
-	}*/
+			cache.flush();*/
+	}
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = this.getSupportMenuInflater();
@@ -364,29 +378,25 @@ public class UTilitiesActivity extends SherlockActivity {
 		    		menu.add(R.id.log, 11, Menu.NONE, "Log out");
 		    		MenuItem item = menu.findItem(11);
 		    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		    	}
-		    	else if(!ConnectionHelper.cookieHasBeenSet() || !ConnectionHelper.bbCookieHasBeenSet() || !ConnectionHelper.PNACookieHasBeenSet()) {
+		    	} else if(!ConnectionHelper.cookieHasBeenSet() || !ConnectionHelper.bbCookieHasBeenSet() || !ConnectionHelper.PNACookieHasBeenSet()) {
 		    		menu.removeGroup(R.id.log);
 		    		menu.add(R.id.log, R.id.login, Menu.NONE, "Log in");
 		    		MenuItem item = menu.findItem(R.id.login);
 		    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		    	}	
-	    	}
-	    	else if(ConnectionHelper.isLoggingIn()) {
+	    	} else if(ConnectionHelper.isLoggingIn()) {
 	    		menu.removeGroup(R.id.log);
 	    		menu.add(R.id.log, CANCEL_LOGIN_MENU_ID, Menu.NONE, "Cancel");
 	    		MenuItem item = menu.findItem(CANCEL_LOGIN_MENU_ID);
 	    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 	    	}
-        }
-        else {
+        } else {
         	if(ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.bbCookieHasBeenSet() || ConnectionHelper.PNACookieHasBeenSet()) {
 	    		menu.removeGroup(R.id.log);
 	    		menu.add(R.id.log, LOGOUT_MENU_ID, Menu.NONE, "Log out");
 	    		MenuItem item = menu.findItem(LOGOUT_MENU_ID);
 	    		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-	    	}
-        	else
+	    	} else
         		menu.removeGroup(R.id.log);
         }
         return true;
@@ -395,7 +405,7 @@ public class UTilitiesActivity extends SherlockActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
     	switch(id) {
-    		case R.id.login:login();invalidateOptionsMenu();break;
+    		case R.id.login:initLogin();break;
     		case R.id.settings:loadSettings();break;
     		case LOGOUT_MENU_ID:logout();invalidateOptionsMenu();break;
     		case CANCEL_LOGIN_MENU_ID:cancelLogin();invalidateOptionsMenu();break;
@@ -406,58 +416,111 @@ public class UTilitiesActivity extends SherlockActivity {
     public Object onRetainNonConfigurationInstance() {
     	return new ChangeableContextTask[] {bblt, lt, plt};
     }
-
     public void loadSettings() {
     	final Intent pref_intent = new Intent(this, Preferences.class);
     	startActivity(pref_intent);
     }
-    public void login() {
+    public void initLogin() {
     	SecurePreferences sp = new SecurePreferences(UTilitiesActivity.this,"com.nasageek.utexasutilities.password", false);
     	if(settings.getBoolean("loginpref", false)) {
-    		if( !settings.contains("eid") || 
-      				!sp.containsKey("password") || 
-      				 settings.getString("eid", "error").equals("") ||
-      				 sp.getString("password").equals("") ) {	
-  				message.setText("Please enter your credentials to log in");
+    		if( !settings.contains("eid") || !sp.containsKey("password") || 
+      		    settings.getString("eid", "error").equals("") ||
+      		    sp.getString("password").equals("") ) {	
+  				
+    			message.setText("Please enter your credentials to log in");
       			message.setDuration(Toast.LENGTH_LONG);
       			message.show();
-			}
-    		else {
-           		message.setText("Logging in...");
-         		message.setDuration(Toast.LENGTH_SHORT);
-         		message.show();
-         		ConnectionHelper.loggingIn=true;
-         		
-           		setSupportProgressBarIndeterminateVisibility(true);
-           		
-           		ConnectionHelper ch = new ConnectionHelper();
-      			DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
-      			DefaultHttpClient pnahttpclient = ConnectionHelper.getThreadSafeClient();
-      			DefaultHttpClient bbhttpclient = ConnectionHelper.getThreadSafeClient();
-      			
-      			
-      			ConnectionHelper.resetCookies(this);
-
-      			bblt = ch.new bbLoginTask(this, httpclient, pnahttpclient, bbhttpclient);
-      			lt = ch.new loginTask(this, httpclient, pnahttpclient, bbhttpclient);
-      			plt = ch.new PNALoginTask(this, httpclient, pnahttpclient, bbhttpclient);
-      			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-	      			bblt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ch);
-	      			lt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ch);
-	      			plt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ch);
-      			}
-      			else {	
-      				bblt.execute(ch);
-      				lt.execute(ch);
-      				plt.execute(ch);
-      			}
+			} else {
+           		canvasLoginFlow();
            	}
-    	}
-    	else {
-	    	Intent login_intent = new Intent(this, LoginActivity.class);
+    	} else {
+    		//dead condition I think
+    		Intent login_intent = new Intent(this, LoginActivity.class);
 	    	startActivity(login_intent);
     	}
     }
+    
+    public void login() {
+    	message.setText("Logging in...");
+ 		message.setDuration(Toast.LENGTH_SHORT);
+ 		message.show();
+ 		ConnectionHelper.loggingIn = true;
+ 		invalidateOptionsMenu();
+ 		
+   		setSupportProgressBarIndeterminateVisibility(true);
+   		ConnectionHelper ch = new ConnectionHelper();
+		DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
+		DefaultHttpClient pnahttpclient = ConnectionHelper.getThreadSafeClient();
+		DefaultHttpClient bbhttpclient = ConnectionHelper.getThreadSafeClient();
+		
+		ConnectionHelper.resetCookies(this);
+		
+		bblt = ch.new bbLoginTask(this, httpclient, pnahttpclient, bbhttpclient);
+		lt = ch.new loginTask(this, httpclient, pnahttpclient, bbhttpclient);
+		plt = ch.new PNALoginTask(this, httpclient, pnahttpclient, bbhttpclient);
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			bblt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ch);
+			lt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ch);
+			plt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ch);
+		} else {	
+			bblt.execute(ch);
+			lt.execute(ch);
+			plt.execute(ch);
+		}
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	if(requestCode == CANVAS_LOGIN_REQUEST_CODE) {
+    		if(resultCode == RESULT_OK) {
+    			// Canvas is good to go, continue login
+    			
+    			// indicate we are logging in during the final OAuth POST
+    			ConnectionHelper.loggingIn = true;
+    			setSupportProgressBarIndeterminateVisibility(true);
+                invalidateOptionsMenu();
+                
+    			String oauth2_code = data.getExtras().getString("oauth2_code");
+    			CanvasPostOAuthCodeRequest req = new CanvasPostOAuthCodeRequest(oauth2_code);
+    			spiceManager.execute(req, new CanvasPostOAuthCodeRequestListener());
+    		} else if(resultCode == RESULT_CANCELED) {
+    			// User cancelled
+    			message.setText("Login cancelled");
+    			message.setDuration(Toast.LENGTH_SHORT);
+    			message.show();
+    		}
+    	}
+    }
+    
+    public final class CanvasPostOAuthCodeRequestListener implements RequestListener<OAuthResponse> {
+
+        @Override
+        public void onRequestFailure(SpiceException spiceException) {
+            Toast.makeText(UTilitiesActivity.this, "Canvas failure", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onRequestSuccess(final OAuthResponse result) {
+            Utility.commit(settings.edit().putString("canvas_auth_token", result.access_token));
+            login();
+        }
+    }
+    
+    public void canvasLoginFlow() {
+    	//check if we've got a Canvas token
+    	if(settings.getString("canvas_auth_token", "").equals("")) {
+    		Intent login_intent = new Intent(UTilitiesActivity.this, LoginActivity.class);
+			login_intent.putExtra("activity", UTilitiesActivity.this.getComponentName().getClassName());
+			login_intent.putExtra("service", 'c');
+	    	startActivityForResult(login_intent, CANVAS_LOGIN_REQUEST_CODE);
+	    	return;
+    	} else { //we've already got one
+    		
+    		login();
+    		return;
+    	}
+    }
+    
     public void cancelLogin() {
     	if(lt!=null)
     		lt.cancel(true);
@@ -465,40 +528,50 @@ public class UTilitiesActivity extends SherlockActivity {
    			plt.cancel(true);
    		if(bblt!=null)
    			bblt.cancel(true);
-   		message.setText("Cancelled");
     	ConnectionHelper.logout(this);
     	setSupportProgressBarIndeterminateVisibility(false);
     }
+    
     public void logout() {
     	ConnectionHelper.logout(this);
     	resetChecks();
     	message.setText("You have been successfully logged out");
+    	message.setDuration(Toast.LENGTH_SHORT);
     	message.show();
     }
+    
+    @Override
     public void onResume() {
     	super.onResume();
     	invalidateOptionsMenu();
     	resetChecks();	
     }
+    
+    @Override
     public void onPause() {
     	super.onPause();
     	if(nologin != null)
     		if(nologin.isShowing())
     			nologin.dismiss();	
     }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+    	super.onSaveInstanceState(outState);
+    	outState.putBoolean("shouldAutologin", shouldAutologin);
+    }
+    
     private void resetChecks() {
     	if(settings.getBoolean("loginpref", false)) {	
     		scheduleCheck.setVisibility(View.GONE);
     		balanceCheck.setVisibility(View.GONE);
     		dataCheck.setVisibility(View.GONE);
     		blackboardCheck.setVisibility(View.GONE);
-    	}
-        else {
+    	} else {
         	if(!ConnectionHelper.cookieHasBeenSet()) {	
         		scheduleCheck.setImageResource(R.drawable.ic_done_translucent);
         		balanceCheck.setImageResource(R.drawable.ic_done_translucent);
-        	}
-        	else {
+        	} else {
         		scheduleCheck.setImageResource(R.drawable.ic_done);
         		balanceCheck.setImageResource(R.drawable.ic_done);
     		}
@@ -510,8 +583,7 @@ public class UTilitiesActivity extends SherlockActivity {
     		}
         	if(!ConnectionHelper.PNACookieHasBeenSet()) {	
         		dataCheck.setImageResource(R.drawable.ic_done_translucent);
-        	}
-        	else {
+        	} else {
         		dataCheck.setImageResource(R.drawable.ic_done);
         	}
         	scheduleCheck.setVisibility(View.VISIBLE);

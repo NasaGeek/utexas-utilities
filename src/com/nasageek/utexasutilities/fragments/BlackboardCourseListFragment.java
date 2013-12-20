@@ -5,25 +5,21 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.acra.ACRA;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 
+import retrofit.RetrofitError;
+
 import android.annotation.TargetApi;
-import android.content.Intent;
-import android.net.Uri;
-import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -31,17 +27,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-//import com.crittercism.app.Crittercism;
 import com.foound.widget.AmazingListView;
 import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.mapsaurus.paneslayout.PanesActivity;
+import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.ParcelablePair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SectionedParcelableList;
 import com.nasageek.utexasutilities.adapters.BBClassAdapter;
+import com.nasageek.utexasutilities.fragments.canvas.CanvasCourseMapFragment;
 import com.nasageek.utexasutilities.model.BBCourse;
 import com.nasageek.utexasutilities.model.Course;
 import com.nasageek.utexasutilities.model.canvas.CanvasCourse;
@@ -81,7 +77,8 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
     	classList = new ArrayList<Course>();
-    	canvasCourseListRequest = new CanvasCourseListRequest();
+    	
+    	canvasCourseListRequest = new CanvasCourseListRequest(ConnectionHelper.getCanvasAuthCookie(getActivity()));
     	if(savedInstanceState == null)
     		classSectionList = new ArrayList<ParcelablePair<String, List<Course>>>();
     	else
@@ -94,8 +91,6 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
     	httpclient.getCookieStore().addCookie(cookie);
     	
     	classAdapter = new BBClassAdapter(getSherlockActivity(), classSectionList);
-			
-    	//Crittercism.leaveBreadcrumb("Loaded BlackboardActivity");
 	}
 
 	
@@ -119,14 +114,9 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				//TODO: figure out course id stuff here
-		//		Intent classLaunch = new Intent(getString(R.string.coursemap_intent), null, getSherlockActivity(), CourseMapActivity.class);
-				BBCourse bbclass = (BBCourse)(parent.getItemAtPosition(position));
-		/*		classLaunch.putExtra("courseid", bbclass.getBbid());
-				classLaunch.setData(Uri.parse((bbclass).getBbid()));
-				classLaunch.putExtra("folderName", "Course Map");
-				classLaunch.putExtra("coursename", bbclass.getCourseId());
-				classLaunch.putExtra("showViewInWeb", true);
-				startActivity(classLaunch);*/
+				Course course = (Course)(parent.getItemAtPosition(position));
+				String type = course.getType();
+		
 				SherlockFragmentActivity act = getSherlockActivity();
 				Fragment topFragment = null;
 				if(act != null && act instanceof PanesActivity) {	
@@ -137,15 +127,24 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 				}
 				//don't re-add the current displayed course, instead just show it
 				if(act != null && act instanceof FragmentLauncher) {	
-					if( topFragment == null || 
-					  ( topFragment != null && topFragment instanceof BlackboardFragment && 
-					  (!((BlackboardFragment)topFragment).getBbid().equals(bbclass.getId())) || ((BlackboardFragment)topFragment).isFromDashboard()))
-					{	((FragmentLauncher)act).addFragment(BlackboardCourseListFragment.this.getParentFragment(), 					
-								BlackboardCourseMapFragment.newInstance(getString(R.string.coursemap_intent), null, bbclass.getId(), bbclass.getCourseCode(), "Course Map", "", -1, false));
-														
+					if(type.equals("blackboard")) {
+						BBCourse bbclass = (BBCourse)course;
+						/*if(topFragment == null || 
+						  (topFragment != null && topFragment instanceof BlackboardFragment && 
+						  (!((BlackboardFragment)topFragment).getBbid().equals(bbclass.getId())) || ((BlackboardFragment)topFragment).isFromDashboard()))
+						{*/	((FragmentLauncher)act).addFragment(BlackboardCourseListFragment.this.getParentFragment(), 					
+									BlackboardCourseMapFragment.newInstance(getString(R.string.coursemap_intent), null, bbclass.getId(), bbclass.getCourseCode(), "Course Map", "", -1, false));
+															
+					/*	}
+						else if(act instanceof PanesActivity)
+							((PanesActivity) act).showContent();*/
+					} else if(type.equals("canvas")) {
+						CanvasCourse ccourse = (CanvasCourse)course;
+						//launch canvas coursemap
+						((FragmentLauncher)act).addFragment(BlackboardCourseListFragment.this.getParentFragment(), 					
+								CanvasCourseMapFragment.newInstance(ccourse.getId(), ccourse.getName(), ccourse.getCourseCode()));
+							
 					}
-					else if(act instanceof PanesActivity)
-						((PanesActivity) act).showContent();
 				}		
 			}
 		});
@@ -173,6 +172,10 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             Toast.makeText(getSherlockActivity(), "failure", Toast.LENGTH_SHORT).show();
+            //if request was unauthorized, token's probably bad
+            if(((RetrofitError)spiceException.getCause()).getResponse().getStatus() == 401) {
+            	ConnectionHelper.resetCanvasAuthToken(getActivity());
+            }
         }
 
         @Override

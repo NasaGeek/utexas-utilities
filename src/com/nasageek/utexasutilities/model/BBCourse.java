@@ -11,7 +11,6 @@ import android.util.Log;
 public class BBCourse extends Course implements Parcelable {
 
 	private String fullcourseid;
-	private String semester;
 	private String unique;
 	private String fullName;
 	
@@ -34,9 +33,10 @@ public class BBCourse extends Course implements Parcelable {
 		super.name = in.readString();
 		super.id = in.readString();
 		fullcourseid = in.readString();
-		semester = in.readString();
+		super.term_name = in.readString();
 		unique = in.readString();
 		super.course_code = in.readString();
+		super.type = in.readString();
 		boolean[] temp = new boolean[2];
 		in.readBooleanArray(temp);
 		courseIdAvailable = temp[0];
@@ -102,7 +102,7 @@ public class BBCourse extends Course implements Parcelable {
 			super.term_name = fullcourseid.split("_")[0]+" "+(fullcourseid.split("_")[1].charAt(0)+"").toUpperCase(Locale.US)+fullcourseid.split("_")[1].substring(1);	
 		} catch(Exception ex) {
 			ex.printStackTrace();
-			this.semester = "Unknown";
+			super.term_name = "Unknown";
 		}
 		
 		if(fullcourseid.split("_").length >= 3) {	
@@ -147,9 +147,11 @@ public class BBCourse extends Course implements Parcelable {
 		dest.writeString(super.name);
 		dest.writeString(super.id);
 		dest.writeString(fullcourseid);
-		dest.writeString(semester);
+		dest.writeString(super.term_name);
 		dest.writeString(unique);
 		dest.writeString(super.course_code);
+		dest.writeString(super.type);
+		
 		dest.writeBooleanArray(new boolean[] {courseIdAvailable, fullCourseIdTooShort});
 
 	}

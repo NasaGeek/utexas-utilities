@@ -138,6 +138,7 @@ public class ConnectionHelper {
 		   PNALoggedIn = true; 
 		   return true;
 	}
+	
 	public static void logout(Context con) {
 		settings = PreferenceManager.getDefaultSharedPreferences(con);
 		Editor edit = settings.edit();
@@ -242,6 +243,15 @@ public class ConnectionHelper {
 			return "";
 		}
 	}
+	public static String getCanvasAuthCookie(Context con) {
+		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		
+		if(settings.contains("canvas_auth_token")) {
+			return "Bearer " + settings.getString("canvas_auth_token", "");
+		} else {
+			throw new IllegalStateException();
+		}
+	}
 	public static void resetCookie(Context con) {
 		settings = PreferenceManager.getDefaultSharedPreferences(con);
 		Utility.commit(settings.edit().remove("utd_auth_cookie"));
@@ -262,6 +272,12 @@ public class ConnectionHelper {
 		bbAuthCookie = "";
 		bbLoggedIn = false;
 		bbCookieHasBeenSet = false;
+	}
+	
+	//don't call this in resetCookies! should only be called in rare cases
+	public static void resetCanvasAuthToken(Context con) {
+		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		Utility.commit(settings.edit().remove("canvas_auth_token"));
 	}
 	public static void resetCookies(Context con) {
 		resetCookie(con);
@@ -285,6 +301,10 @@ public class ConnectionHelper {
 		Utility.commit(settings.edit().putString("bb_auth_cookie", cookie));
 		bbAuthCookie = cookie;
 		bbCookieHasBeenSet = true;
+	}
+	public static void setCanvasAuthToken(String token, Context con) {
+		settings = PreferenceManager.getDefaultSharedPreferences(con);
+		Utility.commit(settings.edit().putString("canvas_auth_token", token));
 	}
 	public static boolean cookieHasBeenSet() {
 		return cookieHasBeenSet;
@@ -475,9 +495,11 @@ public class ConnectionHelper {
 				logindone = false;pnalogindone = false;bbLoginDone=false;
 				loggingIn=false;
 				
-				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals("") && !ConnectionHelper.getBBAuthCookie(context, bbhttpclient).equals("")) {
-					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
+				if(!ConnectionHelper.getAuthCookie(context, httpclient).equals("") && 
+				   !ConnectionHelper.getPNAAuthCookie(context, pnahttpclient).equals("") && 
+				   !ConnectionHelper.getBBAuthCookie(context, bbhttpclient).equals("")) {
 					
+					Toast.makeText(context, "You're now logged in; feel free to access any of the app's features", Toast.LENGTH_LONG).show();
 					edit.putBoolean("loggedin", true);
 					Utility.commit(edit);
 					

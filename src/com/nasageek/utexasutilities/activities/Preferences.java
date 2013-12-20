@@ -2,10 +2,14 @@ package com.nasageek.utexasutilities.activities;
 
 import java.io.IOException;
 
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -24,8 +28,9 @@ import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.Utility;
+import com.nasageek.utexasutilities.retrofit.Canvas;
 
-public class Preferences extends SherlockPreferenceActivity{
+public class Preferences extends SherlockPreferenceActivity {
 
 	private Preference loginfield;
     private Preference passwordfield;
@@ -117,23 +122,18 @@ public class Preferences extends SherlockPreferenceActivity{
 
         //disable the EID and password preferences if the user is logged in
         //TODO: make a method to check if user is logged in, it's cleaner that way
-        if(ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet() && ConnectionHelper.bbCookieHasBeenSet())
-        {
+        if(ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet() && ConnectionHelper.bbCookieHasBeenSet()) {
         	loginfield.setEnabled(false);
         	passwordfield.setEnabled(false);
-        }
-        else
-        {
+        } else {
         	loginfield.setEnabled(true);
         	passwordfield.setEnabled(true);      
         }
         
         final CheckBoxPreference sendcrashes = (CheckBoxPreference)findPreference("acra.enable");
-        sendcrashes.setOnPreferenceChangeListener(new OnPreferenceChangeListener() 
-        {	
+        sendcrashes.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {	
 			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) 
-			{
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				//Crittercism.setOptOutStatus(!(Boolean)newValue);
 				return true;
 			}
@@ -163,35 +163,66 @@ public class Preferences extends SherlockPreferenceActivity{
 				return true;
 			}
 		});
+        
+        final Preference deauthorizeCanvas = (Preference) findPreference("deauthorize_canvas");
+        deauthorizeCanvas.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				if(preference.getSharedPreferences().contains("canvas_auth_token")) {	
+					RestAdapter ra = new RestAdapter.Builder()
+						.setServer("https://utexas.instructure.com")
+						.build();
+					Canvas canvas = ra.create(Canvas.class);
+					String auth = ConnectionHelper.getCanvasAuthCookie(Preferences.this);
+					canvas.deauthorize(auth, new Callback<Object>() {
+						
+						@Override
+						public void success(Object arg0, Response arg1) {
+							Toast.makeText(Preferences.this, "UTilities Canvas access revoked", Toast.LENGTH_SHORT).show();
+							ConnectionHelper.logout(Preferences.this);
+						}
+						
+						@Override
+						public void failure(RetrofitError arg0) {
+							Toast.makeText(Preferences.this, "Could not deauthorize Canvas, but deleted local token", Toast.LENGTH_SHORT).show();
+							ConnectionHelper.logout(Preferences.this);
+						}
+					});
+					ConnectionHelper.resetCanvasAuthToken(Preferences.this);
+				} else {
+					Toast.makeText(Preferences.this, "UTilities is not authorize for Canvas", Toast.LENGTH_SHORT).show();
+				}
+				return true;
+			}
+		});
     }
-    @Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-    	int id = item.getItemId();
-    	switch(id)
-    	{
-	    	case android.R.id.home:
-	            // app icon in action bar clicked; go home
-	            super.onBackPressed();
-	            break;
-    	}
-    	return false;
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+		switch (id) {
+		case android.R.id.home:
+			// app icon in action bar clicked; go home
+			super.onBackPressed();
+			break;
+		}
+		return false;
 	}
-    @Override
-    public void onResume()
-    {
-    	super.onResume();
-    	if(ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet() && ConnectionHelper.bbCookieHasBeenSet())
-        {
-	        loginfield.setEnabled(false);
-	        passwordfield.setEnabled(false);
-	        ba.notifyDataSetChanged();
-        }
-        else
-        {
-		  	loginfield.setEnabled(true);
-		    passwordfield.setEnabled(true);  
-		  	ba.notifyDataSetChanged();
-        }
-    }
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (ConnectionHelper.cookieHasBeenSet()
+				&& ConnectionHelper.PNACookieHasBeenSet()
+				&& ConnectionHelper.bbCookieHasBeenSet()) {
+			loginfield.setEnabled(false);
+			passwordfield.setEnabled(false);
+			ba.notifyDataSetChanged();
+		} else {
+			loginfield.setEnabled(true);
+			passwordfield.setEnabled(true);
+			ba.notifyDataSetChanged();
+		}
+	}
 }

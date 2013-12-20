@@ -120,13 +120,17 @@
     </PreferenceCategory>
 
     <PreferenceScreen
-        android:enabled="false"
-        android:selectable="false"
+        android:enabled="true"
+        android:selectable="true"
         android:title="Experimental" >
         <Preference
             android:id="@+id/update_stops"
             android:key="update_stops"
             android:title="Update Bus Stops" />
+        <Preference
+            android:id="@+id/deauthorize_canvas"
+            android:key="deauthorize_canvas"
+            android:title="Deauthorize Canvas" />
     </PreferenceScreen>
 
 </PreferenceScreen>
