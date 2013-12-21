@@ -311,9 +311,9 @@ public class TransactionsFragment extends SherlockFragment {
 					ell.setVisibility(View.VISIBLE);
 				}
 				else { //on later pages we should let them see what's already loaded
-					//got an NPE here, seems like a race condition where cancel is called externally, and for some
-					//reason null is returned (shouldn't be the case) not worth looking into right now
-					Toast.makeText(getSherlockActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+					//got an NPE here, seems like a race condition where cancel is called externally
+					if(getActivity() != null)
+						Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
 					ta.notifyNoMorePages();
 					ta.notifyDataSetChanged();
 				}
