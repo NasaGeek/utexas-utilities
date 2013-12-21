@@ -42,7 +42,7 @@ public class AttachmentDownloadService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 
-		String urlToDownload = "https://courses.utexas.edu" + intent.getStringExtra("url");
+		String urlToDownload = ConnectionHelper.blackboard_domain + intent.getStringExtra("url");
 		String fileName = intent.getStringExtra("fileName");
 		
 		NotificationCompat.Builder notbuild = new NotificationCompat.Builder(AttachmentDownloadService.this);
@@ -64,8 +64,8 @@ public class AttachmentDownloadService extends IntentService {
             connection.addRequestProperty("Cookie", "s_session_id="+ConnectionHelper.getBBAuthCookie(AttachmentDownloadService.this, ConnectionHelper.getThreadSafeClient()));
             
             if(Build.VERSION.SDK_INT<=Build.VERSION_CODES.ECLAIR_MR1)
-            {	(new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Download")).mkdirs();
-            	dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment.getExternalStorageDirectory()), "Download/"+fileName);
+            {	(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download")).mkdirs();
+            	dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment.getExternalStorageDirectory()), "Download/" + fileName);
             }
             else
             {	Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();

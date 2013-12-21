@@ -52,8 +52,6 @@
         
         <service android:name=".AttachmentDownloadService"/>
         
-        <activity android:name="com.crittercism.NotificationActivity"/>
-        
         <activity android:name=".activities.DataUsageActivity"
         		 android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"></activity>
         

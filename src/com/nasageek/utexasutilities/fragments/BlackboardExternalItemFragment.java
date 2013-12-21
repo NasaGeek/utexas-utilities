@@ -54,7 +54,7 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
 		setHasOptionsMenu(true);			
 		CookieSyncManager.createInstance(getSherlockActivity());
 		CookieManager man = CookieManager.getInstance();
-		man.setCookie("courses.utexas.edu", "s_session_id=" + ConnectionHelper.getBBAuthCookie(getSherlockActivity(), ConnectionHelper.getThreadSafeClient()));
+		man.setCookie(ConnectionHelper.blackboard_domain_noprot, "s_session_id=" + ConnectionHelper.getBBAuthCookie(getSherlockActivity(), ConnectionHelper.getThreadSafeClient()));
 		
 		CookieSyncManager.getInstance().sync();
 	}

@@ -1,6 +1,8 @@
 package com.nasageek.utexasutilities.fragments;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +17,9 @@ import org.apache.http.util.EntityUtils;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
+
 import com.nasageek.utexasutilities.AsyncTask;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -80,8 +84,8 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
-		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(),httpclient));
-    	cookie.setDomain("courses.utexas.edu");
+		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient));
+    	cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
     	httpclient.getCookieStore().addCookie(cookie);
     	
     	classAdapter = new BBClassAdapter(getSherlockActivity(), classSectionList);
@@ -178,7 +182,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 		
 		@Override
 		protected ArrayList<ParcelablePair<String, List<BBClass>>> doInBackground(Object... params) {
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
+			HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
 	    	String pagedata="";
 
 	    	try {
@@ -228,6 +232,15 @@ public class BlackboardCourseListFragment extends SherlockFragment {
     				sectionList.add(classList.get(i));
     			}  			
     		}
+    		Collections.reverse(tempClassSectionList);
+    		/*Collections.sort(tempClassSectionList, new Comparator<ParcelablePair<String, List<BBClass>>>() {
+
+				@Override
+				public int compare(ParcelablePair<String, List<BBClass>> lhs,
+						ParcelablePair<String, List<BBClass>> rhs) {
+					return -lhs.first.compareTo(rhs.first);
+				}
+			});*/
 			return tempClassSectionList;
 		}
 		@Override

@@ -113,7 +113,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		
 		client = ConnectionHelper.getThreadSafeClient();
 		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(),client));
-    	cookie.setDomain("courses.utexas.edu");
+    	cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
     	client.getCookieStore().addCookie(cookie);
 	}
 	
@@ -185,7 +185,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 						};
 							getSherlockActivity().registerReceiver(onNotificationClick, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
 							  
-							Uri uri = Uri.parse("https://courses.utexas.edu" + Uri.decode(item.getDlUri()));
+							Uri uri = Uri.parse(ConnectionHelper.blackboard_domain + Uri.decode(item.getDlUri()));
 							 
 							Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
 							DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -365,7 +365,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		protected Object[] doInBackground(String... params) {
 			String contentid = params[0];
 			
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/contentDetail?content_id="+contentid+"&course_id="+getArguments().getString("courseID"));
+			HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain + "/webapps/Bb-mobile-BBLEARN/contentDetail?content_id="+contentid+"&course_id="+getArguments().getString("courseID"));
 	    	String pagedata="";
 
 	    	try {
@@ -553,5 +553,4 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	public void onPanesScrolled() {
 		setupActionBar();		
 	}
-
 }

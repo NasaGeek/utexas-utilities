@@ -18,7 +18,9 @@ import org.apache.http.protocol.HTTP;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+
 import com.nasageek.utexasutilities.AsyncTask;
+
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -30,6 +32,9 @@ import com.nasageek.utexasutilities.activities.Preferences;
 import com.nasageek.utexasutilities.activities.UTilitiesActivity;
 
 public class ConnectionHelper {
+	
+	public static final String blackboard_domain_noprot = "blackboard.utexas.edu";
+	public static final String blackboard_domain = "https://" + blackboard_domain_noprot;
 	
 	private static SharedPreferences settings;
 	private static SecurePreferences sp;
@@ -60,7 +65,7 @@ public class ConnectionHelper {
 	public boolean bbLogin(Context con, DefaultHttpClient client) {
 		settings = PreferenceManager.getDefaultSharedPreferences(con);
 		sp = new SecurePreferences(con, "com.nasageek.utexasutilities.password",false);
-		HttpPost httppost = new HttpPost("https://courses.utexas.edu/webapps/login/");
+		HttpPost httppost = new HttpPost(ConnectionHelper.blackboard_domain + "/webapps/login/");
 		try {
 		       
 			 // Add your data
@@ -69,7 +74,7 @@ public class ConnectionHelper {
 		        nameValuePairs.add(new BasicNameValuePair("user_id", settings.getString("eid","error").trim()));
 		        nameValuePairs.add(new BasicNameValuePair("password", sp.getString("password")));
 		        
-		        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs,HTTP.ASCII));
+		        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.ASCII));
 
 		        // Execute HTTP Post Request
 		        HttpResponse response = client.execute(httppost);
