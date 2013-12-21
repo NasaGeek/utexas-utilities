@@ -5,7 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
@@ -25,13 +24,11 @@ import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.net.Uri;
-import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.Html;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,19 +44,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-//import com.crittercism.app.Crittercism;
 import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.AttachmentDownloadService;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.MyScrollView;
-import com.nasageek.utexasutilities.ParcelablePair;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.model.CourseMapItem;
 
 public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	
@@ -487,7 +480,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 			TextView filesizeView = (TextView) lin.findViewById(R.id.attachment_size);
 			
 			nameView.setText(item.getName());
-			filesizeView.setText("Filesize: " + String.format("%,.1f", Double.parseDouble(item.getSize())/1000)+" KB");
+			filesizeView.setText("Filesize: " + String.format("%,.1f", Double.parseDouble(item.getSize()) / 1000) + " KB");
 		
 			return (View)lin;
 		}

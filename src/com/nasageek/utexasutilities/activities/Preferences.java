@@ -5,21 +5,18 @@ import java.io.IOException;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceManager;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
-//import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
@@ -134,7 +131,6 @@ public class Preferences extends SherlockPreferenceActivity{
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) 
 			{
-				//Crittercism.setOptOutStatus(!(Boolean)newValue);
 				return true;
 			}
 		});

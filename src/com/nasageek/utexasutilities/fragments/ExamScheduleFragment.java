@@ -1,7 +1,6 @@
 package com.nasageek.utexasutilities.fragments;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,8 +12,6 @@ import org.apache.http.util.EntityUtils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
@@ -34,7 +31,7 @@ import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-//import com.crittercism.app.Crittercism;
+import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
@@ -265,9 +262,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 				}
 				catch(ArrayIndexOutOfBoundsException ex)
 				{
-					ex.printStackTrace();
-					//Crittercism.leaveBreadcrumb("Exam parse error "+Arrays.toString(examdata));
-					
+					ex.printStackTrace();					
 				}
 				String course = "";
 				ViewGroup vg = (ViewGroup)convertView;
@@ -282,8 +277,8 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 				}
 				else
 				{
-					course = id+" "+name;
-					TextView left= (TextView) vg.findViewById(R.id.examdateview);
+					course = id + " " + name;
+					TextView left = (TextView) vg.findViewById(R.id.examdateview);
 					left.setText(date);
 					TextView right = (TextView) vg.findViewById(R.id.examlocview);
 					right.setText(location);

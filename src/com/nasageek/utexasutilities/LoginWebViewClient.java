@@ -1,6 +1,5 @@
 package com.nasageek.utexasutilities;
 
-//import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.activities.LoginActivity;
 import com.nasageek.utexasutilities.activities.UTilitiesActivity;
 
@@ -109,11 +108,10 @@ public class LoginWebViewClient extends WebViewClient {
 	}
 	private void continueToActivity(String service)
 	{
-		Intent intent=null;
+		Intent intent = null;
 		try {
 			intent = new Intent(context, Class.forName(nextActivity));
-			Toast.makeText(context, "You're now logged in to "+service, Toast.LENGTH_SHORT).show();
-			//Crittercism.leaveBreadcrumb("Logged in (temp)");
+			Toast.makeText(context, "You're now logged in to " + service, Toast.LENGTH_SHORT).show();
 		} catch (ClassNotFoundException e) {
 			
 			e.printStackTrace();
@@ -123,7 +121,6 @@ public class LoginWebViewClient extends WebViewClient {
 		}
 		context.startActivity(intent);
     	CookieManager.getInstance().removeAllCookie();
-
     	return;
 	}
 }

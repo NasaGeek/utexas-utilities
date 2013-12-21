@@ -40,7 +40,6 @@ import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-//import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
@@ -510,7 +509,6 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 					setMenuItemsEnabled(true);
 					if(!parentAct.isFinishing())
 				    	Toast.makeText(parentAct, "Tap a class to see its information.", Toast.LENGTH_SHORT).show();
-					//Crittercism.leaveBreadcrumb("Loaded schedule from web");
 				}
 			}
 			else {

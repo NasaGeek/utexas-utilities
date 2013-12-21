@@ -37,12 +37,10 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.support.v4.widget.SearchViewCompat;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -61,7 +59,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-//import com.crittercism.app.Crittercism;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
@@ -74,6 +71,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.BuildingSaxHandler;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.NavigationDataSet;
@@ -292,7 +290,6 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
         		return;
         	}
         });*/
-        //Crittercism.leaveBreadcrumb("Loaded CampusMapActivity");
     }
 	private void setupMapIfNeeded() {
 		// Do a null check to confirm that we have not already instantiated the map.

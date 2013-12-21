@@ -27,7 +27,6 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
-//import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.activities.Preferences;
 import com.nasageek.utexasutilities.activities.UTilitiesActivity;
 
@@ -151,9 +150,7 @@ public class ConnectionHelper {
 		edit.putBoolean("loggedin", false);
 		
 		Utility.commit(edit);
-		loggingIn = false;
-		//Crittercism.leaveBreadcrumb("Logged out");
-		
+		loggingIn = false;		
 	}
 	public static boolean isLoggingIn() {
 		return loggingIn;
@@ -354,7 +351,6 @@ public class ConnectionHelper {
 				}
 				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
-				//Crittercism.leaveBreadcrumb("Logged in (persistent)");
 			}
 		}
 		public void setContext(Context con) {
@@ -423,7 +419,6 @@ public class ConnectionHelper {
 				}
 				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
-				//Crittercism.leaveBreadcrumb("Logged in (persistent)");
 			}
 		}
 		public void setContext(Context con) {
@@ -489,7 +484,6 @@ public class ConnectionHelper {
 				}
 				((SherlockActivity)(context)).invalidateOptionsMenu();
 				cancelProgressBar();
-				//Crittercism.leaveBreadcrumb("Logged in (persistent)");
 			}
 		}
 		public void setContext(Context con) {

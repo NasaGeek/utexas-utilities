@@ -6,9 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -26,7 +24,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
-//import com.crittercism.app.Crittercism;
+import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.ChangeLog;
 import com.nasageek.utexasutilities.ChangeableContextTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
@@ -66,7 +64,6 @@ public class UTilitiesActivity extends SherlockActivity {
         	
         }*/
        
-        //Crittercism.init(getApplicationContext(), "4fed1764be790e4597000001");
         
    /*     try {
         	File httpCacheDir = new File(getCacheDir(), "http");
@@ -85,7 +82,6 @@ public class UTilitiesActivity extends SherlockActivity {
         }
                 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
-        //Crittercism.setOptOutStatus(!settings.getBoolean("sendcrashes", true));
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         
         setContentView(R.layout.main);

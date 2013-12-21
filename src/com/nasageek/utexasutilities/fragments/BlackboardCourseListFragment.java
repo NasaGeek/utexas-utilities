@@ -2,12 +2,10 @@ package com.nasageek.utexasutilities.fragments;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.acra.ACRA;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -15,31 +13,24 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 
 import android.annotation.TargetApi;
-import android.content.Intent;
-import android.net.Uri;
-
-import com.nasageek.utexasutilities.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-//import com.crittercism.app.Crittercism;
 import com.foound.widget.AmazingListView;
 import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.mapsaurus.paneslayout.PanesActivity;
+import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.ParcelablePair;
 import com.nasageek.utexasutilities.R;
@@ -89,8 +80,6 @@ public class BlackboardCourseListFragment extends SherlockFragment {
     	httpclient.getCookieStore().addCookie(cookie);
     	
     	classAdapter = new BBClassAdapter(getSherlockActivity(), classSectionList);
-			
-    	//Crittercism.leaveBreadcrumb("Loaded BlackboardActivity");
 	}
 
 	

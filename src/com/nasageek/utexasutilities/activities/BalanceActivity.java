@@ -14,14 +14,12 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-//import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
 import com.nasageek.utexasutilities.fragments.TransactionsFragment;
 import com.nasageek.utexasutilities.fragments.TransactionsFragment.TransactionType;
 import com.viewpagerindicator.MyTabPageIndicator;
-import com.viewpagerindicator.TabPageIndicator;
 
 public class BalanceActivity extends SherlockFragmentActivity {	
 
@@ -45,8 +43,6 @@ public class BalanceActivity extends SherlockFragmentActivity {
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionbar.setHomeButtonEnabled(true);
 		actionbar.setDisplayHomeAsUpEnabled(true);
-		
-		//Crittercism.leaveBreadcrumb("BalanceActivity entered");
 	}
     private void initialisePaging() {
     	
