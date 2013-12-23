@@ -36,7 +36,7 @@ import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
 
-public class ExamScheduleFragment extends SherlockFragment implements ActionModeFragment{
+public class ExamScheduleFragment extends SherlockFragment implements ActionModeFragment {
 
 	private boolean noExams;
 	private TextView login_first;
@@ -54,25 +54,19 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 	String semId;
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{			
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {			
 		View vg = inflater.inflate(R.layout.exam_schedule_fragment_layout, container, false);
-		
 		updateView(semId, vg);
-		
 		return vg;
 	}
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		parentAct = this.getSherlockActivity();
 		semId = getArguments().getString("semdId");
 	}
-	public void updateView(String semId, View vg)
-	{
+	public void updateView(String semId, View vg) {
 		this.semId = semId;
-		
-		examlist=  new ArrayList<String>();
+		examlist = new ArrayList<String>();
 		login_first = (TextView) vg.findViewById(R.id.login_first_tv);
 		pb_ll = (LinearLayout) vg.findViewById(R.id.examschedule_progressbar_ll);
 		examlistview = (ListView) vg.findViewById(R.id.examschedule_listview);
@@ -83,9 +77,9 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 		if(!ConnectionHelper.cookieHasBeenSet()) {	
 			pb_ll.setVisibility(View.GONE);
 			login_first.setVisibility(View.VISIBLE);
-		}
-		else
+		} else {
 			parser();
+		}		
 	}
 	public void parser() {
 		httpclient = ConnectionHelper.getThreadSafeClient();
@@ -135,8 +129,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 				cancel(true);
 				return 'e';
 	    	}
-	    	if(pagedata.contains("will be available approximately three weeks"))// || !tempId.equals(semId)) 
-	    	{	
+	    	if(pagedata.contains("will be available approximately three weeks")) {// || !tempId.equals(semId)) 
 	    		noExams = true;
 	    		return 'c';
 	    	}
@@ -186,175 +179,147 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 	    		netv.setVisibility(View.VISIBLE);
 			}
 			pb_ll.setVisibility(View.GONE);
-			
 		}
 		@Override
-		protected void onCancelled()
-		{
+		protected void onCancelled() {
 			eetv.setText(errorMsg);
-			
 			netv.setVisibility(View.GONE);
 			pb_ll.setVisibility(View.GONE);
 			examlistview.setVisibility(View.GONE);
 			login_first.setVisibility(View.GONE);
 			ell.setVisibility(View.VISIBLE);
-			
 		}
 	}
 	
-	private class ExamAdapter extends ArrayAdapter<String> implements AdapterView.OnItemClickListener
-	{
-			private Context con;
-			private ArrayList<String> exams;
-			private LayoutInflater li;
+	private class ExamAdapter extends ArrayAdapter<String> implements AdapterView.OnItemClickListener {
+		private Context con;
+		private ArrayList<String> exams;
+		private LayoutInflater li;
 
-			public ExamAdapter(Context c, ArrayList<String> objects)
-			{
-				super(c,0,objects);
-				con = c;
-				exams = objects;
-				li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			}
-			public int getCount() {
-				return exams.size();
-			}
-
-			public String getItem(int position) {
-				return exams.get(position);
-			}
-
-			public long getItemId(int position) {
-				return 0;
-			}
-			@Override
-			public boolean areAllItemsEnabled()
-			{
-				return true;
-			}
-			@Override
-			public boolean isEnabled(int i)
-			{
-				return true;
-			}
-			@Override
-			public View getView(int position, View convertView, ViewGroup parent)
-			{
-				String[] examdata = exams.get(position).split("\\^");
-				boolean examRequested = false, summerSession = false;
-				String id="", name="", date="", location="", unique="";
-				
-				
-				//TODO: I hate doing these try/catches, find a better solution so I know when stuff goes wrong? ACRA?
-				try
-				{
-					examRequested = !examdata[2].contains("The department");
-					summerSession = examdata[2].contains("Information on final exams is available for Nine-Week Summer Session(s) only.");	
-				
-					unique = examdata[0]; 
-					id = examdata[1];
-					name = examdata[2];
-					date = "";
-					location = "";
-					if(examRequested && !summerSession && examdata.length >= 5)
-					{	date = examdata[3];
-						location = examdata[4];
-					}
-				}
-				catch(ArrayIndexOutOfBoundsException ex)
-				{
-					ex.printStackTrace();					
-				}
-				String course = "";
-				ViewGroup vg = (ViewGroup)convertView;
-				vg =(ViewGroup)li.inflate(R.layout.exam_item_view,null,false);
-				TextView courseview = (TextView) vg.findViewById(R.id.exam_item_header_text);
-				
-				if(!examRequested || summerSession)
-				{
-					course = id + " - " + unique;
-					TextView left= (TextView) vg.findViewById(R.id.examdateview);
-					left.setText(name);
-				}
-				else
-				{
-					course = id + " " + name;
-					TextView left = (TextView) vg.findViewById(R.id.examdateview);
-					left.setText(date);
-					TextView right = (TextView) vg.findViewById(R.id.examlocview);
-					right.setText(location);
-				}
-				
-				courseview.setText(course);
-				
-				return (View)vg;
-				
-			}
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-			{
-				mode = ExamScheduleFragment.this.parentAct.startActionMode(new ScheduleActionMode(position));
-			}
-			final class ScheduleActionMode implements ActionMode.Callback {
-		        
-				int position;
-				
-				public ScheduleActionMode(int pos)
-				{
-					position = pos;
-				}
-				
-				@Override
-		        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-		            mode.setTitle("Exam Info");
-		            MenuInflater inflater = getSherlockActivity().getSupportMenuInflater();
-		            String[] elements = exams.get(position).split("\\^");
-		            if(elements.length >= 3) //TODO: check this?
-		            {
-		            	if(elements[2].contains("The department") || elements[2].contains("Information on final exams is available for Nine-Week Summer Session(s) only."))
-	    				{
-	    					return true;
-	    				}
-		            }
-		            else
-		            	return true;
-		            inflater.inflate(R.menu.schedule_action_mode, menu);
-		            return true;
-		        }
-
-		        @Override
-		        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-		            return false;
-		        }
-
-		        @Override
-		        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-		            switch(item.getItemId())
-		            {
-		            	case R.id.locate_class:
-		            		ArrayList<String> building = new ArrayList<String>();
-		            		Intent map = new Intent(con.getString(R.string.building_intent), null, con, CampusMapActivity.class);
-		            		
-		            		String[] elements = exams.get(position).split("\\^");
-		            		if(elements.length >= 5)
-		    				{	
-		    					building.add(elements[4].split(" ")[0]);
-		    					map.putStringArrayListExtra("buildings",building);
-		            	//		map.setData(Uri.parse(elements[4].split(" ")[0]));
-		    					con.startActivity(map);
-		    					return true;
-		    				}
-		            		else
-		            		{
-		            			Toast.makeText(con, "Your exam's location could not be found", Toast.LENGTH_SHORT).show();
-		            		}
-		            }
-		            return true;
-		        }
-
-		        @Override
-		        public void onDestroyActionMode(ActionMode mode) {
-		        }
-		    }
-			
-			
+		public ExamAdapter(Context c, ArrayList<String> objects) {
+			super(c,0,objects);
+			con = c;
+			exams = objects;
+			li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
+		public int getCount() {
+			return exams.size();
+		}
+
+		public String getItem(int position) {
+			return exams.get(position);
+		}
+
+		public long getItemId(int position) {
+			return 0;
+		}
+		@Override
+		public boolean areAllItemsEnabled() {
+			return true;
+		}
+		@Override
+		public boolean isEnabled(int i) {
+			return true;
+		}
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			String[] examdata = exams.get(position).split("\\^");
+			boolean examRequested = false, summerSession = false;
+			String id="", name="", date="", location="", unique="";
+			
+			//TODO: I hate doing these try/catches, find a better solution so I know when stuff goes wrong? ACRA?
+			try {
+				examRequested = !examdata[2].contains("The department");
+				summerSession = examdata[2].contains("Information on final exams is available for Nine-Week Summer Session(s) only.");	
+			
+				unique = examdata[0]; 
+				id = examdata[1];
+				name = examdata[2];
+				date = "";
+				location = "";
+				if(examRequested && !summerSession && examdata.length >= 5) {
+					date = examdata[3];
+					location = examdata[4];
+				}
+			} catch(ArrayIndexOutOfBoundsException ex) {
+				ex.printStackTrace();					
+			}
+			String course = "";
+			ViewGroup vg = (ViewGroup)convertView;
+			vg =(ViewGroup)li.inflate(R.layout.exam_item_view,null,false);
+			TextView courseview = (TextView) vg.findViewById(R.id.exam_item_header_text);
+			
+			if(!examRequested || summerSession) {
+				course = id + " - " + unique;
+				TextView left= (TextView) vg.findViewById(R.id.examdateview);
+				left.setText(name);
+			} else {
+				course = id + " " + name;
+				TextView left = (TextView) vg.findViewById(R.id.examdateview);
+				left.setText(date);
+				TextView right = (TextView) vg.findViewById(R.id.examlocview);
+				right.setText(location);
+			}
+			
+			courseview.setText(course);
+			return (View)vg;	
+		}
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			mode = ExamScheduleFragment.this.parentAct.startActionMode(new ScheduleActionMode(position));
+		}
+		final class ScheduleActionMode implements ActionMode.Callback {
+	        
+			int position;
+			
+			public ScheduleActionMode(int pos) {
+				position = pos;
+			}
+			
+			@Override
+	        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+	            mode.setTitle("Exam Info");
+	            MenuInflater inflater = getSherlockActivity().getSupportMenuInflater();
+	            String[] elements = exams.get(position).split("\\^");
+	            if(elements.length >= 3) { //TODO: check this?
+	            	if(elements[2].contains("The department") || 
+	            	   elements[2].contains("Information on final exams is available for Nine-Week Summer Session(s) only.")) {
+    					return true;
+    				}
+	            } else {
+	            	return true;
+	            }
+	            inflater.inflate(R.menu.schedule_action_mode, menu);
+	            return true;
+	        }
+
+	        @Override
+	        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+	            return false;
+	        }
+
+	        @Override
+	        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+	            switch(item.getItemId()) {
+	            	case R.id.locate_class:
+	            		ArrayList<String> building = new ArrayList<String>();
+	            		Intent map = new Intent(con.getString(R.string.building_intent), null, con, CampusMapActivity.class);
+	            		
+	            		String[] elements = exams.get(position).split("\\^");
+	            		if(elements.length >= 5) {	
+	    					building.add(elements[4].split(" ")[0]);
+	    					map.putStringArrayListExtra("buildings",building);
+	            	//		map.setData(Uri.parse(elements[4].split(" ")[0]));
+	    					con.startActivity(map);
+	    					return true;
+	    				} else {
+	            			Toast.makeText(con, "Your exam's location could not be found", Toast.LENGTH_SHORT).show();
+	            		}
+	            }
+	            return true;
+	        }
+
+	        @Override
+	        public void onDestroyActionMode(ActionMode mode)  {}
+	    }
+	}
 }
