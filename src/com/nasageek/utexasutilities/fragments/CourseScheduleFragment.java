@@ -179,6 +179,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 				break;
     		}
     	case R.id.export_schedule:
+    		//version-gate handled by xml, but just to make sure...
     		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
     			//check to see if we're done loading the schedules (the ClassAdapter is initialized in onPostExecute)
     			if(ca != null) {	
