@@ -113,7 +113,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
 		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient));
-		cookie.setDomain("courses.utexas.edu");
+		cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
 		httpclient.getCookieStore().addCookie(cookie);
 	}
 	
@@ -309,7 +309,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		}	
 		@Override
 		protected ArrayList doInBackground(Object... params) {
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseMap?course_id=" + bbID);
+			HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain + "/webapps/Bb-mobile-BBLEARN/courseMap?course_id=" + bbID);
 	    	String pagedata="";
 
 	    	try {

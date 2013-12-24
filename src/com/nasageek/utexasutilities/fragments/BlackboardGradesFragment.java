@@ -88,7 +88,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
 		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(),httpclient));
-		cookie.setDomain("courses.utexas.edu");
+		cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
 		httpclient.getCookieStore().addCookie(cookie);
 			
 	}
@@ -252,7 +252,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 		@Override
 		protected ArrayList<BBGrade> doInBackground(Object... params) {
 
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/courseData?course_section=GRADES&course_id="+courseID);
+			HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain + "/webapps/Bb-mobile-BBLEARN/courseData?course_section=GRADES&course_id="+courseID);
 	    	String pagedata="";
 
 	    	try {

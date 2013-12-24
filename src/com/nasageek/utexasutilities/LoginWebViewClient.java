@@ -73,19 +73,21 @@ public class LoginWebViewClient extends WebViewClient {
 					continueToActivity("UT PNA");
 					return;
 				}
-			}
-			break;
-
-		case 'b':
-			if(url.contains("courses.utexas.edu")) {
-				cookies = CookieManager.getInstance().getCookie("https://courses.utexas.edu");
-
-				if(url.equals("https://courses.utexas.edu/webapps/portal/frameset.jsp") && cookies != null) {
-					for(String s : cookies.split("; ")) {
-						if(s.startsWith("s_session_id=")) {
-							authCookie = s.substring(13);
-							;
-							break;
+				break;
+				
+			case 'b':
+				if(url.contains(ConnectionHelper.blackboard_domain_noprot))
+				{	
+					cookies = CookieManager.getInstance().getCookie(ConnectionHelper.blackboard_domain);
+					
+					if(url.equals(ConnectionHelper.blackboard_domain + "/webapps/portal/frameset.jsp") && cookies != null)
+					{
+						for(String s : cookies.split("; "))
+						{
+							if(s.startsWith("s_session_id="))
+							{	authCookie =  s.substring(13);;
+								break;
+							}
 						}
 					}
 				}

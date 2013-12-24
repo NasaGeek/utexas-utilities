@@ -169,3 +169,16 @@ Versioncode 24 - 1.99.1
 
 Fix navigation bug in Blackboard
 
+Versioncode 25 - 1.99.2
+
+Fixed a couple bugs with downloading files from Blackboard
+
+Versioncode 28 - 1.99.3
+
+Fixed blackboard URL and ordering bug
+Fixed bug with downloading files
+Switched to ACRA for bug reporting
+Few other bugs might have been fixed
+
+
+

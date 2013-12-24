@@ -109,7 +109,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 		String bbAuthCookie = ConnectionHelper.getBBAuthCookie(getSherlockActivity(),httpclient);
 		httpclient.getCookieStore().clear();
 		BasicClientCookie cookie = new BasicClientCookie("s_session_id", bbAuthCookie);
-    	cookie.setDomain("courses.utexas.edu");
+    	cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
     	httpclient.getCookieStore().addCookie(cookie);
 		
 		dlv = (AmazingListView) vg.findViewById(R.id.dash_listview);
@@ -260,7 +260,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 		    	URL location;
 		    	HttpsURLConnection conn = null;
 				try {
-					location = new URL("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/dashboard?course_type=COURSE&with_notifications=true");
+					location = new URL(ConnectionHelper.blackboard_domain + "/webapps/Bb-mobile-BBLEARN/dashboard?course_type=COURSE&with_notifications=true");
 					conn = (HttpsURLConnection) location.openConnection();
 					conn.setRequestProperty("Cookie", "s_session_id="+bbAuthCookie);
 					conn.setRequestMethod("GET");
@@ -293,7 +293,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 				}
 	    	} else {
 		    	try {
-		    		HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/dashboard?course_type=COURSE&with_notifications=true");
+		    		HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain + "/webapps/Bb-mobile-BBLEARN/dashboard?course_type=COURSE&with_notifications=true");
 		    		HttpResponse response = client.execute(hget);
 			    	pagedata = EntityUtils.toString(response.getEntity());
 			    	BlackboardDashboardXmlParser parser = new BlackboardDashboardXmlParser();

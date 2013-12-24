@@ -5,7 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
@@ -25,13 +24,11 @@ import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.net.Uri;
-import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.Html;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,19 +44,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-//import com.crittercism.app.Crittercism;
 import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.AttachmentDownloadService;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.MyScrollView;
-import com.nasageek.utexasutilities.ParcelablePair;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.model.CourseMapItem;
 
 public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	
@@ -113,7 +106,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		
 		client = ConnectionHelper.getThreadSafeClient();
 		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(),client));
-    	cookie.setDomain("courses.utexas.edu");
+    	cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
     	client.getCookieStore().addCookie(cookie);
 	}
 	
@@ -185,7 +178,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 						};
 							getSherlockActivity().registerReceiver(onNotificationClick, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
 							  
-							Uri uri = Uri.parse("https://courses.utexas.edu" + Uri.decode(item.getDlUri()));
+							Uri uri = Uri.parse(ConnectionHelper.blackboard_domain + Uri.decode(item.getDlUri()));
 							 
 							Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
 							DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -200,7 +193,15 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 					    			.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.getFileName())
 					    			.addRequestHeader("Cookie", "s_session_id="+ConnectionHelper.getBBAuthCookie(getSherlockActivity(), client));
 					    	
-					    	final long dlID = manager.enqueue(request);
+					    	try {
+					    		final long dlID = manager.enqueue(request);
+					    	} catch(IllegalArgumentException iae) {
+					    		//fallback for people with messed up Downloads provider
+					    		Intent downloadAttachment = new Intent(getSherlockActivity(), AttachmentDownloadService.class);
+								downloadAttachment.putExtra("fileName", item.getFileName());
+								downloadAttachment.putExtra("url", item.getDlUri());
+								getSherlockActivity().startService(downloadAttachment);
+					    	}
 					    	Toast.makeText(getSherlockActivity(), "Download started, item should appear in the \"Download\" folder on your external storage.", Toast.LENGTH_LONG).show();
 						 }	 
 						 else {
@@ -357,7 +358,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		protected Object[] doInBackground(String... params) {
 			String contentid = params[0];
 			
-			HttpGet hget = new HttpGet("https://courses.utexas.edu/webapps/Bb-mobile-BBLEARN/contentDetail?content_id="+contentid+"&course_id="+getArguments().getString("courseID"));
+			HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain + "/webapps/Bb-mobile-BBLEARN/contentDetail?content_id="+contentid+"&course_id="+getArguments().getString("courseID"));
 	    	String pagedata="";
 
 	    	try {
@@ -479,7 +480,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 			TextView filesizeView = (TextView) lin.findViewById(R.id.attachment_size);
 			
 			nameView.setText(item.getName());
-			filesizeView.setText("Filesize: " + String.format("%,.1f", Double.parseDouble(item.getSize())/1000)+" KB");
+			filesizeView.setText("Filesize: " + String.format("%,.1f", Double.parseDouble(item.getSize()) / 1000) + " KB");
 		
 			return (View)lin;
 		}
@@ -545,5 +546,4 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	public void onPanesScrolled() {
 		setupActionBar();		
 	}
-
 }

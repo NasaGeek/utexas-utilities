@@ -14,12 +14,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.content.res.TypedArray;
-import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,11 +24,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.foound.widget.AmazingListView;
+import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.adapters.TransactionAdapter;
@@ -311,9 +304,9 @@ public class TransactionsFragment extends SherlockFragment {
 					ell.setVisibility(View.VISIBLE);
 				}
 				else { //on later pages we should let them see what's already loaded
-					//got an NPE here, seems like a race condition where cancel is called externally, and for some
-					//reason null is returned (shouldn't be the case) not worth looking into right now
-					Toast.makeText(getSherlockActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+					//got an NPE here, seems like a race condition where cancel is called externally
+					if(getActivity() != null)
+						Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
 					ta.notifyNoMorePages();
 					ta.notifyDataSetChanged();
 				}

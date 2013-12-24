@@ -7,9 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.TransitionDrawable;
-
 import com.nasageek.utexasutilities.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -81,7 +79,6 @@ public class UTilitiesActivity extends SherlockActivity {
         	
         }*/
        
-        //Crittercism.init(getApplicationContext(), "4fed1764be790e4597000001");
         
    /*     try {
         	File httpCacheDir = new File(getCacheDir(), "http");

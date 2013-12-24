@@ -8,6 +8,7 @@ import android.webkit.WebView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.LoginWebViewClient;
 
 public class LoginActivity extends SherlockActivity {
@@ -36,7 +37,7 @@ public class LoginActivity extends SherlockActivity {
     	{
     	case 'u':wv.loadUrl("https://utdirect.utexas.edu");
     			 actionbar.setSubtitle("UTDirect");break;
-    	case 'b':wv.loadUrl("https://courses.utexas.edu");
+    	case 'b':wv.loadUrl(ConnectionHelper.blackboard_domain);
     			 actionbar.setSubtitle("Blackboard");break;
     	case 'p':wv.loadUrl("https://management.pna.utexas.edu/server/graph.cgi");
     			 actionbar.setSubtitle("UT PNA");break;

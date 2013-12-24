@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+	<release version="1.99.3" versioncode="28">
+        <change>Switched to ACRA for bug reporting</change>
+        <change>Fixed bug with downloading files</change>
+        <change>Fixed blackboard URL and ordering bug</change>
+        <change>Few other bug fixes</change>
+    </release>
+	<release version="1.99.2" versioncode="25">
+	    <change>Fixed a couple bugs with downloading files from Blackboard</change>
+	</release>
 	<release version="1.99.1" versioncode="24">
 		<change>Fix navigation bug in Blackboard</change>
   	</release>

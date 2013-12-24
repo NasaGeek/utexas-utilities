@@ -1,35 +1,24 @@
 package com.nasageek.utexasutilities.activities;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
-
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.widget.ImageView;
-import android.widget.SlidingDrawer;
 import android.widget.Spinner;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-//import com.crittercism.app.Crittercism;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.adapters.MyFragmentPagerAdapter;
 import com.nasageek.utexasutilities.fragments.ActionModeFragment;
 import com.nasageek.utexasutilities.fragments.CourseScheduleFragment;
 import com.nasageek.utexasutilities.fragments.ExamScheduleFragment;
 import com.nasageek.utexasutilities.model.Classtime;
-import com.nasageek.utexasutilities.model.UTClass;
 import com.viewpagerindicator.TitlePageIndicator;
 
 public class ScheduleActivity extends SherlockFragmentActivity implements ViewPager.OnPageChangeListener{
@@ -41,15 +30,15 @@ public class ScheduleActivity extends SherlockFragmentActivity implements ViewPa
 	private ViewPager pager;
 	protected List<SherlockFragment> fragments;
 	protected TitlePageIndicator titleIndicator;
-	String semId ="";
+	String semId = "";
 	int selection;
 	Spinner spinner;
 	
 		
 	public enum Semester {
-		No_Overlay(Calendar.getInstance().get(Calendar.YEAR)+"2","Spring"),
-		JesterCityLimits(Calendar.getInstance().get(Calendar.YEAR)+"6","Summer"),
-		JesterCityMarket(Calendar.getInstance().get(Calendar.YEAR)+"9","Fall");
+		No_Overlay(Calendar.getInstance().get(Calendar.YEAR) + "2", "Spring"),
+		JesterCityLimits(Calendar.getInstance().get(Calendar.YEAR) + "6", "Summer"),
+		JesterCityMarket(Calendar.getInstance().get(Calendar.YEAR) + "9", "Fall");
 		
 	    private String code;
 	    private String fullName; 
@@ -102,7 +91,6 @@ public class ScheduleActivity extends SherlockFragmentActivity implements ViewPa
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 	    actionbar.setHomeButtonEnabled(true);
 	    actionbar.setDisplayHomeAsUpEnabled(true);
-	    //Crittercism.leaveBreadcrumb("Entered ScheduleActivity");
 		
 /*		spinner = new Spinner(this);
         spinner.setPromptId(R.string.semesterprompt);

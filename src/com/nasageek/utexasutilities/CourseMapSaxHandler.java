@@ -60,9 +60,13 @@ public class CourseMapSaxHandler extends DefaultHandler {
 	        	   String host = "";
 	        	   Boolean blackboardItem = false;
 	        	   if(!(atts.getValue("viewurl").contains("http://") || atts.getValue("viewurl").contains("https://"))) {
-	        		   host="https://courses.utexas.edu";
+	        		   host = ConnectionHelper.blackboard_domain;
 	        	   }
-	        	   content.add(new ParcelablePair(new CourseMapItem(atts.getValue("name"),host+atts.getValue("viewurl").replace("&amp;","&"),atts.getValue("contentid"),atts.getValue("linktype")),new ArrayList()));
+	        	   content.add(new ParcelablePair(new CourseMapItem(atts.getValue("name"),
+	        			   											host + atts.getValue("viewurl").replace("&amp;","&"),
+	        			   											atts.getValue("contentid"),
+	        			   											atts.getValue("linktype")),
+	        			   						  new ArrayList()));
 	           }
 	           folderDepth++;
 	           

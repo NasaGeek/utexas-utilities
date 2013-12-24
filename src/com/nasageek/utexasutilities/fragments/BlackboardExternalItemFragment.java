@@ -15,6 +15,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.mapsaurus.paneslayout.MySlidingPaneLayout;
+import com.mapsaurus.paneslayout.MySlidingPaneLayout;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 
@@ -24,6 +25,7 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
 	private TextView absSubtitle;
 //	private WebView wv;
 	private View absView;
+	private MySlidingPaneLayout mspl;
 	
 	public BlackboardExternalItemFragment() {}
 	
@@ -48,7 +50,7 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
 		setHasOptionsMenu(true);			
 		CookieSyncManager.createInstance(getSherlockActivity());
 		CookieManager man = CookieManager.getInstance();
-		man.setCookie("courses.utexas.edu", "s_session_id=" + ConnectionHelper.getBBAuthCookie(getSherlockActivity(), ConnectionHelper.getThreadSafeClient()));
+		man.setCookie(ConnectionHelper.blackboard_domain_noprot, "s_session_id=" + ConnectionHelper.getBBAuthCookie(getSherlockActivity(), ConnectionHelper.getThreadSafeClient()));
 		
 		CookieSyncManager.getInstance().sync();
 	}
@@ -56,7 +58,7 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		//if we're on a phone, let the SlidingPaneLayout know that it's got a webview
-		MySlidingPaneLayout mspl = (MySlidingPaneLayout) getSherlockActivity().findViewById(R.id.slidingpane_layout);
+		mspl = (MySlidingPaneLayout) getSherlockActivity().findViewById(R.id.slidingpane_layout);
 		if(mspl != null) {
 			mspl.setIsShowingWebView(true);
 		}
@@ -77,6 +79,16 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
 		wv.loadUrl(getArguments().getString("url"));
 		return wv;
 	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		//when we leave turn off SlidingPane webview behavior
+		if(mspl != null) {
+			mspl.setIsShowingWebView(false);
+		}
+	}
+	
 	private void setupActionBar() {
 		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
 		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_TITLE);

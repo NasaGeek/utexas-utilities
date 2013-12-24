@@ -65,8 +65,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 	
 	public DoubleDatePickerDialogFragment() {}
 	
-	public static DoubleDatePickerDialogFragment newInstance(ArrayList<UTClass> classList)
-	{
+	public static DoubleDatePickerDialogFragment newInstance(ArrayList<UTClass> classList) {
 		DoubleDatePickerDialogFragment ddpdf = new DoubleDatePickerDialogFragment();
 		Bundle args = new Bundle();
 		args.putParcelableArrayList("classList", classList);
@@ -74,8 +73,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 		return ddpdf;
 	}
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setStyle(DialogFragment.STYLE_NO_TITLE, 0);
 	}
@@ -97,24 +95,20 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		
 		View view = inflater.inflate(R.layout.double_date_picker_dialog_fragment_layout, container);
 		initialisePaging(view);
-		((Button)view.findViewById(R.id.calendar_button_ok)).setOnClickListener(new OnClickListener() {
+		((Button) view.findViewById(R.id.calendar_button_ok)).setOnClickListener(new OnClickListener() {
 			
 			@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 			@Override
 			public void onClick(View v) {
-				
 				Calendar startDate = new GregorianCalendar(startDatePicker.getYear(), 
 															 startDatePicker.getMonth(),
 															 startDatePicker.getDayOfMonth());
 				Calendar endDate = new GregorianCalendar(endDatePicker.getYear(),
 														   endDatePicker.getMonth(),
 														   endDatePicker.getDayOfMonth());
-				
-				if(startDate.after(endDate))
-				{
+				if(startDate.after(endDate)) {
 					Toast.makeText(getSherlockActivity(), "Start date must be before end date.", Toast.LENGTH_SHORT).show();
 					return;
 				}
@@ -126,17 +120,14 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
     			//roll forward one because RRULE will not place events on the specified end date
     			endDate.roll(Calendar.DATE, true);
     			
-    			String endDateString = endDateFormatter.format(endDate.getTime());
-    			   			
+    			String endDateString = endDateFormatter.format(endDate.getTime());  			
     			ArrayList<ContentValues> valuesList = new ArrayList<ContentValues>();
     			
     			//copying our original selected start date for comparison to each class
     			//start date later
     			Calendar selectedStartDate = (Calendar) startDate.clone();
-				for(UTClass clz : classList)
-				{
-					for(Classtime clt : clz.getClassTimes())
-					{	
+				for(UTClass clz : classList) {
+					for(Classtime clt : clz.getClassTimes()) {	
 						Date classStartTime = null, classEndTime = null;
 						
 						try {
@@ -175,16 +166,15 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 						values.put(CalendarContract.Events.DURATION, startEndToDuration(classStartTime, classEndTime));
 						values.put(CalendarContract.Events.DTSTART, startDate.getTimeInMillis());
 						values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getTimeZone("US/Central").getID());
-						
 						valuesList.add(values);
-						
 					}
 				}
 				
 				Cursor cur = null;
 				Uri uri = Calendars.CONTENT_URI;   
 				
-				//show them Google Calendars where they are either: owner, editor, contributor, or domain admin (700, 600, 500, 800 respectively)
+				//show them Google Calendars where they are either: owner, editor, contributor, or domain admin 
+				//(700, 600, 500, 800 respectively)
 				cur = cr.query(uri, EVENT_PROJECTION, "(("+Calendars.ACCOUNT_TYPE + " = ?) AND ((" + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR " +
 																							   "(" + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR " +
 																							   "(" + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR " +
@@ -194,27 +184,22 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 				ArrayList<Integer> indices = new ArrayList<Integer>();
 				
 				//If no calendars are available, let them know
-				if(cur == null)
-				{
+				if(cur == null) {
 					Toast.makeText(getSherlockActivity(), "There are no available calendars to export to.", Toast.LENGTH_LONG).show();
 					DoubleDatePickerDialogFragment.this.dismiss();
 					return;
 				}
-				while (cur.moveToNext()) 
-				{	
+				while (cur.moveToNext()) {	
 				    long calID = 0;
 				    String displayName = null;
-				    String accountName = null;
-				      
+				    String accountName = null;   
 				    calID = cur.getLong(PROJECTION_ID_INDEX);
 				    displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX);
 				    accountName = cur.getString(PROJECTION_ACCOUNT_NAME_INDEX);
-			
 				    calendars.add(displayName + " ^^ " + accountName);
 				   
 				    //going to hope that they don't have so many calendars that I actually need a long
-				    indices.add((int)calID);
-		
+				    indices.add((int) calID);
 				}
 				FragmentManager fm = getSherlockActivity().getSupportFragmentManager();
 		        PickCalendarDialogFragment pcdf = PickCalendarDialogFragment.newInstance(indices, calendars, valuesList);
@@ -223,8 +208,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 		        return;
 			}
 		});
-		((Button)view.findViewById(R.id.calendar_button_cancel)).setOnClickListener(new OnClickListener() {
-			
+		((Button) view.findViewById(R.id.calendar_button_cancel)).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				getDialog().dismiss();	
@@ -232,10 +216,8 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 		});		
 		return view;	
 	}
-	private int getDayConstantFromChar(char day)
-	{
-		switch(day)
-		{
+	private int getDayConstantFromChar(char day) {
+		switch(day) {
 		case 'M':return Calendar.MONDAY;
 		case 'T':return Calendar.TUESDAY;
 		case 'W':return Calendar.WEDNESDAY;
@@ -246,8 +228,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 	}
 	
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	private void initialisePaging(View view)
-	{	
+	private void initialisePaging(View view) {	
 		datePickers = new Vector<View>();
 	    FrameLayout fl1 = new FrameLayout(getSherlockActivity());
 	    FrameLayout fl2 = new FrameLayout(getSherlockActivity());
@@ -256,9 +237,8 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 	    endDatePicker = new DatePicker(getSherlockActivity());
 	    endDatePicker.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER));
 
-	    //this is always true for now, but not so when I get 2.x implemented
-	    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-	    {
+	    //not entirely necessary since this feature will never be supported below Honeycomb
+	    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 	    	startDatePicker.setCalendarViewShown(false);
 	    	endDatePicker.setCalendarViewShown(false);
 	    }
@@ -283,52 +263,41 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 	/*
 	 * Converts a start and end time to a duration in the RFC2445 format
 	 */
-	private String startEndToDuration(Date startTime, Date endTime)
-	{
+	private String startEndToDuration(Date startTime, Date endTime) {
 		int minutesDur = 0;
-		minutesDur = (int) ((endTime.getTime() - startTime.getTime())/(1000*60));
+		minutesDur = (int) ((endTime.getTime() - startTime.getTime()) / (1000 * 60));
 		String duration = minutesDur + "M";
 		return "P" + duration;
 	}
 }
 
-class ViewPagerAdapter extends android.support.v4.view.PagerAdapter
-{
+class ViewPagerAdapter extends android.support.v4.view.PagerAdapter {
 	private List<View> views;
 	
-	public ViewPagerAdapter(List<View> views)
-	{
+	public ViewPagerAdapter(List<View> views) {
 		super();
 		this.views = views;
 	}
-
 	@Override
 	public int getCount() {
 		return 2;
 	}
-
 	@Override
 	public boolean isViewFromObject(View arg0, Object arg1) {
-		
-		return arg0.equals((View)arg1);
+		return arg0.equals((View) arg1);
 	}
 	@Override
-	public Object instantiateItem(ViewGroup container, int position)
-	{
+	public Object instantiateItem(ViewGroup container, int position) {
 		container.addView(views.get(position));
 		return views.get(position);
 	}
 	@Override
-	public void destroyItem(ViewGroup container, int position, Object object)
-	{
+	public void destroyItem(ViewGroup container, int position, Object object) {
 		container.removeView((View)object);
 		views.remove(position);
 	}
 	@Override
-	public String getPageTitle(int position)
-	{
+	public String getPageTitle(int position) {
 		return (String) views.get(position).getTag();
-	}
-	
+	}	
 }
-
