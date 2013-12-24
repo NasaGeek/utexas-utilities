@@ -13,10 +13,12 @@ import android.widget.Toast;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.adapters.AssignmentsAdapter;
+import com.nasageek.utexasutilities.adapters.FilesAdapter;
 import com.nasageek.utexasutilities.fragments.BaseSpiceListFragment;
 import com.nasageek.utexasutilities.fragments.canvas.AssignmentsFragment.CanvasAssignmentsRequestListener;
 import com.nasageek.utexasutilities.model.canvas.Assignment;
 import com.nasageek.utexasutilities.requests.CanvasAssignmentsRequest;
+import com.nasageek.utexasutilities.requests.CanvasFilesRequest;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -47,8 +49,8 @@ public class FileBrowserFragment extends BaseSpiceListFragment {
 		course_id = getArguments().getString("courseID");
 		course_name = getArguments().getString("courseName");
 		
-		canvasAssignmentsRequest = new CanvasAssignmentsRequest(ConnectionHelper.getCanvasAuthCookie(getActivity()), course_id);
-		getSpiceManager().execute(canvasAssignmentsRequest, course_id + "assignments", DurationInMillis.ONE_MINUTE * 5, new CanvasAssignmentsRequestListener());		
+		canvasFilesRequest = new CanvasFilesRequest(ConnectionHelper.getCanvasAuthCookie(getActivity()), course_id);
+		getSpiceManager().execute(canvasFilesRequest, course_id + "assignments", DurationInMillis.ONE_MINUTE * 5, new CanvasAssignmentsRequestListener());		
 	}
 	
 	@Override

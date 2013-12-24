@@ -55,37 +55,34 @@ public class LoginWebViewClient extends WebViewClient {
 		String authCookie = "";
 		String cookies = "";
 		switch(service) {
-		case 'z':
-			((Activity) context).finish();
-			break;
-		case 'p':
-			if(url.contains("pna.utexas.edu")) {
-				cookies = CookieManager.getInstance().getCookie("https://pna.utexas.edu");
-				if(cookies != null && cookies.contains("AUTHCOOKIE="))
-					for(String s : cookies.split("; ")) {
-						if(s.startsWith("AUTHCOOKIE=")) {
-							authCookie = s.substring(11);
-							break;
-						}
-					}
-				if(!authCookie.equals("")) {
-					ConnectionHelper.setPNAAuthCookie(authCookie, context);
-					continueToActivity("UT PNA");
-					return;
-				}
+			case 'z':
+				((Activity) context).finish();
 				break;
-				
+			case 'p':
+				if(url.contains("pna.utexas.edu")) {
+					cookies = CookieManager.getInstance().getCookie("https://pna.utexas.edu");
+					if(cookies != null && cookies.contains("AUTHCOOKIE="))
+						for(String s : cookies.split("; ")) {
+							if(s.startsWith("AUTHCOOKIE=")) {
+								authCookie = s.substring(11);
+								break;
+							}
+						}
+					if(!authCookie.equals("")) {
+						ConnectionHelper.setPNAAuthCookie(authCookie, context);
+						continueToActivity("UT PNA");
+						return;
+					}
+				}
+				break;		
 			case 'b':
-				if(url.contains(ConnectionHelper.blackboard_domain_noprot))
-				{	
+				if(url.contains(ConnectionHelper.blackboard_domain_noprot)) {	
 					cookies = CookieManager.getInstance().getCookie(ConnectionHelper.blackboard_domain);
 					
-					if(url.equals(ConnectionHelper.blackboard_domain + "/webapps/portal/frameset.jsp") && cookies != null)
-					{
-						for(String s : cookies.split("; "))
-						{
-							if(s.startsWith("s_session_id="))
-							{	authCookie =  s.substring(13);;
+					if(url.equals(ConnectionHelper.blackboard_domain + "/webapps/portal/frameset.jsp") && cookies != null) {
+						for(String s : cookies.split("; ")) {
+							if(s.startsWith("s_session_id=")) {	
+								authCookie =  s.substring(13);;
 								break;
 							}
 						}
@@ -96,26 +93,25 @@ public class LoginWebViewClient extends WebViewClient {
 					continueToActivity("Blackboard");
 					return;
 				}
-			}
-			break;
-		case 'u':
-			if(url.contains("utexas.edu")) {
-				cookies = CookieManager.getInstance().getCookie("https://utexas.edu");
-				if(cookies != null && !cookies.contains("SC=NONE")) {
-					for(String s : cookies.split("; ")) {
-						if(s.startsWith("SC=")) {
-							authCookie = s.substring(3);
-							break;
+				break;
+			case 'u':
+				if(url.contains("utexas.edu")) {
+					cookies = CookieManager.getInstance().getCookie("https://utexas.edu");
+					if(cookies != null && !cookies.contains("SC=NONE")) {
+						for(String s : cookies.split("; ")) {
+							if(s.startsWith("SC=")) {
+								authCookie = s.substring(3);
+								break;
+							}
 						}
 					}
+					if(!authCookie.equals("") && !authCookie.equals("NONE") && url.equals("https://utdirect.utexas.edu/security-443/logon_check.logonform")) {
+						ConnectionHelper.setAuthCookie(authCookie, context);
+						continueToActivity("UTDirect");
+						return;
+					}
 				}
-				if(!authCookie.equals("") && !authCookie.equals("NONE") && url.equals("https://utdirect.utexas.edu/security-443/logon_check.logonform")) {
-					ConnectionHelper.setAuthCookie(authCookie, context);
-					continueToActivity("UTDirect");
-					return;
-				}
-			}
-			break;
+				break;
 		}
 	}
 
@@ -128,7 +124,6 @@ public class LoginWebViewClient extends WebViewClient {
 			Toast.makeText(context, "You're now logged in to " + service, Toast.LENGTH_SHORT).show();
 
 		} catch(ClassNotFoundException e) {
-
 			e.printStackTrace();
 			intent = new Intent(context, UTilitiesActivity.class);
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -136,7 +131,7 @@ public class LoginWebViewClient extends WebViewClient {
 		}
 		CookieManager.getInstance().removeAllCookie();
 		context.startActivity(intent);
-		((Activity)context).finish();
+		((Activity) context).finish();
 		return;
 	}
 }
