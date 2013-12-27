@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.foound.widget.AmazingAdapter;
@@ -88,6 +89,7 @@ public class BBClassAdapter extends AmazingAdapter {
 			holder = new ViewHolder();
 			holder.idview = (TextView) res.findViewById(R.id.bb_class_id);
 			holder.nameview = (TextView) res.findViewById(R.id.bb_class_name);
+			holder.indicator = (ImageView) res.findViewById(R.id.service_indicator);
 			res.setTag(holder);
 		}
 		else
@@ -114,8 +116,10 @@ public class BBClassAdapter extends AmazingAdapter {
 				//id not set because unique will contain ID and Unique number
 				holder.idview.setText(unique);		
 			}
+			holder.indicator.setImageResource(R.drawable.bb_indicator);
 		} else if(course.getType().equals("canvas")) {
 			holder.idview.setText(course.getCourseCode());
+			holder.indicator.setImageResource(R.drawable.canvas_indicator);
 		}
 
 		holder.nameview.setText(course.getName());
@@ -125,6 +129,7 @@ public class BBClassAdapter extends AmazingAdapter {
 	class ViewHolder {
 		TextView nameview;
 		TextView idview;
+		ImageView indicator;
 	}
 
 	@Override
