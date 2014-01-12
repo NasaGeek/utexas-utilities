@@ -19,7 +19,6 @@ import org.apache.http.util.EntityUtils;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Color;
-import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -40,6 +39,7 @@ import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
@@ -149,11 +149,18 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 	public void onPrepareOptionsMenu(Menu menu) {
 		if(classList == null || classList.size() == 0) {
 			menu.findItem(R.id.map_all_classes).setEnabled(false);
-			menu.findItem(R.id.export_schedule).setEnabled(false);
+			MenuItem exportSchedule;
+			//<4.0 can't export schedule, so MenuItem will be null
+			if((exportSchedule = menu.findItem(R.id.export_schedule)) != null) {
+				exportSchedule.setEnabled(false);
+			}
 		}
 		else {
 			menu.findItem(R.id.map_all_classes).setEnabled(true);
-			menu.findItem(R.id.export_schedule).setEnabled(true);
+			MenuItem exportSchedule;
+			if((exportSchedule = menu.findItem(R.id.export_schedule)) != null) {
+				exportSchedule.setEnabled(true);
+			}
 		}
 	}
 	@Override
