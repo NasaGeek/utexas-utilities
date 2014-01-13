@@ -90,7 +90,7 @@ public class PickCalendarDialogFragment extends SherlockDialogFragment {
 			{
 				Log.d("CalendarStuff","insert finished");
 				Toast.makeText(parentAct, "This schedule has been exported successfully. It may take a minute or two " +
-					"for it to show up on your calendar", Toast.LENGTH_LONG).show();
+					"for it to show up on your calendar..", Toast.LENGTH_LONG).show();
 			}
 		}
 	}
