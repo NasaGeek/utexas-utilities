@@ -2,6 +2,7 @@ package com.nasageek.utexasutilities.fragments;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,22 +20,17 @@ import org.apache.http.util.EntityUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.annotation.TargetApi;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.net.Uri;
-import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
 import android.preference.PreferenceManager;
-import android.util.TimingLogger;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -47,11 +43,11 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.foound.widget.AmazingAdapter;
 import com.foound.widget.AmazingListView;
 import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.BlackboardDashboardXmlParser;
 import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.ParcelablePair;
+import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.SectionedParcelableList;
 import com.nasageek.utexasutilities.model.BBClass;
 import com.nasageek.utexasutilities.model.FeedItem;
 
@@ -63,12 +59,12 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 	private TextView etv;
 	private LinearLayout ell;
 	private Button eb;
-	private TimingLogger tl;
+	//private TimingLogger tl;
 	private fetchDashboardTask fetch;
 	private boolean longform;
 
 	private HashMap<String, BBClass> courses;
-	private List<ParcelablePair<String, List<FeedItem>>> feedList;
+	private List<MyPair<String, List<FeedItem>>> feedList;
 	private BlackboardDashboardAdapter bda;
 				
 		
@@ -87,18 +83,16 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		tl = new TimingLogger("Dashboard", "loadTime");
+		//tl = new TimingLogger("Dashboard", "loadTime");
 				
 		longform = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean("blackboard_class_longform", false);
 		if(savedInstanceState == null)
-			feedList = new ArrayList<ParcelablePair<String,List<FeedItem>>>();
+			feedList = new ArrayList<MyPair<String,List<FeedItem>>>();
 		else {
-			feedList = (List<ParcelablePair<String, List<FeedItem>>>) ((SectionedParcelableList) savedInstanceState.getParcelable("feedList")).getList();
+			feedList = (List<MyPair<String, List<FeedItem>>>) savedInstanceState.getSerializable("feedList");
 			courses = (HashMap<String, BBClass>) savedInstanceState.getSerializable("courses");
 		}
-		bda = new BlackboardDashboardAdapter(feedList);
-		
-			
+		bda = new BlackboardDashboardAdapter(feedList);		
 	}
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
@@ -211,17 +205,16 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putParcelable("feedList", new SectionedParcelableList<FeedItem>(feedList, FeedItem.class));
+		outState.putSerializable("feedList", (Serializable) feedList);
 		outState.putSerializable("courses", courses);
 	}
 	
-	public void refresh()
-	{
+	public void refresh() {
 	//	tlv.setVisibility(View.GONE);
 	//	etv.setVisibility(View.GONE);
 	//	t_pb_ll.setVisibility(View.VISIBLE);
-		if(fetch!=null)
-		{	fetch.cancel(true);
+		if(fetch!=null) {	
+			fetch.cancel(true);
 			fetch = null;
 		}
 //		transactionlist.clear();
@@ -230,11 +223,10 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 //		ta.resetPage();
 //		tlv.setSelectionFromTop(0, 0);
 	}
-	private class fetchDashboardTask extends AsyncTask<String,Void,List<ParcelablePair<String, List<FeedItem>>>>
-	{
+	private class fetchDashboardTask extends AsyncTask<String,Void,List<MyPair<String, List<FeedItem>>>> {
 		private DefaultHttpClient client;
 		private String errorMsg = "";
-		private List<ParcelablePair<String, List<FeedItem>>> tempFeedList;
+		private List<MyPair<String, List<FeedItem>>> tempFeedList;
 		private Exception ex;
 		private String pagedata;
 		private Boolean showButton = false;
@@ -251,10 +243,10 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 		}
 		
 		@Override
-		protected List<ParcelablePair<String, List<FeedItem>>> doInBackground(String... params) {
+		protected List<MyPair<String, List<FeedItem>>> doInBackground(String... params) {
 	    	String pagedata="";
 	    	String bbAuthCookie = params[0];		
-	    	tempFeedList = new ArrayList<ParcelablePair<String, List<FeedItem>>>();
+	    	tempFeedList = new ArrayList<MyPair<String, List<FeedItem>>>();
 	    	
 	    	if(Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
 		    	URL location;
@@ -271,7 +263,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 					tempFeedList = parser.parse(in);
 					courses = parser.getCourses();
 					in.close();
-					tl.addSplit("XML downloaded");
+					//tl.addSplit("XML downloaded");
 					
 				} catch (IOException e) {
 					errorMsg = "UTilities could not fetch your Blackboard Dashboard";
@@ -315,22 +307,22 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 		    		return null;	        	 
 		    	}	
 	    	}
-	    	tl.addSplit("XML parsed");
+	   // 	tl.addSplit("XML parsed");
 	   // 	tl.dumpToLog();
 			return feedList;
 		}
 		@Override
-		protected void onPostExecute(List<ParcelablePair<String, List<FeedItem>>> result) {
+		protected void onPostExecute(List<MyPair<String, List<FeedItem>>> result) {
 			//	dlv.setAdapter(new BlackboardDashboardAdapter(result));
 			feedList.addAll(tempFeedList);
 			bda.notifyDataSetChanged();
-			tl.addSplit("Adapter created");
+			//tl.addSplit("Adapter created");
 			d_pb_ll.setVisibility(View.GONE);
 			dlv.setVisibility(View.VISIBLE);
 			ell.setVisibility(View.GONE);	
 		}
 		@Override
-		protected void onCancelled(List<ParcelablePair<String, List<FeedItem>>> result) {
+		protected void onCancelled(List<MyPair<String, List<FeedItem>>> result) {
 			etv.setText(errorMsg);
 			if(showButton) {
 				eb.setText("Send anonymous information about the dashboard to the developer to help improve UTilities.");
@@ -366,9 +358,9 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 	//TODO: figure out fast scroll, maybe the min-sdk is just too low...
 	class BlackboardDashboardAdapter extends AmazingAdapter {
 		
-		private List<ParcelablePair<String, List<FeedItem>>> items;
+		private List<MyPair<String, List<FeedItem>>> items;
 		
-		public BlackboardDashboardAdapter(List<ParcelablePair<String, List<FeedItem>>> items) {
+		public BlackboardDashboardAdapter(List<MyPair<String, List<FeedItem>>> items) {
 			this.items = items;
 		}
 		
@@ -460,9 +452,6 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 		public void configurePinnedHeader(View header, int position, int alpha) {
 			TextView lSectionHeader = (TextView)header;
 			lSectionHeader.setText(getSections()[getSectionForPosition(position)]);
-			//	lSectionHeader.getBackground().setAlpha(alpha);
-			//	lSectionHeader.setBackgroundColor(alpha << 24 | (0xEAEAEA));
-			//	lSectionHeader.setTextColor(alpha << 24 | (0x343434));
 		}
 		
 		@Override

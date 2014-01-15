@@ -62,7 +62,7 @@ public class CourseMapSaxHandler extends DefaultHandler {
 	        	   if(!(atts.getValue("viewurl").contains("http://") || atts.getValue("viewurl").contains("https://"))) {
 	        		   host = ConnectionHelper.blackboard_domain;
 	        	   }
-	        	   content.add(new ParcelablePair(new CourseMapItem(atts.getValue("name"),
+	        	   content.add(new MyPair(new CourseMapItem(atts.getValue("name"),
 	        			   											host + atts.getValue("viewurl").replace("&amp;","&"),
 	        			   											atts.getValue("contentid"),
 	        			   											atts.getValue("linktype")),
@@ -73,7 +73,7 @@ public class CourseMapSaxHandler extends DefaultHandler {
 	      } else if (localName.equals("children")) { 
 	          this.in_childrentag = true;
 	          recLists.push(content);
-	          content= (ArrayList) ((ParcelablePair) (content.get(content.size()-1))).second;
+	          content= (ArrayList) ((MyPair) (content.get(content.size()-1))).second;
 	      }
 	 } 
 

@@ -1,22 +1,12 @@
 package com.nasageek.utexasutilities.fragments;
 
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.acra.ACRA;
-import org.acra.collector.CrashReportData;
-import org.acra.sender.ReportSender;
-import org.acra.sender.ReportSenderException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -30,14 +20,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
-import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,19 +36,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.CourseMapSaxHandler;
-import com.nasageek.utexasutilities.ParcelablePair;
+import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.adapters.CourseMapAdapter;
-import com.nasageek.utexasutilities.fragments.MenuFragment.food;
 import com.nasageek.utexasutilities.model.BBClass;
 import com.nasageek.utexasutilities.model.CourseMapItem;
 
@@ -74,12 +57,12 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	private LinearLayout cm_pb_ll;
 	private ListView cmlv;
 	private ArrayList<BBClass> classList;
-	private ArrayList<ParcelablePair<CourseMapItem,ArrayList<BBClass>>> classSectionList;
+	private ArrayList<MyPair<CourseMapItem,ArrayList<BBClass>>> classSectionList;
 	private fetchCoursemapTask fetch;
 	private XMLReader xmlreader;
 	private CourseMapSaxHandler courseMapSaxHandler;
 	private int itemNumber;
-	private ArrayList<ParcelablePair<CourseMapItem, ArrayList>> mainList;
+	private ArrayList<MyPair<CourseMapItem, ArrayList>> mainList;
 	private LinearLayout failure_ll;
 	private TextView failure_tv;
 	private Button failure_button;
@@ -91,7 +74,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	
 	public BlackboardCourseMapFragment() {}
 	
-	public static BlackboardCourseMapFragment newInstance(String action, ArrayList<ParcelablePair<CourseMapItem, ArrayList>> mainList, 
+	public static BlackboardCourseMapFragment newInstance(String action, ArrayList<MyPair<CourseMapItem, ArrayList>> mainList, 
 			String courseID, String courseName, String folderName, String viewUri, int itemNumber, boolean fromDashboard) {
 		BlackboardCourseMapFragment bcmf = new BlackboardCourseMapFragment();
 		
@@ -121,7 +104,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		setHasOptionsMenu(true);
 		
 		if(getString(R.string.coursemap_nest_intent).equals(getArguments().getString("action"))) {
-			mainList = (ArrayList<ParcelablePair<CourseMapItem, ArrayList>>) getArguments().getSerializable("mainList");
+			mainList = (ArrayList<MyPair<CourseMapItem, ArrayList>>) getArguments().getSerializable("mainList");
 			itemNumber = getArguments().getInt("itemNumber");		
 		}
 

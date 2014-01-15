@@ -1,5 +1,6 @@
 package com.nasageek.utexasutilities.fragments;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,9 +33,8 @@ import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.mapsaurus.paneslayout.PanesActivity;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.ParcelablePair;
+import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.SectionedParcelableList;
 import com.nasageek.utexasutilities.adapters.BBClassAdapter;
 import com.nasageek.utexasutilities.model.BBClass;
 
@@ -48,9 +48,9 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 	
 	private AmazingListView bblv;
 	private ArrayList<BBClass> classList;
-	private List<ParcelablePair<String, List<BBClass>>> classSectionList;
+	private List<MyPair<String, List<BBClass>>> classSectionList;
 	private fetchClassesTask fetch;	
-//	private ArrayList<ParcelablePair<String, ArrayList<BBClass>>> classes;
+//	private ArrayList<ParcelableMyPair<String, ArrayList<BBClass>>> classes;
 	private BBClassAdapter classAdapter;
 	
 	public BlackboardCourseListFragment() {}
@@ -69,9 +69,9 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 		super.onCreate(savedInstanceState);
     	classList = new ArrayList<BBClass>();
     	if(savedInstanceState == null)
-    		classSectionList = new ArrayList<ParcelablePair<String, List<BBClass>>>();
+    		classSectionList = new ArrayList<MyPair<String, List<BBClass>>>();
     	else
-    		classSectionList = (ArrayList<ParcelablePair<String, List<BBClass>>>) ((SectionedParcelableList) savedInstanceState.getParcelable("classSectionList")).getList();
+    		classSectionList = (ArrayList<MyPair<String, List<BBClass>>>) savedInstanceState.getSerializable("classSectionList");
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
@@ -134,7 +134,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 			}
 		});
 		
-		//TODO: where to callll, also, helper?  -  helper for what? shit I don't remember writing this...
+		//where to callll, also, helper?  -  helper for what? shit I don't remember writing this...
 		if(classSectionList.size() == 0) {
 	    	fetch = new fetchClassesTask(httpclient);
 	    	
@@ -149,10 +149,10 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putParcelable("classSectionList", new SectionedParcelableList<BBClass>(classSectionList, BBClass.class));
+		outState.putSerializable("classSectionList", (Serializable) classSectionList);
 	}
 	
-	private class fetchClassesTask extends AsyncTask<Object,Void,ArrayList<ParcelablePair<String, List<BBClass>>>> {
+	private class fetchClassesTask extends AsyncTask<Object,Void,ArrayList<MyPair<String, List<BBClass>>>> {
 		private DefaultHttpClient client;
 		private String errorMsg;
 		private Exception ex;
@@ -170,7 +170,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 		}
 		
 		@Override
-		protected ArrayList<ParcelablePair<String, List<BBClass>>> doInBackground(Object... params) {
+		protected ArrayList<MyPair<String, List<BBClass>>> doInBackground(Object... params) {
 			HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
 	    	String pagedata="";
 
@@ -193,7 +193,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 	    	//build the sectioned list now
 	    	String currentCategory="";
     		ArrayList<BBClass> sectionList=null;
-			ArrayList<ParcelablePair<String, List<BBClass>>> tempClassSectionList = new ArrayList<ParcelablePair<String, List<BBClass>>>();
+			ArrayList<MyPair<String, List<BBClass>>> tempClassSectionList = new ArrayList<MyPair<String, List<BBClass>>>();
     		for(int i = 0; i<classList.size(); i++) {
     			//first course is always in a new category (the first category)
 				if(i == 0) {	
@@ -208,7 +208,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
     				if(i == classList.size() - 1)
     					sectionList.add(classList.get(i));
     					
-    				tempClassSectionList.add(new ParcelablePair<String, List<BBClass>>(currentCategory, sectionList));
+    				tempClassSectionList.add(new MyPair<String, List<BBClass>>(currentCategory, sectionList));
     				
     				currentCategory = classList.get(i).getSemester();
     				sectionList=new ArrayList<BBClass>();
@@ -222,18 +222,18 @@ public class BlackboardCourseListFragment extends SherlockFragment {
     			}  			
     		}
     		Collections.reverse(tempClassSectionList);
-    		/*Collections.sort(tempClassSectionList, new Comparator<ParcelablePair<String, List<BBClass>>>() {
+    		/*Collections.sort(tempClassSectionList, new Comparator<ParcelableMyPair<String, List<BBClass>>>() {
 
 				@Override
-				public int compare(ParcelablePair<String, List<BBClass>> lhs,
-						ParcelablePair<String, List<BBClass>> rhs) {
+				public int compare(ParcelableMyPair<String, List<BBClass>> lhs,
+						ParcelableMyPair<String, List<BBClass>> rhs) {
 					return -lhs.first.compareTo(rhs.first);
 				}
 			});*/
 			return tempClassSectionList;
 		}
 		@Override
-		protected void onPostExecute(ArrayList<ParcelablePair<String, List<BBClass>>> result) {	    		
+		protected void onPostExecute(ArrayList<MyPair<String, List<BBClass>>> result) {	    		
 			classSectionList.addAll(result);
 			classAdapter.notifyDataSetChanged();
 			
@@ -256,3 +256,5 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 			fetch.cancel(true);
 	}
 }
+
+

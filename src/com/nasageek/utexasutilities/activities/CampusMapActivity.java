@@ -141,12 +141,10 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	    public String getCode() {
 	      return code + "";
 	    }
-	    public String fullName()
-	    {
+	    public String fullName() {
 	    	return fullName;
 	    }
-	    public String toString()
-	    {
+	    public String toString() {
 	    	return fullName;
 	    }
 	}
@@ -154,9 +152,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_layout);
-        
         setupMapIfNeeded();
-
         settings = PreferenceManager.getDefaultSharedPreferences(this);
         this.savedInstanceState = savedInstanceState;
         buildingIdList = new ArrayList<String>();
@@ -168,7 +164,6 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
         }
 
         am = getAssets();
-        
         actionbar = getSupportActionBar();
 		actionbar.setTitle("Map and Bus Routes");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
