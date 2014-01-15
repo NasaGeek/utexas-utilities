@@ -145,26 +145,23 @@ If the Work includes a "NOTICE" text file as part of its distribution, then any 
      A: UTilities sends your credentials to UT\'s servers when it needs to log in, and that is the only place it sends them. 
      Your UT EID and password will never be shared with anyone except The University of Texas at Austin.\n</string>
     
-      <string-array name="routes_array">	
-			<item>No Bus Route</item>
-			<item>Crossing Place</item>
-			<item>Cameron Road</item>
-			<item>East Campus</item>
-			<item>Forty Acres</item>
-			<item>Far West</item>
-			<item>Intramural Fields</item>
-			<item>Intramural Field/Far West</item>
-			<item>Lake Austin</item>
-			<item>Lakeshore</item>
-			<item>North Riverside</item>
-			<item>North Riverside/Lakeshore</item>
-			<item>Pickle Research Campus</item>
-			<item>Red River</item>
-			<item>Red River/Cameron Road</item>
-			<item>West Campus</item>
-			<item>Wickersham Lane</item>
-			<item>Wickersham/Crossing Place</item>
-    </string-array>   
+	<string-array name="routes_array">	
+		<item>No Bus Route</item>
+		<item>Crossing Place</item>
+		<item>Camino La Costa</item>
+		<item>East Campus</item>
+		<item>Forty Acres</item>
+		<item>Far West</item>
+		<item>Intramural Fields</item>
+		<item>Intramural Field/Far West</item>
+		<item>Lake Austin</item>
+		<item>Lakeshore</item>
+		<item>North Riverside</item>
+		<item>North Riverside/Lakeshore</item>
+		<item>Pickle Research Campus</item>
+		<item>Red River</item>
+		<item>West Campus</item>
+	</string-array>   
     <string-array name="routes_value_array">
         <item>0</item>
         <item>1</item>
@@ -181,9 +178,6 @@ If the Work includes a "NOTICE" text file as part of its distribution, then any 
         <item>12</item>
         <item>13</item>
         <item>14</item>
-        <item>15</item>
-        <item>16</item>
-        <item>17</item> 
     </string-array>
     <string-array name="restaurants_array">	
 		<item>No Restaurant</item>

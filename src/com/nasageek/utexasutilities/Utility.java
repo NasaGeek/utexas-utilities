@@ -87,7 +87,8 @@ public class Utility {
     	@Override
 		protected Void doInBackground(Void...v) {
 			
-			int [] routes = {640, 641, 642, 651, 652, 653, 656, 661, 663, 670, 671, 672, 675, 680, 681, 684, 685};
+    		//675, 684, 685 were retired on 1/7/14
+			int [] routes = {640, 641, 642, 651, 652, 653, 656, 661, 663, 670, 671, 672, 680, 681};
 			
 			//FileOutputStream fos = con.openFileOutput("stops", Context.MODE_PRIVATE);
 			File folder = con.getDir("stops", Context.MODE_PRIVATE);
@@ -108,7 +109,7 @@ public class Utility {
 					e.printStackTrace();
 					return null;
 				}
-				File stopsfile = new File(folder, route+"_stops.txt");
+				File stopsfile = new File(folder, route + "_stops.txt");
 				BufferedOutputStream bos = null;
 				
 				try {
@@ -139,10 +140,8 @@ public class Utility {
 		            
 		            try {
 		            
-			            while(coordMatcher.find() && nameMatcher.find() && idMatcher.find())
-			            {
+			            while(coordMatcher.find() && nameMatcher.find() && idMatcher.find()) {
 							bos.write((coordMatcher.group(1)+", "+coordMatcher.group(2)+"\t").getBytes());
-							
 			            	bos.write((nameMatcher.group(1)+"\t").getBytes());
 			            	bos.write((idMatcher.group(1)+"\n").getBytes());
 			            }
@@ -174,7 +173,6 @@ public class Utility {
 		protected void onPostExecute(Void result) {
 			//TODO: will need to set a flag here so campus map knows where to fetch the new stops
 			//(private data folder instead of assets)
-			
 			Toast.makeText(con, "Stops have been updated.", Toast.LENGTH_LONG).show();
 		}
     }
@@ -184,7 +182,6 @@ public class Utility {
      * (perhaps I should just use reflection?) to generate the
      * necessary fragment tags for the purpose of restoring them
      */
-    
     public static String makeFragmentName(int viewId, int position) {
     	return "android:switcher:" + viewId + ":" + position;
 	}
