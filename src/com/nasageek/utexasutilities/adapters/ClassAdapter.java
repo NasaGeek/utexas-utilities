@@ -149,7 +149,7 @@ public class ClassAdapter extends BaseAdapter {
 			iv =(TextView) convertView;
 		
         iv.setTextColor(Color.BLACK); 
-        iv.setTextSize(13f); //11.75 for full
+        iv.setTextSize(13f); //11.75 to fill cell space
         if(cllist.get(position)==null) {	
         	if(position == currentTimePos) {	
         		Drawable currentMinutesLine = new ShapeDrawable(new Shape() {
