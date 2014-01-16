@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.nasageek.utexasutilities"
       android:installLocation="auto"
-      android:versionCode="28"
-      android:versionName="1.99.3">
+      android:versionCode="29"
+      android:versionName="1.99.4b">
     
     <permission
 	    android:name="com.nasageek.utexasutilities.permission.MAPS_RECEIVE"
@@ -39,9 +39,9 @@
             android:value="@integer/google_play_services_version" />	 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyDdQ8isPMaFCEnEaIUR9_3dzPV2n-d8vFw"/>
+            android:value="AIzaSyDbKUcoAOFioEaFXqPiEJ3Rx-bC1Sg2-0s"/>
         
-        <!-- release: "AIzaSyDbKUcoAOFioEaFXqPiEJ3Rx-bC1Sg2-0s"-->
+        <!-- debug: "AIzaSyDdQ8isPMaFCEnEaIUR9_3dzPV2n-d8vFw"-->
         
         <activity android:name=".activities.UTilitiesActivity"
                   android:label="@string/app_name"

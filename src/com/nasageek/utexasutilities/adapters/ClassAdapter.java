@@ -150,7 +150,9 @@ public class ClassAdapter extends BaseAdapter {
 		
         iv.setTextColor(Color.BLACK); 
         iv.setTextSize(13f); //11.75 to fill cell space
-        if(cllist.get(position)==null) {	
+        
+        //no class at this time?
+        if(cllist.get(position) == null) {	
         	if(position == currentTimePos) {	
         		Drawable currentMinutesLine = new ShapeDrawable(new Shape() {
 					
@@ -170,15 +172,14 @@ public class ClassAdapter extends BaseAdapter {
 					}
 				});
         		iv.setBackgroundDrawable(currentMinutesLine);
-        	}
-        	else {	
+        		iv.setText("");
+        	} else {	
         		iv.setBackgroundColor(getEmptyCellColor(position));
         		iv.setText("");
         	}
-        }
-        else {	
+        } else {	
         	final Classtime cl = cllist.get(position);
-        	final String color = "#"+cl.getColor();
+        	final String color = "#" + cl.getColor();
 
         	if(position == currentTimePos) {	
         		Drawable currentMinutesLine = new ShapeDrawable(new Shape() {
@@ -192,15 +193,14 @@ public class ClassAdapter extends BaseAdapter {
 						Paint blur = new Paint(paint);
 						blur.setStrokeWidth(3f);
 						blur.setMaskFilter(new BlurMaskFilter(3, BlurMaskFilter.Blur.SOLID));
-						canvas.drawLine(0, (int)((currMinutes/30.0)*getHeight() + .5), 
-								getWidth(), (int)((currMinutes/30.0)*getHeight() + .5), paint);
-
+						canvas.drawLine(0, (int) ((currMinutes / 30.0) * getHeight() + .5),
+								getWidth(), (int) ((currMinutes / 30.0) * getHeight() + .5), paint);
 					}
 				});
         		iv.setBackgroundDrawable(currentMinutesLine);
-        	}
-        	else
+        	} else {
         		iv.setBackgroundColor(Color.parseColor(color));
+        	}
         	
         	if(firstlist.get(position)) {	
         		iv.setText(cllist.get(position).getStartTime());
@@ -213,37 +213,39 @@ public class ClassAdapter extends BaseAdapter {
         //		ll.setPadding(0, 1, 0, 1);
         		
        // 		return ll;
+        	} else {
+        		iv.setText("");
         	}
-        	else
-        		iv.setText("");	
         }
 		return iv;
 	}
+
 	private int getEmptyCellColor(int position) {
 		int darkgray = 0xFFcecece;
 		int lightgray = 0xFFdcdcdc;
-		
-		if(empty_cell_pref.equals("checkhour")) {
-    		if((position/10)%2==0) {
-    			if((position/5)%2==0)
-    				return position%2==0?lightgray:darkgray;
-    			else
-    				return position%2==0?darkgray:lightgray;
-    		}
-    		else {
-    			if((position/5)%2==0)
-    				return position%2==0?darkgray:lightgray;
-    			else
-    				return position%2==0?lightgray:darkgray;
-    		}
-		}	
-		else if(empty_cell_pref.equals("checkhalf"))
-			return position%2==0 && (position%10)%2==0?lightgray:darkgray;
-		else if(empty_cell_pref.equals("stripehour"))
-			return position/10%2==0?lightgray:darkgray;
-		else if(empty_cell_pref.equals("stripehalf"))
-			return position/5%2==0?lightgray:darkgray;
-		else
+
+		if (empty_cell_pref.equals("checkhour")) {
+			if ((position / 10) % 2 == 0) {
+				if ((position / 5) % 2 == 0) {
+					return position % 2 == 0 ? lightgray : darkgray;
+				} else {
+					return position % 2 == 0 ? darkgray : lightgray;
+				}
+			} else {
+				if ((position / 5) % 2 == 0) {
+					return position % 2 == 0 ? darkgray : lightgray;
+				} else {
+					return position % 2 == 0 ? lightgray : darkgray;
+				}
+			}
+		} else if (empty_cell_pref.equals("checkhalf")) {
+			return position % 2 == 0 && (position % 10) % 2 == 0 ? lightgray : darkgray;
+		} else if (empty_cell_pref.equals("stripehour")) {
+			return position / 10 % 2 == 0 ? lightgray : darkgray;
+		} else if (empty_cell_pref.equals("stripehalf")) {
+			return position / 5 % 2 == 0 ? lightgray : darkgray;
+		} else {
 			return Color.BLACK;
+		}
 	}
 }
