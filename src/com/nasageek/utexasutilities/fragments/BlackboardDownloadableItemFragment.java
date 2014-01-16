@@ -148,6 +148,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 							Intent downloadAttachment = new Intent(getSherlockActivity(), AttachmentDownloadService.class);
 							downloadAttachment.putExtra("fileName", item.getFileName());
 							downloadAttachment.putExtra("url", item.getDlUri());
+							downloadAttachment.putExtra("service", "blackboard");
 							getSherlockActivity().startService(downloadAttachment);			
 						}	
 						else if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) { 	
@@ -471,18 +472,18 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 			ViewGroup lin = (ViewGroup) convertView;
 			
 			if (lin == null)
-				lin = (ViewGroup) li.inflate(R.layout.attachment_view,null,false);
+				lin = (ViewGroup) li.inflate(R.layout.file_view, null, false);
 		/*	if(position%2==0)
 				lin.setBackgroundColor(Color.LTGRAY);   Don't do this until you figure out the state drawable
 			else
 				lin.setBackgroundDrawable(null);*/
-			TextView nameView = (TextView) lin.findViewById(R.id.attachment_name);
-			TextView filesizeView = (TextView) lin.findViewById(R.id.attachment_size);
+			TextView nameView = (TextView) lin.findViewById(R.id.file_name);
+			TextView filesizeView = (TextView) lin.findViewById(R.id.file_size);
 			
 			nameView.setText(item.getName());
 			filesizeView.setText("Filesize: " + String.format("%,.1f", Double.parseDouble(item.getSize()) / 1000) + " KB");
 		
-			return (View)lin;
+			return (View) lin;
 		}
 	}
 	
@@ -495,11 +496,11 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		
 		
 		public bbFile(String name, String fileName, String size, String dlUri, String viewUri) {
-			this.name=name;
-			this.fileName=fileName;
-			this.size=size;
-			this.dlUri=dlUri;
-			this.viewUri=viewUri;
+            this.name = name;
+            this.fileName = fileName;
+            this.size = size;
+            this.dlUri = dlUri;
+            this.viewUri = viewUri;
 		}
 		public String getName() {
 			return name;

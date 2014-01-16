@@ -40,10 +40,10 @@ public class CanvasCourseMapFragment extends BaseSpiceListFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
-		setListAdapter(new ArrayAdapter<String>(getActivity(), 
+		setListAdapter(new ArrayAdapter<String>(getActivity(),
 											    R.layout.coursemap_item_view, 
 											    R.id.coursemap_item_name, 
-											    new String[] {"Assignments"}));
+											    new String[] {"Assignments", "Files"}));
 		Bundle args = getArguments();
 		course_id = args.getString("courseID");
 		course_name = args.getString("courseName");
@@ -54,12 +54,13 @@ public class CanvasCourseMapFragment extends BaseSpiceListFragment {
 	
 	@Override
 	public void onListItemClick(ListView lv, View v, int position, long id) {
-		if(((String)lv.getItemAtPosition(position)).equals("Assignments")) {
-			((FragmentLauncher)getActivity()).addFragment(CanvasCourseMapFragment.this, 
+		String feature = (String) lv.getItemAtPosition(position);
+		if(feature.equals("Assignments")) {
+			((FragmentLauncher) getActivity()).addFragment(CanvasCourseMapFragment.this, 
 					AssignmentsFragment.newInstance(course_id, course_name, course_code));
+		} else if(feature.equals("Files")) {
+			((FragmentLauncher) getActivity()).addFragment(CanvasCourseMapFragment.this, 
+					FileBrowserFragment.newInstance(course_id, course_name, course_code));
 		}
 	}
-	
-	
-
 }

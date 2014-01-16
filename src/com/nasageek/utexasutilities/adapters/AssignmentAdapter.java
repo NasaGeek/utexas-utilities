@@ -12,12 +12,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class AssignmentsAdapter extends ArrayAdapter<Assignment> {
+public class AssignmentAdapter extends ArrayAdapter<Assignment> {
 
 	private int mResource;
 	private LayoutInflater mInflater;
 	
-	public AssignmentsAdapter(Context context, int resource, List<Assignment> objects) {
+	public AssignmentAdapter(Context context, int resource, List<Assignment> objects) {
 		super(context, resource, objects);
 		mResource = resource;
 		mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -37,7 +37,8 @@ public class AssignmentsAdapter extends ArrayAdapter<Assignment> {
 		
 		String score = "-";
 		String comment = "";
-		if(assignment.submission != null) {
+		//might check grading_type here, too. Need some sample data for letter_grade grade_type
+		if(assignment.submission != null && assignment.submission.score != null || assignment.muted) {
 			score = assignment.submission.score;
 			if(assignment.submission.submission_comments != null && assignment.submission.submission_comments.comment != null) {
 				comment = assignment.submission.submission_comments.comment;
@@ -47,9 +48,7 @@ public class AssignmentsAdapter extends ArrayAdapter<Assignment> {
 		
 		((TextView)view.findViewById(R.id.grade_name)).setText(assignment.name);
 		((TextView)view.findViewById(R.id.grade_value)).setText(score + "/" + assignment.points_possible);
-		
-		
-		
+
 		return view;
 	}
 

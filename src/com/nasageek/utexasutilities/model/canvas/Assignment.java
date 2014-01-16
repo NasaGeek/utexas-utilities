@@ -11,11 +11,11 @@ public class Assignment {
 	private String due_at; //possibly null
 	private String course_id;
 	private String html_url;
-	private Boolean muted;
+	public Boolean muted;
 	public int points_possible;
 	private String grading_type;
 	
-	public Submission submission;
+	public Submission submission; //doesn't look this can be null, but all of its members can be
 	
 	
 	public static class List extends ArrayList<Assignment> {}

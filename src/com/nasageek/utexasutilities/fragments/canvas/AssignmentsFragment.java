@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.adapters.AssignmentsAdapter;
+import com.nasageek.utexasutilities.adapters.AssignmentAdapter;
 import com.nasageek.utexasutilities.fragments.BaseSpiceListFragment;
 import com.nasageek.utexasutilities.model.BBGrade;
 import com.nasageek.utexasutilities.model.canvas.Assignment;
@@ -26,7 +26,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 public class AssignmentsFragment extends BaseSpiceListFragment{
 
-	private AssignmentsAdapter assignmentsAdapter;
+	private AssignmentAdapter assignmentsAdapter;
 	private CanvasAssignmentsRequest canvasAssignmentsRequest;
 	private String course_id, course_name;
 	private List<Assignment> assignments;
@@ -93,7 +93,7 @@ public class AssignmentsFragment extends BaseSpiceListFragment{
 
         @Override
         public void onRequestSuccess(final Assignment.List result) {
-    		setListAdapter(new AssignmentsAdapter(getSherlockActivity(), R.layout.grade_item_view, result));
+    		setListAdapter(new AssignmentAdapter(getActivity(), R.layout.grade_item_view, result));
         }
     }
 }

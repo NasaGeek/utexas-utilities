@@ -181,6 +181,8 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
         @Override
         public void onRequestSuccess(final CanvasCourse.List result) {
             int i = 0;
+            
+            Collections.reverse(result);
             //classSectionList guaranteed to be populated, this supposes the two lists are ordered the same
             //in this case most recent to least
             for(int j = 0; j < classSectionList.size(); j++) {
@@ -216,7 +218,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 		@Override
 		protected ArrayList<ParcelablePair<String, List<Course>>> doInBackground(Object... params) {
 			HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
-	    	String pagedata="";
+	    	String pagedata = "";
 
 	    	try {
 				HttpResponse response = client.execute(hget);
@@ -267,6 +269,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
     			}  			
     		}
     		Collections.reverse(tempClassSectionList);
+    		//TODO: implement sorting of classes so BB's ordering won't matter
     		/*Collections.sort(tempClassSectionList, new Comparator<ParcelablePair<String, List<BBClass>>>() {
 
 				@Override

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class File {
 
-	int size;
-	String content_type;
-	String url;
+	public int size;
+	String content_type; //can be null
+	public String url;
 	String id;
-	String display_name;	
+	public String display_name;
 	
 	public static class List extends ArrayList<File> {}
 }

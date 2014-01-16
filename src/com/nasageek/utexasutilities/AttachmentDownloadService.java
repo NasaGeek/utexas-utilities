@@ -39,8 +39,16 @@ public class AttachmentDownloadService extends IntentService {
 	}
 	@Override
 	protected void onHandleIntent(Intent intent) {
-
-		String urlToDownload = ConnectionHelper.blackboard_domain + intent.getStringExtra("url");
+		String urlToDownload = "";
+		String service = intent.getStringExtra("service");
+		if(service.equals("blackboard")) {
+			urlToDownload = ConnectionHelper.blackboard_domain + intent.getStringExtra("url");
+		} else if(service.equals("canvas")) {
+			urlToDownload = intent.getStringExtra("url");
+		} else {
+			throw new RuntimeException("You must pass either \"canvas\" or \"blackboard\" to Attachment" +
+					"DownloadService by putting an extra called \"service\" in the intent");
+		}
 		String fileName = intent.getStringExtra("fileName");
 		
 		NotificationCompat.Builder notbuild = new NotificationCompat.Builder(AttachmentDownloadService.this);
@@ -61,14 +69,13 @@ public class AttachmentDownloadService extends IntentService {
             URLConnection connection = url.openConnection();
             connection.addRequestProperty("Cookie", "s_session_id="+ConnectionHelper.getBBAuthCookie(AttachmentDownloadService.this, ConnectionHelper.getThreadSafeClient()));
             
-            if(Build.VERSION.SDK_INT<=Build.VERSION_CODES.ECLAIR_MR1)
-            {	(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download")).mkdirs();
-            	dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment.getExternalStorageDirectory()), "Download/" + fileName);
-            }
-            else
-            {	Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
-            	dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)),fileName);
-            }
+			if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ECLAIR_MR1) {
+				(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download")).mkdirs();
+				dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment.getExternalStorageDirectory()), "Download/" + fileName);
+			} else {
+				Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
+				dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)), fileName);
+			}
             // download the file
             InputStream input = new BufferedInputStream(url.openStream());
 
@@ -94,10 +101,8 @@ public class AttachmentDownloadService extends IntentService {
             return;
         }
 
-        if(new Intent(Intent.ACTION_VIEW, dlLocation).resolveActivity(getPackageManager()) == null)
-        {	
-        	handler.post(new Runnable()
-        	{
+        if(new Intent(Intent.ACTION_VIEW, dlLocation).resolveActivity(getPackageManager()) == null) {	
+        	handler.post(new Runnable() {
 				@Override
 				public void run() {
 					Toast.makeText(getApplicationContext(), "You do not have any apps that can open this file; download one from the Play Store.", Toast.LENGTH_LONG).show();	
