@@ -1,10 +1,13 @@
 package com.nasageek.utexasutilities.model;
 
+import java.io.Serializable;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Classtime implements Parcelable
+public class Classtime implements Parcelable, Serializable
 {
+	private static final long serialVersionUID = 1L;
 	private char day;
 	private String starttime, endtime, courseId, name;
 	private Building buil;

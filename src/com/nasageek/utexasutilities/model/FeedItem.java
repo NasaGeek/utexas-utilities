@@ -1,5 +1,6 @@
 package com.nasageek.utexasutilities.model;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -7,11 +8,9 @@ import java.util.Date;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class FeedItem implements Parcelable {
-	/*public enum SourceType {
-		
-	}*/
-	
+public class FeedItem implements Parcelable, Serializable {
+
+	private static final long serialVersionUID = 1L;
 	private String type, message, contentid, sourcetype, bbid;
 	private Date date;
 	
