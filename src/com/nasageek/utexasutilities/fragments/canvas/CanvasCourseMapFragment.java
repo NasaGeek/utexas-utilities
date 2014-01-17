@@ -5,22 +5,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.fragments.BaseSpiceListFragment;
-import com.nasageek.utexasutilities.fragments.BlackboardCourseMapFragment;
-import com.nasageek.utexasutilities.model.canvas.Assignment;
-import com.nasageek.utexasutilities.requests.CanvasAssignmentsRequest;
-import com.octo.android.robospice.persistence.DurationInMillis;
-import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
 
 
-public class CanvasCourseMapFragment extends BaseSpiceListFragment {
+public class CanvasCourseMapFragment extends BaseSpiceListFragment implements OnPanesScrolledListener {
 	
-	private String course_id, course_name, course_code;
+	private String courseId, courseName, courseCode;
 	
 	public static CanvasCourseMapFragment newInstance(String courseID, String courseName, String courseCode) {
 		CanvasCourseMapFragment bcmf = new CanvasCourseMapFragment();
@@ -40,15 +35,17 @@ public class CanvasCourseMapFragment extends BaseSpiceListFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
+		Bundle args = getArguments();
+        courseId = args.getString("courseID");
+        courseName = args.getString("courseName");
+        courseCode = args.getString("courseCode");
+        setupActionBar();
 		setListAdapter(new ArrayAdapter<String>(getActivity(),
 											    R.layout.coursemap_item_view, 
 											    R.id.coursemap_item_name, 
 											    new String[] {"Assignments", "Files"}));
-		Bundle args = getArguments();
-		course_id = args.getString("courseID");
-		course_name = args.getString("courseName");
-		course_code = args.getString("courseCode");
-		Log.d("course_id", course_id);
+		
+
 	//	canvasAssignmentsRequest = new CanvasAssignmentsRequest(course_id);
 	}
 	
@@ -57,10 +54,22 @@ public class CanvasCourseMapFragment extends BaseSpiceListFragment {
 		String feature = (String) lv.getItemAtPosition(position);
 		if(feature.equals("Assignments")) {
 			((FragmentLauncher) getActivity()).addFragment(CanvasCourseMapFragment.this, 
-					AssignmentsFragment.newInstance(course_id, course_name, course_code));
+					AssignmentsFragment.newInstance(courseId, courseName, courseCode));
 		} else if(feature.equals("Files")) {
 			((FragmentLauncher) getActivity()).addFragment(CanvasCourseMapFragment.this, 
-					FileBrowserFragment.newInstance(course_id, course_name, course_code));
+					FileBrowserFragment.newInstance(courseId, courseName, courseCode));
 		}
 	}
+	
+	private void setupActionBar() {
+        final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+        actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionbar.setTitle(courseCode);
+        actionbar.setSubtitle("Course Map"); 
+    }
+	
+	@Override
+    public void onPanesScrolled() {
+        setupActionBar();   
+    }
 }

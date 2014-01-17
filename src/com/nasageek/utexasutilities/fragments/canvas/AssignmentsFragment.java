@@ -13,8 +13,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.adapters.AssignmentAdapter;
 import com.nasageek.utexasutilities.fragments.BaseSpiceListFragment;
 import com.nasageek.utexasutilities.model.BBGrade;
@@ -24,11 +26,11 @@ import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
-public class AssignmentsFragment extends BaseSpiceListFragment{
+public class AssignmentsFragment extends BaseSpiceListFragment implements OnPanesScrolledListener {
 
 	private AssignmentAdapter assignmentsAdapter;
 	private CanvasAssignmentsRequest canvasAssignmentsRequest;
-	private String course_id, course_name;
+	private String courseId, courseName, courseCode;
 	private List<Assignment> assignments;
 	
 	public static AssignmentsFragment newInstance(String courseID, String courseName, String courseCode) {
@@ -47,11 +49,13 @@ public class AssignmentsFragment extends BaseSpiceListFragment{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
-		course_id = getArguments().getString("courseID");
-		course_name = getArguments().getString("courseName");
+		courseId = getArguments().getString("courseID");
+		courseName = getArguments().getString("courseName");
+		courseCode = getArguments().getString("courseCode");
+		setupActionBar();
 		
-		canvasAssignmentsRequest = new CanvasAssignmentsRequest(ConnectionHelper.getCanvasAuthCookie(getActivity()), course_id);
-		getSpiceManager().execute(canvasAssignmentsRequest, course_id + "assignments", DurationInMillis.ONE_MINUTE * 5, new CanvasAssignmentsRequestListener());		
+		canvasAssignmentsRequest = new CanvasAssignmentsRequest(ConnectionHelper.getCanvasAuthCookie(getActivity()), courseId);
+		getSpiceManager().execute(canvasAssignmentsRequest, courseId + "assignments", DurationInMillis.ONE_MINUTE * 5, new CanvasAssignmentsRequestListener());		
 	}
 	
 	@Override
@@ -95,5 +99,17 @@ public class AssignmentsFragment extends BaseSpiceListFragment{
         public void onRequestSuccess(final Assignment.List result) {
     		setListAdapter(new AssignmentAdapter(getActivity(), R.layout.grade_item_view, result));
         }
+    }
+	
+	private void setupActionBar() {
+        final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+        actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionbar.setTitle(courseCode);
+        actionbar.setSubtitle("Assignments"); 
+    }
+    
+    @Override
+    public void onPanesScrolled() {
+        setupActionBar();   
     }
 }

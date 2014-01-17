@@ -77,7 +77,7 @@ public class BlackboardPagerFragment extends SherlockFragment implements OnPanes
 	public void onPanesScrolled() {
 		final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
 		actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
-		actionbar.setTitle("Blackboard");
+		actionbar.setTitle("Courses");
 		actionbar.setSubtitle(null);
 	}
 }

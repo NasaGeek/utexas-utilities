@@ -1,5 +1,6 @@
 package com.nasageek.utexasutilities.adapters;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -19,11 +20,12 @@ import com.nasageek.utexasutilities.model.Course;
 public class BBClassAdapter extends AmazingAdapter {
 	private Context con;
 	private ArrayList<Course> classes;
-	private List<ParcelablePair<String, List<Course>>> all;
+	private List<MyPair<String, List<Course>>> all;
 	private LayoutInflater li;
 	private Boolean longform;
 	
-	public BBClassAdapter(Context con, List<MyPair<String, List<BBCourse>>> objects) {		all = objects;
+	public BBClassAdapter(Context con, List<MyPair<String, List<Course>>> objects) {		
+	    all = objects;
 		li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);	
 		longform = PreferenceManager.getDefaultSharedPreferences(con).getBoolean("blackboard_class_longform", false);
 	}

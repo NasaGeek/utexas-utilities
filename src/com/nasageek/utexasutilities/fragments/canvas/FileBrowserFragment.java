@@ -1,6 +1,9 @@
 package com.nasageek.utexasutilities.fragments.canvas;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import retrofit.RetrofitError;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -21,9 +24,11 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.nasageek.utexasutilities.AttachmentDownloadService;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.adapters.FileAdapter;
 import com.nasageek.utexasutilities.fragments.BaseSpiceListFragment;
 import com.nasageek.utexasutilities.model.canvas.Assignment;
@@ -33,11 +38,11 @@ import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
-public class FileBrowserFragment extends BaseSpiceListFragment {
+public class FileBrowserFragment extends BaseSpiceListFragment implements OnPanesScrolledListener {
 	
 	private FileAdapter mFileAdapter;
 	private CanvasFilesRequest canvasFilesRequest;
-	private String course_id, course_name;
+	private String courseId, courseName, courseCode;
 	private List<Assignment> assignments;
 	private BroadcastReceiver onNotificationClick;
 	
@@ -57,11 +62,13 @@ public class FileBrowserFragment extends BaseSpiceListFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
-		course_id = getArguments().getString("courseID");
-		course_name = getArguments().getString("courseName");
+		courseId = getArguments().getString("courseID");
+		courseName = getArguments().getString("courseName");
+		courseCode = getArguments().getString("courseCode");
+		setupActionBar();
 		
-		canvasFilesRequest = new CanvasFilesRequest(ConnectionHelper.getCanvasAuthCookie(getActivity()), course_id);
-		getSpiceManager().execute(canvasFilesRequest, course_id + "files", DurationInMillis.ONE_MINUTE * 5, new CanvasFilesRequestListener());		
+		canvasFilesRequest = new CanvasFilesRequest(ConnectionHelper.getCanvasAuthCookie(getActivity()), courseId);
+		getSpiceManager().execute(canvasFilesRequest, courseId + "files", DurationInMillis.ONE_MINUTE * 5, new CanvasFilesRequestListener());		
 	}
 	
 	@Override
@@ -177,16 +184,33 @@ public class FileBrowserFragment extends BaseSpiceListFragment {
         @Override
         public void onRequestFailure(SpiceException spiceException) {
         	spiceException.printStackTrace();
-            Toast.makeText(getSherlockActivity(), "No files available", Toast.LENGTH_SHORT).show();
-            // it looks like this can happen if the user isn't authorized (but when is that the case?)
-            // either it occurs after the course has completed, it occurs because there are no files,
-            // or it is a specific setting activated by the instructor.
+        	// it looks like this can happen if the user isn't authorized (but when is that the case?)
+        	// either it occurs after the course has completed, it occurs because there are no files,
+        	// or it is a specific setting activated by the instructor.
+        	if(((RetrofitError)spiceException.getCause()).getResponse().getStatus() == 401) {
+            	Toast.makeText(getSherlockActivity(), "No files available", Toast.LENGTH_SHORT).show();
+            	setListAdapter(new FileAdapter(getActivity(), R.layout.file_view, new ArrayList<File>()));
+            	setEmptyText("No files available/Not authorized");
+            }  
         }
 
         @Override
-        public void onRequestSuccess(final File.List result) {Log.d("FILEREQUEST", result.toString());
+        public void onRequestSuccess(final File.List result) {
     		setListAdapter(new FileAdapter(getActivity(), R.layout.file_view, result));
+    		setEmptyText("No files available/Not authorized");
         }
+    }
+	
+   private void setupActionBar() {
+        final ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+        actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionbar.setTitle(courseCode);
+        actionbar.setSubtitle("Files"); 
+    }
+    
+    @Override
+    public void onPanesScrolled() {
+        setupActionBar();   
     }
 	
 }

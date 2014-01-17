@@ -90,7 +90,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
     	cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
     	httpclient.getCookieStore().addCookie(cookie);
     	
-    	classAdapter = new BBClassAdapter(getSherlockActivity(), classSectionList);
+    	classAdapter = new BBClassAdapter(getActivity(), classSectionList);
 	}
 
 	
@@ -176,6 +176,9 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
             if(((RetrofitError)spiceException.getCause()).getResponse().getStatus() == 401) {
             	ConnectionHelper.resetCanvasAuthToken(getActivity());
             }
+			bb_pb_ll.setVisibility(View.GONE);
+			bbell.setVisibility(View.GONE);
+			bblv.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -194,7 +197,10 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 	        		classSectionList.get(j).second.addAll(result.subList(i, result.size()));
 	        	}
             }
-            classAdapter.notifyDataSetChanged();
+			classAdapter.notifyDataSetChanged();
+			bb_pb_ll.setVisibility(View.GONE);
+			bbell.setVisibility(View.GONE);
+			bblv.setVisibility(View.VISIBLE);
         }
     }
 	
@@ -286,9 +292,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 			getSpiceManager().execute(canvasCourseListRequest, "courses", DurationInMillis.ONE_MINUTE * 5, new CanvasCourseListRequestListener());
 			
 			
-			bb_pb_ll.setVisibility(View.GONE);
-			bbell.setVisibility(View.GONE);
-    		bblv.setVisibility(View.VISIBLE);	
+				
 		}
 		@Override
 		protected void onCancelled() {
