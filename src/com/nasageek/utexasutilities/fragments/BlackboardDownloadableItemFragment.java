@@ -150,9 +150,8 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 							downloadAttachment.putExtra("url", item.getDlUri());
 							downloadAttachment.putExtra("service", "blackboard");
 							getSherlockActivity().startService(downloadAttachment);			
-						}	
-						else if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) { 	
-							final DownloadManager manager = (DownloadManager) getSherlockActivity().getSystemService(Service.DOWNLOAD_SERVICE);
+						} else if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) { 	
+							final DownloadManager manager = (DownloadManager) getActivity().getSystemService(Service.DOWNLOAD_SERVICE);
 	
 							onNotificationClick = new BroadcastReceiver() {
 							    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -171,12 +170,12 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 							 	    				ex.printStackTrace();
 							 	    				//TODO: let the user know something went wrong?
 							 	    		}
-							    		}
-							    		else
+							    		} else {
 							    			Toast.makeText(con, "Download could not be opened at this time.", Toast.LENGTH_SHORT).show();
+							    		}
+							    	}
 							    }
-							}
-						};
+							};
 							getSherlockActivity().registerReceiver(onNotificationClick, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
 							  
 							Uri uri = Uri.parse(ConnectionHelper.blackboard_domain + Uri.decode(item.getDlUri()));
@@ -204,8 +203,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 								getSherlockActivity().startService(downloadAttachment);
 					    	}
 					    	Toast.makeText(getSherlockActivity(), "Download started, item should appear in the \"Download\" folder on your external storage.", Toast.LENGTH_LONG).show();
-						 }	 
-						 else {
+						 } else {
 							 AlertDialog.Builder build = new AlertDialog.Builder(getSherlockActivity());
 							 build.setNeutralButton("Okay", new DialogInterface.OnClickListener() {	
 								@Override
@@ -235,13 +233,14 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if(onNotificationClick != null)
+		if(onNotificationClick != null) {
 			try {
 				getSherlockActivity().unregisterReceiver(onNotificationClick);
 				onNotificationClick = null;
 			} catch(IllegalArgumentException e) { //if it's already been unregistered
 				e.printStackTrace();
 			}
+		}
 	}
 	
 	@Override
@@ -283,8 +282,7 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 				if(sp.getBoolean("embedded_browser", true)) {
 					((FragmentLauncher)getSherlockActivity()).addFragment(BlackboardDownloadableItemFragment.this, 
 							BlackboardExternalItemFragment.newInstance(viewUri, courseID, courseName, itemName, false));
-				}
-				else {
+				} else {
 					Intent i = new Intent(Intent.ACTION_VIEW);  
 					i.setData(Uri.parse(viewUri));  
 					startActivity(i);
@@ -376,10 +374,11 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 	    	
 	    	Pattern contentPattern = Pattern.compile("<body>(.*?)</body>",Pattern.DOTALL);
 	    	Matcher contentMatcher = contentPattern.matcher(pagedata);
-	    	if(contentMatcher.find())
+	    	if(contentMatcher.find()) {
 	    		content = contentMatcher.group(1);
-	    	else
+	    	} else {
 	    		content = "No description";
+	    	}
 	    	
 	       	Pattern attachmentPattern = Pattern.compile("<attachment.*?/>");
 	    	Matcher attachmentMatcher = attachmentPattern.matcher(pagedata);
@@ -395,9 +394,10 @@ public class BlackboardDownloadableItemFragment extends  BlackboardFragment {
 		    	Pattern sizePattern = Pattern.compile("filesize=\"(.*?)\"");
 		    	Matcher sizeMatcher = sizePattern.matcher(attachData);
 	
-		    	if(sizeMatcher.find() && nameMatcher.find() && fileNameMatcher.find() && uriMatcher.find())
+		    	if(sizeMatcher.find() && nameMatcher.find() && fileNameMatcher.find() && uriMatcher.find()) {
 		    		data.add(new bbFile(nameMatcher.group(1).replace("&amp;", "&"),fileNameMatcher.group(1),
 		    				sizeMatcher.group(1),uriMatcher.group(1).replace("&amp;", "&"),getArguments().getString("itemName")));
+		    	}
 	    	}
 	    	
 	    	result[0] = content;

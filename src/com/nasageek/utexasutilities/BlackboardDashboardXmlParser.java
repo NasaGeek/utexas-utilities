@@ -14,11 +14,10 @@ import java.util.Locale;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import com.nasageek.utexasutilities.model.BBCourse;
 import android.util.TimingLogger;
 import android.util.Xml;
 
-import com.nasageek.utexasutilities.model.BBClass;
+import com.nasageek.utexasutilities.model.BBCourse;
 import com.nasageek.utexasutilities.model.FeedItem;
 
 public class BlackboardDashboardXmlParser {
