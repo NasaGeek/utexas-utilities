@@ -13,15 +13,9 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-
-import com.mapsaurus.paneslayout.FragmentLauncher;
-import com.nasageek.utexasutilities.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,13 +27,15 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.foound.widget.AmazingAdapter;
 import com.foound.widget.AmazingListView;
+import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
+import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.activities.NutritionInfoActivity;
 
 public class MenuFragment extends SherlockFragment {
 	private DefaultHttpClient httpclient;
-	private ArrayList<Pair<String,ArrayList<food>>> listOfLists;
+	private ArrayList<MyPair<String,ArrayList<food>>> listOfLists;
 	private AmazingListView mlv;
 	private LinearLayout m_pb_ll;
 	private TextView metv;
@@ -81,7 +77,7 @@ public class MenuFragment extends SherlockFragment {
 		setRetainInstance(true);
 		restId = getArguments().getString("restId");
         httpclient = ConnectionHelper.getThreadSafeClient();
-        listOfLists = new ArrayList<Pair<String,ArrayList<food>>>();
+        listOfLists = new ArrayList<MyPair<String,ArrayList<food>>>();
         mAdapter = new MenuAdapter(listOfLists);
 	}
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -134,7 +130,7 @@ public class MenuFragment extends SherlockFragment {
 		private DefaultHttpClient client;
 		private String meal;
 		private String errorMsg;
-		private ArrayList<Pair<String,ArrayList<food>>> tempListOfLists;
+		private ArrayList<MyPair<String,ArrayList<food>>> tempListOfLists;
 		
 		public fetchMenuTask(DefaultHttpClient client) {
 			this.client = client;
@@ -150,7 +146,7 @@ public class MenuFragment extends SherlockFragment {
 		protected String doInBackground(Object... params) { 
 			ArrayList<String> categories = new ArrayList<String>();
 			ArrayList<food> foodList = new ArrayList<food>();
-			tempListOfLists = new ArrayList<Pair<String,ArrayList<food>>>();
+			tempListOfLists = new ArrayList<MyPair<String,ArrayList<food>>>();
 			meal = (String)params[1];
 			String location = "";
 			
@@ -174,7 +170,7 @@ public class MenuFragment extends SherlockFragment {
 			}
 	    	if(pagedata.contains("No Data Available")) {
 	    		foodList.add(new food("",""));
-	    		listOfLists.add(new Pair<String,ArrayList<food>>("No Food Offered at this Time",foodList));
+	    		listOfLists.add(new MyPair<String,ArrayList<food>>("No Food Offered at this Time",foodList));
 	    		return meal;
 	    	}
 	    	else {
@@ -203,7 +199,7 @@ public class MenuFragment extends SherlockFragment {
 		    		while(foodMatcher.find() && nutritionLinkMatcher.find()) {
 		    			foodList.add(new food(foodMatcher.group(1),nutritionLinkMatcher.group(1)));
 		    		}	
-		    		tempListOfLists.add(new Pair<String,ArrayList<food>>(catNameMatcher.group(1),foodList));	
+		    		tempListOfLists.add(new MyPair<String,ArrayList<food>>(catNameMatcher.group(1),foodList));	
 		    		if(isCancelled())
 		    			return "";
 		    	}
@@ -244,9 +240,9 @@ public class MenuFragment extends SherlockFragment {
 	}
 
 	class MenuAdapter extends AmazingAdapter {
-		private ArrayList<Pair<String, ArrayList<food>>> all;
+		private ArrayList<MyPair<String, ArrayList<food>>> all;
 
-		public MenuAdapter(ArrayList<Pair<String, ArrayList<food>>> all) {
+		public MenuAdapter(ArrayList<MyPair<String, ArrayList<food>>> all) {
 			this.all = all;
 		}
 		

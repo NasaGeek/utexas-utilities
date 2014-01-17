@@ -113,7 +113,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	public enum Route {
 		No_Overlay(0,"No Bus Route Overlay"),
 		Crossing_Place(670,"Crossing Place"),
-		Cameron_Road(651,"Cameron Road"),
+		Camino_La_Costa(651,"Camino La Costa"),
 		East_Campus(641,"East Campus"),
 		Forty_Acres(640, "Forty Acres"),
 		Far_West(661,"Far West"),
@@ -125,10 +125,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 		North_Riverside_Lakeshore(680,"North Riverside/Lakeshore"),
 		Pickle_Research_Campus(652, "Pickle Research Campus"),
 		Red_River(653,"Red River"),
-		Red_River_Cameron_Road(684, "Red River/Cameron Road"),
-		West_Campus(642,"West Campus"),
-		Wickersham_Lane(675,"Wickersham Lane"),
-		Wickersham_Crossing_Place(685,"Wickersham/Crossing Place");
+		West_Campus(642,"West Campus");
 
 	    private int code;
 	    private String fullName; 
@@ -141,12 +138,10 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
 	    public String getCode() {
 	      return code + "";
 	    }
-	    public String fullName()
-	    {
+	    public String fullName() {
 	    	return fullName;
 	    }
-	    public String toString()
-	    {
+	    public String toString() {
 	    	return fullName;
 	    }
 	}
@@ -154,9 +149,7 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_layout);
-        
         setupMapIfNeeded();
-
         settings = PreferenceManager.getDefaultSharedPreferences(this);
         this.savedInstanceState = savedInstanceState;
         buildingIdList = new ArrayList<String>();
@@ -168,7 +161,6 @@ public class CampusMapActivity extends SherlockFragmentActivity  {
         }
 
         am = getAssets();
-        
         actionbar = getSupportActionBar();
 		actionbar.setTitle("Map and Bus Routes");
 		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);

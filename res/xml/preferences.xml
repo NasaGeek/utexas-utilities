@@ -110,13 +110,11 @@
             android:key="embedded_browser"
             android:summary="External links will be opened in the default browser otherwise"
             android:title="Use embedded browser" />
-        
+
         <Preference
             android:id="@+id/about"
             android:key="about"
             android:title="About UTilities" />
-
-        
     </PreferenceCategory>
 
     <PreferenceScreen

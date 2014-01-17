@@ -1,14 +1,16 @@
 package com.nasageek.utexasutilities.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-public class UTClass implements Parcelable{
+public class UTClass implements Parcelable, Serializable {
 	
-	
+	private static final long serialVersionUID = 1L;
+
 	private String courseId, unique, name, semId, color;
 
 	private ArrayList<Classtime> classtimes;

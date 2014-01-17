@@ -1,20 +1,15 @@
 package com.nasageek.utexasutilities.activities;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Debug;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.MenuItem;
 import com.mapsaurus.paneslayout.PanesActivity;
 import com.mapsaurus.paneslayout.PanesLayout;
 import com.mapsaurus.paneslayout.PanesLayout.OnIndexChangedListener;
 import com.mapsaurus.paneslayout.PanesSizer.PaneSizer;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.fragments.BlackboardAnnouncementsFragment;
-import com.nasageek.utexasutilities.fragments.BlackboardCourseListFragment;
 import com.nasageek.utexasutilities.fragments.BlackboardCourseMapFragment;
 import com.nasageek.utexasutilities.fragments.BlackboardDownloadableItemFragment;
 import com.nasageek.utexasutilities.fragments.BlackboardExternalItemFragment;

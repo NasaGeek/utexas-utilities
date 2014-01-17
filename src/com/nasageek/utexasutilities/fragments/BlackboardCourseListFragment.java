@@ -1,5 +1,6 @@
 package com.nasageek.utexasutilities.fragments;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,9 +34,8 @@ import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.mapsaurus.paneslayout.PanesActivity;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.ParcelablePair;
+import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.SectionedParcelableList;
 import com.nasageek.utexasutilities.adapters.BBClassAdapter;
 import com.nasageek.utexasutilities.fragments.canvas.CanvasCourseMapFragment;
 import com.nasageek.utexasutilities.model.BBCourse;
@@ -56,9 +56,9 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 	
 	private AmazingListView bblv;
 	private ArrayList<Course> classList;
-	private List<ParcelablePair<String, List<Course>>> classSectionList;
+	private List<MyPair<String, List<Course>>> classSectionList;
 	private fetchClassesTask fetch;	
-//	private ArrayList<ParcelablePair<String, ArrayList<BBClass>>> classes;
+//	private ArrayList<ParcelableMyPair<String, ArrayList<BBClass>>> classes;
 	private BBClassAdapter classAdapter;
 	private CanvasCourseListRequest canvasCourseListRequest;
 	
@@ -80,9 +80,9 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
     	
     	canvasCourseListRequest = new CanvasCourseListRequest(ConnectionHelper.getCanvasAuthCookie(getActivity()));
     	if(savedInstanceState == null)
-    		classSectionList = new ArrayList<ParcelablePair<String, List<Course>>>();
+    		classSectionList = new ArrayList<MyPair<String, List<Course>>>();
     	else
-    		classSectionList = (ArrayList<ParcelablePair<String, List<Course>>>) ((SectionedParcelableList) savedInstanceState.getParcelable("classSectionList")).getList();
+    		classSectionList = (ArrayList<MyPair<String, List<Course>>>) savedInstanceState.getSerializable("classSectionList");
 		
 		httpclient = ConnectionHelper.getThreadSafeClient();
 		httpclient.getCookieStore().clear();
@@ -149,7 +149,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 			}
 		});
 		
-		//TODO: where to callll, also, helper?  -  helper for what? shit I don't remember writing this...
+		//where to callll, also, helper?  -  helper for what? shit I don't remember writing this...
 		if(classSectionList.size() == 0) {
 	    	fetch = new fetchClassesTask(httpclient);
 	    	
@@ -164,7 +164,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putParcelable("classSectionList", new SectionedParcelableList<Course>(classSectionList, Course.class));
+		outState.putSerializable("classSectionList", (Serializable) classSectionList);
 	}
 
 	public final class CanvasCourseListRequestListener implements RequestListener<CanvasCourse.List> {
@@ -198,8 +198,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
         }
     }
 	
-	private class fetchClassesTask extends AsyncTask<Object, Void, ArrayList<ParcelablePair<String, List<Course>>>> {
-		private DefaultHttpClient client;
+	private class fetchClassesTask extends AsyncTask<Object, Void, ArrayList<MyPair<String, List<Course>>>> {		private DefaultHttpClient client;
 		private String errorMsg;
 		private Exception ex;
 		private String pagedata;
@@ -216,8 +215,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 		}
 		
 		@Override
-		protected ArrayList<ParcelablePair<String, List<Course>>> doInBackground(Object... params) {
-			HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
+		protected ArrayList<MyPair<String, List<Course>>> doInBackground(Object... params) {			HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
 	    	String pagedata = "";
 
 	    	try {
@@ -239,7 +237,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 	    	//build the sectioned list now
 	    	String currentCategory = "";
     		ArrayList<Course> sectionList = null;
-			ArrayList<ParcelablePair<String, List<Course>>> tempClassSectionList = new ArrayList<ParcelablePair<String, List<Course>>>();
+			ArrayList<MyPair<String, List<Course>>> tempClassSectionList = new ArrayList<MyPair<String, List<Course>>>();
 
 			for(int i = 0; i < classList.size(); i++) {
     			//first course is always in a new category (the first category)
@@ -255,7 +253,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
     				if(i == classList.size() - 1)
     					sectionList.add(classList.get(i));
     					
-    				tempClassSectionList.add(new ParcelablePair<String, List<Course>>(currentCategory, sectionList));
+    				tempClassSectionList.add(new MyPair<String, List<Course>>(currentCategory, sectionList));
     				
     				currentCategory = classList.get(i).getTermName();
     				sectionList= new ArrayList<Course>();
@@ -270,18 +268,18 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
     		}
     		Collections.reverse(tempClassSectionList);
     		//TODO: implement sorting of classes so BB's ordering won't matter
-    		/*Collections.sort(tempClassSectionList, new Comparator<ParcelablePair<String, List<BBClass>>>() {
+    		/*Collections.sort(tempClassSectionList, new Comparator<MyPair<String, List<BBClass>>>() {
 
 				@Override
-				public int compare(ParcelablePair<String, List<BBClass>> lhs,
-						ParcelablePair<String, List<BBClass>> rhs) {
+				public int compare(ParcelableMyPair<String, List<BBClass>> lhs,
+						ParcelableMyPair<String, List<BBClass>> rhs) {
 					return -lhs.first.compareTo(rhs.first);
 				}
 			});*/
 			return tempClassSectionList;
 		}
 		@Override
-		protected void onPostExecute(ArrayList<ParcelablePair<String, List<Course>>> result) {	    		
+		protected void onPostExecute(ArrayList<MyPair<String, List<Course>>> result) {	    		
 			classSectionList.addAll(result);
 			classAdapter.notifyDataSetChanged();
 			//TODO: learn to thread properly :(
@@ -307,3 +305,5 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 			fetch.cancel(true);
 	}
 }
+
+

@@ -81,11 +81,9 @@ public class AboutMeActivity extends SherlockFragmentActivity
 	}
 	
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
+	public boolean onOptionsItemSelected(MenuItem item) {
     	int id = item.getItemId();
-    	switch(id)
-    	{
+    	switch(id) {
 	    	case android.R.id.home:
 	            // app icon in action bar clicked; go home
 	            super.onBackPressed();
@@ -94,16 +92,14 @@ public class AboutMeActivity extends SherlockFragmentActivity
     	return false;
 	}
 
-	public static class PrivacyPolicyDialog extends SherlockDialogFragment
-	{
+	public static class PrivacyPolicyDialog extends SherlockDialogFragment {
 	//	private TextView policyText;
 		private Button dismissButton;
 		
 		public PrivacyPolicyDialog() {}
 		
 		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState)
-		{
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			View view = getActivity().getLayoutInflater().inflate(R.layout.privacy_policy_dialog_fragment, null);
 			AlertDialog.Builder build = new AlertDialog.Builder(getActivity());
 			build.setMessage(getString(R.string.privacy_policy)).
@@ -113,16 +109,14 @@ public class AboutMeActivity extends SherlockFragmentActivity
 		}
 	}
 	
-	public static class LibraryLicenseDialog extends SherlockDialogFragment
-	{
+	public static class LibraryLicenseDialog extends SherlockDialogFragment {
 		private TextView licenseTextView;
 		private Button dismissButton;
 		
 		public LibraryLicenseDialog() {}
 		
 		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState)
-		{
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			View view = getActivity().getLayoutInflater().inflate(R.layout.license_dialog_fragment, null);
 			AlertDialog.Builder build = new AlertDialog.Builder(getActivity());
 			String licenseText = getString(R.string.licenses) + "\n\n" + "Legal Notices:" + "\n\n" + 

@@ -30,13 +30,11 @@ public class BlackboardPagerFragment extends SherlockFragment implements OnPanes
 	
 	public BlackboardPagerFragment() {}
 	
-	public static BlackboardPagerFragment newInstance()
-	{
+	public static BlackboardPagerFragment newInstance() {
 		return new BlackboardPagerFragment();
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		
 		View vg = inflater.inflate(R.layout.blackboard_layout, container, false);
 		
 		setHasOptionsMenu(true);
@@ -50,8 +48,7 @@ public class BlackboardPagerFragment extends SherlockFragment implements OnPanes
 		
         List<SherlockFragment> fragments = new Vector<SherlockFragment>();
         
-        if(getChildFragmentManager().findFragmentByTag(Utility.makeFragmentName(pager.getId(), 0)) != null) {
-        	
+        if(getChildFragmentManager().findFragmentByTag(Utility.makeFragmentName(pager.getId(), 0)) != null) { 	
         	fragments.add((SherlockFragment)getChildFragmentManager().findFragmentByTag(Utility.makeFragmentName(pager.getId(), 0)));
         	fragments.add((SherlockFragment)getChildFragmentManager().findFragmentByTag(Utility.makeFragmentName(pager.getId(), 1)));
         }
@@ -83,6 +80,4 @@ public class BlackboardPagerFragment extends SherlockFragment implements OnPanes
 		actionbar.setTitle("Blackboard");
 		actionbar.setSubtitle(null);
 	}
-
-
 }

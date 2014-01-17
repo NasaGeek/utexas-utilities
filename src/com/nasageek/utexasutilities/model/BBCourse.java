@@ -1,5 +1,6 @@
 package com.nasageek.utexasutilities.model;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 import java.util.Locale;
@@ -8,8 +9,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-public class BBCourse extends Course implements Parcelable {
+public class BBCourse extends Course implements Parcelable, Serializable {
 
+	private static final long serialVersionUID = 1L;
+	private String name;
+	private String bbid;
 	private String fullcourseid;
 	private String unique;
 	private String fullName;

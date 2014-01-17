@@ -15,10 +15,11 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import com.nasageek.utexasutilities.model.BBCourse;
-import com.nasageek.utexasutilities.model.FeedItem;
-
 import android.util.TimingLogger;
 import android.util.Xml;
+
+import com.nasageek.utexasutilities.model.BBClass;
+import com.nasageek.utexasutilities.model.FeedItem;
 
 public class BlackboardDashboardXmlParser {
 
@@ -28,7 +29,7 @@ public class BlackboardDashboardXmlParser {
 	//need this so we don't instantiate it every time we make a new FeedItem
 	private SimpleDateFormat feedItemDateFormat;
 	
-	public List<ParcelablePair<String, List<FeedItem>>> parse(InputStream in) throws XmlPullParserException, IOException {
+	public List<MyPair<String, List<FeedItem>>> parse(InputStream in) throws XmlPullParserException, IOException {
 		try {
 			XmlPullParser parser = Xml.newPullParser();
 			parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -39,7 +40,7 @@ public class BlackboardDashboardXmlParser {
 			in.close();
 		}
 	}
-	public List<ParcelablePair<String, List<FeedItem>>> parse(Reader in) throws XmlPullParserException, IOException {
+	public List<MyPair<String, List<FeedItem>>> parse(Reader in) throws XmlPullParserException, IOException {
 		try {
 			XmlPullParser parser = Xml.newPullParser();
 			parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -56,7 +57,7 @@ public class BlackboardDashboardXmlParser {
 	 * easy to understand to calling classes with minimal code duplication.  This is where the actual 
 	 * parsing occurs.
 	 */
-	private List<ParcelablePair<String, List<FeedItem>>> actuallyParse(XmlPullParser parser) throws XmlPullParserException, IOException {
+	private List<MyPair<String, List<FeedItem>>> actuallyParse(XmlPullParser parser) throws XmlPullParserException, IOException {
 		tl = new TimingLogger("Dashboard", "Parser");
 		
 		List<FeedItem> feeditems = readDashboard(parser); 
@@ -66,7 +67,7 @@ public class BlackboardDashboardXmlParser {
 		//want to show most recent date at top and ListView's stackFromBottom is broken by AmazingListView
 		Collections.reverse(feeditems);
 		tl.addSplit("Collections.reverse()");
-		List<ParcelablePair<String, List<FeedItem>>> categorizedList = new ArrayList<ParcelablePair<String, List<FeedItem>>>();
+		List<MyPair<String, List<FeedItem>>> categorizedList = new ArrayList<MyPair<String, List<FeedItem>>>();
 		String currentCategory="";
 		ArrayList<FeedItem> sectionList=null;
 		DateFormat df = SimpleDateFormat.getDateInstance();
@@ -83,7 +84,7 @@ public class BlackboardDashboardXmlParser {
 				if(i == feeditems.size()-1)
 					sectionList.add(feeditems.get(i));
 					
-				categorizedList.add(new ParcelablePair<String, List<FeedItem>>(currentCategory,sectionList));
+				categorizedList.add(new MyPair<String, List<FeedItem>>(currentCategory,sectionList));
 				
 				currentCategory = df.format(feeditems.get(i).getDate());
 				sectionList=new ArrayList<FeedItem>();

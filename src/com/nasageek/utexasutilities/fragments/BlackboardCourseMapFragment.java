@@ -44,7 +44,7 @@ import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.CourseMapSaxHandler;
-import com.nasageek.utexasutilities.ParcelablePair;
+import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.adapters.CourseMapAdapter;
 import com.nasageek.utexasutilities.model.BBCourse;
@@ -57,12 +57,12 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	private LinearLayout cm_pb_ll;
 	private ListView cmlv;
 	private ArrayList<BBCourse> classList;
-	private ArrayList<ParcelablePair<CourseMapItem,ArrayList<BBCourse>>> classSectionList;
+	private ArrayList<MyPair<CourseMapItem,ArrayList<BBCourse>>> classSectionList;
 	private fetchCoursemapTask fetch;
 	private XMLReader xmlreader;
 	private CourseMapSaxHandler courseMapSaxHandler;
 	private int itemNumber;
-	private ArrayList<ParcelablePair<CourseMapItem, ArrayList>> mainList;
+	private ArrayList<MyPair<CourseMapItem, ArrayList>> mainList;
 	private LinearLayout failure_ll;
 	private TextView failure_tv;
 	private Button failure_button;
@@ -74,7 +74,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 	
 	public BlackboardCourseMapFragment() {}
 	
-	public static BlackboardCourseMapFragment newInstance(String action, ArrayList<ParcelablePair<CourseMapItem, ArrayList>> mainList, 
+	public static BlackboardCourseMapFragment newInstance(String action, ArrayList<MyPair<CourseMapItem, ArrayList>> mainList, 
 			String courseID, String courseName, String folderName, String viewUri, int itemNumber, boolean fromDashboard) {
 		BlackboardCourseMapFragment bcmf = new BlackboardCourseMapFragment();
 		
@@ -104,7 +104,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 		setHasOptionsMenu(true);
 		
 		if(getString(R.string.coursemap_nest_intent).equals(getArguments().getString("action"))) {
-			mainList = (ArrayList<ParcelablePair<CourseMapItem, ArrayList>>) getArguments().getSerializable("mainList");
+			mainList = (ArrayList<MyPair<CourseMapItem, ArrayList>>) getArguments().getSerializable("mainList");
 			itemNumber = getArguments().getInt("itemNumber");		
 		}
 

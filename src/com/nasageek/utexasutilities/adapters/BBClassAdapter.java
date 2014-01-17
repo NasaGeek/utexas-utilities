@@ -1,6 +1,5 @@
 package com.nasageek.utexasutilities.adapters;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -12,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.foound.widget.AmazingAdapter;
-import com.nasageek.utexasutilities.ParcelablePair;
+import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.model.BBCourse;
 import com.nasageek.utexasutilities.model.Course;
@@ -24,11 +23,9 @@ public class BBClassAdapter extends AmazingAdapter {
 	private LayoutInflater li;
 	private Boolean longform;
 	
-	public BBClassAdapter(Context con, List<ParcelablePair<String, List<Course>>> objects) {
-		all = objects;
+	public BBClassAdapter(Context con, List<MyPair<String, List<BBCourse>>> objects) {		all = objects;
 		li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);	
 		longform = PreferenceManager.getDefaultSharedPreferences(con).getBoolean("blackboard_class_longform", false);
-		this.con = con;
 	}
 	@Override
 	public int getCount() {
@@ -96,7 +93,7 @@ public class BBClassAdapter extends AmazingAdapter {
 			holder = (ViewHolder) res.getTag();
 		
 		Course course = getItem(position);
-		String name = "", unique = "", id = "";
+		String unique = "";
 		
 		if(course.getType().equals("blackboard")) {
 			if(!longform) {														
@@ -136,9 +133,6 @@ public class BBClassAdapter extends AmazingAdapter {
 	public void configurePinnedHeader(View header, int position, int alpha) {
 		TextView lSectionHeader = (TextView)header;
 		lSectionHeader.setText(getSections()[getSectionForPosition(position)]);
-	//	lSectionHeader.getBackground().setAlpha(alpha);
-	//	lSectionHeader.setBackgroundColor(alpha << 24 | (0xEAEAEA));
-	//	lSectionHeader.setTextColor(alpha << 24 | (0x343434));
 	}
 
 	@Override
