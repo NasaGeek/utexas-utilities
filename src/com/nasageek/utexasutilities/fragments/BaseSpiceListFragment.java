@@ -1,13 +1,13 @@
 package com.nasageek.utexasutilities.fragments;
 
 import com.actionbarsherlock.app.SherlockListFragment;
-import com.octo.android.robospice.SpiceManager;
-
 import com.nasageek.utexasutilities.CanvasRetrofitSpiceService;
+import com.nasageek.utexasutilities.MySpiceManager;
+import com.octo.android.robospice.SpiceManager;
 
 public class BaseSpiceListFragment extends SherlockListFragment {
 
-    private SpiceManager spiceManager = new SpiceManager(CanvasRetrofitSpiceService.class);
+    private MySpiceManager spiceManager = new MySpiceManager(CanvasRetrofitSpiceService.class);
     
     @Override
     public void onStart() {
