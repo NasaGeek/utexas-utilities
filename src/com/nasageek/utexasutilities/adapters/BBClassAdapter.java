@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ public class BBClassAdapter extends AmazingAdapter {
 	    all = objects;
 		li = (LayoutInflater)con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);	
 		longform = PreferenceManager.getDefaultSharedPreferences(con).getBoolean("blackboard_class_longform", false);
+		this.con = con;
 	}
 	@Override
 	public int getCount() {
@@ -89,10 +91,12 @@ public class BBClassAdapter extends AmazingAdapter {
 			holder.idview = (TextView) res.findViewById(R.id.bb_class_id);
 			holder.nameview = (TextView) res.findViewById(R.id.bb_class_name);
 			holder.indicator = (ImageView) res.findViewById(R.id.service_indicator);
+			holder.canvasIcon = con.getResources().getDrawable(R.drawable.canvas_indicator);
+			holder.blackboardIcon = con.getResources().getDrawable(R.drawable.bb_indicator);
 			res.setTag(holder);
-		}
-		else
+		} else {
 			holder = (ViewHolder) res.getTag();
+		}
 		
 		Course course = getItem(position);
 		String unique = "";
@@ -115,10 +119,10 @@ public class BBClassAdapter extends AmazingAdapter {
 				//id not set because unique will contain ID and Unique number
 				holder.idview.setText(unique);		
 			}
-			holder.indicator.setImageResource(R.drawable.bb_indicator);
+			holder.indicator.setImageDrawable(holder.blackboardIcon);
 		} else if(course.getType().equals("canvas")) {
 			holder.idview.setText(course.getCourseCode());
-			holder.indicator.setImageResource(R.drawable.canvas_indicator);
+			holder.indicator.setImageDrawable(holder.canvasIcon);
 		}
 
 		holder.nameview.setText(course.getName());
@@ -129,6 +133,8 @@ public class BBClassAdapter extends AmazingAdapter {
 		TextView nameview;
 		TextView idview;
 		ImageView indicator;
+		Drawable blackboardIcon;
+		Drawable canvasIcon;
 	}
 
 	@Override
