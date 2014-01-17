@@ -1,11 +1,14 @@
 package com.nasageek.utexasutilities.model.canvas;
 
+import java.io.Serializable;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Term implements Parcelable {
+public class Term implements Parcelable, Serializable {
 
-	private String id;
+    private static final long serialVersionUID = 1L;
+    private String id;
 	private String name;
 	private String start_at;
 	private String end_at;

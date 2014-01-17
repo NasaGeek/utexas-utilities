@@ -1,10 +1,12 @@
 package com.nasageek.utexasutilities.model.canvas;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class File {
+public class File implements Serializable {
 
-	public int size;
+    private static final long serialVersionUID = 1L;
+    public int size;
 	String content_type; //can be null
 	public String url;
 	String id;

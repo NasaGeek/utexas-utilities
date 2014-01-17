@@ -12,8 +12,6 @@ import android.util.Log;
 public class BBCourse extends Course implements Parcelable, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private String name;
-	private String bbid;
 	private String fullcourseid;
 	private String unique;
 	private String fullName;
@@ -76,16 +74,18 @@ public class BBCourse extends Course implements Parcelable, Serializable {
 			//TODO: might try this with a split[0] rather than the substring
 			//TODO: this might not trim off Summer semester identifier, check Alex's tablet
 			//If we've got a date in the front (probably) chop it off
-			if(name.substring(0, name.indexOf(" ")).matches("^\\d{2}[A-Z]{1,2}$"))
-				this.name = name.substring(name.indexOf(" ")+1);
-			else
+			if(name.substring(0, name.indexOf(" ")).matches("^\\d{2}[A-Z]{1,2}$")) {
+                this.name = name.substring(name.indexOf(" ") + 1);
+			} else {
 				this.name = name;
+			}
 		}
-		else
-			super.name = name;
+		else {
+			this.name = name;
+		}
 		
 		//Remove anything in parentheses, it's usually all superfluous
-		super.name = super.name.replaceAll("\\(.*?\\)", "");													
+		this.name = this.name.replaceAll("\\(.*?\\)", "");													
 		
 		/* 
 		 * sometimes the name will still contain parentheses, this seems to largely be caused

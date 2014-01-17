@@ -1,10 +1,13 @@
 package com.nasageek.utexasutilities.model;
 
+import java.io.Serializable;
+
 import android.os.Parcelable;
 
-public abstract class Course implements Parcelable {
+public abstract class Course implements Parcelable, Serializable {
 
-	protected String id;
+    private static final long serialVersionUID = 1L;
+    protected String id;
 	protected String name;
 	protected String course_code;
 	protected String start_at;
