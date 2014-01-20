@@ -188,7 +188,7 @@ public class Preferences extends SherlockPreferenceActivity {
 					});
 					ConnectionHelper.resetCanvasAuthToken(Preferences.this);
 				} else {
-					Toast.makeText(Preferences.this, "UTilities is not authorize for Canvas", Toast.LENGTH_SHORT).show();
+					Toast.makeText(Preferences.this, "UTilities is not authorized for Canvas", Toast.LENGTH_SHORT).show();
 				}
 				return true;
 			}
