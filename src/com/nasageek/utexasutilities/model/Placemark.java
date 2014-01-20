@@ -1,45 +1,47 @@
+
 package com.nasageek.utexasutilities.model;
 
 public class Placemark {
 
-	String title;
-	String description;
-	String coordinates;
-	String address;
+    String title;
+    String description;
+    String coordinates;
+    String address;
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getCoordinates() {
-		return coordinates;
-	}
+    public String getCoordinates() {
+        return coordinates;
+    }
 
-	public void setCoordinates(String coordinates) {
-		this.coordinates = coordinates;
-	}
+    public void setCoordinates(String coordinates) {
+        this.coordinates = coordinates;
+    }
 
-	public String getAddress() {
-		return address;
-	}
+    public String getAddress() {
+        return address;
+    }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-	public String toString() {
-		return title + " : " + description + "(" + coordinates + ")";
-	}
+    @Override
+    public String toString() {
+        return title + " : " + description + "(" + coordinates + ")";
+    }
 }

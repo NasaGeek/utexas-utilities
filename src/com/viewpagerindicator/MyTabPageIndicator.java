@@ -16,14 +16,11 @@
  */
 
 package com.viewpagerindicator;
+
 // Quick note, this is in the com.viewpagerindicator package so it can sneak a peak at IcsLinearLayout
 
-import com.viewpagerindicator.IconPagerAdapter;
-import com.viewpagerindicator.IcsLinearLayout;
-import com.viewpagerindicator.PageIndicator;
-import com.viewpagerindicator.R;
-import com.viewpagerindicator.R.attr;
-
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -34,9 +31,6 @@ import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * This widget implements the dynamic action bar tab behavior that can change
@@ -52,7 +46,7 @@ public class MyTabPageIndicator extends HorizontalScrollView implements PageIndi
     public interface OnTabReselectedListener {
         /**
          * Callback when the selected tab has been reselected.
-         *
+         * 
          * @param position Position of the current center item.
          */
         void onTabReselected(int position);
@@ -61,8 +55,9 @@ public class MyTabPageIndicator extends HorizontalScrollView implements PageIndi
     private Runnable mTabSelector;
 
     private final OnClickListener mTabClickListener = new OnClickListener() {
+        @Override
         public void onClick(View view) {
-            TabView tabView = (TabView)view;
+            TabView tabView = (TabView) view;
             final int oldSelected = mViewPager.getCurrentItem();
             final int newSelected = tabView.getIndex();
             mViewPager.setCurrentItem(newSelected);
@@ -79,7 +74,7 @@ public class MyTabPageIndicator extends HorizontalScrollView implements PageIndi
 
     private int mMaxTabWidth;
     private int mSelectedTabIndex;
-    
+
     private Boolean selectAllHack = false;
 
     private OnTabReselectedListener mTabReselectedListener;
@@ -107,9 +102,10 @@ public class MyTabPageIndicator extends HorizontalScrollView implements PageIndi
         setFillViewport(lockedExpanded);
 
         final int childCount = mTabLayout.getChildCount();
-        if (childCount > 1 && (widthMode == MeasureSpec.EXACTLY || widthMode == MeasureSpec.AT_MOST)) {
+        if (childCount > 1
+                && (widthMode == MeasureSpec.EXACTLY || widthMode == MeasureSpec.AT_MOST)) {
             if (childCount > 2) {
-                mMaxTabWidth = (int)(MeasureSpec.getSize(widthMeasureSpec) * 0.4f);
+                mMaxTabWidth = (int) (MeasureSpec.getSize(widthMeasureSpec) * 0.4f);
             } else {
                 mMaxTabWidth = MeasureSpec.getSize(widthMeasureSpec) / 2;
             }
@@ -133,6 +129,7 @@ public class MyTabPageIndicator extends HorizontalScrollView implements PageIndi
             removeCallbacks(mTabSelector);
         }
         mTabSelector = new Runnable() {
+            @Override
             public void run() {
                 final int scrollPos = tabView.getLeft() - (getWidth() - tabView.getWidth()) / 2;
                 smoothScrollTo(scrollPos, 0);
@@ -212,12 +209,13 @@ public class MyTabPageIndicator extends HorizontalScrollView implements PageIndi
         notifyDataSetChanged();
     }
 
+    @Override
     public void notifyDataSetChanged() {
         mTabLayout.removeAllViews();
         PagerAdapter adapter = mViewPager.getAdapter();
         IconPagerAdapter iconAdapter = null;
         if (adapter instanceof IconPagerAdapter) {
-            iconAdapter = (IconPagerAdapter)adapter;
+            iconAdapter = (IconPagerAdapter) adapter;
         }
         final int count = adapter.getCount();
         for (int i = 0; i < count; i++) {
@@ -262,10 +260,9 @@ public class MyTabPageIndicator extends HorizontalScrollView implements PageIndi
             }
         }
     }
-    
-    public void setSelectAll(Boolean selectAll)
-    {
-    	selectAllHack = selectAll;
+
+    public void setSelectAll(Boolean selectAll) {
+        selectAllHack = selectAll;
     }
 
     @Override

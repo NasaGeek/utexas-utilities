@@ -1,3 +1,4 @@
+
 package com.nasageek.utexasutilities;
 
 import android.content.Context;
@@ -5,13 +6,13 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.SlidingDrawer;
 
-
 public class WrappingSlidingDrawer extends SlidingDrawer {
 
     public WrappingSlidingDrawer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        int orientation = attrs.getAttributeIntValue("android", "orientation", ORIENTATION_VERTICAL);
+        int orientation = attrs
+                .getAttributeIntValue("android", "orientation", ORIENTATION_VERTICAL);
         mTopOffset = attrs.getAttributeIntValue("android", "topOffset", 0);
         mVertical = (orientation == SlidingDrawer.ORIENTATION_VERTICAL);
     }
@@ -19,7 +20,8 @@ public class WrappingSlidingDrawer extends SlidingDrawer {
     public WrappingSlidingDrawer(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        int orientation = attrs.getAttributeIntValue("android", "orientation", ORIENTATION_VERTICAL);
+        int orientation = attrs
+                .getAttributeIntValue("android", "orientation", ORIENTATION_VERTICAL);
         mTopOffset = attrs.getAttributeIntValue("android", "topOffset", 0);
         mVertical = (orientation == SlidingDrawer.ORIENTATION_VERTICAL);
     }
@@ -28,10 +30,10 @@ public class WrappingSlidingDrawer extends SlidingDrawer {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
         int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
-        int widthSpecSize =  MeasureSpec.getSize(widthMeasureSpec);
+        int widthSpecSize = MeasureSpec.getSize(widthMeasureSpec);
 
         int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSpecSize =  MeasureSpec.getSize(heightMeasureSpec);
+        int heightSpecSize = MeasureSpec.getSize(heightMeasureSpec);
 
         if (widthSpecMode == MeasureSpec.UNSPECIFIED || heightSpecMode == MeasureSpec.UNSPECIFIED) {
             throw new RuntimeException("SlidingDrawer cannot have UNSPECIFIED dimensions");
@@ -46,18 +48,23 @@ public class WrappingSlidingDrawer extends SlidingDrawer {
             content.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(height, heightSpecMode));
             heightSpecSize = handle.getMeasuredHeight() + mTopOffset + content.getMeasuredHeight();
             widthSpecSize = content.getMeasuredWidth();
-            if (handle.getMeasuredWidth() > widthSpecSize) widthSpecSize = handle.getMeasuredWidth();
-        }
-        else {
+            if (handle.getMeasuredWidth() > widthSpecSize) {
+                widthSpecSize = handle.getMeasuredWidth();
+            }
+        } else {
             int width = widthSpecSize - handle.getMeasuredWidth() - mTopOffset;
-            getContent().measure(MeasureSpec.makeMeasureSpec(width, widthSpecMode), heightMeasureSpec);
+            getContent().measure(MeasureSpec.makeMeasureSpec(width, widthSpecMode),
+                    heightMeasureSpec);
             widthSpecSize = handle.getMeasuredWidth() + mTopOffset + content.getMeasuredWidth();
             heightSpecSize = content.getMeasuredHeight();
-            if (handle.getMeasuredHeight() > heightSpecSize) heightSpecSize = handle.getMeasuredHeight();
+            if (handle.getMeasuredHeight() > heightSpecSize) {
+                heightSpecSize = handle.getMeasuredHeight();
+            }
         }
 
         setMeasuredDimension(widthSpecSize, heightSpecSize);
     }
+
     private boolean mVertical;
     private int mTopOffset;
 }
