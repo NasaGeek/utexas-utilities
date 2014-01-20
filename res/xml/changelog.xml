@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="1.99.4" versioncode="31">
+        <change>Update changed bus routes and stops</change>
+        <change>Hopefully fixed common bug when restoring suspended app</change>
+        <change>Other bug fixes</change>
+    </release>
 	<release version="1.99.3" versioncode="28">
         <change>Switched to ACRA for bug reporting</change>
         <change>Fixed bug with downloading files</change>
