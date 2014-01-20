@@ -150,10 +150,11 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 					lastScrolling = oldFirstFinger.x - firstFinger.x;
 					scroll(lastScrolling);
 					lastZooming = (firstFinger.y - oldFirstFinger.y) / graph.getHeight();
-					if (lastZooming < 0)
+					if (lastZooming < 0) {
 						lastZooming = 1 / (1 - lastZooming);
-					else
+					} else {
 						lastZooming += 1;
+					}
 					zoom(lastZooming);
 
 					graph.redraw();
@@ -200,18 +201,19 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 	
 	private void checkBoundaries() {
 		//Make sure the proposed domain boundaries will not cause plotting issues
-		if (minXY.x < absMinX  || ((Double)minXY.x).equals(Double.NaN))
+		if (minXY.x < absMinX  || ((Double)minXY.x).equals(Double.NaN)) {
 			minXY.x = absMinX;
-		else if (minXY.x > maxNoError)
+		} else if (minXY.x > maxNoError) {
 			minXY.x = maxNoError;
-		if (maxXY.x > absMaxX ||  ((Double)maxXY.x).equals(Double.NaN))
+		} if (maxXY.x > absMaxX ||  ((Double)maxXY.x).equals(Double.NaN)) {
 			maxXY.x = absMaxX;
-		else if (maxXY.x < minNoError)
+		} else if (maxXY.x < minNoError) {
 			maxXY.x = minNoError;
-		if (maxXY.x - minXY.x < minDif)
+		} if (maxXY.x - minXY.x < minDif) {
 			maxXY.x = maxXY.x + (double) (minDif - (maxXY.x - minXY.x));
-		else if (maxXY.x - minXY.x > maxDif)
+		} else if (maxXY.x - minXY.x > maxDif) {
 			maxXY.x = maxXY.x + (double) (maxDif - (maxXY.x - minXY.x));
+		}
 		graph.setDomainBoundaries(minXY.x, maxXY.x, BoundaryMode.FIXED);
 	}
 	private class fetchProgressTask extends AsyncTask<Object,Void,Void> {
@@ -239,16 +241,17 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 			Pattern percentpattern = Pattern.compile("\\((.+?)%\\)");
 	    	Matcher percentmatcher = percentpattern.matcher(pagedata);
 	    	String found = "0.00";
-			if(percentmatcher.find())
+			if(percentmatcher.find()) {
 				found = percentmatcher.group(1);
+	        }
 			percentused = Double.parseDouble(found);
 			
 			Pattern usedpattern = Pattern.compile("<b>(.*?)</b>");
 	    	Matcher usedmatcher = usedpattern.matcher(pagedata);
-	    	usedText="UTilities could not find your % data usage";
-			if(usedmatcher.find())
+	    	usedText = "UTilities could not find your % data usage";
+			if(usedmatcher.find()) {
 				usedText = usedmatcher.group(1);
-			
+			}
 			return null;
 		}
 		@Override
@@ -277,9 +280,9 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 			HttpGet hget = null;
 			Pattern authidpattern = Pattern.compile("(?<=%20)\\d+");
 	    	Matcher authidmatcher = authidpattern.matcher(client.getCookieStore().getCookies().get(0).getValue());
-			if(authidmatcher.find())
+			if(authidmatcher.find()) {
 				hget = new HttpGet("https://management.pna.utexas.edu/server/get-bw-graph-data.cgi?authid="+authidmatcher.group());
-			else {
+		    } else {
 				cancel(true);
 				errorMsg = "UTilities could not fetch your data usage"; 
 				Log.d(DataUsageActivity.class.getSimpleName(), "No authid found");
@@ -317,14 +320,12 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 		    				Integer.parseInt(entry[0].split("/| ")[2]),
 		    				Integer.parseInt(entry[0].split(" |:")[1]),
 		    				Integer.parseInt(entry[0].split(" |:")[2]));
-	    		}
-	    		catch(NumberFormatException nfe) {
+	    		} catch(NumberFormatException nfe) {
 	    			cancel(true);
 					errorMsg = "UTilities could not fetch your data usage"; 
 					nfe.printStackTrace();
 					return ' ';
-	    		}
-	    		catch(ArrayIndexOutOfBoundsException aibe) {
+	    		} catch(ArrayIndexOutOfBoundsException aibe) {
 	    			errorMsg = "UTilities could not parse your data usage";
 	    			ex = aibe;
 	    			StringBuilder data = new StringBuilder();
@@ -438,6 +439,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
     		if(showButton) deb.setVisibility(View.VISIBLE);
 		}
 	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
