@@ -39,7 +39,7 @@ public class BuildingDatabase extends SQLiteOpenHelper {
 	        KEY_SUGGEST_COLUMN_INTENT_DATA + " TEXT NOT NULL);";
 	
 	public BuildingDatabase(Context con) {
-		super(con, TABLE_NAME, null, 1);
+		super(con, DB_NAME, null, 1);
 		mContext = con;
 	}
 
@@ -49,27 +49,20 @@ public class BuildingDatabase extends SQLiteOpenHelper {
     	
 		boolean dbExist = checkDataBase();
  
-    	if(dbExist){
+    	if(dbExist) {
     		Log.d("Building DB","Building db already exists");
-    		//do nothing - database already exist
-    	}else{
- 
-    			//By calling this method and empty database will be created into the default system path
+    		//do nothing - database already exists
+    	} else {
+    		   //By calling this method an empty database will be created into the default system path
                //of your application so we are gonna be able to overwrite that database with our database.
     			this.getReadableDatabase();
- 
         	try {
- 
     			copyDataBase();
     			Log.d("Building DB","New building DB copied");
- 
     		} catch (IOException e) {
- 
         		throw new Error("Error copying building database");
- 
         	}
     	}
- 
     }
 	private void copyDataBase() throws IOException{
 		 
@@ -110,20 +103,18 @@ public class BuildingDatabase extends SQLiteOpenHelper {
  
     	SQLiteDatabase checkDB = null;
  
-    	try{
+    	try {
     		String myPath = DB_PATH + DB_NAME;
     		checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
  
-    	}catch(SQLiteException e){
+    	} catch(SQLiteException e) {
  
     		//database does't exist yet.
  
     	}
  
     	if(checkDB != null){
- 
     		checkDB.close();
- 
     	}
  
     	return checkDB != null ? true : false;
@@ -137,11 +128,9 @@ public class BuildingDatabase extends SQLiteOpenHelper {
 	public void addBuilding(ContentValues cal)//String id, String name, String lat, String lon)
 	{
 		new openDbTask(cal).execute();
-	
 	}
 	public Cursor query(String tablename, String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy)
-	{
-		
+	{	
 		SQLiteCursor c =  (SQLiteCursor) getReadableDatabase().query(tablename, columns,KEY_SUGGEST_COLUMN_TEXT_1+" LIKE '%"+selection+"%' OR "+KEY_SUGGEST_COLUMN_TEXT_2+" LIKE '%"+selection+"%'",selectionArgs, groupBy, having,orderBy);
 		c.moveToFirst();
 		 return c;

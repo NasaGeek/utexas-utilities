@@ -40,7 +40,7 @@ public class BuildingProvider extends ContentProvider {
 		//V1 Initial building list
 		//V2 Added all garages, Belo, a few dorms I missed.  Should be the entire official building list now
 		//V3 CLA - Liberal Arts Building
-		//V2 POB, GDC - POB is ACES but renamed, leave them both in there
+		//V4 POB, GDC - POB is ACES but renamed, leave them both in there
 		
 		if(PreferenceManager.getDefaultSharedPreferences(this.getContext()).getInt("buildingdbversion",1) < 4)
     	{
