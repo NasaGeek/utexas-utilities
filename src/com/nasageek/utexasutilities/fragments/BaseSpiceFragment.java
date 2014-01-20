@@ -1,3 +1,4 @@
+
 package com.nasageek.utexasutilities.fragments;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -8,20 +9,20 @@ import com.octo.android.robospice.SpiceManager;
 public class BaseSpiceFragment extends SherlockFragment {
 
     private MySpiceManager spiceManager = new MySpiceManager(CanvasRetrofitSpiceService.class);
-    
+
     @Override
     public void onStart() {
-    	super.onStart();
-    	spiceManager.start(getSherlockActivity());
+        super.onStart();
+        spiceManager.start(getSherlockActivity());
     }
-    
+
     @Override
     public void onStop() {
-    	spiceManager.shouldStop();
-    	super.onStop();
+        spiceManager.shouldStop();
+        super.onStop();
     }
-    
+
     protected SpiceManager getSpiceManager() {
-    	return spiceManager;
+        return spiceManager;
     }
 }

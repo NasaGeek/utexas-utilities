@@ -1,9 +1,5 @@
-package com.nasageek.utexasutilities.retrofit;
 
-import com.nasageek.utexasutilities.model.canvas.Assignment;
-import com.nasageek.utexasutilities.model.canvas.CanvasCourse;
-import com.nasageek.utexasutilities.model.canvas.File;
-import com.nasageek.utexasutilities.model.canvas.OAuthResponse;
+package com.nasageek.utexasutilities.retrofit;
 
 import retrofit.Callback;
 import retrofit.http.DELETE;
@@ -14,28 +10,50 @@ import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.Path;
 
+import com.nasageek.utexasutilities.model.canvas.Assignment;
+import com.nasageek.utexasutilities.model.canvas.CanvasCourse;
+import com.nasageek.utexasutilities.model.canvas.File;
+import com.nasageek.utexasutilities.model.canvas.OAuthResponse;
+
 public interface Canvas {
 
-    @GET("/api/v1/courses?include[]=term")//hardcoded access token for chris 12~9LxMuYQfyNAM4qI3e9mdzxq7AkRTfwpgnX9D1ge5DUx3oaNcapoMwmDvibDXNkH9")
-    CanvasCourse.List courseList(@Header("Authorization") String canvas_auth_token);
-    
+    //@formatter:off
+
+    // hardcoded access token for chris
+    // 12~9LxMuYQfyNAM4qI3e9mdzxq7AkRTfwpgnX9D1ge5DUx3oaNcapoMwmDvibDXNkH9")
+    @GET("/api/v1/courses?include[]=term")
+    CanvasCourse.List courseList(
+        @Header("Authorization") String canvas_auth_token);
+
     @GET("/api/v1/courses/{course_id}/assignments?include[]=submission")
-    Assignment.List assignmentsForCourse(@Header("Authorization") String canvas_auth_token, @Path("course_id") String course_id);
-    
+    Assignment.List assignmentsForCourse(
+        @Header("Authorization") String canvas_auth_token, 
+        @Path("course_id") String course_id);
+
     @GET("/api/v1/courses/{course_id}/files")
-    File.List filesForCourse(@Header("Authorization") String canvas_auth_token, @Path("course_id") String course_id);
-    
+    File.List filesForCourse(
+        @Header("Authorization") String canvas_auth_token, 
+        @Path("course_id") String course_id);
+
     @GET("/api/v1/folder/{folder_id}/files")
-    File.List filesForFolder(@Header("Authorization") String canvas_auth_token, @Path("course_id") String folder_id);
-    
+    File.List filesForFolder(
+        @Header("Authorization") String canvas_auth_token, 
+        @Path("course_id") String folder_id);
+
     @GET("/api/v1/folder/{folder_id}/folders")
-    File.List foldersForFolder(@Header("Authorization") String canvas_auth_token, @Path("course_id") String folder_id);
-    
+    File.List foldersForFolder(
+        @Header("Authorization") String canvas_auth_token, 
+        @Path("course_id") String folder_id);
+
     @FormUrlEncoded
     @POST("/login/oauth2/token")
-    OAuthResponse postAuthCode(@Field("client_id") String client_id, @Field("client_secret") String client_secret,
-    				  @Field("redirect_uri") String redirect_uri, @Field("code") String code);
-    
+    OAuthResponse postAuthCode(
+        @Field("client_id") String client_id,
+        @Field("client_secret") String client_secret,
+        @Field("redirect_uri") String redirect_uri,
+        @Field("code")  String code);
+
     @DELETE("/login/oauth2/token")
-    void deauthorize(@Header("Authorization") String canvas_auth_token, Callback<Object> cb);
+    void deauthorize(
+        @Header("Authorization") String canvas_auth_token, Callback<Object> cb);
 }

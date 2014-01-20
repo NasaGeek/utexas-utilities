@@ -1,3 +1,4 @@
+
 package com.nasageek.utexasutilities;
 
 import com.nasageek.utexasutilities.retrofit.Canvas;
@@ -8,9 +9,9 @@ public class CanvasRetrofitSpiceService extends RetrofitGsonSpiceService {
     private final static String BASE_URL = "https://utexas.instructure.com";
 
     public CanvasRetrofitSpiceService() {
-    	
+
     }
-    
+
     @Override
     public void onCreate() {
         super.onCreate();

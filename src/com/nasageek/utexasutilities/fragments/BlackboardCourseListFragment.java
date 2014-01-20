@@ -1,3 +1,4 @@
+
 package com.nasageek.utexasutilities.fragments;
 
 import java.io.Serializable;
@@ -47,267 +48,299 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 public class BlackboardCourseListFragment extends BaseSpiceFragment {
-	
-	private DefaultHttpClient httpclient;
-	private LinearLayout bb_pb_ll;
-	private TextView bbetv;
-	private LinearLayout bbell;
-	private Button bbeb;
-	
-	private AmazingListView bblv;
-	private ArrayList<Course> classList;
-	private List<MyPair<String, List<Course>>> classSectionList;
-	private fetchClassesTask fetch;	
-//	private ArrayList<ParcelableMyPair<String, ArrayList<BBClass>>> classes;
-	private BBClassAdapter classAdapter;
-	private CanvasCourseListRequest canvasCourseListRequest;
-	
-	public BlackboardCourseListFragment() {}
-	
-	public static BlackboardCourseListFragment newInstance(String title) {
-		BlackboardCourseListFragment f = new BlackboardCourseListFragment();
-		Bundle args = new Bundle();
-		args.putString("title", title);
-		f.setArguments(args);
-		
-		return f;
-	}
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-    	classList = new ArrayList<Course>();
-    	
-    	canvasCourseListRequest = new CanvasCourseListRequest(ConnectionHelper.getCanvasAuthCookie(getActivity()));
-    	if(savedInstanceState == null)
-    		classSectionList = new ArrayList<MyPair<String, List<Course>>>();
-    	else
-    		classSectionList = (ArrayList<MyPair<String, List<Course>>>) savedInstanceState.getSerializable("classSectionList");
-		
-		httpclient = ConnectionHelper.getThreadSafeClient();
-		httpclient.getCookieStore().clear();
-		BasicClientCookie cookie = new BasicClientCookie("s_session_id", ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient));
-    	cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
-    	httpclient.getCookieStore().addCookie(cookie);
-    	
-    	classAdapter = new BBClassAdapter(getActivity(), classSectionList);
-	}
 
-	
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {	
-		View vg = inflater.inflate(R.layout.blackboard_courselist_fragment, container, false);
+    private DefaultHttpClient httpclient;
+    private LinearLayout bb_pb_ll;
+    private TextView bbetv;
+    private LinearLayout bbell;
+    private Button bbeb;
 
-    	bb_pb_ll = (LinearLayout) vg.findViewById(R.id.blackboard_progressbar_ll);
-    	bblv = (AmazingListView) vg.findViewById(R.id.blackboard_class_listview);
-    	
-    	bbell = (LinearLayout) vg.findViewById (R.id.blackboard_error);
-    	bbetv = (TextView) vg.findViewById(R.id.tv_failure);
-    	bbeb = (Button) vg.findViewById(R.id.button_send_data);
-    			
-		bblv.setAdapter(classAdapter);
-		bblv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(R.layout.menu_header_item_view, bblv, false));		
-		bblv.setOnItemClickListener(new OnItemClickListener() {
-			
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position,
-					long id) {
-				//TODO: figure out course id stuff here
-				Course course = (Course)(parent.getItemAtPosition(position));
-				String type = course.getType();
-		
-				SherlockFragmentActivity act = getSherlockActivity();
-				Fragment topFragment = null;
-				if(act != null && act instanceof PanesActivity) {	
-					topFragment = ((PanesActivity)act).getTopFragment();
-					//we're on a tablet, PanesActivity acts a bit odd with them
-					if(((PanesActivity)act).getMenuFragment() == topFragment)
-						topFragment = null;
-				}
-				//don't re-add the current displayed course, instead just show it
-				if(act != null && act instanceof FragmentLauncher) {	
-					if(type.equals("blackboard")) {
-						BBCourse bbclass = (BBCourse)course;
-						/*if(topFragment == null || 
-						  (topFragment != null && topFragment instanceof BlackboardFragment && 
-						  (!((BlackboardFragment)topFragment).getBbid().equals(bbclass.getId())) || ((BlackboardFragment)topFragment).isFromDashboard()))
-						{*/	((FragmentLauncher)act).addFragment(BlackboardCourseListFragment.this.getParentFragment(), 					
-									BlackboardCourseMapFragment.newInstance(getString(R.string.coursemap_intent), null, bbclass.getId(), bbclass.getCourseCode(), "Course Map", "", -1, false));
-															
-					/*	}
-						else if(act instanceof PanesActivity)
-							((PanesActivity) act).showContent();*/
-					} else if(type.equals("canvas")) {
-						CanvasCourse ccourse = (CanvasCourse)course;
-						//launch canvas coursemap
-						((FragmentLauncher)act).addFragment(BlackboardCourseListFragment.this.getParentFragment(), 					
-								CanvasCourseMapFragment.newInstance(ccourse.getId(), ccourse.getName(), ccourse.getCourseCode()));
-							
-					}
-				}		
-			}
-		});
-		
-		//where to callll, also, helper?  -  helper for what? shit I don't remember writing this...
-		if(classSectionList.size() == 0) {
-	    	fetch = new fetchClassesTask(httpclient);
-	    	
-	    	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-			else
-				fetch.execute();  	
-    	}
-		return vg;
-	}
-	
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putSerializable("classSectionList", (Serializable) classSectionList);
-	}
+    private AmazingListView bblv;
+    private ArrayList<Course> classList;
+    private List<MyPair<String, List<Course>>> classSectionList;
+    private fetchClassesTask fetch;
+    // private ArrayList<ParcelableMyPair<String, ArrayList<BBClass>>> classes;
+    private BBClassAdapter classAdapter;
+    private CanvasCourseListRequest canvasCourseListRequest;
 
-	public final class CanvasCourseListRequestListener implements RequestListener<CanvasCourse.List> {
+    public BlackboardCourseListFragment() {
+    }
+
+    public static BlackboardCourseListFragment newInstance(String title) {
+        BlackboardCourseListFragment f = new BlackboardCourseListFragment();
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        f.setArguments(args);
+
+        return f;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        classList = new ArrayList<Course>();
+
+        canvasCourseListRequest = new CanvasCourseListRequest(
+                ConnectionHelper.getCanvasAuthCookie(getActivity()));
+        if (savedInstanceState == null) {
+            classSectionList = new ArrayList<MyPair<String, List<Course>>>();
+        } else {
+            classSectionList = (ArrayList<MyPair<String, List<Course>>>) savedInstanceState
+                    .getSerializable("classSectionList");
+        }
+
+        httpclient = ConnectionHelper.getThreadSafeClient();
+        httpclient.getCookieStore().clear();
+        BasicClientCookie cookie = new BasicClientCookie("s_session_id",
+                ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient));
+        cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
+        httpclient.getCookieStore().addCookie(cookie);
+
+        classAdapter = new BBClassAdapter(getActivity(), classSectionList);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View vg = inflater.inflate(R.layout.blackboard_courselist_fragment, container, false);
+
+        bb_pb_ll = (LinearLayout) vg.findViewById(R.id.blackboard_progressbar_ll);
+        bblv = (AmazingListView) vg.findViewById(R.id.blackboard_class_listview);
+
+        bbell = (LinearLayout) vg.findViewById(R.id.blackboard_error);
+        bbetv = (TextView) vg.findViewById(R.id.tv_failure);
+        bbeb = (Button) vg.findViewById(R.id.button_send_data);
+
+        bblv.setAdapter(classAdapter);
+        bblv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(
+                R.layout.menu_header_item_view, bblv, false));
+        bblv.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // TODO: figure out course id stuff here
+                Course course = (Course) (parent.getItemAtPosition(position));
+                String type = course.getType();
+
+                SherlockFragmentActivity act = getSherlockActivity();
+                Fragment topFragment = null;
+                if (act != null && act instanceof PanesActivity) {
+                    topFragment = ((PanesActivity) act).getTopFragment();
+                    // we're on a tablet, PanesActivity acts a bit odd with them
+                    if (((PanesActivity) act).getMenuFragment() == topFragment) {
+                        topFragment = null;
+                    }
+                }
+                // don't re-add the current displayed course, instead just show
+                // it
+                if (act != null && act instanceof FragmentLauncher) {
+                    if (type.equals("blackboard")) {
+                        BBCourse bbclass = (BBCourse) course;
+                        /*
+                         * if(topFragment == null || (topFragment != null &&
+                         * topFragment instanceof BlackboardFragment &&
+                         * (!((BlackboardFragment
+                         * )topFragment).getBbid().equals(bbclass.getId())) ||
+                         * ((BlackboardFragment)topFragment).isFromDashboard()))
+                         * {
+                         */((FragmentLauncher) act).addFragment(BlackboardCourseListFragment.this
+                                .getParentFragment(), BlackboardCourseMapFragment.newInstance(
+                                getString(R.string.coursemap_intent), null, bbclass.getId(),
+                                bbclass.getCourseCode(), "Course Map", "", -1, false));
+
+                        /*
+                         * } else if(act instanceof PanesActivity)
+                         * ((PanesActivity) act).showContent();
+                         */
+                    } else if (type.equals("canvas")) {
+                        CanvasCourse ccourse = (CanvasCourse) course;
+                        // launch canvas coursemap
+                        ((FragmentLauncher) act).addFragment(
+                                BlackboardCourseListFragment.this.getParentFragment(),
+                                CanvasCourseMapFragment.newInstance(ccourse.getId(),
+                                        ccourse.getName(), ccourse.getCourseCode()));
+
+                    }
+                }
+            }
+        });
+
+        // where to callll, also, helper? - helper for what? shit I don't
+        // remember writing this...
+        if (classSectionList.size() == 0) {
+            fetch = new fetchClassesTask(httpclient);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                fetch.execute();
+            }
+        }
+        return vg;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("classSectionList", (Serializable) classSectionList);
+    }
+
+    public final class CanvasCourseListRequestListener implements
+            RequestListener<CanvasCourse.List> {
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             Toast.makeText(getSherlockActivity(), "failure", Toast.LENGTH_SHORT).show();
-            //if request was unauthorized, token's probably bad
-            if(((RetrofitError)spiceException.getCause()).getResponse().getStatus() == 401) {
-            	ConnectionHelper.resetCanvasAuthToken(getActivity());
+            // if request was unauthorized, token's probably bad
+            if (((RetrofitError) spiceException.getCause()).getResponse().getStatus() == 401) {
+                ConnectionHelper.resetCanvasAuthToken(getActivity());
             }
-			bb_pb_ll.setVisibility(View.GONE);
-			bbell.setVisibility(View.GONE);
-			bblv.setVisibility(View.VISIBLE);
+            bb_pb_ll.setVisibility(View.GONE);
+            bbell.setVisibility(View.GONE);
+            bblv.setVisibility(View.VISIBLE);
         }
 
         @Override
         public void onRequestSuccess(final CanvasCourse.List result) {
             int i = 0;
-            
+
             Collections.reverse(result);
-            //classSectionList guaranteed to be populated, this supposes the two lists are ordered the same
-            //in this case most recent to least
-            for(int j = 0; j < classSectionList.size(); j++) {
-	        	while(i < result.size() && result.get(i).getTermName().equals(classSectionList.get(j).first)) {
-	        		classSectionList.get(j).second.add(result.get(i));
-	        		i++;
-	        	}
-	        	if(j == classSectionList.size() - 1) {
-	        		classSectionList.get(j).second.addAll(result.subList(i, result.size()));
-	        	}
+            // classSectionList guaranteed to be populated, this supposes the
+            // two lists are ordered the same
+            // in this case most recent to least
+            for (int j = 0; j < classSectionList.size(); j++) {
+                while (i < result.size()
+                        && result.get(i).getTermName().equals(classSectionList.get(j).first)) {
+                    classSectionList.get(j).second.add(result.get(i));
+                    i++;
+                }
+                if (j == classSectionList.size() - 1) {
+                    classSectionList.get(j).second.addAll(result.subList(i, result.size()));
+                }
             }
-			classAdapter.notifyDataSetChanged();
-			bb_pb_ll.setVisibility(View.GONE);
-			bbell.setVisibility(View.GONE);
-			bblv.setVisibility(View.VISIBLE);
+            classAdapter.notifyDataSetChanged();
+            bb_pb_ll.setVisibility(View.GONE);
+            bbell.setVisibility(View.GONE);
+            bblv.setVisibility(View.VISIBLE);
         }
     }
-	
-	private class fetchClassesTask extends AsyncTask<Object, Void, ArrayList<MyPair<String, List<Course>>>> {		private DefaultHttpClient client;
-		private String errorMsg;
-		private Exception ex;
-		private String pagedata;
-		
-		public fetchClassesTask(DefaultHttpClient client) {
-			this.client = client;
-		}
-		
-		@Override
-		protected void onPreExecute() {
-			bb_pb_ll.setVisibility(View.VISIBLE);
-			bbell.setVisibility(View.GONE);
-    		bblv.setVisibility(View.GONE);
-		}
-		
-		@Override
-		protected ArrayList<MyPair<String, List<Course>>> doInBackground(Object... params) {			HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
-	    	String pagedata = "";
 
-	    	try {
-				HttpResponse response = client.execute(hget);
-		    	pagedata = EntityUtils.toString(response.getEntity());
-			} catch (Exception e) {
-				errorMsg = "UTilities could not fetch the Blackboard course list";
-				e.printStackTrace();
-				cancel(true);
-				return null;
-			}
+    private class fetchClassesTask extends
+            AsyncTask<Object, Void, ArrayList<MyPair<String, List<Course>>>> {
+        private DefaultHttpClient client;
+        private String errorMsg;
+        private Exception ex;
+        private String pagedata;
 
-	    	Pattern class_pattern = Pattern.compile("bbid=\"(.*?)\" name=\"(.*?)\" courseid=\"(.*?)\"");
-	    	Matcher class_matcher = class_pattern.matcher(pagedata);
-	    	
-	    	while(class_matcher.find()) {
-	    		classList.add(new BBCourse(class_matcher.group(2).replace("&amp;","&"),class_matcher.group(1).replace("&amp;","&"),class_matcher.group(3)));	
-	    	}	    	
-	    	//build the sectioned list now
-	    	String currentCategory = "";
-    		ArrayList<Course> sectionList = null;
-			ArrayList<MyPair<String, List<Course>>> tempClassSectionList = new ArrayList<MyPair<String, List<Course>>>();
+        public fetchClassesTask(DefaultHttpClient client) {
+            this.client = client;
+        }
 
-			for(int i = 0; i < classList.size(); i++) {
-    			//first course is always in a new category (the first category)
-				if(i == 0) {	
-    				currentCategory = classList.get(i).getTermName();
-    				sectionList = new ArrayList<Course>();
-    				sectionList.add(classList.get(i));
-    			}
-				//if the current course is not part of the current category or we're on the last course
-				//weird stuff going on here depending on if we're at the end of the course list
-    			else if(!classList.get(i).getTermName().equals(currentCategory) || i == classList.size() - 1) {
-    				
-    				if(i == classList.size() - 1)
-    					sectionList.add(classList.get(i));
-    					
-    				tempClassSectionList.add(new MyPair<String, List<Course>>(currentCategory, sectionList));
-    				
-    				currentCategory = classList.get(i).getTermName();
-    				sectionList= new ArrayList<Course>();
-    				
-    				if(i != classList.size() - 1)
-    					sectionList.add(classList.get(i));
-    			}
-				//otherwise just add to the current category
-    			else {
-    				sectionList.add(classList.get(i));
-    			}  			
-    		}
-    		Collections.reverse(tempClassSectionList);
-    		//TODO: implement sorting of classes so BB's ordering won't matter
-    		/*Collections.sort(tempClassSectionList, new Comparator<MyPair<String, List<BBClass>>>() {
+        @Override
+        protected void onPreExecute() {
+            bb_pb_ll.setVisibility(View.VISIBLE);
+            bbell.setVisibility(View.GONE);
+            bblv.setVisibility(View.GONE);
+        }
 
-				@Override
-				public int compare(ParcelableMyPair<String, List<BBClass>> lhs,
-						ParcelableMyPair<String, List<BBClass>> rhs) {
-					return -lhs.first.compareTo(rhs.first);
-				}
-			});*/
-			return tempClassSectionList;
-		}
-		@Override
-		protected void onPostExecute(ArrayList<MyPair<String, List<Course>>> result) {	    		
-			classSectionList.addAll(result);
-			classAdapter.notifyDataSetChanged();
-			//TODO: learn to thread properly :(
-			getSpiceManager().execute(canvasCourseListRequest, "courses", DurationInMillis.ONE_MINUTE * 5, new CanvasCourseListRequestListener());
-			
-			
-				
-		}
-		@Override
-		protected void onCancelled() {
-			bbetv.setText(errorMsg);
-			bb_pb_ll.setVisibility(View.GONE);
-			bbell.setVisibility(View.VISIBLE);
-    		bblv.setVisibility(View.GONE);
-		}
-	}
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		if(fetch != null)
-			fetch.cancel(true);
-	}
+        @Override
+        protected ArrayList<MyPair<String, List<Course>>> doInBackground(Object... params) {
+            HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain
+                    + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
+            String pagedata = "";
+
+            try {
+                HttpResponse response = client.execute(hget);
+                pagedata = EntityUtils.toString(response.getEntity());
+            } catch (Exception e) {
+                errorMsg = "UTilities could not fetch the Blackboard course list";
+                e.printStackTrace();
+                cancel(true);
+                return null;
+            }
+
+            Pattern class_pattern = Pattern
+                    .compile("bbid=\"(.*?)\" name=\"(.*?)\" courseid=\"(.*?)\"");
+            Matcher class_matcher = class_pattern.matcher(pagedata);
+
+            while (class_matcher.find()) {
+                classList.add(new BBCourse(class_matcher.group(2).replace("&amp;", "&"),
+                        class_matcher.group(1).replace("&amp;", "&"), class_matcher.group(3)));
+            }
+            // build the sectioned list now
+            String currentCategory = "";
+            ArrayList<Course> sectionList = null;
+            ArrayList<MyPair<String, List<Course>>> tempClassSectionList = new ArrayList<MyPair<String, List<Course>>>();
+
+            for (int i = 0; i < classList.size(); i++) {
+                // first course is always in a new category (the first category)
+                if (i == 0) {
+                    currentCategory = classList.get(i).getTermName();
+                    sectionList = new ArrayList<Course>();
+                    sectionList.add(classList.get(i));
+                }
+                // if the current course is not part of the current category or
+                // we're on the last course
+                // weird stuff going on here depending on if we're at the end of
+                // the course list
+                else if (!classList.get(i).getTermName().equals(currentCategory)
+                        || i == classList.size() - 1) {
+
+                    if (i == classList.size() - 1) {
+                        sectionList.add(classList.get(i));
+                    }
+
+                    tempClassSectionList.add(new MyPair<String, List<Course>>(currentCategory,
+                            sectionList));
+
+                    currentCategory = classList.get(i).getTermName();
+                    sectionList = new ArrayList<Course>();
+
+                    if (i != classList.size() - 1) {
+                        sectionList.add(classList.get(i));
+                    }
+                }
+                // otherwise just add to the current category
+                else {
+                    sectionList.add(classList.get(i));
+                }
+            }
+            Collections.reverse(tempClassSectionList);
+            // TODO: implement sorting of classes so BB's ordering won't matter
+            /*
+             * Collections.sort(tempClassSectionList, new
+             * Comparator<MyPair<String, List<BBClass>>>() {
+             * @Override public int compare(ParcelableMyPair<String,
+             * List<BBClass>> lhs, ParcelableMyPair<String, List<BBClass>> rhs)
+             * { return -lhs.first.compareTo(rhs.first); } });
+             */
+            return tempClassSectionList;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<MyPair<String, List<Course>>> result) {
+            classSectionList.addAll(result);
+            classAdapter.notifyDataSetChanged();
+            // TODO: learn to thread properly :(
+            getSpiceManager().execute(canvasCourseListRequest, "courses",
+                    DurationInMillis.ONE_MINUTE * 5, new CanvasCourseListRequestListener());
+
+        }
+
+        @Override
+        protected void onCancelled() {
+            bbetv.setText(errorMsg);
+            bb_pb_ll.setVisibility(View.GONE);
+            bbell.setVisibility(View.VISIBLE);
+            bblv.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (fetch != null) {
+            fetch.cancel(true);
+        }
+    }
 }
-
-

@@ -1,3 +1,4 @@
+
 package com.nasageek.utexasutilities;
 
 import java.io.BufferedInputStream;
@@ -26,56 +27,71 @@ import android.widget.Toast;
 @SuppressLint("NewApi")
 public class AttachmentDownloadService extends IntentService {
 
-	private Handler handler;
-	
-	public AttachmentDownloadService() {
-		super("AttachmentDownload");
-	}
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		
-		handler = new Handler();
-		return super.onStartCommand(intent, flags, startId);
-	}
-	@Override
-	protected void onHandleIntent(Intent intent) {
-		String urlToDownload = "";
-		String service = intent.getStringExtra("service");
-		if(service.equals("blackboard")) {
-			urlToDownload = ConnectionHelper.blackboard_domain + intent.getStringExtra("url");
-		} else if(service.equals("canvas")) {
-			urlToDownload = intent.getStringExtra("url");
-		} else {
-			throw new RuntimeException("You must pass either \"canvas\" or \"blackboard\" to Attachment" +
-					"DownloadService by putting an extra called \"service\" in the intent");
-		}
-		String fileName = intent.getStringExtra("fileName");
-		
-		NotificationCompat.Builder notbuild = new NotificationCompat.Builder(AttachmentDownloadService.this);
-		Notification n = notbuild.setContentIntent(PendingIntent.getActivity(this, 010, new Intent(), 0))
-		 .setOngoing(true)
-   	 	.setSmallIcon(android.R.drawable.stat_sys_download)
-        .setContentTitle(fileName)
-        .setContentText("Download in progress")
-        .setTicker("UTilities download started.")
-  // TODO:  .build(); really should do this, but don't want to break anything
-        .getNotification();
-        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(fileName,1123,n);
-		
+    private Handler handler;
+
+    public AttachmentDownloadService() {
+        super("AttachmentDownload");
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        handler = new Handler();
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        String urlToDownload = "";
+        String service = intent.getStringExtra("service");
+        if (service.equals("blackboard")) {
+            urlToDownload = ConnectionHelper.blackboard_domain + intent.getStringExtra("url");
+        } else if (service.equals("canvas")) {
+            urlToDownload = intent.getStringExtra("url");
+        } else {
+            throw new RuntimeException(
+                    "You must pass either \"canvas\" or \"blackboard\" to Attachment"
+                            + "DownloadService by putting an extra called \"service\" in the intent");
+        }
+        String fileName = intent.getStringExtra("fileName");
+
+        NotificationCompat.Builder notbuild = new NotificationCompat.Builder(
+                AttachmentDownloadService.this);
+        Notification n = notbuild
+                .setContentIntent(PendingIntent.getActivity(this, 010, new Intent(), 0))
+                .setOngoing(true).setSmallIcon(android.R.drawable.stat_sys_download)
+                .setContentTitle(fileName).setContentText("Download in progress")
+                .setTicker("UTilities download started.")
+                // TODO: .build(); really should do this, but don't want to
+                // break anything
+                .getNotification();
+        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(fileName,
+                1123, n);
+
         Uri dlLocation = null;
         try {
             URL url = new URL(urlToDownload);
-            
+
             URLConnection connection = url.openConnection();
-            connection.addRequestProperty("Cookie", "s_session_id="+ConnectionHelper.getBBAuthCookie(AttachmentDownloadService.this, ConnectionHelper.getThreadSafeClient()));
-            
-			if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ECLAIR_MR1) {
-				(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download")).mkdirs();
-				dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment.getExternalStorageDirectory()), "Download/" + fileName);
-			} else {
-				Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
-				dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)), fileName);
-			}
+            connection.addRequestProperty(
+                    "Cookie",
+                    "s_session_id="
+                            + ConnectionHelper.getBBAuthCookie(AttachmentDownloadService.this,
+                                    ConnectionHelper.getThreadSafeClient()));
+
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ECLAIR_MR1) {
+                (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download"))
+                        .mkdirs();
+                dlLocation = Uri.withAppendedPath(
+                        Uri.fromFile(Environment.getExternalStorageDirectory()), "Download/"
+                                + fileName);
+            } else {
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                        .mkdirs();
+                dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)),
+                        fileName);
+            }
             // download the file
             InputStream input = new BufferedInputStream(url.openStream());
 
@@ -91,31 +107,37 @@ public class AttachmentDownloadService extends IntentService {
             input.close();
         } catch (IOException e) {
             e.printStackTrace();
-            n = notbuild.setOngoing(false)
-            .setSmallIcon(android.R.drawable.stat_sys_download_done)
-            .setContentText("Download failed")
-            .setTicker("Download failed.")
-            // TODO:  .build(); really should do this, but don't want to break anything
-            .getNotification();
-            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(fileName, 1123, n);
+            n = notbuild.setOngoing(false).setSmallIcon(android.R.drawable.stat_sys_download_done)
+                    .setContentText("Download failed").setTicker("Download failed.")
+                    // TODO: .build(); really should do this, but don't want to
+                    // break anything
+                    .getNotification();
+            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(fileName,
+                    1123, n);
             return;
         }
 
-        if(new Intent(Intent.ACTION_VIEW, dlLocation).resolveActivity(getPackageManager()) == null) {	
-        	handler.post(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(getApplicationContext(), "You do not have any apps that can open this file; download one from the Play Store.", Toast.LENGTH_LONG).show();	
-				}	
-        	});
+        if (new Intent(Intent.ACTION_VIEW, dlLocation).resolveActivity(getPackageManager()) == null) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "You do not have any apps that can open this file; download one from the Play Store.",
+                            Toast.LENGTH_LONG).show();
+                }
+            });
         }
-        n = notbuild.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(Intent.ACTION_VIEW,dlLocation), 0))
-       	.setOngoing(false)
-       	.setSmallIcon(android.R.drawable.stat_sys_download_done)
-       	.setContentText("Download complete")
-        .setTicker("Download complete.")
-        // TODO:  .build(); really should do this, but don't want to break anything
-        .getNotification();
-       	((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(fileName, 1123, n);
+        n = notbuild
+                .setContentIntent(
+                        PendingIntent.getActivity(this, 0, new Intent(Intent.ACTION_VIEW,
+                                dlLocation), 0)).setOngoing(false)
+                .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                .setContentText("Download complete").setTicker("Download complete.")
+                // TODO: .build(); really should do this, but don't want to
+                // break anything
+                .getNotification();
+        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(fileName,
+                1123, n);
     }
 }

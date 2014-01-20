@@ -30,6 +30,7 @@
  *
  * http://code.google.com/p/android-change-log/
  */
+
 package com.nasageek.utexasutilities;
 
 import java.io.IOException;
@@ -54,8 +55,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.webkit.WebView;
-import com.nasageek.utexasutilities.R;
-
 
 /**
  * Display a dialog showing a full or partial (What's New) change log.
@@ -79,14 +78,12 @@ public class ChangeLog {
     /**
      * Default CSS styles used to format the change log.
      */
-    private static final String DEFAULT_CSS =
-            "h1 { margin-left: 0px; font-size: 1.2em;}" +
-            "li { margin-left: 0px;}" +
-            "ul { padding-left: 2em;}";
-
+    private static final String DEFAULT_CSS = "h1 { margin-left: 0px; font-size: 1.2em;}"
+            + "li { margin-left: 0px;}" + "ul { padding-left: 2em;}";
 
     /**
-     * Context that is used to access the resources and to create the ChangeLog dialogs.
+     * Context that is used to access the resources and to create the ChangeLog
+     * dialogs.
      */
     protected final Context mContext;
 
@@ -96,7 +93,8 @@ public class ChangeLog {
     protected final String mCss;
 
     /**
-     * Last version code read from {@code SharedPreferences} or {@link #NO_VERSION}.
+     * Last version code read from {@code SharedPreferences} or
+     * {@link #NO_VERSION}.
      */
     private int mLastVersionCode;
 
@@ -109,7 +107,6 @@ public class ChangeLog {
      * Version name of the current installation.
      */
     private String mCurrentVersionName;
-
 
     /**
      * Contains constants for the root element of {@code changelog.xml}.
@@ -135,38 +132,38 @@ public class ChangeLog {
     }
 
     /**
-     * Create a {@code ChangeLog} instance using the default {@link SharedPreferences} file.
-     *
-     * @param context
-     *         Context that is used to access the resources and to create the ChangeLog dialogs.
+     * Create a {@code ChangeLog} instance using the default
+     * {@link SharedPreferences} file.
+     * 
+     * @param context Context that is used to access the resources and to create
+     *            the ChangeLog dialogs.
      */
     public ChangeLog(Context context) {
         this(context, PreferenceManager.getDefaultSharedPreferences(context), DEFAULT_CSS);
     }
 
     /**
-     * Create a {@code ChangeLog} instance using the default {@link SharedPreferences} file.
-     *
-     * @param context
-     *         Context that is used to access the resources and to create the ChangeLog dialogs.
-     * @param css
-     *         CSS styles that will be used to format the change log.
+     * Create a {@code ChangeLog} instance using the default
+     * {@link SharedPreferences} file.
+     * 
+     * @param context Context that is used to access the resources and to create
+     *            the ChangeLog dialogs.
+     * @param css CSS styles that will be used to format the change log.
      */
     public ChangeLog(Context context, String css) {
         this(context, PreferenceManager.getDefaultSharedPreferences(context), css);
     }
 
     /**
-     * Create a {@code ChangeLog} instance using the supplied {@code SharedPreferences} instance.
-     *
-     * @param context
-     *         Context that is used to access the resources and to create the ChangeLog dialogs.
-     * @param preferences
-     *         {@code SharedPreferences} instance that is used to persist the last version code.
-     * @param css
-     *         CSS styles used to format the change log (excluding {@code <style>} and
-     *         {@code </style>}).
-     *
+     * Create a {@code ChangeLog} instance using the supplied
+     * {@code SharedPreferences} instance.
+     * 
+     * @param context Context that is used to access the resources and to create
+     *            the ChangeLog dialogs.
+     * @param preferences {@code SharedPreferences} instance that is used to
+     *            persist the last version code.
+     * @param css CSS styles used to format the change log (excluding
+     *            {@code <style>} and {@code </style>}).
      */
     public ChangeLog(Context context, SharedPreferences preferences, String css) {
         mContext = context;
@@ -190,12 +187,12 @@ public class ChangeLog {
 
     /**
      * Get version code of last installation.
-     *
-     * @return The version code of the last installation of this app (as described in the former
-     *         manifest). This will be the same as returned by {@link #getCurrentVersionCode()} the
-     *         second time this version of the app is launched (more precisely: the second time
+     * 
+     * @return The version code of the last installation of this app (as
+     *         described in the former manifest). This will be the same as
+     *         returned by {@link #getCurrentVersionCode()} the second time this
+     *         version of the app is launched (more precisely: the second time
      *         {@code ChangeLog} is instantiated).
-     *
      * @see AndroidManifest.xml#android:versionCode
      */
     public int getLastVersionCode() {
@@ -204,9 +201,8 @@ public class ChangeLog {
 
     /**
      * Get version code of current installation.
-     *
+     * 
      * @return The version code of this app as described in the manifest.
-     *
      * @see AndroidManifest.xml#android:versionCode
      */
     public int getCurrentVersionCode() {
@@ -215,9 +211,8 @@ public class ChangeLog {
 
     /**
      * Get version name of current installation.
-     *
+     * 
      * @return The version name of this app as described in the manifest.
-     *
      * @see AndroidManifest.xml#android:versionName
      */
     public String getCurrentVersionName() {
@@ -226,8 +221,9 @@ public class ChangeLog {
 
     /**
      * Check if this is the first execution of this app version.
-     *
-     * @return {@code true} if this version of your app is started the first time.
+     * 
+     * @return {@code true} if this version of your app is started the first
+     *         time.
      */
     public boolean isFirstRun() {
         return mLastVersionCode < mCurrentVersionCode;
@@ -235,9 +231,10 @@ public class ChangeLog {
 
     /**
      * Check if this is a new installation.
-     *
-     * @return {@code true} if your app including {@code ChangeLog} is started the first time ever.
-     *         Also {@code true} if your app was uninstalled and installed again.
+     * 
+     * @return {@code true} if your app including {@code ChangeLog} is started
+     *         the first time ever. Also {@code true} if your app was
+     *         uninstalled and installed again.
      */
     public boolean isFirstRunEver() {
         return mLastVersionCode == NO_VERSION;
@@ -245,10 +242,11 @@ public class ChangeLog {
 
     /**
      * Get the "What's New" dialog.
-     *
-     * @return An AlertDialog displaying the changes since the previous installed version of your
-     *         app (What's New). But when this is the first run of your app including
-     *         {@code ChangeLog} then the full log dialog is show.
+     * 
+     * @return An AlertDialog displaying the changes since the previous
+     *         installed version of your app (What's New). But when this is the
+     *         first run of your app including {@code ChangeLog} then the full
+     *         log dialog is show.
      */
     public AlertDialog getLogDialog() {
         return getDialog(isFirstRunEver());
@@ -256,7 +254,7 @@ public class ChangeLog {
 
     /**
      * Get a dialog with the full change log.
-     *
+     * 
      * @return An AlertDialog with a full change log displayed.
      */
     public AlertDialog getFullLogDialog() {
@@ -265,16 +263,15 @@ public class ChangeLog {
 
     /**
      * Create a dialog containing (parts of the) change log.
-     *
-     * @param full
-     *         If this is {@code true} the full change log is displayed. Otherwise only changes for
-     *         versions newer than the last version are displayed.
-     *
+     * 
+     * @param full If this is {@code true} the full change log is displayed.
+     *            Otherwise only changes for versions newer than the last
+     *            version are displayed.
      * @return A dialog containing the (partial) change log.
      */
     protected AlertDialog getDialog(boolean full) {
         WebView wv = new WebView(mContext);
-        //wv.setBackgroundColor(0); // transparent
+        // wv.setBackgroundColor(0); // transparent
         wv.loadDataWithBaseURL(null, getLog(full), "text/html", "UTF-8", null);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -284,12 +281,12 @@ public class ChangeLog {
                 .setView(wv)
                 .setCancelable(false)
                 // OK button
-                .setPositiveButton(
-                        mContext.getResources().getString(R.string.changelog_ok_button),
+                .setPositiveButton(mContext.getResources().getString(R.string.changelog_ok_button),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // The user clicked "OK" so save the current version code as
+                                // The user clicked "OK" so save the current
+                                // version code as
                                 // "last version code".
                                 updateVersionInPreferences();
                             }
@@ -323,9 +320,9 @@ public class ChangeLog {
 
     /**
      * Get changes since last version as HTML string.
-     *
-     * @return HTML string containing the changes since the previous installed version of your app
-     *         (What's New).
+     * 
+     * @return HTML string containing the changes since the previous installed
+     *         version of your app (What's New).
      */
     public String getLog() {
         return getLog(false);
@@ -333,7 +330,7 @@ public class ChangeLog {
 
     /**
      * Get full change log as HTML string.
-     *
+     * 
      * @return HTML string containing the full change log.
      */
     public String getFullLog() {
@@ -342,11 +339,10 @@ public class ChangeLog {
 
     /**
      * Get (partial) change log as HTML string.
-     *
-     * @param full
-     *         If this is {@code true} the full change log is returned. Otherwise only changes for
-     *         versions newer than the last version are returned.
-     *
+     * 
+     * @param full If this is {@code true} the full change log is returned.
+     *            Otherwise only changes for versions newer than the last
+     *            version are returned.
      * @return The (partial) change log.
      */
     private String getLog(boolean full) {
@@ -362,12 +358,16 @@ public class ChangeLog {
         SparseArray<ReleaseItem> defaultChangelog;
         try {
             XmlPullParser xml = XmlPullParserFactory.newInstance().newPullParser();
-            InputStreamReader reader = new InputStreamReader(resources.openRawResource(R.raw.changelog));
+            InputStreamReader reader = new InputStreamReader(
+                    resources.openRawResource(R.raw.changelog));
             xml.setInput(reader);
             try {
                 defaultChangelog = readChangeLog(xml, full);
             } finally {
-                try { reader.close(); } catch (Exception e) { /* do nothing */ }
+                try {
+                    reader.close();
+                } catch (Exception e) { /* do nothing */
+                }
             }
         } catch (XmlPullParserException e) {
             Log.e(LOG_TAG, "Error reading raw/changelog.xml", e);
@@ -398,7 +398,8 @@ public class ChangeLog {
         for (Integer version : versions) {
             int key = version.intValue();
 
-            // Use release information from localized change log and fall back to the master file
+            // Use release information from localized change log and fall back
+            // to the master file
             // if necessary.
             ReleaseItem release = changelog.get(key, defaultChangelog.get(key));
 
@@ -420,14 +421,13 @@ public class ChangeLog {
 
     /**
      * Read the change log from an XML file.
-     *
-     * @param xml
-     *         The {@code XmlPullParser} instance used to read the change log.
-     * @param full
-     *         If {@code true} the full change log is read. Otherwise only the changes since the
-     *         last (saved) version are read.
-     *
-     * @return A {@code SparseArray} mapping the version codes to release information.
+     * 
+     * @param xml The {@code XmlPullParser} instance used to read the change
+     *            log.
+     * @param full If {@code true} the full change log is read. Otherwise only
+     *            the changes since the last (saved) version are read.
+     * @return A {@code SparseArray} mapping the version codes to release
+     *         information.
      */
     protected SparseArray<ReleaseItem> readChangeLog(XmlPullParser xml, boolean full) {
         SparseArray<ReleaseItem> result = new SparseArray<ReleaseItem>();
@@ -437,7 +437,8 @@ public class ChangeLog {
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG && xml.getName().equals(ReleaseTag.NAME)) {
                     if (parseReleaseTag(xml, full, result)) {
-                        // Stop reading more elements if this entry is not newer than the last
+                        // Stop reading more elements if this entry is not newer
+                        // than the last
                         // version.
                         break;
                     }
@@ -455,21 +456,20 @@ public class ChangeLog {
 
     /**
      * Parse the {@code release} tag of a change log XML file.
-     *
-     * @param xml
-     *         The {@code XmlPullParser} instance used to read the change log.
-     * @param full
-     *         If {@code true} the contents of the {@code release} tag are always added to
-     *         {@code changelog}. Otherwise only if the item's {@code versioncode} attribute is
-     *         higher than the last version code.
-     * @param changelog
-     *         The {@code SparseArray} to add a new {@link ReleaseItem} instance to.
-     *
-     * @return {@code true} if the {@code release} element is describing changes of a version older
-     *         or equal to the last version. In that case {@code changelog} won't be modified and
-     *         {@link #readChangeLog(XmlPullParser, boolean)} will stop reading more elements from
-     *         the change log file.
-     *
+     * 
+     * @param xml The {@code XmlPullParser} instance used to read the change
+     *            log.
+     * @param full If {@code true} the contents of the {@code release} tag are
+     *            always added to {@code changelog}. Otherwise only if the
+     *            item's {@code versioncode} attribute is higher than the last
+     *            version code.
+     * @param changelog The {@code SparseArray} to add a new {@link ReleaseItem}
+     *            instance to.
+     * @return {@code true} if the {@code release} element is describing changes
+     *         of a version older or equal to the last version. In that case
+     *         {@code changelog} won't be modified and
+     *         {@link #readChangeLog(XmlPullParser, boolean)} will stop reading
+     *         more elements from the change log file.
      * @throws XmlPullParserException
      * @throws IOException
      */

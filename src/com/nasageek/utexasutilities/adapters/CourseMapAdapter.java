@@ -1,3 +1,4 @@
+
 package com.nasageek.utexasutilities.adapters;
 
 import java.util.ArrayList;
@@ -14,58 +15,66 @@ import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.model.CourseMapItem;
 
-public class CourseMapAdapter extends ArrayAdapter<MyPair<CourseMapItem,ArrayList>> {
+public class CourseMapAdapter extends ArrayAdapter<MyPair<CourseMapItem, ArrayList>> {
 
-	private Context con;
-	private ArrayList<MyPair<CourseMapItem,ArrayList>> items;
-	private LayoutInflater li;
-	
-	public CourseMapAdapter(Context c, ArrayList<MyPair<CourseMapItem,ArrayList>> items) {
-		super(c,0,items);
-		con = c;
-		this.items=items;
-		li = (LayoutInflater) con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	}
-	public int getCount() {
-		
-		return items.size();
-	}
+    private Context con;
+    private ArrayList<MyPair<CourseMapItem, ArrayList>> items;
+    private LayoutInflater li;
 
-	public MyPair getItem(int position) {
-		return items.get(position);
-	}
+    public CourseMapAdapter(Context c, ArrayList<MyPair<CourseMapItem, ArrayList>> items) {
+        super(c, 0, items);
+        con = c;
+        this.items = items;
+        li = (LayoutInflater) con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
 
-	public long getItemId(int position) {
-		return 0;
-	}
-	@Override
-	public boolean areAllItemsEnabled() {
-		return true;
-	}
-	@Override
-	public boolean isEnabled(int i) {
-		return true;
-	}
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		Boolean isFolder = true;
-		MyPair<CourseMapItem, ArrayList> item = items.get(position);
-		
-		String title = item.first.getName();
-		if(item.second.size() == 0)
-			isFolder = false;
-		
-		ViewGroup lin = (ViewGroup) convertView;
-	
-		if (lin == null)
-			lin = (ViewGroup) li.inflate(R.layout.coursemap_item_view,null,false);
-		
-		TextView itemName = (TextView) lin.findViewById(R.id.coursemap_item_name);
-		ImageView folder = (ImageView) lin.findViewById(R.id.coursemap_folder);
-	
-		folder.setVisibility(isFolder ? View.VISIBLE
-									  : View.INVISIBLE);
-		itemName.setText(title);
-		return (View)lin;
-	}
+    @Override
+    public int getCount() {
+
+        return items.size();
+    }
+
+    @Override
+    public MyPair getItem(int position) {
+        return items.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return 0;
+    }
+
+    @Override
+    public boolean areAllItemsEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled(int i) {
+        return true;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        Boolean isFolder = true;
+        MyPair<CourseMapItem, ArrayList> item = items.get(position);
+
+        String title = item.first.getName();
+        if (item.second.size() == 0) {
+            isFolder = false;
+        }
+
+        ViewGroup lin = (ViewGroup) convertView;
+
+        if (lin == null) {
+            lin = (ViewGroup) li.inflate(R.layout.coursemap_item_view, null, false);
+        }
+
+        TextView itemName = (TextView) lin.findViewById(R.id.coursemap_item_name);
+        ImageView folder = (ImageView) lin.findViewById(R.id.coursemap_folder);
+
+        folder.setVisibility(isFolder ? View.VISIBLE : View.INVISIBLE);
+        itemName.setText(title);
+        return lin;
+    }
 }
