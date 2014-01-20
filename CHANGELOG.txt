@@ -180,7 +180,7 @@ Fixed bug with downloading files
 Switched to ACRA for bug reporting
 Few other bugs might have been fixed
 
-Versioncode ## - 1.99.4
+Versioncode 31 - 1.99.4
 
 Update changed bus routes and stops
 Hopefully fixed common bug when restoring suspended app
