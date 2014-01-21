@@ -78,6 +78,7 @@ import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.NavigationDataSet;
 import com.nasageek.utexasutilities.NavigationSaxHandler;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.model.Placemark;
 
 public class CampusMapActivity extends SherlockFragmentActivity {
@@ -230,6 +231,16 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+        // TODO: Handle all route changes, not just changes that cause obvious
+        // errors
+        if (Integer.parseInt(settings.getString("default_bus_route", "0")) >= spinner.getAdapter()
+                .getCount()) {
+            Utility.commit(settings.edit().putString("default_bus_route", "0"));
+            Toast.makeText(
+                    this,
+                    "Your default bus route has been reset due to either an application error or a change in UT's shuttle system.",
+                    Toast.LENGTH_LONG).show();
+        }
         routeid = ((Route) spinner.getAdapter().getItem(
                 Integer.parseInt(settings.getString("default_bus_route", "0")))).getCode();
 
