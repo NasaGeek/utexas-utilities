@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nasageek.utexasutilities"
     android:installLocation="auto"
-    android:versionCode="31"
-    android:versionName="1.99.4" >
+    android:versionCode="32"
+    android:versionName="1.99.5" >
 
     <permission
         android:name="com.nasageek.utexasutilities.permission.MAPS_RECEIVE"

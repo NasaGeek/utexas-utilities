@@ -186,3 +186,7 @@ Update changed bus routes and stops
 Hopefully fixed common bug when restoring suspended app
 Other bug fixes
 
+Versioncode 32 - 1.99.5
+
+Fix crashes for people with West Campus set as their default bus route. Sorry!
+
