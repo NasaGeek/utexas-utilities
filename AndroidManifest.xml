@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.nasageek.utexasutilities"
       android:installLocation="auto"
-      android:versionCode="30"
+      android:versionCode="38"
       android:versionName="2.0a">
     
     <permission
