@@ -110,18 +110,26 @@ public class CampusMapActivity extends SherlockFragmentActivity {
 
     private static final LatLng UT_TOWER = new LatLng(30.285706, -97.739423);
 
+    //@formatter:off
     public enum Route {
-        No_Overlay(0, "No Bus Route Overlay"), Crossing_Place(670, "Crossing Place"), Camino_La_Costa(
-                651, "Camino La Costa"), East_Campus(641, "East Campus"), Forty_Acres(640,
-                "Forty Acres"), Far_West(661, "Far West"), Intramural_Fields(656,
-                "Intramural Fields"), Intramural_Fields_Far_West(681, "Intramural Field/Far West"), Lake_Austin(
-                663, "Lake Austin"), Lakeshore(672, "Lakeshore"), North_Riverside(671,
-                "North Riverside"), North_Riverside_Lakeshore(680, "North Riverside/Lakeshore"), Pickle_Research_Campus(
-                652, "Pickle Research Campus"), Red_River(653, "Red River"), West_Campus(642,
-                "West Campus");
-
-        private int code;
-        private String fullName;
+        No_Overlay(0, "No Bus Route Overlay"), 
+        Crossing_Place(670, "Crossing Place"), 
+        Camino_La_Costa(651, "Camino La Costa"), 
+        East_Campus(641, "East Campus"), 
+        Forty_Acres(640, "Forty Acres"), 
+        Far_West(661, "Far West"), 
+        Intramural_Fields(656, "Intramural Fields"), 
+        Intramural_Fields_Far_West(681, "Intramural Field/Far West"), 
+        Lake_Austin(663, "Lake Austin"), 
+        Lakeshore(672, "Lakeshore"), 
+        North_Riverside(671, "North Riverside"), 
+        North_Riverside_Lakeshore(680, "North Riverside/Lakeshore"), 
+        Pickle_Research_Campus(652, "Pickle Research Campus"), 
+        Red_River(653, "Red River"), 
+        West_Campus(642, "West Campus");
+    //@formatter:on
+        private final int code;
+        private final String fullName;
 
         private Route(int c, String fullName) {
             code = c;
@@ -722,9 +730,9 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     }
 
     class StopInfoAdapter implements InfoWindowAdapter {
-        private LinearLayout infoLayout;
-        private TextView infoTitle, infoSnippet;
-        private ImageView tapMeIndicator;
+        private final LinearLayout infoLayout;
+        private final TextView infoTitle, infoSnippet;
+        private final ImageView tapMeIndicator;
 
         public StopInfoAdapter() {
             infoLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.info_window_layout,
