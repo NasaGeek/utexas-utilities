@@ -18,6 +18,7 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.foound.widget.AmazingListView;
 import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.mapsaurus.paneslayout.PanesActivity;
@@ -80,11 +80,11 @@ public class BlackboardCourseListFragment extends SherlockFragment {
         httpclient = ConnectionHelper.getThreadSafeClient();
         httpclient.getCookieStore().clear();
         BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient));
+                ConnectionHelper.getBBAuthCookie(getActivity(), httpclient));
         cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
         httpclient.getCookieStore().addCookie(cookie);
 
-        classAdapter = new BBClassAdapter(getSherlockActivity(), classSectionList);
+        classAdapter = new BBClassAdapter(getActivity(), classSectionList);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -100,7 +100,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
         bbeb = (Button) vg.findViewById(R.id.button_send_data);
 
         bblv.setAdapter(classAdapter);
-        bblv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(
+        bblv.setPinnedHeaderView(getActivity().getLayoutInflater().inflate(
                 R.layout.menu_header_item_view, bblv, false));
         bblv.setOnItemClickListener(new OnItemClickListener() {
 
@@ -109,7 +109,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
                 // TODO: figure out course id stuff here
                 // Intent classLaunch = new
                 // Intent(getString(R.string.coursemap_intent), null,
-                // getSherlockActivity(), CourseMapActivity.class);
+                // getActivity(), CourseMapActivity.class);
                 BBClass bbclass = (BBClass) (parent.getItemAtPosition(position));
                 /*
                  * classLaunch.putExtra("courseid", bbclass.getBbid());
@@ -119,7 +119,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
                  * classLaunch.putExtra("showViewInWeb", true);
                  * startActivity(classLaunch);
                  */
-                SherlockFragmentActivity act = getSherlockActivity();
+                FragmentActivity act = getActivity();
                 Fragment topFragment = null;
                 if (act != null && act instanceof PanesActivity) {
                     topFragment = ((PanesActivity) act).getTopFragment();

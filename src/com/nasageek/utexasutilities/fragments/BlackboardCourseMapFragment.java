@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,7 +38,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -117,7 +117,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         httpclient = ConnectionHelper.getThreadSafeClient();
         httpclient.getCookieStore().clear();
         BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient));
+                ConnectionHelper.getBBAuthCookie(getActivity(), httpclient));
         cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
         httpclient.getCookieStore().addCookie(cookie);
     }
@@ -141,7 +141,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 
                 final String linkType = mainList.get(position).first.getLinkType();
                 final String url = mainList.get(position).first.getViewUrl();
-                final SherlockFragmentActivity act = getSherlockActivity();
+                final FragmentActivity act = getActivity();
 
                 if (mainList.get(position).second.size() != 0) // a folder was
                                                                // clicked
@@ -164,11 +164,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
                     String contentid = mainList.get(position).first.getContentId();
                     String itemName = "";
                     if (itemNumber == -1) {
-                        itemName = mainList.get(position).first.getName(); // will
-                                                                           // be
-                                                                           // used
-                                                                           // as
-                                                                           // Subtitle
+                        itemName = mainList.get(position).first.getName(); // Subtitle
                     } else {
                         itemName = absSubtitle.getText() + "/"
                                 + mainList.get(position).first.getName(); // Subtitle
@@ -195,11 +191,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
                 {
                     String itemName = "";
                     if (itemNumber == -1) {
-                        itemName = mainList.get(position).first.getName(); // will
-                                                                           // be
-                                                                           // used
-                                                                           // as
-                                                                           // Subtitle
+                        itemName = mainList.get(position).first.getName(); // Subtitle
                     } else {
                         itemName = absSubtitle.getText() + "/"
                                 + mainList.get(position).first.getName(); // Subtitle
@@ -219,7 +211,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         }
         // now we've got the whole course tree, navigate as necessary
         else if (mainList != null && mainList.size() != 0) {
-            cmlv.setAdapter(new CourseMapAdapter(getSherlockActivity(), mainList));
+            cmlv.setAdapter(new CourseMapAdapter(getActivity(), mainList));
             cm_pb_ll.setVisibility(View.GONE);
             cmlv.setVisibility(View.VISIBLE);
         }
@@ -235,6 +227,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
                 | ActionBar.DISPLAY_SHOW_TITLE);
         actionbar.setCustomView(absView);
 
+        // TODO: look into using actual ABS assets instead of the ones I grabbed
         absTitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_title);
         absSubtitle = (TextView) actionbar.getCustomView().findViewById(
                 R.id.abs__action_bar_subtitle);
@@ -274,7 +267,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         int id = item.getItemId();
         switch (id) {
             case R.id.course_map_view_in_web:
-                showAreYouSureDlg(getSherlockActivity());
+                showAreYouSureDlg(getActivity());
                 break;
         }
         return false;
@@ -297,7 +290,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(con);
                 if (sp.getBoolean("embedded_browser", true)) {
-                    ((FragmentLauncher) getSherlockActivity()).addFragment(
+                    ((FragmentLauncher) getActivity()).addFragment(
                             BlackboardCourseMapFragment.this, BlackboardExternalItemFragment
                                     .newInstance(viewUri, bbID, courseName, folderName, false));
                 } else {
@@ -401,8 +394,8 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         @Override
         protected void onPostExecute(ArrayList result) {
             if (!this.isCancelled()) {
-                if (getSherlockActivity() != null) {
-                    cmlv.setAdapter(new CourseMapAdapter(getSherlockActivity(), result));
+                if (getActivity() != null) {
+                    cmlv.setAdapter(new CourseMapAdapter(getActivity(), result));
                 }
 
                 cm_pb_ll.setVisibility(View.GONE);
@@ -422,7 +415,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
                 public void onClick(View v) {
                     if (pagedata != null && ex != null) {
                         SharedPreferences sp = PreferenceManager
-                                .getDefaultSharedPreferences(getSherlockActivity().getBaseContext());
+                                .getDefaultSharedPreferences(getActivity().getBaseContext());
                         if (!sp.getBoolean("acra.enable", true)) {
                             ACRA.getErrorReporter().setEnabled(true);
                         }
@@ -432,11 +425,11 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
                         if (!sp.getBoolean("acra.enable", true)) {
                             ACRA.getErrorReporter().setEnabled(false);
                         }
-                        Toast.makeText(getSherlockActivity(),
+                        Toast.makeText(getActivity(),
                                 "Data is being sent, thanks for helping out!", Toast.LENGTH_SHORT)
                                 .show();
                     } else {
-                        Toast.makeText(getSherlockActivity(),
+                        Toast.makeText(getActivity(),
                                 "Couldn't send the course data for some reason :(",
                                 Toast.LENGTH_SHORT).show();
                     }

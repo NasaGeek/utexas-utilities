@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,13 +27,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.nasageek.utexasutilities.R;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class PickCalendarDialogFragment extends SherlockDialogFragment {
 
-    private SherlockFragmentActivity parentAct;
+    private FragmentActivity parentAct;
 
     public PickCalendarDialogFragment() {
     }
@@ -50,37 +50,35 @@ public class PickCalendarDialogFragment extends SherlockDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder build = new AlertDialog.Builder(getSherlockActivity());
+        AlertDialog.Builder build = new AlertDialog.Builder(getActivity());
         ArrayList<String> calendars = getArguments().getStringArrayList("calendars");
-        parentAct = getSherlockActivity();
-        build.setAdapter(new CalendarAdapter(getSherlockActivity(), calendars),
-                new OnClickListener() {
+        parentAct = getActivity();
+        build.setAdapter(new CalendarAdapter(getActivity(), calendars), new OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        CalendarInsertHandler cih = new CalendarInsertHandler(getSherlockActivity()
-                                .getContentResolver());
-                        ArrayList<ContentValues> cvList = getArguments().getParcelableArrayList(
-                                "valuesList");
-                        ArrayList<Integer> indices = getArguments().getIntegerArrayList("indices");
-                        int selection = indices.get(which);
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                CalendarInsertHandler cih = new CalendarInsertHandler(getActivity()
+                        .getContentResolver());
+                ArrayList<ContentValues> cvList = getArguments().getParcelableArrayList(
+                        "valuesList");
+                ArrayList<Integer> indices = getArguments().getIntegerArrayList("indices");
+                int selection = indices.get(which);
 
-                        for (int i = 0; i < cvList.size(); i++) {
-                            cvList.get(i).put(CalendarContract.Events.CALENDAR_ID, selection);
-                            cih.startInsert(i, null, CalendarContract.Events.CONTENT_URI,
-                                    cvList.get(i));
-                        }
+                for (int i = 0; i < cvList.size(); i++) {
+                    cvList.get(i).put(CalendarContract.Events.CALENDAR_ID, selection);
+                    cih.startInsert(i, null, CalendarContract.Events.CONTENT_URI, cvList.get(i));
+                }
 
-                    }
-                }).setTitle("Select calendar");
-
+            }
+        }).setTitle("Select calendar");
         AlertDialog dlg = build.create();
-
         return dlg;
     }
 
+    // Suppress because handler is very shortlived
+    @SuppressLint("HandlerLeak")
     class CalendarInsertHandler extends AsyncQueryHandler {
-        @SuppressLint("HandlerLeak")
+
         public CalendarInsertHandler(ContentResolver cr) {
             super(cr);
         }
@@ -134,6 +132,5 @@ public class PickCalendarDialogFragment extends SherlockDialogFragment {
             ((TextView) convertView.findViewById(R.id.calendar_account)).setText(accName);
             return convertView;
         }
-
     }
 }

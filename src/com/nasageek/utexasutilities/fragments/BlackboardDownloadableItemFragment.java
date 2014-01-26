@@ -102,12 +102,12 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
         setHasOptionsMenu(true);
 
         attachments = new ArrayList<bbFile>();
-        attachmentAdapter = new dlableItemAdapter(getSherlockActivity(), attachments);
+        attachmentAdapter = new dlableItemAdapter(getActivity(), attachments);
         content = "";
 
         client = ConnectionHelper.getThreadSafeClient();
         BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBBAuthCookie(getSherlockActivity(), client));
+                ConnectionHelper.getBBAuthCookie(getActivity(), client));
         cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
         client.getCookieStore().addCookie(cookie);
     }
@@ -134,7 +134,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
             public void onItemClick(AdapterView<?> parent, View arg1, int position, long id) {
                 final bbFile item = (bbFile) (parent.getAdapter().getItem(position));
 
-                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getSherlockActivity());
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
                 alertBuilder.setMessage("Would you like to download this attached file?")
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
@@ -148,15 +148,15 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
                                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB
                                         && Environment.getExternalStorageState().equals(
                                                 Environment.MEDIA_MOUNTED)) {
-                                    Intent downloadAttachment = new Intent(getSherlockActivity(),
+                                    Intent downloadAttachment = new Intent(getActivity(),
                                             AttachmentDownloadService.class);
                                     downloadAttachment.putExtra("fileName", item.getFileName());
                                     downloadAttachment.putExtra("url", item.getDlUri());
-                                    getSherlockActivity().startService(downloadAttachment);
+                                    getActivity().startService(downloadAttachment);
                                 } else if (Environment.getExternalStorageState().equals(
                                         Environment.MEDIA_MOUNTED)
                                         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                                    final DownloadManager manager = (DownloadManager) getSherlockActivity()
+                                    final DownloadManager manager = (DownloadManager) getActivity()
                                             .getSystemService(Context.DOWNLOAD_SERVICE);
 
                                     onNotificationClick = new BroadcastReceiver() {
@@ -201,7 +201,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
                                             }
                                         }
                                     };
-                                    getSherlockActivity().registerReceiver(
+                                    getActivity().registerReceiver(
                                             onNotificationClick,
                                             new IntentFilter(
                                                     DownloadManager.ACTION_NOTIFICATION_CLICKED));
@@ -229,7 +229,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
                                                     "Cookie",
                                                     "s_session_id="
                                                             + ConnectionHelper.getBBAuthCookie(
-                                                                    getSherlockActivity(), client));
+                                                                    getActivity(), client));
 
                                     try {
                                         final long dlID = manager.enqueue(request);
@@ -237,19 +237,19 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
                                         // fallback for people with messed up
                                         // Downloads provider
                                         Intent downloadAttachment = new Intent(
-                                                getSherlockActivity(),
+                                                getActivity(),
                                                 AttachmentDownloadService.class);
                                         downloadAttachment.putExtra("fileName", item.getFileName());
                                         downloadAttachment.putExtra("url", item.getDlUri());
-                                        getSherlockActivity().startService(downloadAttachment);
+                                        getActivity().startService(downloadAttachment);
                                     }
                                     Toast.makeText(
-                                            getSherlockActivity(),
+                                            getActivity(),
                                             "Download started, item should appear in the \"Download\" folder on your external storage.",
                                             Toast.LENGTH_LONG).show();
                                 } else {
                                     AlertDialog.Builder build = new AlertDialog.Builder(
-                                            getSherlockActivity());
+                                            getActivity());
                                     build.setNeutralButton("Okay",
                                             new DialogInterface.OnClickListener() {
                                                 @Override
@@ -281,7 +281,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
         super.onDestroy();
         if (onNotificationClick != null) {
             try {
-                getSherlockActivity().unregisterReceiver(onNotificationClick);
+                getActivity().unregisterReceiver(onNotificationClick);
                 onNotificationClick = null;
             } catch (IllegalArgumentException e) { // if it's already been
                                                    // unregistered
@@ -307,7 +307,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
         int id = item.getItemId();
         switch (id) {
             case R.id.dlable_item_view_in_web:
-                showAreYouSureDlg(getSherlockActivity());
+                showAreYouSureDlg(getActivity());
                 break;
         }
         return false;
@@ -331,7 +331,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
 
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(con);
                 if (sp.getBoolean("embedded_browser", true)) {
-                    ((FragmentLauncher) getSherlockActivity()).addFragment(
+                    ((FragmentLauncher) getActivity()).addFragment(
                             BlackboardDownloadableItemFragment.this, BlackboardExternalItemFragment
                                     .newInstance(viewUri, courseID, courseName, itemName, false));
                 } else {
@@ -391,12 +391,12 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
             });
         }
         if (("".equals(content) || "No description".equals(content))
-                && getSherlockActivity() != null) {
+                && getActivity() != null) {
             content = "No description";
             TypedValue tv = new TypedValue();
-            if (getSherlockActivity().getTheme().resolveAttribute(android.R.attr.textColorTertiary,
+            if (getActivity().getTheme().resolveAttribute(android.R.attr.textColorTertiary,
                     tv, true)) {
-                TypedArray arr = getSherlockActivity().obtainStyledAttributes(tv.resourceId,
+                TypedArray arr = getActivity().obtainStyledAttributes(tv.resourceId,
                         new int[] {
                             android.R.attr.textColorTertiary
                         });

@@ -86,7 +86,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
      * @Override public Dialog onCreateDialog(Bundle savedInstanceState) { View
      * view = getActivity().getLayoutInflater().inflate(R.layout.
      * double_date_picker_dialog_fragment_layout, null); AlertDialog.Builder
-     * build = new AlertDialog.Builder(getSherlockActivity());
+     * build = new AlertDialog.Builder(getActivity());
      * build.setView(view). setPositiveButton("Okay", null).
      * setNegativeButton("Cancel", null).
      * setTitle("Choose start and end dates"); initialisePaging(view); return
@@ -108,12 +108,12 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
                         Calendar endDate = new GregorianCalendar(endDatePicker.getYear(),
                                 endDatePicker.getMonth(), endDatePicker.getDayOfMonth());
                         if (startDate.after(endDate)) {
-                            Toast.makeText(getSherlockActivity(),
+                            Toast.makeText(getActivity(),
                                     "Start date must be before end date.", Toast.LENGTH_SHORT)
                                     .show();
                             return;
                         }
-                        ContentResolver cr = getSherlockActivity().getContentResolver();
+                        ContentResolver cr = getActivity().getContentResolver();
 
                         SimpleDateFormat formatter = new SimpleDateFormat("hh:mmaa", Locale.US);
                         ArrayList<UTClass> classList = getArguments().getParcelableArrayList(
@@ -139,7 +139,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
                                     classStartTime = formatter.parse(clt.getStartTime());
                                     classEndTime = formatter.parse(clt.getEndTime());
                                 } catch (ParseException e1) {
-                                    Toast.makeText(getSherlockActivity(),
+                                    Toast.makeText(getActivity(),
                                             "Error parsing " + clt.getCourseId()
                                                     + " start/end time. Export canceled.",
                                             Toast.LENGTH_LONG);
@@ -210,7 +210,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 
                         // If no calendars are available, let them know
                         if (cur == null) {
-                            Toast.makeText(getSherlockActivity(),
+                            Toast.makeText(getActivity(),
                                     "There are no available calendars to export to.",
                                     Toast.LENGTH_LONG).show();
                             DoubleDatePickerDialogFragment.this.dismiss();
@@ -229,7 +229,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
                             // calendars that I actually need a long
                             indices.add((int) calID);
                         }
-                        FragmentManager fm = getSherlockActivity().getSupportFragmentManager();
+                        FragmentManager fm = getActivity().getSupportFragmentManager();
                         PickCalendarDialogFragment pcdf = PickCalendarDialogFragment.newInstance(
                                 indices, calendars, valuesList);
                         DoubleDatePickerDialogFragment.this.dismiss();
@@ -267,12 +267,12 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void initialisePaging(View view) {
         datePickers = new Vector<View>();
-        FrameLayout fl1 = new FrameLayout(getSherlockActivity());
-        FrameLayout fl2 = new FrameLayout(getSherlockActivity());
-        startDatePicker = new DatePicker(getSherlockActivity());
+        FrameLayout fl1 = new FrameLayout(getActivity());
+        FrameLayout fl2 = new FrameLayout(getActivity());
+        startDatePicker = new DatePicker(getActivity());
         startDatePicker.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT, Gravity.CENTER));
-        endDatePicker = new DatePicker(getSherlockActivity());
+        endDatePicker = new DatePicker(getActivity());
         endDatePicker.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT, Gravity.CENTER));
 

@@ -79,12 +79,12 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
         fromDashboard = getArguments().getBoolean("fromDashboard");
         setHasOptionsMenu(true);
         announcements = new ArrayList<bbAnnouncement>();
-        announceAdapter = new AnnouncementsAdapter(getSherlockActivity(), announcements);
+        announceAdapter = new AnnouncementsAdapter(getActivity(), announcements);
 
         httpclient = ConnectionHelper.getThreadSafeClient();
         httpclient.getCookieStore().clear();
         BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient));
+                ConnectionHelper.getBBAuthCookie(getActivity(), httpclient));
         cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
         httpclient.getCookieStore().addCookie(cookie);
 
@@ -153,7 +153,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
         int id = item.getItemId();
         switch (id) {
             case R.id.announcements_view_in_web:
-                showAreYouSureDlg(getSherlockActivity());
+                showAreYouSureDlg(getActivity());
                 break;
         }
         return false;
@@ -179,7 +179,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(con);
                 if (sp.getBoolean("embedded_browser", true)) {
-                    ((FragmentLauncher) getSherlockActivity()).addFragment(
+                    ((FragmentLauncher) getActivity()).addFragment(
                             BlackboardAnnouncementsFragment.this, BlackboardExternalItemFragment
                                     .newInstance(viewUri, courseID, courseName, "Announcements",
                                             false));

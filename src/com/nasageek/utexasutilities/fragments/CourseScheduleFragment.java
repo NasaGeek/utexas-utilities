@@ -51,6 +51,7 @@ import com.nasageek.utexasutilities.adapters.ClassAdapter;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
 
+@SuppressWarnings("deprecation")
 public class CourseScheduleFragment extends SherlockFragment implements ActionModeFragment,
         SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener,
         AdapterView.OnItemClickListener {
@@ -60,7 +61,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
     private LinearLayout sdll;
     private ClassAdapter ca;
     private DefaultHttpClient client;
-    private String[] colors = {
+    private final String[] colors = {
             "488ab0", "00b060", "b56eb3", "94c6ff", "81b941", "ff866e", "ffad46", "ffe45e"
     };
 
@@ -355,7 +356,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                             "https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId);
                     conn = (HttpsURLConnection) location.openConnection();
 
-                    if (getSherlockActivity() == null) {
+                    if (getActivity() == null) {
                         cancel(true);
                         errorMsg = "";
                         return -1;

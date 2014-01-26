@@ -85,12 +85,12 @@ public class BlackboardGradesFragment extends BlackboardFragment {
         setHasOptionsMenu(true);
 
         grades = new ArrayList<bbGrade>();
-        gradeAdapter = new GradesAdapter(getSherlockActivity(), grades);
+        gradeAdapter = new GradesAdapter(getActivity(), grades);
 
         httpclient = ConnectionHelper.getThreadSafeClient();
         httpclient.getCookieStore().clear();
         BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient));
+                ConnectionHelper.getBBAuthCookie(getActivity(), httpclient));
         cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
         httpclient.getCookieStore().addCookie(cookie);
 
@@ -117,7 +117,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 bbGrade grade = (bbGrade) arg0.getAdapter().getItem(arg2);
 
-                Dialog dlg = new Dialog(getSherlockActivity());// ,R.style.Theme_Sherlock_Light_Dialog);
+                Dialog dlg = new Dialog(getActivity());// ,R.style.Theme_Sherlock_Light_Dialog);
                 dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dlg.setContentView(R.layout.grade_info_dialog);
                 dlg.setTitle("Grade Info");
@@ -174,7 +174,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
         int id = item.getItemId();
         switch (id) {
             case R.id.grades_view_in_web:
-                showAreYouSureDlg(getSherlockActivity());
+                showAreYouSureDlg(getActivity());
                 break;
         }
         return false;
@@ -200,7 +200,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(con);
                 if (sp.getBoolean("embedded_browser", true)) {
-                    ((FragmentLauncher) getSherlockActivity()).addFragment(
+                    ((FragmentLauncher) getActivity()).addFragment(
                             BlackboardGradesFragment.this, BlackboardExternalItemFragment
                                     .newInstance(viewUri, courseID, courseName, "Grades", false));
                 } else {

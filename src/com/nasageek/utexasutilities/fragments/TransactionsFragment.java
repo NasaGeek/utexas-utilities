@@ -131,7 +131,7 @@ public class TransactionsFragment extends SherlockFragment {
             balance = savedInstanceState.getString("balance");
         }
 
-        ta = new TransactionAdapter(getSherlockActivity(), this, transactionlist);
+        ta = new TransactionAdapter(getActivity(), this, transactionlist);
 
     }
 
@@ -151,7 +151,7 @@ public class TransactionsFragment extends SherlockFragment {
         screen.setDomain(".utexas.edu");
         httpclient.getCookieStore().addCookie(screen);
         BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(
-                getSherlockActivity(), httpclient));
+                getActivity(), httpclient));
         cookie.setDomain(".utexas.edu");
         httpclient.getCookieStore().addCookie(cookie);
 
@@ -236,7 +236,7 @@ public class TransactionsFragment extends SherlockFragment {
             // TODO: automatically log them back in
             if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-                ConnectionHelper.logout(getSherlockActivity());
+                ConnectionHelper.logout(getActivity());
                 cancel(true);
                 return null;
             }

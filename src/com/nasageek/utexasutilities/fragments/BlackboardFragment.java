@@ -17,7 +17,7 @@ public abstract class BlackboardFragment extends SherlockFragment implements
      * @Override public void onPanesScrolled() { //woops! turns out I don't need
      * this. We'll hang onto it for the time being just in case I change my
      * mind. // if(isAdded()) //
-     * getSherlockActivity().supportInvalidateOptionsMenu(); }
+     * getActivity().supportInvalidateOptionsMenu(); }
      */
 
 }

@@ -67,7 +67,7 @@ public class BlackboardPagerFragment extends SherlockFragment implements OnPanes
         pager.setAdapter(mPagerAdapter);
         tabIndicator.setViewPager(pager);
 
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity());
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         pager.setCurrentItem(Integer.parseInt(sp.getString("default_blackboard_tab", "0")));
 
     }

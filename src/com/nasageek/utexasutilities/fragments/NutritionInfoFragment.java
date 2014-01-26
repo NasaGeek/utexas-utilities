@@ -46,7 +46,7 @@ public class NutritionInfoFragment extends SherlockFragment {
         // setupActionBar();
 
         // TODO: figure out how to save state of the WebView
-        final WebView wv = new WebView(getSherlockActivity());
+        final WebView wv = new WebView(getActivity());
         wv.getSettings().setJavaScriptEnabled(true);
         wv.getSettings().setBuiltInZoomControls(true);
         wv.setWebViewClient(new WebViewClient() {

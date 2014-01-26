@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +41,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.foound.widget.AmazingAdapter;
 import com.foound.widget.AmazingListView;
 import com.mapsaurus.paneslayout.FragmentLauncher;
@@ -86,7 +86,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         super.onCreate(savedInstanceState);
         // tl = new TimingLogger("Dashboard", "loadTime");
 
-        longform = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean(
+        longform = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(
                 "blackboard_class_longform", false);
         if (savedInstanceState == null) {
             feedList = new ArrayList<MyPair<String, List<FeedItem>>>();
@@ -104,7 +104,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         View vg = inflater.inflate(R.layout.blackboard_dashboard_fragment, container, false);
 
         httpclient = ConnectionHelper.getThreadSafeClient();
-        String bbAuthCookie = ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient);
+        String bbAuthCookie = ConnectionHelper.getBBAuthCookie(getActivity(), httpclient);
         httpclient.getCookieStore().clear();
         BasicClientCookie cookie = new BasicClientCookie("s_session_id", bbAuthCookie);
         cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
@@ -123,8 +123,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                SherlockFragmentActivity act = getSherlockActivity();
-
+                FragmentActivity act = getActivity();
                 FeedItem fi = (FeedItem) parent.getAdapter().getItem(position);
                 String courseid = fi.getBbId();
                 String contentid = fi.getContentId();
@@ -134,8 +133,8 @@ public class BlackboardDashboardFragment extends SherlockFragment {
                 if ("Grades".equals(fi.getType())) {
                     /*
                      * final Intent gradesLaunch = new Intent(null, null,
-                     * getSherlockActivity(), BlackboardGradesActivity.class);
-                     * // gradesLaunch.putExtra("viewUri", url); //TODO: fetch
+                     * getActivity(), BlackboardGradesActivity.class); //
+                     * gradesLaunch.putExtra("viewUri", url); //TODO: fetch
                      * coursemap for viewurl gradesLaunch.putExtra("courseid",
                      * courseid); gradesLaunch.putExtra("coursename",
                      * coursename); gradesLaunch.putExtra("showViewInWeb",
@@ -150,8 +149,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
                 } else if ("Content".equals(fi.getType())) {
                     /*
                      * final Intent bbItemLaunch = new Intent(null, null,
-                     * getSherlockActivity(),
-                     * BlackboardDownloadableItemActivity.class);
+                     * getActivity(), BlackboardDownloadableItemActivity.class);
                      * bbItemLaunch.putExtra("contentid", contentid);
                      * bbItemLaunch.putExtra("itemName", message); //TODO: not
                      * sure if I want to keep this //
@@ -169,8 +167,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
                     // TODO: figure out how to seek to a specific announcement
                     /*
                      * final Intent announcementsLaunch = new Intent(null, null,
-                     * getSherlockActivity(),
-                     * BlackboardAnnouncementsActivity.class); //
+                     * getActivity(), BlackboardAnnouncementsActivity.class); //
                      * announcementsLaunch.putExtra("viewUri", url); TODO
                      * announcementsLaunch.putExtra("courseid", courseid);
                      * announcementsLaunch.putExtra("coursename", coursename);
@@ -185,7 +182,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
                     /*
                      * final Intent classLaunch = new
                      * Intent(getString(R.string.coursemap_intent), null,
-                     * getSherlockActivity(), CourseMapActivity.class);
+                     * getActivity(), CourseMapActivity.class);
                      * classLaunch.putExtra("courseid", fi.getBbId());
                      * classLaunch.setData(Uri.parse(fi.getBbId()));
                      * classLaunch.putExtra("folderName", "Course Map");
@@ -362,8 +359,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
                     public void onClick(View v) {
                         if (pagedata != null && ex != null) {
                             SharedPreferences sp = PreferenceManager
-                                    .getDefaultSharedPreferences(getSherlockActivity()
-                                            .getBaseContext());
+                                    .getDefaultSharedPreferences(getActivity().getBaseContext());
                             if (!sp.getBoolean("acra.enable", true)) {
                                 ACRA.getErrorReporter().setEnabled(true);
                             }
@@ -373,11 +369,11 @@ public class BlackboardDashboardFragment extends SherlockFragment {
                             if (!sp.getBoolean("acra.enable", true)) {
                                 ACRA.getErrorReporter().setEnabled(false);
                             }
-                            Toast.makeText(getSherlockActivity(),
+                            Toast.makeText(getActivity(),
                                     "Data is being sent, thanks for helping out!",
                                     Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(getSherlockActivity(),
+                            Toast.makeText(getActivity(),
                                     "Couldn't send the dashboard data for some reason :(",
                                     Toast.LENGTH_SHORT).show();
                         }
@@ -454,8 +450,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         public View getAmazingView(int position, View convertView, ViewGroup parent) {
             View res = convertView;
             if (res == null) {
-                res = getSherlockActivity().getLayoutInflater().inflate(
-                        R.layout.dashboard_item_view, null);
+                res = getActivity().getLayoutInflater().inflate(R.layout.dashboard_item_view, null);
             }
             FeedItem fi = getItem(position);
             BBClass course = courses.get(fi.getBbId());
@@ -481,12 +476,11 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 
             if (!isEnabled(position)) {
                 TypedValue tv = new TypedValue();
-                if (getSherlockActivity().getTheme().resolveAttribute(
-                        android.R.attr.textColorTertiary, tv, true)) {
-                    TypedArray arr = getSherlockActivity().obtainStyledAttributes(tv.resourceId,
-                            new int[] {
-                                android.R.attr.textColorTertiary
-                            });
+                if (getActivity().getTheme().resolveAttribute(android.R.attr.textColorTertiary, tv,
+                        true)) {
+                    TypedArray arr = getActivity().obtainStyledAttributes(tv.resourceId, new int[] {
+                        android.R.attr.textColorTertiary
+                    });
                     message.setTextColor(arr.getColor(0, Color.BLACK));
                     courseName.setTextColor(arr.getColor(0, Color.BLACK));
                 }

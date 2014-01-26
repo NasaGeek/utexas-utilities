@@ -14,6 +14,7 @@ import org.apache.http.util.EntityUtils;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -27,7 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -46,7 +46,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     private ListView examlistview;
     private ExamAdapter ea;
     private LinearLayout pb_ll;
-    private SherlockFragmentActivity parentAct;
+    private FragmentActivity parentAct;
     // private View vg;
     public ActionMode mode;
     private TextView netv;
@@ -64,7 +64,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        parentAct = this.getSherlockActivity();
+        parentAct = this.getActivity();
         semId = getArguments().getString("semdId");
     }
 
@@ -302,8 +302,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            mode = ExamScheduleFragment.this.parentAct.startActionMode(new ScheduleActionMode(
-                    position));
+            mode = getSherlockActivity().startActionMode(new ScheduleActionMode(position));
         }
 
         final class ScheduleActionMode implements ActionMode.Callback {

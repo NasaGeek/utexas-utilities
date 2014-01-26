@@ -89,7 +89,7 @@ public class MenuFragment extends SherlockFragment {
         this.restId = restId;
 
         mlv.setAdapter(mAdapter);
-        mlv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(
+        mlv.setPinnedHeaderView(getActivity().getLayoutInflater().inflate(
                 R.layout.menu_header_item_view, mlv, false));
         mlv.setOnItemClickListener(new OnItemClickListener() {
 
@@ -100,10 +100,10 @@ public class MenuFragment extends SherlockFragment {
                         + ((food) (arg0.getItemAtPosition(arg2))).nutritionLink;
 
                 SharedPreferences sp = PreferenceManager
-                        .getDefaultSharedPreferences(getSherlockActivity());
+                        .getDefaultSharedPreferences(getActivity());
                 if (sp.getBoolean("embedded_browser", true)) {
 
-                    Intent i = new Intent(getSherlockActivity(), NutritionInfoActivity.class);
+                    Intent i = new Intent(getActivity(), NutritionInfoActivity.class);
                     i.putExtra("url", url);
                     i.putExtra("title", ((food) arg0.getItemAtPosition(arg2)).name);
                     startActivity(i);
