@@ -5,7 +5,9 @@ import java.util.List;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -44,9 +46,15 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_canvas_list, null);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+
         courseId = getArguments().getString("courseID");
         courseName = getArguments().getString("courseName");
         courseCode = getArguments().getString("courseCode");
