@@ -19,9 +19,8 @@ import android.util.Log;
 
 public class BuildingDatabase extends SQLiteOpenHelper {
 
-    private static String DB_PATH = "/data/data/com.nasageek.utexasutilities/databases/";
-
-    private static String DB_NAME = "buildings";
+    private static final String DB_NAME = "buildings";
+    private String dbPath;
     private Context mContext;
     private SQLiteDatabase sqldb;
     private static final String KEY_SUGGEST_COLUMN_TEXT_1 = SearchManager.SUGGEST_COLUMN_TEXT_1;
@@ -69,7 +68,7 @@ public class BuildingDatabase extends SQLiteOpenHelper {
         InputStream myInput = mContext.getAssets().open(DB_NAME);
 
         // Path to the just created empty db
-        String outFileName = DB_PATH + DB_NAME;
+        String outFileName = mContext.getDatabasePath(DB_NAME).getPath();
 
         // Open the empty db as the output stream
         OutputStream myOutput = new FileOutputStream(outFileName);
@@ -90,9 +89,8 @@ public class BuildingDatabase extends SQLiteOpenHelper {
 
     public void openDataBase() throws SQLException {
 
-        // Open the database
-        String myPath = DB_PATH + DB_NAME;
-        sqldb = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+        dbPath = mContext.getDatabasePath(DB_NAME).getPath();
+        sqldb = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
 
     }
 
@@ -107,7 +105,7 @@ public class BuildingDatabase extends SQLiteOpenHelper {
         SQLiteDatabase checkDB = null;
 
         try {
-            String myPath = DB_PATH + DB_NAME;
+            String myPath = mContext.getDatabasePath(DB_NAME).getPath();
             checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
 
         } catch (SQLiteException e) {
@@ -157,7 +155,7 @@ public class BuildingDatabase extends SQLiteOpenHelper {
 
     }
 
-    private class openDbTask extends AsyncTask {
+    private class openDbTask extends AsyncTask<Object, Void, Object> {
         private ContentValues cv2;
 
         public openDbTask(ContentValues c) {

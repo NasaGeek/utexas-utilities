@@ -24,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -45,7 +44,6 @@ public class BlackboardCourseListFragment extends SherlockFragment {
     private LinearLayout bb_pb_ll;
     private TextView bbetv;
     private LinearLayout bbell;
-    private Button bbeb;
 
     private AmazingListView bblv;
     private ArrayList<BBClass> classList;
@@ -66,6 +64,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
         return f;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,7 +96,6 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 
         bbell = (LinearLayout) vg.findViewById(R.id.blackboard_error);
         bbetv = (TextView) vg.findViewById(R.id.tv_failure);
-        bbeb = (Button) vg.findViewById(R.id.button_send_data);
 
         bblv.setAdapter(classAdapter);
         bblv.setPinnedHeaderView(getActivity().getLayoutInflater().inflate(
@@ -173,8 +171,6 @@ public class BlackboardCourseListFragment extends SherlockFragment {
             AsyncTask<Object, Void, ArrayList<MyPair<String, List<BBClass>>>> {
         private DefaultHttpClient client;
         private String errorMsg;
-        private Exception ex;
-        private String pagedata;
 
         public fetchClassesTask(DefaultHttpClient client) {
             this.client = client;

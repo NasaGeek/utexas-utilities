@@ -13,22 +13,18 @@ import android.widget.Spinner;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.adapters.MyFragmentPagerAdapter;
 import com.nasageek.utexasutilities.fragments.ActionModeFragment;
 import com.nasageek.utexasutilities.fragments.CourseScheduleFragment;
 import com.nasageek.utexasutilities.fragments.ExamScheduleFragment;
-import com.nasageek.utexasutilities.model.Classtime;
 import com.viewpagerindicator.TitlePageIndicator;
 
 public class ScheduleActivity extends SherlockFragmentActivity implements
         ViewPager.OnPageChangeListener {
 
     private ActionBar actionbar;
-    private Classtime current_clt;
-    private ActionMode mode;
     protected MyFragmentPagerAdapter mPagerAdapter;
     private ViewPager pager;
     protected List<SherlockFragment> fragments;

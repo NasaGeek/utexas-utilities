@@ -334,8 +334,11 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         }
 
         private String convertStreamToString(InputStream is) {
+            @SuppressWarnings("resource")
             Scanner s = new Scanner(is, "iso-8859-1").useDelimiter("\\A");
-            return s.hasNext() ? s.next() : "";
+            String out = s.hasNext() ? s.next() : "";
+            s.close();
+            return out;
         }
 
         @Override
@@ -514,7 +517,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                     classParseIssue = true;
                     continue;
                 }
-                if (classAttMatcher.find()) { // check remarks for Dropped class
+                if (classAttMatcher.find()) { // check remarks for Dropped
+                                              // class?
                     String remark = classAttMatcher.group(1);
                     if (remark.contains("Dropped")) {
                         dropped = true;
@@ -557,7 +561,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                     gv.setOnItemClickListener(CourseScheduleFragment.this);
                     gv.setAdapter(ca);
 
-                    // scrolls down to the users earliest class
+                    // scrolls down to the user's earliest class
                     gv.setSelection(ca.getEarliestClassPos());
 
                     gv.setVisibility(View.VISIBLE);

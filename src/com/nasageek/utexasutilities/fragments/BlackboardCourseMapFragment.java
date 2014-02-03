@@ -48,7 +48,6 @@ import com.nasageek.utexasutilities.CourseMapSaxHandler;
 import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.adapters.CourseMapAdapter;
-import com.nasageek.utexasutilities.model.BBClass;
 import com.nasageek.utexasutilities.model.CourseMapItem;
 
 public class BlackboardCourseMapFragment extends BlackboardFragment {
@@ -56,8 +55,6 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
     private DefaultHttpClient httpclient;
     private LinearLayout cm_pb_ll;
     private ListView cmlv;
-    private ArrayList<BBClass> classList;
-    private ArrayList<MyPair<CourseMapItem, ArrayList<BBClass>>> classSectionList;
     private fetchCoursemapTask fetch;
     private XMLReader xmlreader;
     private CourseMapSaxHandler courseMapSaxHandler;
@@ -95,6 +92,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         return bcmf;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -227,7 +225,6 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
                 | ActionBar.DISPLAY_SHOW_TITLE);
         actionbar.setCustomView(absView);
 
-        // TODO: look into using actual ABS assets instead of the ones I grabbed
         absTitle = (TextView) actionbar.getCustomView().findViewById(R.id.abs__action_bar_title);
         absSubtitle = (TextView) actionbar.getCustomView().findViewById(
                 R.id.abs__action_bar_subtitle);
@@ -325,7 +322,8 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         return getArguments().getBoolean("fromDashboard");
     }
 
-    private class fetchCoursemapTask extends AsyncTask<Object, Void, ArrayList> {
+    private class fetchCoursemapTask extends
+            AsyncTask<Object, Void, ArrayList<MyPair<CourseMapItem, ArrayList>>> {
         private DefaultHttpClient client;
         private String failureMessage = "";
         private String pagedata;
@@ -344,7 +342,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         }
 
         @Override
-        protected ArrayList doInBackground(Object... params) {
+        protected ArrayList<MyPair<CourseMapItem, ArrayList>> doInBackground(Object... params) {
             HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain
                     + "/webapps/Bb-mobile-BBLEARN/courseMap?course_id=" + bbID);
             String pagedata = "";
@@ -392,7 +390,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         }
 
         @Override
-        protected void onPostExecute(ArrayList result) {
+        protected void onPostExecute(ArrayList<MyPair<CourseMapItem, ArrayList>> result) {
             if (!this.isCancelled()) {
                 if (getActivity() != null) {
                     cmlv.setAdapter(new CourseMapAdapter(getActivity(), result));

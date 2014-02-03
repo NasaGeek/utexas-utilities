@@ -58,10 +58,6 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
      */
 
     private class BlackboardPaneSizer implements PaneSizer {
-        private static final int BLACKBOARD_PAGER_PANE_TYPE = 0;
-        private static final int BLACKBOARD_EXTERNAL_ITEM_PANE_TYPE = 1;
-        private static final int BLACKBOARD_COURSE_MAP_PANE_TYPE = 2;
-        private static final int BLACKBOARD_CONTENT_PANE_TYPE = 3;
         private static final int UNKNOWN_PANE_TYPE = -1;
 
         // type is the ID to the integer defining the percentage of the width of

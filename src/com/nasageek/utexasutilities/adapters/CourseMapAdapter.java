@@ -35,7 +35,7 @@ public class CourseMapAdapter extends ArrayAdapter<MyPair<CourseMapItem, ArrayLi
     }
 
     @Override
-    public MyPair getItem(int position) {
+    public MyPair<CourseMapItem, ArrayList> getItem(int position) {
         return items.get(position);
     }
 

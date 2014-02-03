@@ -4,7 +4,6 @@ package com.nasageek.utexasutilities;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -75,7 +74,7 @@ public class ConnectionHelper {
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.ASCII));
 
             // Execute HTTP Post Request
-            HttpResponse response = client.execute(httppost);
+            client.execute(httppost);
 
         } catch (Exception ex) {
 
@@ -104,7 +103,7 @@ public class ConnectionHelper {
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.ASCII));
 
             // Execute HTTP Post Request
-            HttpResponse response = client.execute(httppost);
+            client.execute(httppost);
 
         } catch (Exception ex) {
 
@@ -134,7 +133,7 @@ public class ConnectionHelper {
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.ASCII));
 
             // Execute HTTP Post Request
-            HttpResponse response = client.execute(httppost);
+            client.execute(httppost);
 
         } catch (Exception ex) {
 

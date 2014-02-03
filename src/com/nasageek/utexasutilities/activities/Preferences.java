@@ -32,6 +32,7 @@ public class Preferences extends SherlockPreferenceActivity {
     private ActionBar actionbar;
     private SecurePreferences sp;
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

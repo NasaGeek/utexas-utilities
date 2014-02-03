@@ -10,7 +10,6 @@ import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -70,8 +69,7 @@ public class AboutMeActivity extends SherlockFragmentActivity {
         try {
             versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
         } catch (NameNotFoundException e) {
-            // come on like I need to put anything here, of course UTilities is
-            // installed
+            // of course UTilities is installed...
             e.printStackTrace();
         }
         versionNumberView.setText(versionName);
@@ -90,16 +88,12 @@ public class AboutMeActivity extends SherlockFragmentActivity {
     }
 
     public static class PrivacyPolicyDialog extends SherlockDialogFragment {
-        // private TextView policyText;
-        private Button dismissButton;
 
         public PrivacyPolicyDialog() {
         }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            View view = getActivity().getLayoutInflater().inflate(
-                    R.layout.privacy_policy_dialog_fragment, null);
             AlertDialog.Builder build = new AlertDialog.Builder(getActivity());
             build.setMessage(getString(R.string.privacy_policy)).setNeutralButton("Okay", null)
                     .setTitle("Privacy Policy");
@@ -108,16 +102,12 @@ public class AboutMeActivity extends SherlockFragmentActivity {
     }
 
     public static class LibraryLicenseDialog extends SherlockDialogFragment {
-        private TextView licenseTextView;
-        private Button dismissButton;
 
         public LibraryLicenseDialog() {
         }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            View view = getActivity().getLayoutInflater().inflate(R.layout.license_dialog_fragment,
-                    null);
             AlertDialog.Builder build = new AlertDialog.Builder(getActivity());
             String licenseText = getString(R.string.licenses) + "\n\n" + "Legal Notices:" + "\n\n"
                     + GooglePlayServicesUtil.getOpenSourceSoftwareLicenseInfo(getActivity());

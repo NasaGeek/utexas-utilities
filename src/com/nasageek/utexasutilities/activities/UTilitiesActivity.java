@@ -64,6 +64,7 @@ public class UTilitiesActivity extends SherlockActivity {
          * httpCacheSize); } catch (IOException e) { e.printStackTrace(); }
          */
 
+        @SuppressWarnings("deprecation")
         final ChangeableContextTask[] loginTasks = (ChangeableContextTask[]) getLastNonConfigurationInstance();
         if (loginTasks != null) {
             for (ChangeableContextTask at : loginTasks) {
