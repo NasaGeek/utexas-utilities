@@ -6,17 +6,17 @@ import java.util.Iterator;
 
 import com.nasageek.utexasutilities.model.Placemark;
 
-public class NavigationDataSet implements Iterable<Placemark> {
+public class NavigationDataSet<E extends Placemark> implements Iterable<E> {
 
-    private ArrayList<Placemark> placemarks = new ArrayList<Placemark>();
-    private Placemark currentPlacemark;
-    private Placemark routePlacemark;
+    private ArrayList<E> placemarks = new ArrayList<E>();
+    private E currentPlacemark;
+    private E routePlacemark;
 
     @Override
     public String toString() {
         String s = "";
-        for (Iterator<Placemark> iter = placemarks.iterator(); iter.hasNext();) {
-            Placemark p = iter.next();
+        for (Iterator<E> iter = placemarks.iterator(); iter.hasNext();) {
+            E p = iter.next();
             s += p.getTitle() + "\t" + p.getDescription() + "\n";
         }
         return s;
@@ -26,32 +26,32 @@ public class NavigationDataSet implements Iterable<Placemark> {
         placemarks.add(currentPlacemark);
     }
 
-    public ArrayList<Placemark> getPlacemarks() {
+    public ArrayList<E> getPlacemarks() {
         return placemarks;
     }
 
-    public void setPlacemarks(ArrayList<Placemark> placemarks) {
+    public void setPlacemarks(ArrayList<E> placemarks) {
         this.placemarks = placemarks;
     }
 
-    public Placemark getCurrentPlacemark() {
+    public E getCurrentPlacemark() {
         return currentPlacemark;
     }
 
-    public void setCurrentPlacemark(Placemark currentPlacemark) {
+    public void setCurrentPlacemark(E currentPlacemark) {
         this.currentPlacemark = currentPlacemark;
     }
 
-    public Placemark getRoutePlacemark() {
+    public E getRoutePlacemark() {
         return routePlacemark;
     }
 
-    public void setRoutePlacemark(Placemark routePlacemark) {
+    public void setRoutePlacemark(E routePlacemark) {
         this.routePlacemark = routePlacemark;
     }
 
     @Override
-    public Iterator<Placemark> iterator() {
+    public Iterator<E> iterator() {
         return placemarks.iterator();
     }
 }

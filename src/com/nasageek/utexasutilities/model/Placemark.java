@@ -24,10 +24,6 @@ public class Placemark {
         this.description = description;
     }
 
-    public String getCoordinates() {
-        return coordinates;
-    }
-
     public void setCoordinates(String coordinates) {
         this.coordinates = coordinates;
     }
