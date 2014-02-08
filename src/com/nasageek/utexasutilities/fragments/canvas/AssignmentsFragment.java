@@ -5,15 +5,14 @@ import java.util.List;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.nasageek.utexasutilities.CanvasRequestListener;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
@@ -46,8 +45,11 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_canvas_list, null);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getListView().setBackgroundResource(R.drawable.background_holo_light);
+        // this should be free... but it ain't
+        setListShown(false);
     }
 
     @Override
@@ -60,10 +62,19 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
         courseCode = getArguments().getString("courseCode");
         setupActionBar();
 
+        Assignment.List mItems = new Assignment.List();
+        AssignmentAdapter mAdapter = new AssignmentAdapter(getActivity(), R.layout.grade_item_view,
+                mItems);
+
         canvasAssignmentsRequest = new CanvasAssignmentsRequest(
                 ConnectionHelper.getCanvasAuthCookie(getActivity()), courseId);
-        getSpiceManager().execute(canvasAssignmentsRequest, courseId + "assignments",
-                DurationInMillis.ONE_MINUTE * 5, new CanvasAssignmentsRequestListener());
+        getSpiceManager()
+                .execute(
+                        canvasAssignmentsRequest,
+                        courseId + "assignments",
+                        DurationInMillis.ONE_MINUTE * 5,
+                        new CanvasRequestListener<Assignment.List>(this, mAdapter, mItems,
+                                "No assignments"));
     }
 
     @Override
@@ -122,5 +133,10 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
     @Override
     public void onPanesScrolled() {
         setupActionBar();
+    }
+
+    @Override
+    public int getPaneWidth() {
+        return R.integer.blackboard_content_width_percentage;
     }
 }

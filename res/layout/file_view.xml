@@ -1,51 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minHeight="?android:listPreferredItemHeight"
-    android:padding="8dp" >
+    android:orientation="vertical" >
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@+id/file_content_type"
-        android:gravity="center_vertical"
-        android:orientation="vertical"
-        android:weightSum="2" >
-
-        <TextView
-            android:id="@+id/file_name"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_gravity="left|top"
-            android:layout_marginBottom="2dp"
-            android:layout_weight="1"
-            android:gravity="top"
-            android:text="Display name"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/file_size"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_gravity="left|bottom"
-            android:layout_marginTop="2dp"
-            android:layout_weight="1"
-            android:gravity="bottom"
-            android:text="Filesize"
-            android:textSize="13sp"
-            android:textStyle="italic" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/file_content_type"
-        android:layout_width="wrap_content"
+    <include
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:text="Content type"
-        android:textSize="13sp"
-        android:visibility="invisible" />
+        layout="@layout/menu_header_item_view"
+        android:visibility="gone" />
 
-</RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="?android:listPreferredItemHeight"
+        android:padding="8dp" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/file_content_type"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:weightSum="2" >
+
+            <TextView
+                android:id="@+id/file_name"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="left|top"
+                android:layout_marginBottom="2dp"
+                android:layout_weight="1"
+                android:gravity="top"
+                android:text="Display name"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/file_size"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="left|bottom"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+                android:gravity="bottom"
+                android:text="Filesize"
+                android:textSize="13sp"
+                android:textStyle="italic" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/file_content_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:text="Content type"
+            android:textSize="13sp"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+</LinearLayout>

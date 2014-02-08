@@ -50,9 +50,6 @@ public class CanvasCourse extends Course implements Parcelable {
 
     public static class List extends ArrayList<CanvasCourse> {
 
-        /**
-         * 
-         */
         private static final long serialVersionUID = 1L;
     }
 

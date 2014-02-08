@@ -2,7 +2,6 @@
 package com.nasageek.utexasutilities.fragments.canvas;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit.RetrofitError;
 import android.annotation.TargetApi;
@@ -18,9 +17,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -31,7 +28,6 @@ import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.adapters.FileAdapter;
 import com.nasageek.utexasutilities.fragments.BaseSpiceListFragment;
-import com.nasageek.utexasutilities.model.canvas.Assignment;
 import com.nasageek.utexasutilities.model.canvas.File;
 import com.nasageek.utexasutilities.requests.CanvasFilesRequest;
 import com.octo.android.robospice.persistence.DurationInMillis;
@@ -43,7 +39,6 @@ public class FileBrowserFragment extends BaseSpiceListFragment implements OnPane
     private FileAdapter mFileAdapter;
     private CanvasFilesRequest canvasFilesRequest;
     private String courseId, courseName, courseCode;
-    private List<Assignment> assignments;
     private BroadcastReceiver onNotificationClick;
 
     public static FileBrowserFragment newInstance(String courseID, String courseName,
@@ -60,8 +55,13 @@ public class FileBrowserFragment extends BaseSpiceListFragment implements OnPane
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_canvas_list, null);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getListView().setBackgroundResource(R.drawable.background_holo_light);
+        // this should be free... but it ain't
+        if (getListAdapter() == null) {
+            setListShown(false);
+        }
     }
 
     @Override
@@ -256,4 +256,8 @@ public class FileBrowserFragment extends BaseSpiceListFragment implements OnPane
         setupActionBar();
     }
 
+    @Override
+    public int getPaneWidth() {
+        return R.integer.blackboard_content_width_percentage;
+    }
 }

@@ -22,9 +22,6 @@ public class Assignment implements Serializable {
 
     public static class List extends ArrayList<Assignment> {
 
-        /**
-         * 
-         */
         private static final long serialVersionUID = 1L;
     }
 

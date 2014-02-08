@@ -85,4 +85,9 @@ public class BlackboardPagerFragment extends SherlockFragment implements OnPanes
         actionbar.setTitle("Courses");
         actionbar.setSubtitle(null);
     }
+
+    @Override
+    public int getPaneWidth() {
+        return R.integer.blackboard_pager_width_percentage;
+    }
 }

@@ -11,16 +11,8 @@ import com.mapsaurus.paneslayout.PanesLayout;
 import com.mapsaurus.paneslayout.PanesLayout.OnIndexChangedListener;
 import com.mapsaurus.paneslayout.PanesSizer.PaneSizer;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.fragments.BlackboardAnnouncementsFragment;
-import com.nasageek.utexasutilities.fragments.BlackboardCourseMapFragment;
-import com.nasageek.utexasutilities.fragments.BlackboardDownloadableItemFragment;
 import com.nasageek.utexasutilities.fragments.BlackboardExternalItemFragment;
-import com.nasageek.utexasutilities.fragments.BlackboardFragment;
-import com.nasageek.utexasutilities.fragments.BlackboardGradesFragment;
 import com.nasageek.utexasutilities.fragments.BlackboardPagerFragment;
-import com.nasageek.utexasutilities.fragments.canvas.AssignmentsFragment;
-import com.nasageek.utexasutilities.fragments.canvas.CanvasCourseMapFragment;
-import com.nasageek.utexasutilities.fragments.canvas.FileBrowserFragment;
 
 public class BlackboardPanesActivity extends PanesActivity implements OnIndexChangedListener {
     private ActionBar actionbar;
@@ -115,20 +107,8 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
         // interface, less ugly
         @Override
         public int getType(Object o) {
-            if (o instanceof BlackboardPagerFragment) {
-                return R.integer.blackboard_pager_width_percentage;
-            } else if (o instanceof BlackboardExternalItemFragment) {
-                return R.integer.blackboard_external_item_width_percentage;
-            } else if (o instanceof BlackboardCourseMapFragment
-                    || o instanceof CanvasCourseMapFragment) {
-                return R.integer.blackboard_course_map_width_percentage;
-            } else if (o instanceof BlackboardGradesFragment
-                    || o instanceof BlackboardAnnouncementsFragment
-                    || o instanceof BlackboardDownloadableItemFragment
-                    || o instanceof AssignmentsFragment || o instanceof FileBrowserFragment) {
-                return R.integer.blackboard_content_width_percentage;
-            } else if (o instanceof BlackboardFragment) {
-                return R.integer.blackboard_other_width_percentage;
+            if (o instanceof OnPanesScrolledListener) {
+                return ((OnPanesScrolledListener) o).getPaneWidth();
             } else {
                 return UNKNOWN_PANE_TYPE;
             }
@@ -169,5 +149,7 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
 
     public interface OnPanesScrolledListener {
         public void onPanesScrolled();
+
+        public int getPaneWidth();
     }
 }

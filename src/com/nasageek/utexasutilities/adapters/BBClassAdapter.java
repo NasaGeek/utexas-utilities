@@ -20,6 +20,7 @@ import com.nasageek.utexasutilities.model.BBCourse;
 import com.nasageek.utexasutilities.model.Course;
 
 public class BBClassAdapter extends AmazingAdapter {
+
     private Context con;
     private ArrayList<Course> classes;
     private List<MyPair<String, List<Course>>> all;
@@ -119,8 +120,7 @@ public class BBClassAdapter extends AmazingAdapter {
                     holder.idview.setText(course.getCourseCode());
                 }
             } else { // probably not even necessary anymore, necessary checking
-                     // is
-                     // done in the if-statement
+                     // is done in the if-statement
                 unique = ((BBCourse) course).getFullCourseid();
                 // id not set because unique will contain ID and Unique number
                 holder.idview.setText(unique);

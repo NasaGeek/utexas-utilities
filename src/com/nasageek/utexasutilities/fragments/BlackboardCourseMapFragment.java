@@ -457,4 +457,9 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
     public void onPanesScrolled() {
         setupActionBar();
     }
+
+    @Override
+    public int getPaneWidth() {
+        return R.integer.blackboard_course_map_width_percentage;
+    }
 }

@@ -381,4 +381,8 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
         setupActionBar();
     }
 
+    @Override
+    public int getPaneWidth() {
+        return R.integer.blackboard_content_width_percentage;
+    }
 }

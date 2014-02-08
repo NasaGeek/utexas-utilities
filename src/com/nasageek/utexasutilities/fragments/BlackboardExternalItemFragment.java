@@ -132,4 +132,9 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
     public void onPanesScrolled() {
         setupActionBar();
     }
+
+    @Override
+    public int getPaneWidth() {
+        return R.integer.blackboard_external_item_width_percentage;
+    }
 }

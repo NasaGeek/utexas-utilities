@@ -10,9 +10,12 @@ import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.Path;
 
+import com.nasageek.utexasutilities.model.canvas.ActivityStreamItem;
 import com.nasageek.utexasutilities.model.canvas.Assignment;
 import com.nasageek.utexasutilities.model.canvas.CanvasCourse;
 import com.nasageek.utexasutilities.model.canvas.File;
+import com.nasageek.utexasutilities.model.canvas.Folder;
+import com.nasageek.utexasutilities.model.canvas.Module;
 import com.nasageek.utexasutilities.model.canvas.OAuthResponse;
 
 public interface Canvas {
@@ -20,7 +23,7 @@ public interface Canvas {
     //@formatter:off
 
     // hardcoded access token for chris
-    // 12~9LxMuYQfyNAM4qI3e9mdzxq7AkRTfwpgnX9D1ge5DUx3oaNcapoMwmDvibDXNkH9")
+    // 12~9LxMuYQfyNAM4qI3e9mdzxq7AkRTfwpgnX9D1ge5DUx3oaNcapoMwmDvibDXNkH9
     @GET("/api/v1/courses?include[]=term")
     CanvasCourse.List courseList(
         @Header("Authorization") String canvas_auth_token);
@@ -38,12 +41,22 @@ public interface Canvas {
     @GET("/api/v1/folder/{folder_id}/files")
     File.List filesForFolder(
         @Header("Authorization") String canvas_auth_token, 
-        @Path("course_id") String folder_id);
+        @Path("folder_id") String folder_id);
 
     @GET("/api/v1/folder/{folder_id}/folders")
-    File.List foldersForFolder(
+    Folder.List foldersForFolder(
         @Header("Authorization") String canvas_auth_token, 
-        @Path("course_id") String folder_id);
+        @Path("folder_id") String folder_id);
+    
+    @GET("/api/v1/courses/{course_id}/modules?include[]=items")
+    Module.List modulesForCourse(
+        @Header("Authorization") String canvas_auth_token,
+        @Path("course_id") String course_id);
+    
+    @GET("/api/v1/courses/{course_id}/activity_stream")
+    ActivityStreamItem.List activityStreamForCourse(
+        @Header("Authorization") String canvas_auth_token, 
+        @Path("course_id") String course_id);
 
     @FormUrlEncoded
     @POST("/login/oauth2/token")

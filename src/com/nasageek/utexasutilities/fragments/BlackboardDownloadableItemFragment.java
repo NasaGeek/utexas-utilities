@@ -639,4 +639,9 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
     public void onPanesScrolled() {
         setupActionBar();
     }
+
+    @Override
+    public int getPaneWidth() {
+        return R.integer.blackboard_content_width_percentage;
+    }
 }

@@ -2,9 +2,8 @@
 package com.nasageek.utexasutilities.fragments.canvas;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.v4.app.Fragment;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -36,8 +35,9 @@ public class CanvasCourseMapFragment extends BaseSpiceListFragment implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_canvas_list, null);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getListView().setBackgroundResource(R.drawable.background_holo_light);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class CanvasCourseMapFragment extends BaseSpiceListFragment implements
         setupActionBar();
         setListAdapter(new ArrayAdapter<String>(getActivity(), R.layout.coursemap_item_view,
                 R.id.coursemap_item_name, new String[] {
-                        "Assignments", "Files"
+                        "Activity Stream", "Assignments", "Files", "Modules"
                 }));
 
         // canvasAssignmentsRequest = new CanvasAssignmentsRequest(course_id);
@@ -61,12 +61,18 @@ public class CanvasCourseMapFragment extends BaseSpiceListFragment implements
     public void onListItemClick(ListView lv, View v, int position, long id) {
         String feature = (String) lv.getItemAtPosition(position);
         if (feature.equals("Assignments")) {
-            ((FragmentLauncher) getActivity()).addFragment(CanvasCourseMapFragment.this,
-                    AssignmentsFragment.newInstance(courseId, courseName, courseCode));
+            launch(AssignmentsFragment.newInstance(courseId, courseName, courseCode));
         } else if (feature.equals("Files")) {
-            ((FragmentLauncher) getActivity()).addFragment(CanvasCourseMapFragment.this,
-                    FileBrowserFragment.newInstance(courseId, courseName, courseCode));
+            launch(FileBrowserFragment.newInstance(courseId, courseName, courseCode));
+        } else if (feature.equals("Activity Stream")) {
+            launch(ActivityStreamFragment.newInstance(courseId, courseName, courseCode));
+        } else if (feature.equals("Modules")) {
+            launch(ModulesFragment.newInstance(courseId, courseName, courseCode));
         }
+    }
+
+    private void launch(Fragment frag) {
+        ((FragmentLauncher) getActivity()).addFragment(this, frag);
     }
 
     private void setupActionBar() {
@@ -80,5 +86,10 @@ public class CanvasCourseMapFragment extends BaseSpiceListFragment implements
     @Override
     public void onPanesScrolled() {
         setupActionBar();
+    }
+
+    @Override
+    public int getPaneWidth() {
+        return R.integer.blackboard_course_map_width_percentage;
     }
 }
