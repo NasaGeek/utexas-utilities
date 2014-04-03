@@ -12,6 +12,8 @@
 bin/
 gen/
 
+# other
+future_feature_list.txt
 # Local configuration file (sdk path, etc)
 local.properties
 
