@@ -9,4 +9,9 @@
             android:title="Show all buildings"
             android:checkable="true"
             android:checked="false"/>
+    <item android:id="@+id/showParkingGarages"
+            android:showAsAction="ifRoom"
+            android:title="Show Parking Garages"
+            android:checkable="true"
+            android:checked="false"/>
 </menu>

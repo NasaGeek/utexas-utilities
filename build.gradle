@@ -10,7 +10,7 @@ buildscript {
 apply plugin: 'com.android.application'
 
 repositories {
-    maven { url "http://dl.bintray.com/populov/maven" }
+    maven { url 'http://dl.bintray.com/populov/maven' }
     mavenCentral()
 }
 
@@ -46,7 +46,6 @@ android {
             manifest.srcFile 'AndroidManifest.xml'
         }
     }
-
     // TODO: You can put sensitive keystore data in an untracked .properties file or ENV variables
     // Example: http://stackoverflow.com/a/20872275/3034339
     signingConfigs {
@@ -57,14 +56,11 @@ android {
             keyPassword ''
         }
     }
-
     buildTypes {
-
         debug {
             // Can add package and versionName suffixes, makes it easier to differentiate if you have play store and debug builds installed
             versionNameSuffix "-debug"
         }
-
         // Release build task. Uses the release signing config above for signing it
         // To run from command line, use './gradlew.bat assembleRelease' from project root
         release {
@@ -77,6 +73,8 @@ android {
 }
 
 dependencies {
+    compile 'com.google.maps.android:android-maps-utils:0.3+'
+
     compile 'com.android.support:support-v4:19.1.0'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
 
@@ -86,6 +84,7 @@ dependencies {
     compile('ch.acra:acra:4.5.0') {
         exclude group: 'org.json'
     }
+
     compile project(':libs:Android-PanesLibrary')
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }

@@ -20,6 +20,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
@@ -48,6 +50,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.ui.IconGenerator;
+import com.google.maps.android.ui.MyIconGenerator;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.BuildingSaxHandler;
 import com.nasageek.utexasutilities.RouteSaxHandler;
@@ -662,6 +666,103 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                     }
                 }
                 break;
+            case R.id.showParkingGarages:
+                if (checkReady()) {
+                    if (item.isChecked()) {
+                        for (String mID : buildingMarkerMap.keySet()) {
+                            buildingMarkerMap.get(mID).remove();
+                        }
+                        buildingMarkerMap.clear();
+                        item.setChecked(false);
+                    } else {
+                        llbuilder = LatLngBounds.builder();
+                        MyIconGenerator ig = new MyIconGenerator(this);
+                        ig.setStyle(IconGenerator.STYLE_DEFAULT);
+
+                        for (BuildingPlacemark pm : buildingDataSet) {
+                            if (pm.getDescription().contains("Garage")) {
+                                if (pm.getTitle().equals("SWG") || pm.getTitle().equals("BRG")) {
+                                    ig.setRotation(180);
+                                    ig.setContentRotation(180);
+                                } else if (pm.getTitle().equals("TRG")
+                                        || pm.getTitle().equals("SJG")) {
+                                    ig.setRotation(90);
+                                    ig.setContentRotation(270);
+                                } else if (pm.getTitle().equals("SAG")) {
+                                    ig.setRotation(270);
+                                    ig.setContentRotation(90);
+                                }
+                                int count = 0;
+                                if (pm.getTitle().equals("BRG")) {
+                                    count = 0;
+                                    ig.setStyle(IconGenerator.STYLE_RED);
+                                } else if (pm.getTitle().equals("TRG")) {
+                                    count = 0;
+                                    ig.setStyle(IconGenerator.STYLE_RED);
+                                } else if (pm.getTitle().equals("SJG")) {
+                                    count = 0;
+                                    ig.setStyle(IconGenerator.STYLE_RED);
+                                } else if (pm.getTitle().equals("MAG")) {
+                                    ig.setStyle(IconGenerator.STYLE_GREEN);
+                                    count = 81;
+                                } else if (pm.getTitle().equals("TSG")) {
+                                    ig.setStyle(IconGenerator.STYLE_ORANGE);
+                                    count = 28;
+                                } else if (pm.getTitle().equals("GUG")) {
+                                    ig.setStyle(IconGenerator.STYLE_ORANGE);
+                                    count = 37;
+                                } else if (pm.getTitle().equals("SAG")) {
+                                    count = 73;
+                                    ig.setStyle(IconGenerator.STYLE_GREEN);
+                                } else if (pm.getTitle().equals("SWG")) {
+                                    count = 100;
+                                    ig.setStyle(IconGenerator.STYLE_GREEN);
+                                } else if (pm.getTitle().equals("CCG")) {
+                                    count = 16;
+                                    ig.setStyle(IconGenerator.STYLE_RED);
+                                }
+
+                                llbuilder.include(new LatLng(pm.getLatitude(), pm.getLongitude()));
+                                // Span for bolding the title
+                                SpannableString title = new SpannableString(pm.getTitle());
+                                title.setSpan(new StyleSpan(Typeface.BOLD), 0, pm.getTitle()
+                                        .length(), 0);
+                                SpannableString number = new SpannableString(count + "");
+                                number.setSpan(new AbsoluteSizeSpan(50), 0, number.length(), 0);
+                                CharSequence text = TextUtils.concat(number, "\n", title);
+
+                                Marker buildingMarker = mMap
+                                        .addMarker(new MarkerOptions()
+                                                .position(
+                                                        new LatLng(pm.getLatitude(), pm
+                                                                .getLongitude()))
+                                                .draggable(false)
+                                                .icon(BitmapDescriptorFactory.fromBitmap(ig
+                                                        .makeIcon(text)))
+                                                .title("^" + pm.getTitle())
+                                                .snippet(
+                                                        pm.getDescription().replaceAll("\\(.*\\)",
+                                                                "")).visible(true));
+                                if (pm.getTitle().equals("SWG") || pm.getTitle().equals("BRG")) {
+                                    buildingMarker.setAnchor(0.5f, 0f);
+                                } else if (pm.getTitle().equals("TRG")
+                                        || pm.getTitle().equals("SJG")) {
+                                    buildingMarker.setAnchor(0f, 0.5f);
+                                } else if (pm.getTitle().equals("SAG")) {
+                                    buildingMarker.setAnchor(1f, 0.5f);
+                                }
+
+                                buildingMarkerMap.put(buildingMarker.getId(), buildingMarker);
+                                ig.setContentRotation(0);
+                                ig.setRotation(0);
+                                ig.setStyle(IconGenerator.STYLE_DEFAULT);
+                            }
+                            item.setChecked(true);
+                        }
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(llbuilder.build(),
+                                120));
+                    }
+                }
         }
         return true;
     }
@@ -872,6 +973,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                             }
 
                             if (myLocation != null) {
+                                // TODO: don't append dirflg=w for garages, will likely drive there
                                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri
                                         .parse("http://maps.google.com/maps?saddr="
                                                 + myLocation.latitude + "," + myLocation.longitude

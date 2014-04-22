@@ -9,7 +9,7 @@ buildscript {
 
 apply plugin: 'com.android.library'
 
-repositories{
+repositories {
     mavenCentral()
 }
 
