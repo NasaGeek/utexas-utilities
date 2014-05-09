@@ -1,15 +1,6 @@
 
 package com.nasageek.utexasutilities;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-
 import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.app.Notification;
@@ -23,6 +14,15 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 @SuppressLint("NewApi")
 public class AttachmentDownloadService extends IntentService {

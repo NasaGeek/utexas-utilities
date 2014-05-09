@@ -34,6 +34,9 @@
 
 package com.nasageek.utexasutilities;
 
+import android.annotation.TargetApi;
+import android.os.Build;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -48,9 +51,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Stack;
-
-import android.annotation.TargetApi;
-import android.os.Build;
 
 /**
  * Resizable-array implementation of the {@link Deque} interface. Array deques

@@ -1,9 +1,6 @@
 
 package com.nasageek.utexasutilities.adapters;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.BlurMaskFilter;
@@ -25,6 +22,9 @@ import android.widget.TextView;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 
 public class ClassAdapter extends BaseAdapter {
 

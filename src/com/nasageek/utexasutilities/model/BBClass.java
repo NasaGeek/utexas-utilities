@@ -1,12 +1,12 @@
 
 package com.nasageek.utexasutilities.model;
 
-import java.io.Serializable;
-import java.util.Locale;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+
+import java.io.Serializable;
+import java.util.Locale;
 
 public class BBClass implements Parcelable, Serializable {
 

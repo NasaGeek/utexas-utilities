@@ -1,10 +1,10 @@
 
 package com.nasageek.utexasutilities;
 
+import com.nasageek.utexasutilities.model.Placemark;
+
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import com.nasageek.utexasutilities.model.Placemark;
 
 public class NavigationDataSet<E extends Placemark> implements Iterable<E> {
 

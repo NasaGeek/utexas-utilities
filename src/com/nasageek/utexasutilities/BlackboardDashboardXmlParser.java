@@ -1,6 +1,15 @@
 
 package com.nasageek.utexasutilities;
 
+import android.util.TimingLogger;
+import android.util.Xml;
+
+import com.nasageek.utexasutilities.model.BBClass;
+import com.nasageek.utexasutilities.model.FeedItem;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -11,15 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import android.util.TimingLogger;
-import android.util.Xml;
-
-import com.nasageek.utexasutilities.model.BBClass;
-import com.nasageek.utexasutilities.model.FeedItem;
 
 public class BlackboardDashboardXmlParser {
 

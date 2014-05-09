@@ -1,8 +1,6 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import java.util.ArrayList;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -28,6 +26,8 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.nasageek.utexasutilities.R;
+
+import java.util.ArrayList;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class PickCalendarDialogFragment extends SherlockDialogFragment {

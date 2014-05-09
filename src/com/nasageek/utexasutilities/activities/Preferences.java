@@ -1,8 +1,6 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import java.io.IOException;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,6 +20,8 @@ import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.Utility;
+
+import java.io.IOException;
 
 public class Preferences extends SherlockPreferenceActivity {
 

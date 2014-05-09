@@ -1,10 +1,6 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.Vector;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -23,6 +19,10 @@ import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
 import com.nasageek.utexasutilities.fragments.MenuFragment;
 import com.viewpagerindicator.MyTabPageIndicator;
+
+import java.util.Calendar;
+import java.util.List;
+import java.util.Vector;
 
 public class MenuActivity extends SherlockFragmentActivity {
 

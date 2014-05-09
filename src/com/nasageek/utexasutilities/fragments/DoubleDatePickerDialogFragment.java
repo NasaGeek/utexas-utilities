@@ -1,17 +1,6 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-import java.util.Vector;
-
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -40,6 +29,17 @@ import com.nasageek.utexasutilities.WrappedViewPager;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
 import com.viewpagerindicator.TabPageIndicator;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.Vector;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
