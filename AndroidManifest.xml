@@ -101,6 +101,9 @@
         <provider
             android:name="com.nasageek.utexasutilities.BuildingProvider"
             android:authorities="com.nasageek.utexasutilities.buildingprovider" />
+
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
