@@ -37,11 +37,12 @@ android {
         main {
             java.srcDirs = ['src']
             res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
             manifest.srcFile 'AndroidManifest.xml'
         }
     }
 
-    // TODO: You can put sensitive keystore data in an untracked .properties file.
+    // TODO: You can put sensitive keystore data in an untracked .properties file or ENV variables
     // Example: http://stackoverflow.com/a/20872275/3034339
     signingConfigs {
         release {
