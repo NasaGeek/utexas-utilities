@@ -1,9 +1,6 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import java.util.List;
-import java.util.Vector;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -21,6 +18,9 @@ import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
 import com.viewpagerindicator.TabPageIndicator;
+
+import java.util.List;
+import java.util.Vector;
 
 public class BlackboardPagerFragment extends SherlockFragment implements OnPanesScrolledListener {
 

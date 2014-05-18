@@ -1,12 +1,12 @@
 
 package com.nasageek.utexasutilities.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 
 public class UTClass implements Parcelable, Serializable {
 

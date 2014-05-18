@@ -16,9 +16,9 @@
 
 package com.nasageek.utexasutilities;
 
-import java.io.Serializable;
-
 import android.util.Pair;
+
+import java.io.Serializable;
 
 /**
  * Container to ease passing around a tuple of two objects. This object provides

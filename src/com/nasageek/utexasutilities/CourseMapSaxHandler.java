@@ -1,14 +1,14 @@
 
 package com.nasageek.utexasutilities;
 
-import java.util.ArrayList;
-import java.util.Stack;
+import com.nasageek.utexasutilities.model.CourseMapItem;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.nasageek.utexasutilities.model.CourseMapItem;
+import java.util.ArrayList;
+import java.util.Stack;
 
 public class CourseMapSaxHandler extends DefaultHandler {
 

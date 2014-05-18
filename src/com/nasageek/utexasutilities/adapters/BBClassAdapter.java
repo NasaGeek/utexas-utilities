@@ -1,8 +1,6 @@
 
 package com.nasageek.utexasutilities.adapters;
 
-import java.util.List;
-
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -14,6 +12,8 @@ import com.foound.widget.AmazingAdapter;
 import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.model.BBClass;
+
+import java.util.List;
 
 public class BBClassAdapter extends AmazingAdapter {
     private List<MyPair<String, List<BBClass>>> all;

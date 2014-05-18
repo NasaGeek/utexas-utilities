@@ -1,11 +1,11 @@
 
 package com.nasageek.utexasutilities;
 
+import android.app.Application;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
-
-import android.app.Application;
 
 @ReportsCrashes(formKey = "", // This is required for backward compatibility but
 // not used

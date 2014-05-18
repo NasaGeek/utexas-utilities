@@ -1,11 +1,11 @@
 
 package com.nasageek.utexasutilities.adapters;
 
-import java.util.List;
-
 import android.support.v4.app.FragmentManager;
 
 import com.actionbarsherlock.app.SherlockFragment;
+
+import java.util.List;
 
 public class MultiPanePagerAdapter extends MyFragmentPagerAdapter {
 

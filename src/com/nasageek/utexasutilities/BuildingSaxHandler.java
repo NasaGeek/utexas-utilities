@@ -1,11 +1,11 @@
 
 package com.nasageek.utexasutilities;
 
+import com.nasageek.utexasutilities.model.BuildingPlacemark;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import com.nasageek.utexasutilities.model.BuildingPlacemark;
 
 public class BuildingSaxHandler extends DefaultHandler {
 

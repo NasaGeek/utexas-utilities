@@ -1,10 +1,6 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.Vector;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -20,6 +16,10 @@ import com.nasageek.utexasutilities.fragments.ActionModeFragment;
 import com.nasageek.utexasutilities.fragments.CourseScheduleFragment;
 import com.nasageek.utexasutilities.fragments.ExamScheduleFragment;
 import com.viewpagerindicator.TitlePageIndicator;
+
+import java.util.Calendar;
+import java.util.List;
+import java.util.Vector;
 
 public class ScheduleActivity extends SherlockFragmentActivity implements
         ViewPager.OnPageChangeListener {

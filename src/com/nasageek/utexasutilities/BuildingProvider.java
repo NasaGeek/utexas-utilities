@@ -1,14 +1,14 @@
 
 package com.nasageek.utexasutilities;
 
-import java.io.IOException;
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+
+import java.io.IOException;
 
 public class BuildingProvider extends ContentProvider {
 

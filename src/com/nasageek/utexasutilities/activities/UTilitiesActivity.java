@@ -1,8 +1,6 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,6 +30,8 @@ import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.Utility;
+
+import org.apache.http.impl.client.DefaultHttpClient;
 
 public class UTilitiesActivity extends SherlockActivity {
 

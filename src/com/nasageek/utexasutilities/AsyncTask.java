@@ -16,6 +16,10 @@
 
 package com.nasageek.utexasutilities;
 
+import android.os.Handler;
+import android.os.Message;
+import android.os.Process;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
@@ -29,10 +33,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import android.os.Handler;
-import android.os.Message;
-import android.os.Process;
 
 /**
  * <p>

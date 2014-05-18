@@ -1,8 +1,6 @@
 
 package com.nasageek.utexasutilities.adapters;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +12,8 @@ import android.widget.TextView;
 import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.model.CourseMapItem;
+
+import java.util.ArrayList;
 
 public class CourseMapAdapter extends ArrayAdapter<MyPair<CourseMapItem, ArrayList>> {
 
