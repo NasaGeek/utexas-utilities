@@ -15,7 +15,7 @@ repositories {
 }
 
 // Some constant information you could use in builds, accessible via BuildConfig.<field-name>
-def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
+//def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
 def buildTime = new Date().format("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"))
 
 android {
@@ -29,7 +29,7 @@ android {
         versionName "1.99.5"
 
         // The git sha of the current head and build time
-        buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
+        //buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
         buildConfigField "String", "BUILD_TIME", "\"${buildTime}\""
     }
 
@@ -64,7 +64,7 @@ android {
         // Release build task. Uses the release signing config above for signing it
         // To run from command line, use './gradlew.bat assembleRelease' from project root
         release {
-            runProguard true
+            runProguard false
             zipAlign true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.cfg'
             signingConfig signingConfigs.release
