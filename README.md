@@ -12,14 +12,14 @@ Regardless of what IDE you use, if you want the campus map to function you'll ne
 
 
 ### With Android Studio
-It should be possible to build UT Utilities using Gradle and Android Studio with no additional configuration. Gradle support is due almost entirely to Henri Sweers' efforts. thanks! If using Eclipse, see below.
+It should be possible to build UT Utilities using Gradle and Android Studio with no additional configuration. Gradle support is due almost entirely to [Henri Sweers'](https://github.com/pandanomic) efforts. thanks! If using Eclipse, see below.
 
 ### With Eclipse
 In order to compile this project in Eclipse you'll need to download and reference a few libraries:
 
 [ActionBarSherlock](http://actionbarsherlock.com/)  
 [Google Play Services](http://developer.android.com/google/play-services/setup.html)  
-[PanesLibrary](https://github.com/NasaGeek/Android-PanesLibrary) (this is custom fork, [but here's the original](https://github.com/cricklet/Android-PanesLibrary))
+[PanesLibrary](https://github.com/NasaGeek/Android-PanesLibrary) (that is a custom fork, [but here's the original](https://github.com/cricklet/Android-PanesLibrary))
 
 There are also a couple of 3rd party libraries necessary for building UTilities that *are already included*:  
 [AndroidPlot](http://androidplot.com/)  
@@ -33,8 +33,8 @@ Henri Sweers - https://github.com/pandanomic
 
 ## Other
 
-Beta G+ Community: https://plus.google.com/communities/111016243219845743497
-About the project developer/maintainer: https://www.linkedin.com/pub/christopher-roberts/59/1b2/1a5
+Beta G+ Community: https://plus.google.com/communities/111016243219845743497  
+About the project developer/maintainer: https://www.linkedin.com/pub/christopher-roberts/59/1b2/1a5  
 
 ## License
 
