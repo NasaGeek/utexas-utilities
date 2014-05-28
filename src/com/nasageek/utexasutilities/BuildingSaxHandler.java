@@ -9,10 +9,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class BuildingSaxHandler extends DefaultHandler {
 
-    // ===========================================================
-    // Fields
-    // ===========================================================
-
     private boolean in_coordinatestag = false;
     private boolean in_nametag = false;
 
@@ -24,17 +20,10 @@ public class BuildingSaxHandler extends DefaultHandler {
         super();
     }
 
-    // ===========================================================
-    // Getter & Setter
-    // ===========================================================
-
     public NavigationDataSet<BuildingPlacemark> getParsedData() {
         return this.navigationDataSet;
     }
 
-    // ===========================================================
-    // Methods
-    // ===========================================================
     @Override
     public void startDocument() throws SAXException {
         this.navigationDataSet = new NavigationDataSet<BuildingPlacemark>();

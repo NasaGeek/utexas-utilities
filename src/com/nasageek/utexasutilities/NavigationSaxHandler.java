@@ -9,10 +9,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class NavigationSaxHandler extends DefaultHandler {
 
-    // ===========================================================
-    // Fields
-    // ===========================================================
-
     private boolean in_nametag = false;
     private boolean in_descriptiontag = false;
     private boolean in_coordinatestag = false;
@@ -25,17 +21,10 @@ public class NavigationSaxHandler extends DefaultHandler {
         super();
     }
 
-    // ===========================================================
-    // Getter & Setter
-    // ===========================================================
-
     public NavigationDataSet<RoutePlacemark> getParsedData() {
         return this.navigationDataSet;
     }
 
-    // ===========================================================
-    // Methods
-    // ===========================================================
     @Override
     public void startDocument() throws SAXException {
         this.navigationDataSet = new NavigationDataSet<RoutePlacemark>();
