@@ -418,12 +418,12 @@ public class CampusMapActivity extends SherlockFragmentActivity {
 
     private void moveToInitialLoc() {
         if (checkReady()) {
-            if (mMap.getMyLocation() != null && settings.getBoolean("starting_location", true)) {
+            if (mMap.getMyLocation() != null && settings.getBoolean("starting_location", false)) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                         new LatLng(mMap.getMyLocation().getLatitude(),
                                 mMap.getMyLocation().getLongitude()), 16f
                 ));
-            } else if (lastKnownLocation != null && settings.getBoolean("starting_location", true)) {
+            } else if (lastKnownLocation != null && settings.getBoolean("starting_location", false)) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                         new LatLng(lastKnownLocation.getLatitude(),
                                 lastKnownLocation.getLongitude()), 16f
