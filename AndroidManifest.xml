@@ -13,7 +13,7 @@
 
     <!-- TODO: Remove this, versionCode, and versionName once you completely switch to Gradle -->
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="10"
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
