@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.10.+'
+        classpath 'com.android.tools.build:gradle:0.11.+'
     }
 }
 
@@ -20,7 +20,7 @@ def buildTime = new Date().format("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone(
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.1"
+    buildToolsVersion "19.1.0"
 
     defaultConfig {
         minSdkVersion 10
@@ -57,8 +57,7 @@ android {
 
         debug {
             // Can add package and versionName suffixes, makes it easier to differentiate if you have play store and debug builds installed
-//            versionNameSuffix "-debug"
-//            packageNameSuffix '.debug'
+            versionNameSuffix "-debug"
         }
 
         // Release build task. Uses the release signing config above for signing it
@@ -76,7 +75,6 @@ dependencies {
     compile 'com.android.support:support-v4:19.1.0'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
 
-    // TODO: If you're willing to bump the min SDK version to 9, also requires fixing BuildingDatabase.java
     compile 'com.google.android.gms:play-services:4.4.52'
 
     compile 'com.viewpagerindicator:library:2.4.1@aar'
