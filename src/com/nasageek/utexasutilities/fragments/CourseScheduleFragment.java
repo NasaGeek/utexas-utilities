@@ -56,62 +56,61 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener,
         AdapterView.OnItemClickListener {
 
-    private GridView gv;
-    private WrappingSlidingDrawer sd;
-    private LinearLayout sdll;
-    private ScheduleClassAdapter ca;
-    private DefaultHttpClient client;
+    public static final int TRANSLUCENT_GRAY = 0x99F0F0F0;
+
+    private GridView scheduleGridView;
+    private WrappingSlidingDrawer slidingDrawer;
+    private ScheduleClassAdapter adapter;
+
     private final String[] colors = {
             "488ab0", "00b060", "b56eb3", "94c6ff", "81b941", "ff866e", "ffad46", "ffe45e"
     };
 
     private Menu mMenu;
-    private LinearLayout pb_ll;
-    private LinearLayout daylist;
-    private ImageView ci_iv;
-    private TextView ci_tv;
-    private TextView nc_tv;
-    private TextView etv;
-    private LinearLayout ell;
+    private LinearLayout progress;
+    private LinearLayout dayList;
+    private ImageView classInfoImageView;
+    private TextView classInfoTextView;
+    private TextView noCoursesTextView;
+    private TextView errorTextView;
+    private LinearLayout errorLayout;
 
     private ArrayList<UTClass> classList;
-    private Classtime current_clt;
+    private Classtime currentClasstime;
     private parseTask fetch;
 
     private ActionMode mode;
 
     private SherlockFragmentActivity parentAct;
-    String semId;
+    private String semId;
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View vg = inflater.inflate(R.layout.course_schedule_fragment_layout, container, false);
 
-        sd = (WrappingSlidingDrawer) vg.findViewById(R.id.drawer);
-        sdll = (LinearLayout) vg.findViewById(R.id.llsd);
+        slidingDrawer = (WrappingSlidingDrawer) vg.findViewById(R.id.drawer);
 
-        ci_iv = (ImageView) vg.findViewById(R.id.class_info_color);
-        ci_tv = (TextView) vg.findViewById(R.id.class_info_text);
-        ell = (LinearLayout) vg.findViewById(R.id.schedule_error);
-        etv = (TextView) vg.findViewById(R.id.tv_failure);
+        classInfoImageView = (ImageView) vg.findViewById(R.id.class_info_color);
+        classInfoTextView = (TextView) vg.findViewById(R.id.class_info_text);
+        errorLayout = (LinearLayout) vg.findViewById(R.id.schedule_error);
+        errorTextView = (TextView) vg.findViewById(R.id.tv_failure);
 
-        pb_ll = (LinearLayout) vg.findViewById(R.id.schedule_progressbar_ll);
-        nc_tv = (TextView) vg.findViewById(R.id.no_courses);
-        gv = (GridView) vg.findViewById(R.id.scheduleview);
-        daylist = (LinearLayout) vg.findViewById(R.id.daylist);
-
-        client = ConnectionHelper.getThreadSafeClient();
+        progress = (LinearLayout) vg.findViewById(R.id.schedule_progressbar_ll);
+        noCoursesTextView = (TextView) vg.findViewById(R.id.no_courses);
+        scheduleGridView = (GridView) vg.findViewById(R.id.scheduleview);
+        dayList = (LinearLayout) vg.findViewById(R.id.daylist);
 
         /*
          * if(savedInstanceState != null) classList =
          * savedInstanceState.getParcelableArrayList("classList");
          */
 
-        sd.setOnDrawerCloseListener(this);
-        sd.setOnDrawerOpenListener(this);
-        sd.setVisibility(View.INVISIBLE);
+        slidingDrawer.setOnDrawerCloseListener(this);
+        slidingDrawer.setOnDrawerOpenListener(this);
+        slidingDrawer.setVisibility(View.INVISIBLE);
 
+        DefaultHttpClient client = ConnectionHelper.getThreadSafeClient();
         fetch = new parseTask(client);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -134,11 +133,11 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
     @Override
     public void onResume() {
         super.onResume();
-        if (ca != null) {
-            ca.updateTime();
+        if (adapter != null) {
+            adapter.updateTime();
         }
-        if (gv != null) {
-            gv.invalidateViews();
+        if (scheduleGridView != null) {
+            scheduleGridView.invalidateViews();
         }
     }
 
@@ -187,9 +186,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             case R.id.map_all_classes:
                 // check to see if we're done loading the schedules (the
                 // ScheduleClassAdapter is initialized in onPostExecute)
-                if (ca != null) {
-                    // populate an array with the buildings IDs of all of the
-                    // user's classtimes
+                if (adapter != null) {
+                    // populate an array with the buildings IDs of all of the user's classtimes
                     ArrayList<String> buildings = new ArrayList<String>();
 
                     for (UTClass clz : classList) {
@@ -200,8 +198,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                         }
                     }
 
-                    Intent map = new Intent(getString(R.string.building_intent), null, parentAct,
-                            CampusMapActivity.class);
+                    Intent map = new Intent(getString(R.string.building_intent), null, parentAct, CampusMapActivity.class);
                     map.putStringArrayListExtra("buildings", buildings);
                     startActivity(map);
                     break;
@@ -211,7 +208,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                     // check to see if we're done loading the schedules (the
                     // ScheduleClassAdapter is initialized in onPostExecute)
-                    if (ca != null) {
+                    if (adapter != null) {
                         FragmentManager fm = parentAct.getSupportFragmentManager();
                         DoubleDatePickerDialogFragment ddpDlg = DoubleDatePickerDialogFragment
                                 .newInstance(classList);
@@ -237,38 +234,38 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
     @Override
     public void onDrawerClosed() {
-        ((ImageView) (sd.getHandle())).setImageResource(R.drawable.ic_expand_half);
+        ((ImageView) (slidingDrawer.getHandle())).setImageResource(R.drawable.ic_expand_half);
     }
 
     @Override
     public void onDrawerOpened() {
-        ((ImageView) (sd.getHandle())).setImageResource(R.drawable.ic_collapse_half);
+        ((ImageView) (slidingDrawer.getHandle())).setImageResource(R.drawable.ic_collapse_half);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        sd.close();
-        current_clt = (Classtime) parent.getItemAtPosition(position);
+        slidingDrawer.close();
+        currentClasstime = (Classtime) parent.getItemAtPosition(position);
 
-        if (current_clt != null) {
+        if (currentClasstime != null) {
             mode = parentAct.startActionMode(new ScheduleActionMode());
-            sd.setVisibility(View.VISIBLE);
+            slidingDrawer.setVisibility(View.VISIBLE);
 
             String text = " ";
-            text += current_clt.getCourseId() + " - " + current_clt.getName() + " ";
+            text += currentClasstime.getCourseId() + " - " + currentClasstime.getName() + " ";
 
             String daytext = "\n\t";
-            String building = current_clt.getBuilding().getId() + " "
-                    + current_clt.getBuilding().getRoom();
-            String unique = current_clt.getUnique();
+            String building = currentClasstime.getBuilding().getId() + " "
+                    + currentClasstime.getBuilding().getRoom();
+            String unique = currentClasstime.getUnique();
 
-            String time = current_clt.getStartTime();
-            String end = current_clt.getEndTime();
+            String time = currentClasstime.getStartTime();
+            String end = currentClasstime.getEndTime();
 
-            if (current_clt.getDay() == 'H') {
+            if (currentClasstime.getDay() == 'H') {
                 daytext += "TH";
             } else {
-                daytext += current_clt.getDay();
+                daytext += currentClasstime.getDay();
             }
 
             // TODO: stringbuilder
@@ -276,23 +273,23 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
             text += "\tUnique: " + unique + "\n";
 
-            ci_iv.setBackgroundColor(Color.parseColor("#" + current_clt.getColor()));
-            ci_iv.setMinimumHeight(10);
-            ci_iv.setMinimumWidth(10);
+            classInfoImageView.setBackgroundColor(Color.parseColor("#" + currentClasstime.getColor()));
+            classInfoImageView.setMinimumHeight(10);
+            classInfoImageView.setMinimumWidth(10);
 
-            ci_tv.setTextColor(Color.BLACK);
-            ci_tv.setTextSize(14f);
-            ci_tv.setBackgroundColor(0x99F0F0F0);
-            ci_tv.setText(text);
+            classInfoTextView.setTextColor(Color.BLACK);
+            classInfoTextView.setTextSize(14f);
+            classInfoTextView.setBackgroundColor(TRANSLUCENT_GRAY);
+            classInfoTextView.setText(text);
 
-            sd.open();
+            slidingDrawer.open();
         }
         // they clicked an empty cell
         else {
             if (mode != null) {
                 mode.finish();
             }
-            sd.setVisibility(View.INVISIBLE);
+            slidingDrawer.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -308,9 +305,9 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
         @Override
         protected void onPreExecute() {
-            pb_ll.setVisibility(View.VISIBLE);
-            gv.setVisibility(View.GONE);
-            ell.setVisibility(View.GONE);
+            progress.setVisibility(View.VISIBLE);
+            scheduleGridView.setVisibility(View.GONE);
+            errorLayout.setVisibility(View.GONE);
 
             client.getCookieStore().clear();
             authCookie = ConnectionHelper.getAuthCookie(parentAct, client);
@@ -411,6 +408,9 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                 }
             }
 
+            // now parse the Class Listing data
+
+            // did we hit the login screen?
             if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
                 if (parentAct != null) {
@@ -439,11 +439,11 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                 }
             }
 
-            Pattern pattern3 = Pattern.compile("<table.*</table>", Pattern.DOTALL);
-            Matcher matcher3 = pattern3.matcher(pagedata);
+            Pattern scheduleTablePattern = Pattern.compile("<table.*</table>", Pattern.DOTALL);
+            Matcher scheduletableMatcher = scheduleTablePattern.matcher(pagedata);
 
-            if (matcher3.find()) {
-                pagedata = matcher3.group(0);
+            if (scheduletableMatcher.find()) {
+                pagedata = scheduletableMatcher.group(0);
             } else {
                 // if no <table>, user probably isn't enrolled for semester
                 return 0;
@@ -456,7 +456,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                 String classContent = classMatcher.group();
 
                 String uniqueid = "", classid = "", classname = "";
-                String[] buildings = null, rooms = null, days = null, times = null;
+                String[] buildings, rooms, days, times;
                 boolean dropped = false;
 
                 Pattern classAttPattern = Pattern.compile("<td >(.*?)</td>", Pattern.DOTALL);
@@ -499,8 +499,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                 }
                 if (classAttMatcher.find()) {
                     days = classAttMatcher.group(1).split("<br />");
-                    // Thursday represented by H so I can treat all days as
-                    // characters
+                    // Thursday represented by H so I can treat all days as single characters
                     for (int a = 0; a < days.length; a++) {
                         days[a] = days[a].replaceAll("TH", "H").trim();
                     }
@@ -517,8 +516,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                     classParseIssue = true;
                     continue;
                 }
-                if (classAttMatcher.find()) { // check remarks for Dropped
-                                              // class?
+                if (classAttMatcher.find()) {
                     String remark = classAttMatcher.group(1);
                     if (remark.contains("Dropped")) {
                         dropped = true;
@@ -534,7 +532,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                     classCount++;
                 }
             }
-            return Integer.valueOf(classCount);
+            return classCount;
 
         }
 
@@ -542,30 +540,28 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         // pretty sure it was because of stupid broken AsyncTask on <2.3
         @Override
         protected void onPostExecute(Integer result) {
-            pb_ll.setVisibility(View.GONE);
+            progress.setVisibility(View.GONE);
 
             if (result != null && result >= 0) {
-                if (result.intValue() == 0) {
-                    daylist.setVisibility(View.GONE);
-                    nc_tv.setText("You aren't enrolled for this semester.");
-                    nc_tv.setVisibility(View.VISIBLE);
+                if (result == 0) {
+                    dayList.setVisibility(View.GONE);
+                    noCoursesTextView.setText("You aren't enrolled for this semester.");
+                    noCoursesTextView.setVisibility(View.VISIBLE);
 
                     // if they're not enrolled for the semester, disable the
                     // calendar-specific options
                     setMenuItemsEnabled(false);
                     return;
                 } else {
-                    ca = new ScheduleClassAdapter(parentAct, classList);
-                    ca.updateTime(); // not really necessary
-
-                    gv.setOnItemClickListener(CourseScheduleFragment.this);
-                    gv.setAdapter(ca);
+                    adapter = new ScheduleClassAdapter(parentAct, classList);
+                    scheduleGridView.setOnItemClickListener(CourseScheduleFragment.this);
+                    scheduleGridView.setAdapter(adapter);
 
                     // scrolls down to the user's earliest class
-                    gv.setSelection(ca.getEarliestClassPos());
+                    scheduleGridView.setSelection(adapter.getEarliestClassPos());
 
-                    gv.setVisibility(View.VISIBLE);
-                    daylist.setVisibility(View.VISIBLE);
+                    scheduleGridView.setVisibility(View.VISIBLE);
+                    dayList.setVisibility(View.VISIBLE);
 
                     setMenuItemsEnabled(true);
                     if (!parentAct.isFinishing()) {
@@ -575,12 +571,12 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                 }
             } else {
                 errorMsg = "UTilities could not fetch your class listing";
-                etv.setText(errorMsg);
-                etv.setVisibility(View.VISIBLE);
-                pb_ll.setVisibility(View.GONE);
-                daylist.setVisibility(View.GONE);
-                nc_tv.setVisibility(View.GONE);
-                gv.setVisibility(View.GONE);
+                errorTextView.setText(errorMsg);
+                errorTextView.setVisibility(View.VISIBLE);
+                progress.setVisibility(View.GONE);
+                dayList.setVisibility(View.GONE);
+                noCoursesTextView.setVisibility(View.GONE);
+                scheduleGridView.setVisibility(View.GONE);
 
                 setMenuItemsEnabled(false);
             }
@@ -594,12 +590,12 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
         @Override
         protected void onCancelled() {
-            etv.setText(errorMsg);
-            ell.setVisibility(View.VISIBLE);
-            pb_ll.setVisibility(View.GONE);
-            daylist.setVisibility(View.GONE);
-            nc_tv.setVisibility(View.GONE);
-            gv.setVisibility(View.GONE);
+            errorTextView.setText(errorMsg);
+            errorLayout.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.GONE);
+            dayList.setVisibility(View.GONE);
+            noCoursesTextView.setVisibility(View.GONE);
+            scheduleGridView.setVisibility(View.GONE);
 
             setMenuItemsEnabled(false);
         }
@@ -637,7 +633,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                     ArrayList<String> building = new ArrayList<String>();
                     Intent map = new Intent(getString(R.string.building_intent), null, parentAct,
                             CampusMapActivity.class);
-                    building.add(current_clt.getBuilding().getId());
+                    building.add(currentClasstime.getBuilding().getId());
                     map.putStringArrayListExtra("buildings", building);
                     startActivity(map);
                     break;
