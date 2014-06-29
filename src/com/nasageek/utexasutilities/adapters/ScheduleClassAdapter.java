@@ -26,7 +26,7 @@ import java.util.HashMap;
 
 public class ScheduleClassAdapter extends BaseAdapter {
 
-    private ArrayList<Classtime> orderedClassTimes;
+    private ArrayList<Classtime> orderedClasstimes;
     private ArrayList<Boolean> firstlist;
     private Context mContext;
     private int currentTimePos = -1;
@@ -40,13 +40,13 @@ public class ScheduleClassAdapter extends BaseAdapter {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
         emptyCellBackgroundPref = sp.getString("schedule_background_style", "checkhour");
         mContext = c;
-        ArrayList<Classtime> allClassTimes = new ArrayList<Classtime>(50);
+        ArrayList<Classtime> allClasstimes = new ArrayList<Classtime>(50);
         updateTime();
 
         // grab all ClassTimes out of classList
         for (UTClass clz : classList) {
-            for (Classtime classTime : clz.getClassTimes()) {
-                allClassTimes.add(classTime);
+            for (Classtime classtime : clz.getClassTimes()) {
+                allClasstimes.add(classtime);
             }
         }
 
@@ -54,31 +54,31 @@ public class ScheduleClassAdapter extends BaseAdapter {
         firstlist = new ArrayList<Boolean>();
         firstlist.ensureCapacity(180);
 
-        // contains the ClassTimes that have been ordered/grouped into a fake "grid"
-        orderedClassTimes = new ArrayList<Classtime>();
-        orderedClassTimes.ensureCapacity(180);
+        // contains the Classtimes that have been ordered/grouped into a fake "grid"
+        orderedClasstimes = new ArrayList<Classtime>();
+        orderedClasstimes.ensureCapacity(180);
 
         for (int x = 0; x < 180; x++) {
-            orderedClassTimes.add(null);
+            orderedClasstimes.add(null);
             firstlist.add(false);
         }
 
         HashMap<Character, Integer> dayCharMap = new HashMap<Character, Integer>();
-        // set up day map for manipulating orderedClassTimes as if it were a grid
+        // set up day map for manipulating orderedClasstimes as if it were a grid
         dayCharMap.put('M', 0);
         dayCharMap.put('T', 1);
         dayCharMap.put('W', 2);
         dayCharMap.put('H', 3);
         dayCharMap.put('F', 4);
 
-        for (Classtime classTime : allClassTimes) {
+        for (Classtime classTime : allClasstimes) {
             int startPos = timeToPos(classTime.getStartTime());
             int endPos = timeToPos(classTime.getEndTime());
             int dayOffset = dayCharMap.get(classTime.getDay());
 
             for (int a = 0; a < (endPos - startPos); a++) {
                 int dayIndex = dayOffset + 5 * startPos + a * 5;
-                orderedClassTimes.set(dayIndex, classTime);
+                orderedClasstimes.set(dayIndex, classTime);
                 if (a == 0) {
                     firstlist.set(dayIndex, true);
                 }
@@ -123,12 +123,12 @@ public class ScheduleClassAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return orderedClassTimes.size();
+        return orderedClasstimes.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return orderedClassTimes.get(position);
+        return orderedClasstimes.get(position);
     }
 
     @Override
@@ -151,7 +151,7 @@ public class ScheduleClassAdapter extends BaseAdapter {
         textView.setTextSize(13f); // 11.75 to fill cell space
 
         // is there class at this time?
-        if (orderedClassTimes.get(position) == null) {
+        if (orderedClasstimes.get(position) == null) {
             if (position == currentTimePos) {
                 final int colorInt = getEmptyCellColor(position);
                 Drawable currentMinutesLine = new ShapeDrawable(new Shape() {
@@ -167,7 +167,7 @@ public class ScheduleClassAdapter extends BaseAdapter {
             }
             textView.setText("");
         } else {
-            final Classtime cl = orderedClassTimes.get(position);
+            final Classtime cl = orderedClasstimes.get(position);
             final String color = "#" + cl.getColor();
 
             if (position == currentTimePos) {
@@ -184,10 +184,10 @@ public class ScheduleClassAdapter extends BaseAdapter {
                 textView.setBackgroundColor(Color.parseColor(color));
             }
 
-            // is this the first ClassTime in a "block"?
+            // is this the first Classtime in a "block"?
             if (firstlist.get(position)) {
                 // if so, label it with the start time of the class
-                textView.setText(orderedClassTimes.get(position).getStartTime());
+                textView.setText(orderedClasstimes.get(position).getStartTime());
                 textView.setGravity(Gravity.CENTER_HORIZONTAL);
             } else {
                 textView.setText("");
