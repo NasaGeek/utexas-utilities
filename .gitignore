@@ -38,6 +38,7 @@ proguard/
 # Android Studio and mac stuff
 /local.properties
 /.idea/workspace.xml
+/.navigation
 .DS_Store
 
 *~
