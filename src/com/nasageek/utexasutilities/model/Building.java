@@ -35,6 +35,10 @@ public class Building implements Parcelable, Serializable {
         room = r;
     }
 
+    public Building(Building building) {
+        this(building.getId(), building.getRoom());
+    }
+
     public String getRoom() {
         return room;
     }
