@@ -31,7 +31,7 @@ import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
 import com.nasageek.utexasutilities.activities.ScheduleActivity;
-import com.nasageek.utexasutilities.adapters.ClassAdapter;
+import com.nasageek.utexasutilities.adapters.ScheduleClassAdapter;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
 
@@ -59,7 +59,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
     private GridView gv;
     private WrappingSlidingDrawer sd;
     private LinearLayout sdll;
-    private ClassAdapter ca;
+    private ScheduleClassAdapter ca;
     private DefaultHttpClient client;
     private final String[] colors = {
             "488ab0", "00b060", "b56eb3", "94c6ff", "81b941", "ff866e", "ffad46", "ffe45e"
@@ -186,7 +186,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         switch (id) {
             case R.id.map_all_classes:
                 // check to see if we're done loading the schedules (the
-                // ClassAdapter is initialized in onPostExecute)
+                // ScheduleClassAdapter is initialized in onPostExecute)
                 if (ca != null) {
                     // populate an array with the buildings IDs of all of the
                     // user's classtimes
@@ -210,7 +210,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                 // version-gate handled by xml, but just to make sure...
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                     // check to see if we're done loading the schedules (the
-                    // ClassAdapter is initialized in onPostExecute)
+                    // ScheduleClassAdapter is initialized in onPostExecute)
                     if (ca != null) {
                         FragmentManager fm = parentAct.getSupportFragmentManager();
                         DoubleDatePickerDialogFragment ddpDlg = DoubleDatePickerDialogFragment
@@ -555,7 +555,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                     setMenuItemsEnabled(false);
                     return;
                 } else {
-                    ca = new ClassAdapter(parentAct, sd, sdll, ci_iv, ci_tv, semId, classList);
+                    ca = new ScheduleClassAdapter(parentAct, classList);
                     ca.updateTime(); // not really necessary
 
                     gv.setOnItemClickListener(CourseScheduleFragment.this);
