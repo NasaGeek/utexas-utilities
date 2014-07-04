@@ -150,7 +150,7 @@ public class TransactionsFragment extends SherlockFragment {
         BasicClientCookie screen = new BasicClientCookie("webBrowserSize", "B");
         screen.setDomain(".utexas.edu");
         httpclient.getCookieStore().addCookie(screen);
-        BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(
+        BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getUtdAuthCookie(
                 getActivity(), httpclient));
         cookie.setDomain(".utexas.edu");
         httpclient.getCookieStore().addCookie(cookie);

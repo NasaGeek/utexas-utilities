@@ -52,10 +52,10 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
         CookieSyncManager.createInstance(getActivity());
         CookieManager man = CookieManager.getInstance();
         man.setCookie(
-                ConnectionHelper.blackboard_domain_noprot,
+                ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT,
                 "s_session_id="
-                        + ConnectionHelper.getBBAuthCookie(getActivity(),
-                                ConnectionHelper.getThreadSafeClient()));
+                        + ConnectionHelper.getBbAuthCookie(getActivity(),
+                        ConnectionHelper.getThreadSafeClient()));
 
         CookieSyncManager.getInstance().sync();
     }

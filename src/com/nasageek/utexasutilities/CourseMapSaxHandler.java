@@ -65,7 +65,7 @@ public class CourseMapSaxHandler extends DefaultHandler {
                 Boolean blackboardItem = false;
                 if (!(atts.getValue("viewurl").contains("http://") || atts.getValue("viewurl")
                         .contains("https://"))) {
-                    host = ConnectionHelper.blackboard_domain;
+                    host = ConnectionHelper.BLACKBOARD_DOMAIN;
                 }
                 content.add(new MyPair(new CourseMapItem(atts.getValue("name"), host
                         + atts.getValue("viewurl").replace("&amp;", "&"), atts

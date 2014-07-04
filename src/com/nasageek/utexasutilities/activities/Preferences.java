@@ -119,7 +119,7 @@ public class Preferences extends SherlockPreferenceActivity {
         // disable the EID and password preferences if the user is logged in
         // TODO: make a method to check if user is logged in, it's cleaner that
         // way
-        if (ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet()
+        if (ConnectionHelper.utdCookieHasBeenSet() && ConnectionHelper.pnaCookieHasBeenSet()
                 && ConnectionHelper.bbCookieHasBeenSet()) {
             loginfield.setEnabled(false);
             passwordfield.setEnabled(false);
@@ -178,7 +178,7 @@ public class Preferences extends SherlockPreferenceActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet()
+        if (ConnectionHelper.utdCookieHasBeenSet() && ConnectionHelper.pnaCookieHasBeenSet()
                 && ConnectionHelper.bbCookieHasBeenSet()) {
             loginfield.setEnabled(false);
             passwordfield.setEnabled(false);

@@ -107,8 +107,8 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
 
         client = ConnectionHelper.getThreadSafeClient();
         BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBBAuthCookie(getActivity(), client));
-        cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
+                ConnectionHelper.getBbAuthCookie(getActivity(), client));
+        cookie.setDomain(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT);
         client.getCookieStore().addCookie(cookie);
     }
 
@@ -207,7 +207,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
                                             new IntentFilter(
                                                     DownloadManager.ACTION_NOTIFICATION_CLICKED));
 
-                                    Uri uri = Uri.parse(ConnectionHelper.blackboard_domain
+                                    Uri uri = Uri.parse(ConnectionHelper.BLACKBOARD_DOMAIN
                                             + Uri.decode(item.getDlUri()));
 
                                     Environment.getExternalStoragePublicDirectory(
@@ -229,8 +229,8 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
                                             .addRequestHeader(
                                                     "Cookie",
                                                     "s_session_id="
-                                                            + ConnectionHelper.getBBAuthCookie(
-                                                                    getActivity(), client));
+                                                            + ConnectionHelper.getBbAuthCookie(
+                                                            getActivity(), client));
 
                                     try {
                                         manager.enqueue(request);
@@ -424,7 +424,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
         protected Object[] doInBackground(String... params) {
             String contentid = params[0];
 
-            HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain
+            HttpGet hget = new HttpGet(ConnectionHelper.BLACKBOARD_DOMAIN
                     + "/webapps/Bb-mobile-BBLEARN/contentDetail?content_id=" + contentid
                     + "&course_id=" + getArguments().getString("courseID"));
             String pagedata = "";

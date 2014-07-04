@@ -90,8 +90,8 @@ public class BlackboardGradesFragment extends BlackboardFragment {
         httpclient = ConnectionHelper.getThreadSafeClient();
         httpclient.getCookieStore().clear();
         BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBBAuthCookie(getActivity(), httpclient));
-        cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
+                ConnectionHelper.getBbAuthCookie(getActivity(), httpclient));
+        cookie.setDomain(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT);
         httpclient.getCookieStore().addCookie(cookie);
 
     }
@@ -266,7 +266,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
         @Override
         protected ArrayList<bbGrade> doInBackground(Object... params) {
 
-            HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain
+            HttpGet hget = new HttpGet(ConnectionHelper.BLACKBOARD_DOMAIN
                     + "/webapps/Bb-mobile-BBLEARN/courseData?course_section=GRADES&course_id="
                     + courseID);
             String pagedata = "";

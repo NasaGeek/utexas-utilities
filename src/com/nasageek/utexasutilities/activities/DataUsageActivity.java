@@ -105,7 +105,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
         httpclient = ConnectionHelper.getThreadSafeClient();
         httpclient.getCookieStore().clear();
         BasicClientCookie cookie = new BasicClientCookie("AUTHCOOKIE",
-                ConnectionHelper.getPNAAuthCookie(this, httpclient));
+                ConnectionHelper.getPnaAuthCookie(this, httpclient));
         cookie.setDomain(".pna.utexas.edu");
         httpclient.getCookieStore().addCookie(cookie);
         new fetchDataTask(httpclient).execute();

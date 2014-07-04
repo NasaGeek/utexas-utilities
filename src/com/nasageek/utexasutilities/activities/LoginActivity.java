@@ -38,7 +38,7 @@ public class LoginActivity extends SherlockActivity {
                 actionbar.setSubtitle("UTDirect");
                 break;
             case 'b':
-                wv.loadUrl(ConnectionHelper.blackboard_domain);
+                wv.loadUrl(ConnectionHelper.BLACKBOARD_DOMAIN);
                 actionbar.setSubtitle("Blackboard");
                 break;
             case 'p':

@@ -104,10 +104,10 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         View vg = inflater.inflate(R.layout.blackboard_dashboard_fragment, container, false);
 
         httpclient = ConnectionHelper.getThreadSafeClient();
-        String bbAuthCookie = ConnectionHelper.getBBAuthCookie(getActivity(), httpclient);
+        String bbAuthCookie = ConnectionHelper.getBbAuthCookie(getActivity(), httpclient);
         httpclient.getCookieStore().clear();
         BasicClientCookie cookie = new BasicClientCookie("s_session_id", bbAuthCookie);
-        cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
+        cookie.setDomain(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT);
         httpclient.getCookieStore().addCookie(cookie);
 
         dlv = (AmazingListView) vg.findViewById(R.id.dash_listview);
@@ -273,7 +273,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
                 HttpsURLConnection conn = null;
                 try {
                     location = new URL(
-                            ConnectionHelper.blackboard_domain
+                            ConnectionHelper.BLACKBOARD_DOMAIN
                                     + "/webapps/Bb-mobile-BBLEARN/dashboard?course_type=COURSE&with_notifications=true");
                     conn = (HttpsURLConnection) location.openConnection();
                     conn.setRequestProperty("Cookie", "s_session_id=" + bbAuthCookie);
@@ -309,7 +309,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
             } else {
                 try {
                     HttpGet hget = new HttpGet(
-                            ConnectionHelper.blackboard_domain
+                            ConnectionHelper.BLACKBOARD_DOMAIN
                                     + "/webapps/Bb-mobile-BBLEARN/dashboard?course_type=COURSE&with_notifications=true");
                     HttpResponse response = client.execute(hget);
                     pagedata = EntityUtils.toString(response.getEntity());

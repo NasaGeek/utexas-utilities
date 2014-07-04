@@ -78,7 +78,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         ell = (LinearLayout) vg.findViewById(R.id.examschedule_error);
         eetv = (TextView) vg.findViewById(R.id.tv_failure);
 
-        if (!ConnectionHelper.cookieHasBeenSet()) {
+        if (!ConnectionHelper.utdCookieHasBeenSet()) {
             pb_ll.setVisibility(View.GONE);
             login_first.setVisibility(View.VISIBLE);
         } else {
@@ -90,7 +90,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         httpclient = ConnectionHelper.getThreadSafeClient();
         httpclient.getCookieStore().clear();
 
-        BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(
+        BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getUtdAuthCookie(
                 parentAct, httpclient));
         cookie.setDomain(".utexas.edu");
         httpclient.getCookieStore().addCookie(cookie);

@@ -50,7 +50,7 @@ public class LoginWebViewClient extends WebViewClient {
                         }
                     }
                     if (!authCookie.equals("")) {
-                        ConnectionHelper.setPNAAuthCookie(authCookie, context);
+                        ConnectionHelper.setPnaAuthCookie(authCookie, context);
                         continueToActivity("UT PNA");
                         return;
                     }
@@ -58,11 +58,11 @@ public class LoginWebViewClient extends WebViewClient {
                 break;
 
             case 'b':
-                if (url.contains(ConnectionHelper.blackboard_domain_noprot)) {
+                if (url.contains(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT)) {
                     cookies = CookieManager.getInstance().getCookie(
-                            ConnectionHelper.blackboard_domain);
+                            ConnectionHelper.BLACKBOARD_DOMAIN);
 
-                    if (url.equals(ConnectionHelper.blackboard_domain
+                    if (url.equals(ConnectionHelper.BLACKBOARD_DOMAIN
                             + "/webapps/portal/frameset.jsp")
                             && cookies != null) {
                         for (String s : cookies.split("; ")) {
@@ -74,7 +74,7 @@ public class LoginWebViewClient extends WebViewClient {
                         }
                     }
                     if (!authCookie.equals("")) {
-                        ConnectionHelper.setBBAuthCookie(authCookie, context);
+                        ConnectionHelper.setBbAuthCookie(authCookie, context);
                         continueToActivity("Blackboard");
                         return;
                     }
@@ -94,7 +94,7 @@ public class LoginWebViewClient extends WebViewClient {
                     if (!authCookie.equals("")
                             && !authCookie.equals("NONE")
                             && url.equals("https://utdirect.utexas.edu/security-443/logon_check.logonform")) {
-                        ConnectionHelper.setAuthCookie(authCookie, context);
+                        ConnectionHelper.setUtdAuthCookie(authCookie, context);
                         continueToActivity("UTDirect");
                         return;
                     }

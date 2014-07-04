@@ -310,7 +310,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             errorLayout.setVisibility(View.GONE);
 
             client.getCookieStore().clear();
-            authCookie = ConnectionHelper.getAuthCookie(parentAct, client);
+            authCookie = ConnectionHelper.getUtdAuthCookie(parentAct, client);
 
             BasicClientCookie cookie = new BasicClientCookie("SC", authCookie);
             cookie.setDomain(".utexas.edu");

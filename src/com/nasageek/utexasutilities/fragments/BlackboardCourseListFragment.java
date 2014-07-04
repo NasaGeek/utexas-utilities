@@ -79,8 +79,8 @@ public class BlackboardCourseListFragment extends SherlockFragment {
         httpclient = ConnectionHelper.getThreadSafeClient();
         httpclient.getCookieStore().clear();
         BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBBAuthCookie(getActivity(), httpclient));
-        cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
+                ConnectionHelper.getBbAuthCookie(getActivity(), httpclient));
+        cookie.setDomain(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT);
         httpclient.getCookieStore().addCookie(cookie);
 
         classAdapter = new BBClassAdapter(getActivity(), classSectionList);
@@ -185,7 +185,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 
         @Override
         protected ArrayList<MyPair<String, List<BBClass>>> doInBackground(Object... params) {
-            HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain
+            HttpGet hget = new HttpGet(ConnectionHelper.BLACKBOARD_DOMAIN
                     + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
             String pagedata = "";
 
