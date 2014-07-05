@@ -25,6 +25,7 @@ import org.apache.http.protocol.HTTP;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class ConnectionHelper {
 
@@ -306,15 +307,18 @@ public class ConnectionHelper {
         DefaultHttpClient bbhttpclient;
         Editor edit;
         Context context;
+        private CountDownLatch loginLatch;
 
         public utdLoginTask(Context con, DefaultHttpClient httpclient,
-                DefaultHttpClient pnahttpclient, DefaultHttpClient bbhttpclient) {
+                DefaultHttpClient pnahttpclient, DefaultHttpClient bbhttpclient,
+                CountDownLatch loginLatch) {
             settings = PreferenceManager.getDefaultSharedPreferences(con);
             edit = settings.edit();
             this.httpclient = httpclient;
             this.pnahttpclient = pnahttpclient;
             this.bbhttpclient = bbhttpclient;
             this.context = con;
+            this.loginLatch = loginLatch;
         }
 
         @Override
@@ -345,7 +349,10 @@ public class ConnectionHelper {
 
         @Override
         protected void onPostExecute(Boolean b) {
-            utdLoginDone = b;
+            loginLatch.countDown();
+            return;
+
+            /*utdLoginDone = b;
 
             if (utdLoginDone && pnaLoginDone && bbLoginDone && !isCancelled()) {
                 utdLoginDone = false;
@@ -365,7 +372,7 @@ public class ConnectionHelper {
                 }
                 ((SherlockActivity) (context)).invalidateOptionsMenu();
                 cancelProgressBar();
-            }
+            }*/
         }
 
         @Override
@@ -392,15 +399,18 @@ public class ConnectionHelper {
         private DefaultHttpClient bbhttpclient;
         private Editor edit;
         private Context context;
+        private CountDownLatch loginLatch;
 
         public pnaLoginTask(Context con, DefaultHttpClient httpclient,
-                DefaultHttpClient pnahttpclient, DefaultHttpClient bbhttpclient) {
+                DefaultHttpClient pnahttpclient, DefaultHttpClient bbhttpclient,
+                CountDownLatch loginLatch) {
             settings = PreferenceManager.getDefaultSharedPreferences(con);
             edit = settings.edit();
             this.httpclient = httpclient;
             this.pnahttpclient = pnahttpclient;
             this.bbhttpclient = bbhttpclient;
             this.context = con;
+            this.loginLatch = loginLatch;
         }
 
         @Override
@@ -427,7 +437,10 @@ public class ConnectionHelper {
 
         @Override
         protected void onPostExecute(Boolean b) {
-            pnaLoginDone = b;
+            loginLatch.countDown();
+            return;
+
+            /*pnaLoginDone = b;
 
             if (utdLoginDone && pnaLoginDone && bbLoginDone && !isCancelled()) {
                 utdLoginDone = false;
@@ -447,7 +460,7 @@ public class ConnectionHelper {
                 }
                 ((SherlockActivity) (context)).invalidateOptionsMenu();
                 cancelProgressBar();
-            }
+            }*/
         }
 
         @Override
@@ -472,14 +485,17 @@ public class ConnectionHelper {
         private DefaultHttpClient bbhttpclient;
         private Editor edit;
         private Context context;
+        private CountDownLatch loginLatch;
 
         public bbLoginTask(Context con, DefaultHttpClient httpclient,
-                DefaultHttpClient pnahttpclient, DefaultHttpClient bbhttpclient) {
+                DefaultHttpClient pnahttpclient, DefaultHttpClient bbhttpclient,
+                CountDownLatch loginLatch) {
             settings = PreferenceManager.getDefaultSharedPreferences(con);
             edit = settings.edit();
             this.httpclient = httpclient;
             this.pnahttpclient = pnahttpclient;
             this.bbhttpclient = bbhttpclient;
+            this.loginLatch = loginLatch;
             this.context = con;
         }
 
@@ -506,7 +522,12 @@ public class ConnectionHelper {
 
         @Override
         protected void onPostExecute(Boolean b) {
-            bbLoginDone = b;
+            loginLatch.countDown();
+            return;
+
+            /*bbLoginDone = b;
+
+
 
             if (utdLoginDone && pnaLoginDone && bbLoginDone && !isCancelled()) {
                 utdLoginDone = false;
@@ -526,7 +547,7 @@ public class ConnectionHelper {
                 }
                 ((SherlockActivity) (context)).invalidateOptionsMenu();
                 cancelProgressBar();
-            }
+            }*/
         }
 
         @Override

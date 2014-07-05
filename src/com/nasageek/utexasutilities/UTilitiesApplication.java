@@ -7,6 +7,12 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 @ReportsCrashes(formKey = "", // This is required for backward compatibility but
 // not used
 customReportContent = {
@@ -19,14 +25,36 @@ customReportContent = {
 
 // formUriBasicAuthLogin = "releasereporter",
 // formUriBasicAuthPassword = "raebpcorterpxayszsword"
+
 )
 public class UTilitiesApplication extends Application {
+
+    private Map<String, AuthCookie> authCookies;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
+        authCookies = new HashMap<String, AuthCookie>();
         // The following line triggers the initialization of ACRA
         ACRA.init(this);
     }
+
+    public AuthCookie getAuthCookie(String key) {
+        return authCookies.get(key);
+    }
+
+    public void putAuthCookie(String key, AuthCookie cookie) {
+        authCookies.put(key, cookie);
+    }
+
+    public boolean allCookiesSet() {
+        for (AuthCookie cookie : authCookies.values()) {
+            if (!cookie.hasCookieBeenSet()) {
+                return false;
+            }
+        }
+        return !authCookies.isEmpty();
+    }
+
+
 }
