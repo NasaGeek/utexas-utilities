@@ -43,6 +43,7 @@ import com.nasageek.utexasutilities.AttachmentDownloadService;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.MyScrollView;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -107,7 +108,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
 
         client = ConnectionHelper.getThreadSafeClient();
         BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBbAuthCookie(getActivity(), client));
+                ((UTilitiesApplication) getActivity().getApplication()).getBbAuthCookie());
         cookie.setDomain(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT);
         client.getCookieStore().addCookie(cookie);
     }
@@ -229,8 +230,8 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
                                             .addRequestHeader(
                                                     "Cookie",
                                                     "s_session_id="
-                                                            + ConnectionHelper.getBbAuthCookie(
-                                                            getActivity(), client));
+                                                            + ((UTilitiesApplication) getActivity()
+                                                            .getApplication()).getBbAuthCookie());
 
                                     try {
                                         manager.enqueue(request);

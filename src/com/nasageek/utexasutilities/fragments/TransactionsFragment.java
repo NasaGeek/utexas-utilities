@@ -14,8 +14,10 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.adapters.TransactionAdapter;
 import com.nasageek.utexasutilities.model.Transaction;
 
@@ -31,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 //TODO: last transaction doesn't show when loading dialog is present at the bottom, low priority fix
 
@@ -48,12 +52,12 @@ public class TransactionsFragment extends SherlockFragment {
     // private SherlockFragmentActivity parentAct;
 
     private View vg;
-
+    private AuthCookie utdAuthCookie;
     private String balance;
     private fetchTransactionDataTask fetch;
 
     public enum TransactionType {
-        Bevo, Dinein;
+        Bevo, Dinein
     }
 
     private TransactionType mType;
@@ -109,6 +113,8 @@ public class TransactionsFragment extends SherlockFragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
+        utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
+                .getAuthCookie(UTD_AUTH_COOKIE_KEY);
         postdata = new ArrayList<BasicNameValuePair>();
         mType = (TransactionType) getArguments().getSerializable("type");
         if (TransactionType.Bevo.equals(mType)) {
@@ -150,8 +156,8 @@ public class TransactionsFragment extends SherlockFragment {
         BasicClientCookie screen = new BasicClientCookie("webBrowserSize", "B");
         screen.setDomain(".utexas.edu");
         httpclient.getCookieStore().addCookie(screen);
-        BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getUtdAuthCookie(
-                getActivity(), httpclient));
+        String utdAuthcookie = utdAuthCookie.getAuthCookie(getActivity());
+        BasicClientCookie cookie = new BasicClientCookie("SC", utdAuthcookie);
         cookie.setDomain(".utexas.edu");
         httpclient.getCookieStore().addCookie(cookie);
 
@@ -236,7 +242,7 @@ public class TransactionsFragment extends SherlockFragment {
             // TODO: automatically log them back in
             if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-                ConnectionHelper.logout(getActivity());
+                TransactionsFragment.this.utdAuthCookie.logout(getActivity());
                 cancel(true);
                 return null;
             }

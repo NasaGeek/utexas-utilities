@@ -17,6 +17,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.mapsaurus.paneslayout.MySlidingPaneLayout;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 
 public class BlackboardExternalItemFragment extends BlackboardFragment {
 
@@ -54,8 +55,7 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
         man.setCookie(
                 ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT,
                 "s_session_id="
-                        + ConnectionHelper.getBbAuthCookie(getActivity(),
-                        ConnectionHelper.getThreadSafeClient()));
+                        + ((UTilitiesApplication) getActivity().getApplication()).getBbAuthCookie());
 
         CookieSyncManager.getInstance().sync();
     }

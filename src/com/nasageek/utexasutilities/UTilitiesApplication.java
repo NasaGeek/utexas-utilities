@@ -7,6 +7,8 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -29,12 +31,33 @@ customReportContent = {
 )
 public class UTilitiesApplication extends Application {
 
+    public static final String UTD_AUTH_COOKIE_KEY = "utd_auth_cookie";
+    public static final String PNA_AUTH_COOKIE_KEY = "pna_auth_cookie";
+    public static final String BB_AUTH_COOKIE_KEY = "bb_auth_cookie";
+
     private Map<String, AuthCookie> authCookies;
 
     @Override
     public void onCreate() {
         super.onCreate();
         authCookies = new HashMap<String, AuthCookie>();
+        authCookies.put(UTD_AUTH_COOKIE_KEY, new AuthCookie(UTD_AUTH_COOKIE_KEY,
+                    "SC",
+                    "https://utdirect.utexas.edu/security-443/logon_check.logonform",
+                    "LOGON",
+                    "PASSWORDS"));
+
+        authCookies.put(PNA_AUTH_COOKIE_KEY, new PnaAuthCookie());
+
+        authCookies.put(BB_AUTH_COOKIE_KEY, new AuthCookie(BB_AUTH_COOKIE_KEY,
+                    "s_session_id",
+                    ConnectionHelper.BLACKBOARD_DOMAIN + "/webapps/login/",
+                    "user_id",
+                    "password"));
+
+        CookieManager cookieManager = new CookieManager();
+        CookieHandler.setDefault(cookieManager);
+
         // The following line triggers the initialization of ACRA
         ACRA.init(this);
     }
@@ -56,5 +79,14 @@ public class UTilitiesApplication extends Application {
         return !authCookies.isEmpty();
     }
 
+    public String getUtdAuthCookie() {
+        return authCookies.get(UTD_AUTH_COOKIE_KEY).getAuthCookie(this);
+    }
 
+    public String getPnaAuthCookie() {
+        return authCookies.get(PNA_AUTH_COOKIE_KEY).getAuthCookie(this);
+    }
+    public String getBbAuthCookie() {
+        return authCookies.get(BB_AUTH_COOKIE_KEY).getAuthCookie(this);
+    }
 }

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
+import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
 
 /**
  * Created by Chris on 7/5/2014.
@@ -33,7 +34,7 @@ public class PnaAuthCookie extends AuthCookie {
 
 
     public PnaAuthCookie() {
-        super("pna_auth_cookie", "AUTHCOOKIE", "https://management.pna.utexas.edu/server/graph.cgi", "PNACLOGINusername", "PNACLOGINpassword");
+        super(PNA_AUTH_COOKIE_KEY, "AUTHCOOKIE", "https://management.pna.utexas.edu/server/graph.cgi", "PNACLOGINusername", "PNACLOGINpassword");
     }
 
     public void login(final Context con) throws IOException {

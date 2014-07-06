@@ -32,6 +32,7 @@ import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.CourseMapSaxHandler;
 import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.adapters.CourseMapAdapter;
 import com.nasageek.utexasutilities.model.CourseMapItem;
 
@@ -115,7 +116,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         httpclient = ConnectionHelper.getThreadSafeClient();
         httpclient.getCookieStore().clear();
         BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBbAuthCookie(getActivity(), httpclient));
+                ((UTilitiesApplication) getActivity().getApplication()).getBbAuthCookie());
         cookie.setDomain(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT);
         httpclient.getCookieStore().addCookie(cookie);
     }

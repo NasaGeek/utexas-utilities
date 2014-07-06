@@ -30,6 +30,7 @@ import com.androidplot.xy.XYStepMode;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 
 import org.acra.ACRA;
 import org.apache.http.HttpResponse;
@@ -50,6 +51,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
 
 public class DataUsageActivity extends SherlockActivity implements OnTouchListener {
 
@@ -104,8 +107,9 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 
         httpclient = ConnectionHelper.getThreadSafeClient();
         httpclient.getCookieStore().clear();
-        BasicClientCookie cookie = new BasicClientCookie("AUTHCOOKIE",
-                ConnectionHelper.getPnaAuthCookie(this, httpclient));
+        String pnaAuthCookie = ((UTilitiesApplication) getApplication())
+                .getAuthCookie(PNA_AUTH_COOKIE_KEY).getAuthCookie(this);
+        BasicClientCookie cookie = new BasicClientCookie("AUTHCOOKIE", pnaAuthCookie);
         cookie.setDomain(".pna.utexas.edu");
         httpclient.getCookieStore().addCookie(cookie);
         new fetchDataTask(httpclient).execute();

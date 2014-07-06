@@ -9,6 +9,8 @@ import android.util.Log;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.net.CookieManager;
+import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -103,20 +105,21 @@ public class AuthCookie {
         bos.flush();
         bos.close();
 
+        // if I don't call getHeaderFields, CookieStore is empty. ????
         Map<String, List<String>> headers = connection.getHeaderFields();
-        List<String> cookies = headers.get("Set-cookie");
-        if (cookies == null) {
-            Log.e("login", "no cookies headers for " + prefKey);
-            return;
-        }
-        for (String cookie : headers.get("Set-cookie")) {
+        CookieManager cm = (CookieManager) CookieManager.getDefault();
+        List<HttpCookie> cookies = cm.getCookieStore().getCookies();
+        for (HttpCookie cookie : cookies) {
             // special case for UTD login since I'm too lazy to subclass it
-            if (cookie.startsWith(authCookieKey) && !cookie.equals("SC=NONE")) {
-                setAuthCookie(cookie.split(";")[0].substring(cookie.indexOf('=') + 1));
+            String cookieVal = cookie.getValue();
+            if (cookie.getName().equals(authCookieKey) && !cookieVal.equals("NONE")) {
+                setAuthCookie(cookieVal);
                 return;
             }
         }
         // do something otherwise
+
+        connection.disconnect();
     }
 
     public void logout(Context con) {

@@ -24,6 +24,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import static com.nasageek.utexasutilities.UTilitiesApplication.BB_AUTH_COOKIE_KEY;
+
 @SuppressLint("NewApi")
 public class AttachmentDownloadService extends IntentService {
 
@@ -67,8 +69,8 @@ public class AttachmentDownloadService extends IntentService {
             connection.addRequestProperty(
                     "Cookie",
                     "s_session_id="
-                            + ConnectionHelper.getBbAuthCookie(AttachmentDownloadService.this,
-                            ConnectionHelper.getThreadSafeClient()));
+                            + ((UTilitiesApplication) getApplication())
+                            .getAuthCookie(BB_AUTH_COOKIE_KEY).getAuthCookie(this));
 
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ECLAIR_MR1) {
                 (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download"))

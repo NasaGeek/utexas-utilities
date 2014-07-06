@@ -30,6 +30,7 @@ import com.nasageek.utexasutilities.BlackboardDashboardXmlParser;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.model.BBClass;
 import com.nasageek.utexasutilities.model.FeedItem;
 
@@ -104,7 +105,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         View vg = inflater.inflate(R.layout.blackboard_dashboard_fragment, container, false);
 
         httpclient = ConnectionHelper.getThreadSafeClient();
-        String bbAuthCookie = ConnectionHelper.getBbAuthCookie(getActivity(), httpclient);
+        String bbAuthCookie = ((UTilitiesApplication) getActivity().getApplication()).getBbAuthCookie();
         httpclient.getCookieStore().clear();
         BasicClientCookie cookie = new BasicClientCookie("s_session_id", bbAuthCookie);
         cookie.setDomain(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT);

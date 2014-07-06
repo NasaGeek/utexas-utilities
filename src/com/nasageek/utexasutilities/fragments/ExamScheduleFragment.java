@@ -23,8 +23,10 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
 
 import org.apache.http.HttpResponse;
@@ -36,6 +38,8 @@ import org.apache.http.util.EntityUtils;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 public class ExamScheduleFragment extends SherlockFragment implements ActionModeFragment {
 
@@ -53,6 +57,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     private TextView eetv;
     private LinearLayout ell;
     String semId;
+    private AuthCookie utdAuthCookie;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,6 +71,8 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         super.onCreate(savedInstanceState);
         parentAct = this.getActivity();
         semId = getArguments().getString("semdId");
+        utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
+                .getAuthCookie(UTD_AUTH_COOKIE_KEY);
     }
 
     public void updateView(String semId, View vg) {
@@ -78,7 +85,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         ell = (LinearLayout) vg.findViewById(R.id.examschedule_error);
         eetv = (TextView) vg.findViewById(R.id.tv_failure);
 
-        if (!ConnectionHelper.utdCookieHasBeenSet()) {
+        if (!utdAuthCookie.hasCookieBeenSet()) {
             pb_ll.setVisibility(View.GONE);
             login_first.setVisibility(View.VISIBLE);
         } else {
@@ -90,8 +97,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         httpclient = ConnectionHelper.getThreadSafeClient();
         httpclient.getCookieStore().clear();
 
-        BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getUtdAuthCookie(
-                parentAct, httpclient));
+        BasicClientCookie cookie = new BasicClientCookie("SC", utdAuthCookie.getAuthCookie(getActivity()));
         cookie.setDomain(".utexas.edu");
         httpclient.getCookieStore().addCookie(cookie);
 

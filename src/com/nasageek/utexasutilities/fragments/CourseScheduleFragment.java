@@ -28,9 +28,11 @@ import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
 import com.nasageek.utexasutilities.activities.ScheduleActivity;
+import com.nasageek.utexasutilities.activities.UTilitiesActivity;
 import com.nasageek.utexasutilities.adapters.ScheduleClassAdapter;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
@@ -50,6 +52,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 @SuppressWarnings("deprecation")
 public class CourseScheduleFragment extends SherlockFragment implements ActionModeFragment,
@@ -310,12 +314,12 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             errorLayout.setVisibility(View.GONE);
 
             client.getCookieStore().clear();
-            authCookie = ConnectionHelper.getUtdAuthCookie(parentAct, client);
+            authCookie = ((UTilitiesApplication) getActivity().getApplication())
+                    .getAuthCookie(UTD_AUTH_COOKIE_KEY).getAuthCookie(getActivity());
 
             BasicClientCookie cookie = new BasicClientCookie("SC", authCookie);
             cookie.setDomain(".utexas.edu");
             client.getCookieStore().addCookie(cookie);
-
         }
 
         @Override

@@ -1,31 +1,7 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import com.google.android.gms.internal.ch;
-import com.google.android.gms.internal.ex;
-
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.drawable.TransitionDrawable;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
-import android.view.View.OnTouchListener;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Toast;
-
 import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -35,20 +11,35 @@ import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.ChangeLog;
 import com.nasageek.utexasutilities.ChangeableContextTask;
 import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.PnaAuthCookie;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.Utility;
 
-import org.apache.http.impl.client.DefaultHttpClient;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.View.OnTouchListener;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Toast;
 
-import java.io.IOError;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.*;
 
 public class UTilitiesActivity extends SherlockActivity {
 
@@ -64,8 +55,10 @@ public class UTilitiesActivity extends SherlockActivity {
     private AlertDialog nologin;
 
     private AuthCookie authCookies[];
-
     private List<ChangeableContextTask> loginTasks;
+    private AuthCookie utdAuthCookie;
+    private AuthCookie pnaAuthCookie;
+    private AuthCookie bbAuthCookie;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,32 +77,10 @@ public class UTilitiesActivity extends SherlockActivity {
          * httpCacheSize); } catch (IOException e) { e.printStackTrace(); }
          */
 
-        final AuthCookie utdAuthCookie, pnaAuthCookie, bbAuthCookie;
         UTilitiesApplication mApp = (UTilitiesApplication) getApplication();
-        if (mApp.getAuthCookie("utd_auth_cookie") == null) {
-            utdAuthCookie = new AuthCookie("utd_auth_cookie",
-                    "SC",
-                    "https://utdirect.utexas.edu/security-443/logon_check.logonform",
-                    "LOGON",
-                    "PASSWORDS");
-        } else {
-            utdAuthCookie = mApp.getAuthCookie("utd_auth_cookie");
-        }
-        if (mApp.getAuthCookie("pna_auth_cookie") == null) {
-            pnaAuthCookie = new PnaAuthCookie();
-
-        } else {
-            pnaAuthCookie = mApp.getAuthCookie("pna_auth_cookie");
-        }
-        if (mApp.getAuthCookie("utd_auth_cookie") == null) {
-            bbAuthCookie = new AuthCookie("bb_auth_cookie",
-                    "s_session_id",
-                    ConnectionHelper.BLACKBOARD_DOMAIN + "/webapps/login/",
-                    "user_id",
-                    "password");
-        } else {
-            bbAuthCookie = mApp.getAuthCookie("bb_auth_cookie");
-        }
+        utdAuthCookie = mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY);
+        pnaAuthCookie = mApp.getAuthCookie(PNA_AUTH_COOKIE_KEY);
+        bbAuthCookie = mApp.getAuthCookie(BB_AUTH_COOKIE_KEY);
         authCookies = new AuthCookie[]{utdAuthCookie, pnaAuthCookie, bbAuthCookie};
 
         @SuppressWarnings("deprecation")
@@ -203,7 +174,7 @@ public class UTilitiesActivity extends SherlockActivity {
             public void onClick(View v) {
 
                 if (settings.getBoolean("loginpref", false)) {
-                    if (!ConnectionHelper.utdCookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
+                    if (!utdAuthCookie.hasCookieBeenSet() || ConnectionHelper.isLoggingIn()) {
                         message.setText(R.string.login_first);
                         message.setDuration(Toast.LENGTH_SHORT);
                         message.show();
@@ -211,7 +182,7 @@ public class UTilitiesActivity extends SherlockActivity {
                         startActivity(schedule);
                     }
                 } else {
-                    if (!ConnectionHelper.utdCookieHasBeenSet()) {
+                    if (!utdAuthCookie.hasCookieBeenSet()) {
                         Intent login_intent = new Intent(UTilitiesActivity.this,
                                 LoginActivity.class);
                         login_intent.putExtra("activity", schedule.getComponent().getClassName());
@@ -232,7 +203,7 @@ public class UTilitiesActivity extends SherlockActivity {
             @Override
             public void onClick(View v) {
                 if (settings.getBoolean("loginpref", false)) {
-                    if (!ConnectionHelper.utdCookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
+                    if (!utdAuthCookie.hasCookieBeenSet() || ConnectionHelper.isLoggingIn()) {
                         message.setText(R.string.login_first);
                         message.setDuration(Toast.LENGTH_SHORT);
                         message.show();
@@ -240,7 +211,7 @@ public class UTilitiesActivity extends SherlockActivity {
                         startActivity(balance);
                     }
                 } else {
-                    if (!ConnectionHelper.utdCookieHasBeenSet()) {
+                    if (!utdAuthCookie.hasCookieBeenSet()) {
                         Intent login_intent = new Intent(UTilitiesActivity.this,
                                 LoginActivity.class);
                         login_intent.putExtra("activity", balance.getComponent().getClassName());
@@ -273,7 +244,7 @@ public class UTilitiesActivity extends SherlockActivity {
             public void onClick(View v) {
 
                 if (settings.getBoolean("loginpref", false)) {
-                    if (!ConnectionHelper.pnaCookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
+                    if (!pnaAuthCookie.hasCookieBeenSet() || ConnectionHelper.isLoggingIn()) {
                         message.setText(R.string.login_pna_first);
                         message.setDuration(Toast.LENGTH_SHORT);
                         message.show();
@@ -281,7 +252,7 @@ public class UTilitiesActivity extends SherlockActivity {
                         startActivity(data);
                     }
                 } else {
-                    if (!ConnectionHelper.pnaCookieHasBeenSet()) {
+                    if (!pnaAuthCookie.hasCookieBeenSet()) {
                         Intent login_intent = new Intent(UTilitiesActivity.this,
                                 LoginActivity.class);
                         login_intent.putExtra("activity", data.getComponent().getClassName());
@@ -315,7 +286,7 @@ public class UTilitiesActivity extends SherlockActivity {
             public void onClick(View v) {
 
                 if (settings.getBoolean("loginpref", false)) {
-                    if (!ConnectionHelper.bbCookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
+                    if (!bbAuthCookie.hasCookieBeenSet() || ConnectionHelper.isLoggingIn()) {
                         message.setText(R.string.login_bb_first);
                         message.setDuration(Toast.LENGTH_SHORT);
                         message.show();
@@ -323,7 +294,7 @@ public class UTilitiesActivity extends SherlockActivity {
                         startActivity(blackboard);
                     }
                 } else {
-                    if (!ConnectionHelper.bbCookieHasBeenSet()) {
+                    if (!bbAuthCookie.hasCookieBeenSet()) {
                         Intent login_intent = new Intent(UTilitiesActivity.this,
                                 LoginActivity.class);
                         login_intent.putExtra("activity", blackboard.getComponent().getClassName());
@@ -644,19 +615,19 @@ public class UTilitiesActivity extends SherlockActivity {
             dataCheck.setVisibility(View.GONE);
             blackboardCheck.setVisibility(View.GONE);
         } else {
-            if (!ConnectionHelper.utdCookieHasBeenSet()) {
+            if (!utdAuthCookie.hasCookieBeenSet()) {
                 scheduleCheck.setImageResource(R.drawable.ic_done_translucent);
                 balanceCheck.setImageResource(R.drawable.ic_done_translucent);
             } else {
                 scheduleCheck.setImageResource(R.drawable.ic_done);
                 balanceCheck.setImageResource(R.drawable.ic_done);
             }
-            if (!ConnectionHelper.bbCookieHasBeenSet()) {
+            if (!bbAuthCookie.hasCookieBeenSet()) {
                 blackboardCheck.setImageResource(R.drawable.ic_done_translucent);
             } else {
                 blackboardCheck.setImageResource(R.drawable.ic_done);
             }
-            if (!ConnectionHelper.pnaCookieHasBeenSet()) {
+            if (!pnaAuthCookie.hasCookieBeenSet()) {
                 dataCheck.setImageResource(R.drawable.ic_done_translucent);
             } else {
                 dataCheck.setImageResource(R.drawable.ic_done);
