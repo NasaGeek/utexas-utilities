@@ -1,31 +1,15 @@
 
 package com.nasageek.utexasutilities;
 
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.HttpParams;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
-import android.widget.Toast;
-
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.nasageek.utexasutilities.activities.Preferences;
-import com.nasageek.utexasutilities.activities.UTilitiesActivity;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HTTP;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 public class ConnectionHelper {
 
@@ -60,11 +44,6 @@ public class ConnectionHelper {
         edit.putBoolean("loggedin", false);
 
         Utility.commit(edit);
-        loggingIn = false;
-    }
-
-    public static boolean isLoggingIn() {
-        return loggingIn;
     }
 
     public static void setUtdAuthCookie(String cookie, Context con) {

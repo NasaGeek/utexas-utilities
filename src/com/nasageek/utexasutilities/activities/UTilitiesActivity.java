@@ -56,6 +56,7 @@ public class UTilitiesActivity extends SherlockActivity {
 
     private AuthCookie authCookies[];
     private List<ChangeableContextTask> loginTasks;
+    private UpdateUiTask updateUiTask;
     private AuthCookie utdAuthCookie;
     private AuthCookie pnaAuthCookie;
     private AuthCookie bbAuthCookie;
@@ -86,18 +87,21 @@ public class UTilitiesActivity extends SherlockActivity {
         @SuppressWarnings("deprecation")
         final List<ChangeableContextTask> restoredLoginTasks = (List<ChangeableContextTask>) getLastNonConfigurationInstance();
         if (restoredLoginTasks != null) {
+            updateUiTask = (UpdateUiTask) restoredLoginTasks.get(0);
             for (ChangeableContextTask task : restoredLoginTasks) {
                 if (task != null) {
                     task.setContext(this);
                 }
             }
+        } else {
+            updateUiTask = new UpdateUiTask(this);
         }
 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         setContentView(R.layout.main);
-        if (ConnectionHelper.isLoggingIn()) {
+        if (isLoggingIn()) {
             setSupportProgressBarIndeterminateVisibility(true);
         } else {
             setSupportProgressBarIndeterminateVisibility(false);
@@ -161,7 +165,7 @@ public class UTilitiesActivity extends SherlockActivity {
             }
         }
 
-        if (settings.getBoolean("autologin", false) && !ConnectionHelper.isLoggingIn() && !mApp.allCookiesSet()) {
+        if (settings.getBoolean("autologin", false) && !isLoggingIn() && !mApp.allCookiesSet()) {
             login();
         }
 
@@ -174,7 +178,7 @@ public class UTilitiesActivity extends SherlockActivity {
             public void onClick(View v) {
 
                 if (settings.getBoolean("loginpref", false)) {
-                    if (!utdAuthCookie.hasCookieBeenSet() || ConnectionHelper.isLoggingIn()) {
+                    if (!utdAuthCookie.hasCookieBeenSet() || isLoggingIn()) {
                         message.setText(R.string.login_first);
                         message.setDuration(Toast.LENGTH_SHORT);
                         message.show();
@@ -203,7 +207,7 @@ public class UTilitiesActivity extends SherlockActivity {
             @Override
             public void onClick(View v) {
                 if (settings.getBoolean("loginpref", false)) {
-                    if (!utdAuthCookie.hasCookieBeenSet() || ConnectionHelper.isLoggingIn()) {
+                    if (!utdAuthCookie.hasCookieBeenSet() || isLoggingIn()) {
                         message.setText(R.string.login_first);
                         message.setDuration(Toast.LENGTH_SHORT);
                         message.show();
@@ -244,7 +248,7 @@ public class UTilitiesActivity extends SherlockActivity {
             public void onClick(View v) {
 
                 if (settings.getBoolean("loginpref", false)) {
-                    if (!pnaAuthCookie.hasCookieBeenSet() || ConnectionHelper.isLoggingIn()) {
+                    if (!pnaAuthCookie.hasCookieBeenSet() || isLoggingIn()) {
                         message.setText(R.string.login_pna_first);
                         message.setDuration(Toast.LENGTH_SHORT);
                         message.show();
@@ -286,7 +290,7 @@ public class UTilitiesActivity extends SherlockActivity {
             public void onClick(View v) {
 
                 if (settings.getBoolean("loginpref", false)) {
-                    if (!bbAuthCookie.hasCookieBeenSet() || ConnectionHelper.isLoggingIn()) {
+                    if (!bbAuthCookie.hasCookieBeenSet() || isLoggingIn()) {
                         message.setText(R.string.login_bb_first);
                         message.setDuration(Toast.LENGTH_SHORT);
                         message.show();
@@ -390,8 +394,7 @@ public class UTilitiesActivity extends SherlockActivity {
         }
 
         if (settings.getBoolean("loginpref", false)) {
-            if (!ConnectionHelper.isLoggingIn()) {
-
+            if (!isLoggingIn()) {
                 if (allLoggedIn) {
                     menu.removeGroup(R.id.log);
                     menu.add(R.id.log, LOGOUT_MENU_ID, Menu.NONE, "Log out");
@@ -455,6 +458,10 @@ public class UTilitiesActivity extends SherlockActivity {
         startActivity(pref_intent);
     }
 
+    private boolean isLoggingIn() {
+        return updateUiTask.getStatus() == AsyncTask.Status.RUNNING;
+    }
+
     static class LoginTask extends AsyncTask<AuthCookie, Void, Void> implements
                                                                             ChangeableContextTask {
 
@@ -506,7 +513,6 @@ public class UTilitiesActivity extends SherlockActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            ConnectionHelper.loggingIn = false;
             for (AuthCookie cookie : mActivity.authCookies) {
                 if (!cookie.hasCookieBeenSet()) {
                     return;
@@ -540,12 +546,18 @@ public class UTilitiesActivity extends SherlockActivity {
                 message.setText("Logging in...");
                 message.setDuration(Toast.LENGTH_SHORT);
                 message.show();
-                ConnectionHelper.loggingIn = true;
                 setSupportProgressBarIndeterminateVisibility(true);
 
                 loginTasks = new ArrayList<ChangeableContextTask>();
-
                 CountDownLatch loginLatch = new CountDownLatch(authCookies.length);
+                updateUiTask = new UpdateUiTask(this);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    updateUiTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, loginLatch);
+                } else {
+                    updateUiTask.execute(loginLatch);
+                }
+                loginTasks.add(updateUiTask);
+
                 for (AuthCookie cookie : authCookies) {
                     ((UTilitiesApplication) getApplication()).putAuthCookie(cookie.getPrefKey(), cookie);
                     LoginTask loginTask = new LoginTask(this, loginLatch);
@@ -556,13 +568,6 @@ public class UTilitiesActivity extends SherlockActivity {
                     }
                     loginTasks.add(loginTask);
                 }
-                UpdateUiTask updateUiTask = new UpdateUiTask(this);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    updateUiTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, loginLatch);
-                } else {
-                    updateUiTask.execute(loginLatch);
-                }
-                loginTasks.add(updateUiTask);
             }
         } else {
             Intent loginIntent = new Intent(this, LoginActivity.class);
@@ -575,7 +580,6 @@ public class UTilitiesActivity extends SherlockActivity {
             ((AsyncTask) task).cancel(true);
         }
         message.setText("Cancelled");
-        ConnectionHelper.loggingIn = false;
         logout(true);
         setSupportProgressBarIndeterminateVisibility(false);
     }
