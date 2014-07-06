@@ -1,6 +1,7 @@
 
 package com.nasageek.utexasutilities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.webkit.CookieManager;
@@ -11,6 +12,8 @@ import android.widget.Toast;
 import com.nasageek.utexasutilities.activities.LoginActivity;
 import com.nasageek.utexasutilities.activities.UTilitiesActivity;
 
+import static com.nasageek.utexasutilities.UTilitiesApplication.*;
+
 public class LoginWebViewClient extends WebViewClient {
 
     private Context context;
@@ -19,7 +22,7 @@ public class LoginWebViewClient extends WebViewClient {
 
     public LoginWebViewClient(Context con, String nextActivity, char service) {
         super();
-        context = con;
+        this.context = con;
         this.nextActivity = nextActivity;
         this.service = service;
     }
@@ -36,7 +39,7 @@ public class LoginWebViewClient extends WebViewClient {
         String cookies = "";
         switch (service) {
             case 'z':
-                ((LoginActivity) context).finish();
+                ((Activity) context).finish();
                 break;
             case 'p':
                 if (url.contains("pna.utexas.edu")) {
@@ -50,7 +53,9 @@ public class LoginWebViewClient extends WebViewClient {
                         }
                     }
                     if (!authCookie.equals("")) {
-                        ConnectionHelper.setPnaAuthCookie(authCookie, context);
+                        AuthCookie pnaAuthCookie = ((UTilitiesApplication) ((Activity) context)
+                                .getApplication()).getAuthCookie(PNA_AUTH_COOKIE_KEY);
+                        pnaAuthCookie.setAuthCookie(authCookie);
                         continueToActivity("UT PNA");
                         return;
                     }
@@ -74,7 +79,9 @@ public class LoginWebViewClient extends WebViewClient {
                         }
                     }
                     if (!authCookie.equals("")) {
-                        ConnectionHelper.setBbAuthCookie(authCookie, context);
+                        AuthCookie bbAuthCookie = ((UTilitiesApplication) ((Activity) context)
+                                .getApplication()).getAuthCookie(BB_AUTH_COOKIE_KEY);
+                        bbAuthCookie.setAuthCookie(authCookie);
                         continueToActivity("Blackboard");
                         return;
                     }
@@ -94,7 +101,9 @@ public class LoginWebViewClient extends WebViewClient {
                     if (!authCookie.equals("")
                             && !authCookie.equals("NONE")
                             && url.equals("https://utdirect.utexas.edu/security-443/logon_check.logonform")) {
-                        ConnectionHelper.setUtdAuthCookie(authCookie, context);
+                        AuthCookie utdAuthCookie = ((UTilitiesApplication) ((Activity) context)
+                                .getApplication()).getAuthCookie(UTD_AUTH_COOKIE_KEY);
+                        utdAuthCookie.setAuthCookie(authCookie);
                         continueToActivity("UTDirect");
                         return;
                     }

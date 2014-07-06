@@ -7,22 +7,10 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.HttpParams;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.preference.PreferenceManager;
-
 public class ConnectionHelper {
 
     public static final String BLACKBOARD_DOMAIN_NOPROT = "blackboard.utexas.edu";
     public static final String BLACKBOARD_DOMAIN = "https://" + BLACKBOARD_DOMAIN_NOPROT;
-
-    private static SharedPreferences settings;
-
-    private static boolean utdCookieHasBeenSet = false;
-    private static boolean pnaCookieHasBeenSet = false;
-    private static boolean bbCookieHasBeenSet = false;
-
-    public static boolean loggingIn = false;
 
     public static DefaultHttpClient getThreadSafeClient() {
 
@@ -37,30 +25,5 @@ public class ConnectionHelper {
     }
 
     public static void logout(Context con) {
-        settings = PreferenceManager.getDefaultSharedPreferences(con);
-        Editor edit = settings.edit();
-        getThreadSafeClient().getCookieStore().clear();
-        //resetCookies(con);
-        edit.putBoolean("loggedin", false);
-
-        Utility.commit(edit);
-    }
-
-    public static void setUtdAuthCookie(String cookie, Context con) {
-        settings = PreferenceManager.getDefaultSharedPreferences(con);
-        Utility.commit(settings.edit().putString("utd_auth_cookie", cookie));
-        utdCookieHasBeenSet = true;
-    }
-
-    public static void setPnaAuthCookie(String cookie, Context con) {
-        settings = PreferenceManager.getDefaultSharedPreferences(con);
-        Utility.commit(settings.edit().putString("pna_auth_cookie", cookie));
-        pnaCookieHasBeenSet = true;
-    }
-
-    public static void setBbAuthCookie(String cookie, Context con) {
-        settings = PreferenceManager.getDefaultSharedPreferences(con);
-        Utility.commit(settings.edit().putString("bb_auth_cookie", cookie));
-        bbCookieHasBeenSet = true;
     }
 }
