@@ -86,7 +86,14 @@ public class UTilitiesApplication extends Application {
     public String getPnaAuthCookie() {
         return authCookies.get(PNA_AUTH_COOKIE_KEY).getAuthCookie(this);
     }
+
     public String getBbAuthCookie() {
         return authCookies.get(BB_AUTH_COOKIE_KEY).getAuthCookie(this);
+    }
+
+    public void logoutAll() {
+        for (AuthCookie authCookie : authCookies.values()) {
+            authCookie.logout(this);
+        }
     }
 }

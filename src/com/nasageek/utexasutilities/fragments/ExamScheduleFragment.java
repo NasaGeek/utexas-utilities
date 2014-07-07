@@ -35,6 +35,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -96,12 +97,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     public void parser() {
         httpclient = ConnectionHelper.getThreadSafeClient();
         httpclient.getCookieStore().clear();
-
-        BasicClientCookie cookie = new BasicClientCookie("SC", utdAuthCookie.getAuthCookie(getActivity()));
-        cookie.setDomain(".utexas.edu");
-        httpclient.getCookieStore().addCookie(cookie);
-
-        new fetchExamDataTask(httpclient).execute();
+        new fetchExamDataTask(httpclient).execute(false);
     }
 
     @Override
@@ -109,7 +105,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         return mode;
     }
 
-    private class fetchExamDataTask extends AsyncTask<Object, Void, Character> {
+    private class fetchExamDataTask extends AsyncTask<Boolean, Void, Character> {
         private DefaultHttpClient client;
         private String errorMsg;
 
@@ -126,7 +122,11 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         }
 
         @Override
-        protected Character doInBackground(Object... params) {
+        protected Character doInBackground(Boolean... params) {
+            Boolean recursing = params[0];
+            BasicClientCookie cookie = new BasicClientCookie("SC", utdAuthCookie.getAuthCookie(getActivity()));
+            cookie.setDomain(".utexas.edu");
+            httpclient.getCookieStore().addCookie(cookie);
             HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registrar/exam_schedule.WBX");
             String pagedata = "";
 
@@ -142,7 +142,20 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
             if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
                 if (parentAct != null) {
-                    ConnectionHelper.logout(parentAct);
+                    UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
+                    if (!recursing) {
+                        try {
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login(parentAct);
+                        } catch (IOException e) {
+                            errorMsg = "UTilities could not fetch your exam schedule";
+                            cancel(true);
+                            e.printStackTrace();
+                            return 'e';
+                        }
+                        return doInBackground(true);
+                    } else {
+                        mApp.logoutAll();
+                    }
                 }
                 cancel(true);
                 return 'e';

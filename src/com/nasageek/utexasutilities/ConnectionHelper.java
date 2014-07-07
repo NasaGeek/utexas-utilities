@@ -6,7 +6,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.HttpParams;
 
-import android.content.Context;
 public class ConnectionHelper {
 
     public static final String BLACKBOARD_DOMAIN_NOPROT = "blackboard.utexas.edu";
@@ -22,8 +21,5 @@ public class ConnectionHelper {
                 mgr.getSchemeRegistry()), params);
 
         return client;
-    }
-
-    public static void logout(Context con) {
     }
 }

@@ -118,9 +118,9 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         fetch = new parseTask(client);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
         } else {
-            fetch.execute();
+            fetch.execute(false);
         }
 
         return vg;
@@ -297,7 +297,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         }
     }
 
-    private class parseTask extends AsyncTask<Object, String, Integer> {
+    private class parseTask extends AsyncTask<Boolean, String, Integer> {
         private DefaultHttpClient client;
         private String errorMsg;
         private boolean classParseIssue = false;
@@ -312,14 +312,6 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             progress.setVisibility(View.VISIBLE);
             scheduleGridView.setVisibility(View.GONE);
             errorLayout.setVisibility(View.GONE);
-
-            client.getCookieStore().clear();
-            authCookie = ((UTilitiesApplication) getActivity().getApplication())
-                    .getAuthCookie(UTD_AUTH_COOKIE_KEY).getAuthCookie(getActivity());
-
-            BasicClientCookie cookie = new BasicClientCookie("SC", authCookie);
-            cookie.setDomain(".utexas.edu");
-            client.getCookieStore().addCookie(cookie);
         }
 
         @Override
@@ -343,7 +335,16 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         }
 
         @Override
-        protected Integer doInBackground(Object... params) {
+        protected Integer doInBackground(Boolean... params) {
+            Boolean recursing = params[0];
+            client.getCookieStore().clear();
+            authCookie = ((UTilitiesApplication) getActivity().getApplication())
+                    .getUtdAuthCookie();
+
+            BasicClientCookie cookie = new BasicClientCookie("SC", authCookie);
+            cookie.setDomain(".utexas.edu");
+            client.getCookieStore().addCookie(cookie);
+
             // "stateful" stuff, I'll get it figured out in the next release
             // if(classList == null)
             classList = new ArrayList<UTClass>();
@@ -418,7 +419,20 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
                 if (parentAct != null) {
-                    ConnectionHelper.logout(parentAct);
+                    UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
+                    if (!recursing) {
+                        try {
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login(parentAct);
+                        } catch (IOException e) {
+                            errorMsg = "UTilities could not fetch your exam schedule";
+                            cancel(true);
+                            e.printStackTrace();
+                            return -1;
+                        }
+                        return doInBackground(params);
+                    } else {
+                        mApp.logoutAll();
+                    }
                 }
                 cancel(true);
                 return -1;

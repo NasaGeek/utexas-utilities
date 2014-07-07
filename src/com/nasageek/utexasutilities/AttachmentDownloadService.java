@@ -69,8 +69,7 @@ public class AttachmentDownloadService extends IntentService {
             connection.addRequestProperty(
                     "Cookie",
                     "s_session_id="
-                            + ((UTilitiesApplication) getApplication())
-                            .getAuthCookie(BB_AUTH_COOKIE_KEY).getAuthCookie(this));
+                            + ((UTilitiesApplication) getApplication()).getBbAuthCookie());
 
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ECLAIR_MR1) {
                 (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download"))

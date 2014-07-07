@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
@@ -114,7 +115,8 @@ public class Preferences extends SherlockPreferenceActivity {
                     ba.notifyDataSetChanged();
                 }
                 // whenever they switch between temp and persistent, log them out
-                ConnectionHelper.logout(Preferences.this);
+                UTilitiesApplication mApp = (UTilitiesApplication) getApplication();
+                mApp.logoutAll();
                 return true;
             }
         });

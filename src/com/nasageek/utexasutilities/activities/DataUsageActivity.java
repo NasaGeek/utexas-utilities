@@ -107,11 +107,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 
         httpclient = ConnectionHelper.getThreadSafeClient();
         httpclient.getCookieStore().clear();
-        String pnaAuthCookie = ((UTilitiesApplication) getApplication())
-                .getAuthCookie(PNA_AUTH_COOKIE_KEY).getAuthCookie(this);
-        BasicClientCookie cookie = new BasicClientCookie("AUTHCOOKIE", pnaAuthCookie);
-        cookie.setDomain(".pna.utexas.edu");
-        httpclient.getCookieStore().addCookie(cookie);
+
         new fetchDataTask(httpclient).execute();
         new fetchProgressTask(httpclient).execute();
 
@@ -241,6 +237,11 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 
         @Override
         protected Void doInBackground(Object... params) {
+            String pnaAuthCookie = ((UTilitiesApplication) getApplication()).getPnaAuthCookie();
+            BasicClientCookie cookie = new BasicClientCookie("AUTHCOOKIE", pnaAuthCookie);
+            cookie.setDomain(".pna.utexas.edu");
+            httpclient.getCookieStore().addCookie(cookie);
+
             HttpGet hget = new HttpGet("https://management.pna.utexas.edu/server/graph.cgi");
 
             String pagedata = "";
@@ -296,6 +297,11 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 
         @Override
         protected Character doInBackground(Object... params) {
+            String pnaAuthCookie = ((UTilitiesApplication) getApplication()).getPnaAuthCookie();
+            BasicClientCookie cookie = new BasicClientCookie("AUTHCOOKIE", pnaAuthCookie);
+            cookie.setDomain(".pna.utexas.edu");
+            httpclient.getCookieStore().addCookie(cookie);
+
             HttpGet hget = null;
             Pattern authidpattern = Pattern.compile("(?<=%20)\\d+");
             Matcher authidmatcher = authidpattern.matcher(client.getCookieStore().getCookies()

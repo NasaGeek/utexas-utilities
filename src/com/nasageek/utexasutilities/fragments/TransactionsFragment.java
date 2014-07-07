@@ -29,6 +29,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -52,7 +53,6 @@ public class TransactionsFragment extends SherlockFragment {
     // private SherlockFragmentActivity parentAct;
 
     private View vg;
-    private AuthCookie utdAuthCookie;
     private String balance;
     private fetchTransactionDataTask fetch;
 
@@ -113,8 +113,6 @@ public class TransactionsFragment extends SherlockFragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
-                .getAuthCookie(UTD_AUTH_COOKIE_KEY);
         postdata = new ArrayList<BasicNameValuePair>();
         mType = (TransactionType) getArguments().getSerializable("type");
         if (TransactionType.Bevo.equals(mType)) {
@@ -156,16 +154,12 @@ public class TransactionsFragment extends SherlockFragment {
         BasicClientCookie screen = new BasicClientCookie("webBrowserSize", "B");
         screen.setDomain(".utexas.edu");
         httpclient.getCookieStore().addCookie(screen);
-        String utdAuthcookie = utdAuthCookie.getAuthCookie(getActivity());
-        BasicClientCookie cookie = new BasicClientCookie("SC", utdAuthcookie);
-        cookie.setDomain(".utexas.edu");
-        httpclient.getCookieStore().addCookie(cookie);
 
         fetch = new fetchTransactionDataTask(httpclient, refresh);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
         } else {
-            fetch.execute();
+            fetch.execute(false);
         }
     }
 
@@ -200,7 +194,7 @@ public class TransactionsFragment extends SherlockFragment {
         tlv.setSelectionFromTop(0, 0);
     }
 
-    private class fetchTransactionDataTask extends AsyncTask<Object, Void, Character> {
+    private class fetchTransactionDataTask extends AsyncTask<Boolean, Void, Character> {
         private DefaultHttpClient client;
         private boolean refresh;
         private String errorMsg;
@@ -225,7 +219,14 @@ public class TransactionsFragment extends SherlockFragment {
         }
 
         @Override
-        protected Character doInBackground(Object... params) {
+        protected Character doInBackground(Boolean... params) {
+            Boolean recursing = params[0];
+            String utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
+                    .getAuthCookie(UTD_AUTH_COOKIE_KEY).getAuthCookie(getActivity());
+            BasicClientCookie cookie = new BasicClientCookie("SC", utdAuthCookie);
+            cookie.setDomain(".utexas.edu");
+            httpclient.getCookieStore().addCookie(cookie);
+
             HttpPost hpost = new HttpPost("https://utdirect.utexas.edu/hfis/transactions.WBX");
             String pagedata = "";
             tempTransactionList = new ArrayList<Transaction>();
@@ -242,7 +243,23 @@ public class TransactionsFragment extends SherlockFragment {
             // TODO: automatically log them back in
             if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-                TransactionsFragment.this.utdAuthCookie.logout(getActivity());
+                if (getActivity() != null) {
+                    UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();
+                    if (!recursing) {
+                        try {
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login(getActivity());
+                        } catch (IOException e) {
+                            errorMsg
+                                    = "UTilities could not fetch transaction data.  Try refreshing.";
+                            cancel(true);
+                            e.printStackTrace();
+                            return null;
+                        }
+                        return doInBackground(true);
+                    } else {
+                      mApp.logoutAll();
+                    }
+                }
                 cancel(true);
                 return null;
             }
