@@ -29,12 +29,20 @@
     <style name="CustomTabPageIndicator.Text" parent="TextAppearance.TabPageIndicator">
         <item name="android:textColor">#FF555555</item>
     </style>
+
+    <style name="ActionBar.Solid.UTilities" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+        <item name="background">@drawable/ab_solid_utilities</item>
+        <item name="android:background">@drawable/ab_solid_utilities</item>
+    </style>
     
-    <style name="Theme.UTilities" parent="@style/Theme.Sherlock.Light">
+    <style name="Theme.UTilities" parent="@style/Theme.Sherlock.Light.DarkActionBar">
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
         <item name="vpiTitlePageIndicatorStyle">@style/CustomTitlePageIndicator</item>
         <item name="android:windowBackground">@drawable/background_holo_light</item>
         <item name="android:cacheColorHint">@android:color/transparent</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Solid.UTilities</item>
+        <item name="actionBarStyle">@style/ActionBar.Solid.UTilities</item>
+
     </style>
     
     
