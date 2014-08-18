@@ -429,7 +429,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                             e.printStackTrace();
                             return -1;
                         }
-                        return doInBackground(params);
+                        return doInBackground(true);
                     } else {
                         mApp.logoutAll();
                     }
