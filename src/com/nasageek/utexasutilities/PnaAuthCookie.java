@@ -44,6 +44,7 @@ public class PnaAuthCookie extends AuthCookie {
         String user = settings.getString("eid", "error").trim();
         String pw = sp.getString("password");
 
+        // sticking with the "tried and true" method because HttpsURLConnection is being difficult
         HttpClient client = new DefaultHttpClient();
         HttpPost httppost = new HttpPost("https://management.pna.utexas.edu/server/graph.cgi");
         try {
@@ -66,7 +67,7 @@ public class PnaAuthCookie extends AuthCookie {
             }
         }
 
-        // do something
+        // TODO: make this work correctly
 
         /*
         String boundary = "--------ututilitiesboundary";
