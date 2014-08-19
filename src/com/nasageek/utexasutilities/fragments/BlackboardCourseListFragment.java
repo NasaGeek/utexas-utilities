@@ -207,52 +207,39 @@ public class BlackboardCourseListFragment extends SherlockFragment {
                 classList.add(new BBClass(class_matcher.group(2).replace("&amp;", "&"),
                         class_matcher.group(1).replace("&amp;", "&"), class_matcher.group(3)));
             }
-            // build the sectioned list now
-            String currentCategory = "";
-            ArrayList<BBClass> sectionList = null;
-            ArrayList<MyPair<String, List<BBClass>>> tempClassSectionList = new ArrayList<MyPair<String, List<BBClass>>>();
+            // section the class list by semester
+            String currentSemester = "";
+            ArrayList<BBClass> currentSemesterList = null;
+            ArrayList<MyPair<String, List<BBClass>>> sectionedClassList =
+                    new ArrayList<MyPair<String, List<BBClass>>>();
             for (int i = 0; i < classList.size(); i++) {
-                // first course is always in a new category (the first category)
+                // first course always starts a new semester
                 if (i == 0) {
-                    currentCategory = classList.get(i).getSemester();
-                    sectionList = new ArrayList<BBClass>();
-                    sectionList.add(classList.get(i));
+                    currentSemester = classList.get(i).getSemester();
+                    currentSemesterList = new ArrayList<BBClass>();
+                    currentSemesterList.add(classList.get(i));
                 }
-                // if the current course is not part of the current category or
-                // we're on the last course
-                // weird stuff going on here depending on if we're at the end of
-                // the course list
-                else if (!classList.get(i).getSemester().equals(currentCategory)
-                        || i == classList.size() - 1) {
+                // hit a new semester, finalize current semester and init the new one
+                else if (!classList.get(i).getSemester().equals(currentSemester)) {
+                    sectionedClassList.add(new MyPair<String, List<BBClass>>(currentSemester,
+                            currentSemesterList));
 
-                    if (i == classList.size() - 1) {
-                        sectionList.add(classList.get(i));
-                    }
-
-                    tempClassSectionList.add(new MyPair<String, List<BBClass>>(currentCategory,
-                            sectionList));
-
-                    currentCategory = classList.get(i).getSemester();
-                    sectionList = new ArrayList<BBClass>();
-
-                    if (i != classList.size() - 1) {
-                        sectionList.add(classList.get(i));
-                    }
+                    currentSemester = classList.get(i).getSemester();
+                    currentSemesterList = new ArrayList<BBClass>();
+                    currentSemesterList.add(classList.get(i));
                 }
-                // otherwise just add to the current category
+                // otherwise just add to the current semester
                 else {
-                    sectionList.add(classList.get(i));
+                    currentSemesterList.add(classList.get(i));
+                }
+                // add final semester once we're through
+                if (i == classList.size() - 1) {
+                    sectionedClassList.add(new MyPair<String, List<BBClass>>(currentSemester,
+                            currentSemesterList));
                 }
             }
-            Collections.reverse(tempClassSectionList);
-            /*
-             * Collections.sort(tempClassSectionList, new
-             * Comparator<ParcelableMyPair<String, List<BBClass>>>() {
-             * @Override public int compare(ParcelableMyPair<String,
-             * List<BBClass>> lhs, ParcelableMyPair<String, List<BBClass>> rhs)
-             * { return -lhs.first.compareTo(rhs.first); } });
-             */
-            return tempClassSectionList;
+            Collections.reverse(sectionedClassList);
+            return sectionedClassList;
         }
 
         @Override
