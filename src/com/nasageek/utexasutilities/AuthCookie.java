@@ -54,7 +54,7 @@ public class AuthCookie {
         return prefKey;
     }
 
-    public String getAuthCookie(Context con) {
+    public String getAuthCookieVal(Context con) {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(con);
 
         if (cookieHasBeenSet) {

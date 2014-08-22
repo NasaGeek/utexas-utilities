@@ -124,7 +124,8 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         @Override
         protected Character doInBackground(Boolean... params) {
             Boolean recursing = params[0];
-            BasicClientCookie cookie = new BasicClientCookie("SC", utdAuthCookie.getAuthCookie(getActivity()));
+            BasicClientCookie cookie = new BasicClientCookie("SC", utdAuthCookie.getAuthCookieVal(
+                    getActivity()));
             cookie.setDomain(".utexas.edu");
             httpclient.getCookieStore().addCookie(cookie);
             HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registrar/exam_schedule.WBX");

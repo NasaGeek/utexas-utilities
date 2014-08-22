@@ -9,11 +9,8 @@ import org.acra.annotation.ReportsCrashes;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @ReportsCrashes(formKey = "", // This is required for backward compatibility but
 // not used
@@ -80,15 +77,15 @@ public class UTilitiesApplication extends Application {
     }
 
     public String getUtdAuthCookie() {
-        return authCookies.get(UTD_AUTH_COOKIE_KEY).getAuthCookie(this);
+        return authCookies.get(UTD_AUTH_COOKIE_KEY).getAuthCookieVal(this);
     }
 
     public String getPnaAuthCookie() {
-        return authCookies.get(PNA_AUTH_COOKIE_KEY).getAuthCookie(this);
+        return authCookies.get(PNA_AUTH_COOKIE_KEY).getAuthCookieVal(this);
     }
 
     public String getBbAuthCookie() {
-        return authCookies.get(BB_AUTH_COOKIE_KEY).getAuthCookie(this);
+        return authCookies.get(BB_AUTH_COOKIE_KEY).getAuthCookieVal(this);
     }
 
     public void logoutAll() {
