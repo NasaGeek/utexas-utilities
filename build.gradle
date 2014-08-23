@@ -72,6 +72,7 @@ android {
 }
 
 dependencies {
+    compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.android.support:support-v4:19.1.0'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
 
