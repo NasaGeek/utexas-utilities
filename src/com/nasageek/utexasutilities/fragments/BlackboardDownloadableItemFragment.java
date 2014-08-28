@@ -1,6 +1,21 @@
 
 package com.nasageek.utexasutilities.fragments;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.AttachmentDownloadService;
+import com.nasageek.utexasutilities.ConnectionHelper;
+import com.nasageek.utexasutilities.MyScrollView;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
@@ -33,24 +48,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.mapsaurus.paneslayout.FragmentLauncher;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.AttachmentDownloadService;
-import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.MyScrollView;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.UTilitiesApplication;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,7 +60,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
     private LinearLayout dlil_pb_ll;
     private TextView dlil_etv;
     private LinearLayout dlil_ell;
-    private DefaultHttpClient client;
+    private OkHttpClient client;
     private BroadcastReceiver onNotificationClick;
     private ArrayList<bbFile> attachments;
     private dlableItemAdapter attachmentAdapter;
@@ -106,11 +104,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
         attachmentAdapter = new dlableItemAdapter(getActivity(), attachments);
         content = "";
 
-        client = ConnectionHelper.getThreadSafeClient();
-        BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ((UTilitiesApplication) getActivity().getApplication()).getBbAuthCookie());
-        cookie.setDomain(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT);
-        client.getCookieStore().addCookie(cookie);
+        client = new OkHttpClient();
     }
 
     @Override
@@ -406,10 +400,10 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
     }
 
     private class fetchData extends AsyncTask<String, Object, Object[]> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private String errorMsg;
 
-        public fetchData(DefaultHttpClient client) {
+        public fetchData(OkHttpClient client) {
             this.client = client;
         }
 
@@ -423,22 +417,26 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
 
         @Override
         protected Object[] doInBackground(String... params) {
-            String contentid = params[0];
+            String contentId = params[0];
 
-            HttpGet hget = new HttpGet(ConnectionHelper.BLACKBOARD_DOMAIN
-                    + "/webapps/Bb-mobile-BBLEARN/contentDetail?content_id=" + contentid
-                    + "&course_id=" + getArguments().getString("courseID"));
+            String reqUrl = ConnectionHelper.BLACKBOARD_DOMAIN
+                    + "/webapps/Bb-mobile-BBLEARN/contentDetail?content_id=" + contentId
+                    + "&course_id=" + getArguments().getString("courseID");
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 errorMsg = "UTilities could not fetch this download";
-                cancel(true);
                 e.printStackTrace();
+                cancel(true);
                 return null;
             }
+
             Object[] result = new Object[2];
             ArrayList<bbFile> data = new ArrayList<bbFile>();
 
