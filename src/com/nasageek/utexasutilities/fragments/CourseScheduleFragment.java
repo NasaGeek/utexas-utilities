@@ -83,6 +83,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
     private SherlockFragmentActivity parentAct;
     private String semId;
+    private Boolean initialFragment;
 
     public static CourseScheduleFragment newInstance(boolean initialFragment, String title, String id) {
         CourseScheduleFragment csf = new CourseScheduleFragment();
@@ -140,6 +141,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         setHasOptionsMenu(true);
         parentAct = this.getSherlockActivity();
         semId = getArguments().getString("semId");
+        initialFragment = getArguments().getBoolean("initialFragment");
     }
 
     @Override
@@ -431,17 +433,14 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                     Pattern.DOTALL);
             Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
 
-            // TODO: un-hardcode this eventually! Shouldn't be too hard to
-            // figure out the dropdown size
-            if (semSelectMatcher.find() && parentAct != null
-                    && ((ScheduleActivity) parentAct).getFragments().size() < 3) {
+            if (semSelectMatcher.find() && initialFragment) {
                 Pattern semesterPattern = Pattern.compile(
                         "<option.*?value=\"(\\d*)\"\\s*>([\\w\\s]*?)</option>", Pattern.DOTALL);
                 Matcher semesterMatcher = semesterPattern.matcher(semSelectMatcher.group());
                 while (semesterMatcher.find()) {
-                    if (semesterMatcher.group(0).contains("selected=\"selected\"")) {
-                        continue;
-                    } else {
+                    // the "current" semester that has been downloaded is the one with the
+                    // "selected" attribute, so we don't want to load it again
+                    if (!semesterMatcher.group(0).contains("selected=\"selected\"")) {
                         publishProgress(semesterMatcher.group(2), semesterMatcher.group(1));
                     }
                 }
