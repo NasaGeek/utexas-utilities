@@ -84,6 +84,18 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
     private SherlockFragmentActivity parentAct;
     private String semId;
 
+    public static CourseScheduleFragment newInstance(boolean initialFragment, String title, String id) {
+        CourseScheduleFragment csf = new CourseScheduleFragment();
+
+        Bundle args = new Bundle();
+        args.putBoolean("initialFragment", initialFragment);
+        args.putString("title", title);
+        args.putString("semId", id);
+        csf.setArguments(args);
+
+        return csf;
+    }
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -320,12 +332,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
         @Override
         protected void onProgressUpdate(String... params) {
-            Bundle args = new Bundle(2);
-            args.putString("title", params[0].trim());
-            args.putString("semId", params[1]);
             ((ScheduleActivity) parentAct).getFragments().add(
-                    (SherlockFragment) Fragment.instantiate(parentAct,
-                            CourseScheduleFragment.class.getName(), args));
+                    CourseScheduleFragment.newInstance(false, params[0].trim(), params[1]));
             ((ScheduleActivity) parentAct).getAdapter().notifyDataSetChanged();
             ((ScheduleActivity) parentAct).getIndicator().notifyDataSetChanged();
         }

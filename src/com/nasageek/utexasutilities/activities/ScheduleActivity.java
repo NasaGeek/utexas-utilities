@@ -109,18 +109,8 @@ public class ScheduleActivity extends SherlockFragmentActivity implements
 
     private void initialisePaging() {
         fragments = new Vector<SherlockFragment>();
-
-        Bundle args = new Bundle(2);
-        args.putString("title", "Exam Schedule");
-        args.putString("semId", semId);
-        fragments.add((SherlockFragment) Fragment.instantiate(this,
-                ExamScheduleFragment.class.getName(), args));
-
-        args = new Bundle(2);
-        args.putString("title", "Current Schedule");
-        args.putString("semId", semId);
-        fragments.add((SherlockFragment) Fragment.instantiate(this,
-                CourseScheduleFragment.class.getName(), args));
+        fragments.add(ExamScheduleFragment.newInstance("Exam Schedule", semId));
+        fragments.add(CourseScheduleFragment.newInstance(true, "Current Schedule", semId));
 
         this.mPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), fragments);
         pager = (ViewPager) findViewById(R.id.viewpager);

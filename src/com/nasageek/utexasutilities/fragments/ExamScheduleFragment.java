@@ -54,6 +54,17 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     private LinearLayout ell;
     String semId;
 
+    public static ExamScheduleFragment newInstance(String title, String id) {
+        ExamScheduleFragment esf = new ExamScheduleFragment();
+
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        args.putString("semId", id);
+        esf.setArguments(args);
+
+        return esf;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View vg = inflater.inflate(R.layout.exam_schedule_fragment_layout, container, false);
@@ -65,7 +76,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         parentAct = this.getActivity();
-        semId = getArguments().getString("semdId");
+        semId = getArguments().getString("semId");
     }
 
     public void updateView(String semId, View vg) {
