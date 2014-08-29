@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.TempLoginException;
 import com.nasageek.utexasutilities.UTilitiesApplication;
@@ -23,18 +22,17 @@ import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.activities.LoginActivity;
 import com.nasageek.utexasutilities.adapters.TransactionAdapter;
 import com.nasageek.utexasutilities.model.Transaction;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.HttpCookie;
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,7 +41,7 @@ import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_
 //TODO: last transaction doesn't show when loading dialog is present at the bottom, low priority fix
 
 public class TransactionsFragment extends SherlockFragment {
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private LinearLayout t_pb_ll;
     private AmazingListView tlv;
     private ArrayList<Transaction> transactionlist;
@@ -53,7 +51,7 @@ public class TransactionsFragment extends SherlockFragment {
     private TextView etv;
     private LinearLayout ell, transactionsLayout;
 
-    private List<BasicNameValuePair> postdata;
+    private FormEncodingBuilder postdata;
     // private SherlockFragmentActivity parentAct;
 
     private View vg;
@@ -119,12 +117,12 @@ public class TransactionsFragment extends SherlockFragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        postdata = new ArrayList<>();
+        postdata = new FormEncodingBuilder();
         mType = (TransactionType) getArguments().getSerializable("type");
         if (TransactionType.Bevo.equals(mType)) {
-            postdata.add(new BasicNameValuePair("sRequestSw", "B"));
+            postdata.add("sRequestSw", "B");
         } else if (TransactionType.Dinein.equals(mType)) {
-            postdata.add(new BasicNameValuePair("rRequestSw", "B"));
+            postdata.add("rRequestSw", "B");
         }
 
         if (savedInstanceState == null) {
@@ -154,13 +152,8 @@ public class TransactionsFragment extends SherlockFragment {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void parser(boolean refresh) {
-        httpclient = new DefaultHttpClient();
-        httpclient.getCookieStore().clear();
-
-        BasicClientCookie screen = new BasicClientCookie("webBrowserSize", "B");
-        screen.setDomain(".utexas.edu");
-        httpclient.getCookieStore().addCookie(screen);
-
+        httpclient = new OkHttpClient();
+        httpclient.setCookieHandler(CookieHandler.getDefault());
         fetch = new fetchTransactionDataTask(httpclient, refresh);
         Utility.parallelExecute(fetch, false);
     }
@@ -180,12 +173,12 @@ public class TransactionsFragment extends SherlockFragment {
         }
         transactionlist.clear();
         balance = "";
-        postdata.clear();
 
+        postdata = new FormEncodingBuilder();
         if (TransactionType.Bevo.equals(mType)) {
-            postdata.add(new BasicNameValuePair("sRequestSw", "B"));
+            postdata.add("sRequestSw", "B");
         } else if (TransactionType.Dinein.equals(mType)) {
-            postdata.add(new BasicNameValuePair("rRequestSw", "B"));
+            postdata.add("rRequestSw", "B");
         }
 
         parser(true);
@@ -194,12 +187,12 @@ public class TransactionsFragment extends SherlockFragment {
     }
 
     private class fetchTransactionDataTask extends AsyncTask<Boolean, Void, Character> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private boolean refresh;
         private String errorMsg;
         private ArrayList<Transaction> tempTransactionList;
 
-        public fetchTransactionDataTask(DefaultHttpClient client, boolean refresh) {
+        public fetchTransactionDataTask(OkHttpClient client, boolean refresh) {
             this.client = client;
             this.refresh = refresh;
         }
@@ -218,23 +211,24 @@ public class TransactionsFragment extends SherlockFragment {
         @Override
         protected Character doInBackground(Boolean... params) {
             Boolean recursing = params[0];
-            AuthCookie utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
-                    .getAuthCookie(UTD_AUTH_COOKIE_KEY);
-            BasicClientCookie cookie = new BasicClientCookie(utdAuthCookie.getAuthCookieKey(),
-                    utdAuthCookie.getAuthCookieVal());
-            cookie.setDomain(".utexas.edu");
-            httpclient.getCookieStore().addCookie(cookie);
 
-            HttpPost hpost = new HttpPost("https://utdirect.utexas.edu/hfis/transactions.WBX");
+            String reqUrl = "https://utdirect.utexas.edu/hfis/transactions.WBX";
+            HttpCookie screenSizeCookie = new HttpCookie("webBrowserSize", "B");
+            screenSizeCookie.setDomain(".utexas.edu");
+            ((CookieManager) client.getCookieHandler()).getCookieStore()
+                   .add(URI.create(".utexas.edu"), screenSizeCookie);
+            Request request = new Request.Builder()
+                    .post(postdata.build())
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
             tempTransactionList = new ArrayList<>();
             try {
-                hpost.setEntity(new UrlEncodedFormEntity(postdata));
-                HttpResponse response = client.execute(hpost);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
+                errorMsg = "UTilities could not fetch your transactions. Try refreshing.";
                 e.printStackTrace();
-                errorMsg = "UTilities could not fetch transaction data.  Try refreshing.";
                 cancel(true);
                 return null;
             }
@@ -308,15 +302,15 @@ public class TransactionsFragment extends SherlockFragment {
                 Matcher dateTimeMatcher = dateTimePattern.matcher(pagedata);
                 if (nameMatcher.find() && nextTransMatcher.find() && dateTimeMatcher.find()
                         && !this.isCancelled()) {
-                    postdata.clear();
-                    postdata.add(new BasicNameValuePair("sNameFL", nameMatcher.group(1)));
-                    postdata.add(new BasicNameValuePair("nexttransid", nextTransMatcher.group(1)));
+                    postdata = new FormEncodingBuilder();
+                    postdata.add("sNameFL", nameMatcher.group(1));
+                    postdata.add("nexttransid", nextTransMatcher.group(1));
                     if (TransactionType.Bevo.equals(mType)) {
-                        postdata.add(new BasicNameValuePair("sRequestSw", "B"));
+                        postdata.add("sRequestSw", "B");
                     } else if (TransactionType.Dinein.equals(mType)) {
-                        postdata.add(new BasicNameValuePair("rRequestSw", "B"));
+                        postdata.add("rRequestSw", "B");
                     }
-                    postdata.add(new BasicNameValuePair("sStartDateTime", dateTimeMatcher.group(1)));
+                    postdata.add("sStartDateTime", dateTimeMatcher.group(1));
                 }
                 return 'm';
             } else {
