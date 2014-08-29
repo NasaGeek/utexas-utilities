@@ -10,7 +10,6 @@ import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.ChangeLog;
 import com.nasageek.utexasutilities.ChangeableContextTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.UTilitiesApplication;

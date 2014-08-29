@@ -1,6 +1,25 @@
 
 package com.nasageek.utexasutilities.fragments;
 
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.ActionMode;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.nasageek.utexasutilities.WrappingSlidingDrawer;
+import com.nasageek.utexasutilities.activities.CampusMapActivity;
+import com.nasageek.utexasutilities.activities.ScheduleActivity;
+import com.nasageek.utexasutilities.adapters.ScheduleClassAdapter;
+import com.nasageek.utexasutilities.model.Classtime;
+import com.nasageek.utexasutilities.model.UTClass;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Color;
@@ -19,39 +38,10 @@ import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.UTilitiesApplication;
-import com.nasageek.utexasutilities.WrappingSlidingDrawer;
-import com.nasageek.utexasutilities.activities.CampusMapActivity;
-import com.nasageek.utexasutilities.activities.ScheduleActivity;
-import com.nasageek.utexasutilities.activities.UTilitiesActivity;
-import com.nasageek.utexasutilities.adapters.ScheduleClassAdapter;
-import com.nasageek.utexasutilities.model.Classtime;
-import com.nasageek.utexasutilities.model.UTClass;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
@@ -114,7 +104,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         slidingDrawer.setOnDrawerOpenListener(this);
         slidingDrawer.setVisibility(View.INVISIBLE);
 
-        DefaultHttpClient client = ConnectionHelper.getThreadSafeClient();
+        OkHttpClient client = new OkHttpClient();
         fetch = new parseTask(client);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -298,12 +288,11 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
     }
 
     private class parseTask extends AsyncTask<Boolean, String, Integer> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private String errorMsg;
         private boolean classParseIssue = false;
-        private String authCookie;
 
-        public parseTask(DefaultHttpClient client) {
+        public parseTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -326,24 +315,9 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             ((ScheduleActivity) parentAct).getIndicator().notifyDataSetChanged();
         }
 
-        private String convertStreamToString(InputStream is) {
-            @SuppressWarnings("resource")
-            Scanner s = new Scanner(is, "iso-8859-1").useDelimiter("\\A");
-            String out = s.hasNext() ? s.next() : "";
-            s.close();
-            return out;
-        }
-
         @Override
         protected Integer doInBackground(Boolean... params) {
             Boolean recursing = params[0];
-            client.getCookieStore().clear();
-            authCookie = ((UTilitiesApplication) getActivity().getApplication())
-                    .getUtdAuthCookie();
-
-            BasicClientCookie cookie = new BasicClientCookie("SC", authCookie);
-            cookie.setDomain(".utexas.edu");
-            client.getCookieStore().addCookie(cookie);
 
             // "stateful" stuff, I'll get it figured out in the next release
             // if(classList == null)
@@ -351,66 +325,20 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             // else
             // return classList.size();
 
+            String reqUrl = "https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId;
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
-                URL location;
-                HttpsURLConnection conn = null;
-                try {
-                    location = new URL(
-                            "https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId);
-                    conn = (HttpsURLConnection) location.openConnection();
-
-                    if (getActivity() == null) {
-                        cancel(true);
-                        errorMsg = "";
-                        return -1;
-                    }
-                    // TODO: why not just do this in onPreExecute?
-                    conn.setRequestProperty("Cookie", "SC=" + authCookie);
-
-                    // conn.setUseCaches(true);
-                    // conn.setRequestProperty("Cache-Control",
-                    // "only-if-cached");
-                    conn.setRequestMethod("GET");
-                    conn.setDoInput(true);
-                    /*
-                     * if(HttpResponseCache.getInstalled().get(new URI(
-                     * "https://utdirect.utexas.edu/registration/classlist.WBX?sem="
-                     * +semId), "GET", conn.getHeaderFields()) != null) {
-                     * pagedata =
-                     * convertStreamToString(HttpResponseCache.getInstalled
-                     * ().get(new URI(
-                     * "https://utdirect.utexas.edu/registration/classlist.WBX?sem="
-                     * +semId), "GET", conn.getHeaderFields()).getBody()); }
-                     * else {
-                     */
-                    conn.connect();
-                    pagedata = convertStreamToString(conn.getInputStream());
-                    // }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    errorMsg = "UTilities could not fetch your class listing";
-                    cancel(true);
-                    return -1;
-                } finally {
-                    if (conn != null) {
-                        conn.disconnect();
-                    }
-                }
-            } else {
-                HttpGet hget = new HttpGet(
-                        "https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId);
-                try {
-                    HttpResponse res = client.execute(hget);
-                    pagedata = EntityUtils.toString(res.getEntity());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    errorMsg = "UTilities could not fetch your class listing";
-                    cancel(true);
-                    return -1;
-                }
+            try {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
+                errorMsg = "UTilities could not fetch your class listing";
+                e.printStackTrace();
+                cancel(true);
+                return -1;
             }
 
             // now parse the Class Listing data

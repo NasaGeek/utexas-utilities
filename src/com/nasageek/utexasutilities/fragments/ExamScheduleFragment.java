@@ -1,6 +1,20 @@
 
 package com.nasageek.utexasutilities.fragments;
 
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.ActionMode;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.AuthCookie;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.nasageek.utexasutilities.activities.CampusMapActivity;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,24 +31,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.AuthCookie;
-import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.UTilitiesApplication;
-import com.nasageek.utexasutilities.activities.CampusMapActivity;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -46,7 +42,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 
     private boolean noExams;
     private TextView login_first;
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private ArrayList<String> examlist;
     private ListView examlistview;
     private ExamAdapter ea;
@@ -95,8 +91,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     }
 
     public void parser() {
-        httpclient = ConnectionHelper.getThreadSafeClient();
-        httpclient.getCookieStore().clear();
+        httpclient = new OkHttpClient();
         new fetchExamDataTask(httpclient).execute(false);
     }
 
@@ -106,10 +101,10 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     }
 
     private class fetchExamDataTask extends AsyncTask<Boolean, Void, Character> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private String errorMsg;
 
-        public fetchExamDataTask(DefaultHttpClient client) {
+        public fetchExamDataTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -124,22 +119,23 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         @Override
         protected Character doInBackground(Boolean... params) {
             Boolean recursing = params[0];
-            BasicClientCookie cookie = new BasicClientCookie("SC", utdAuthCookie.getAuthCookieVal(
-                    getActivity()));
-            cookie.setDomain(".utexas.edu");
-            httpclient.getCookieStore().addCookie(cookie);
-            HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registrar/exam_schedule.WBX");
+
+            String reqUrl = "https://utdirect.utexas.edu/registrar/exam_schedule.WBX";
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 errorMsg = "UTilities could not fetch your exam schedule";
-                cancel(true);
                 e.printStackTrace();
+                cancel(true);
                 return 'e';
             }
+
             if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
                 if (parentAct != null) {

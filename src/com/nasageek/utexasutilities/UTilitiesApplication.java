@@ -1,6 +1,8 @@
 
 package com.nasageek.utexasutilities;
 
+import com.nasageek.utexasutilities.fragments.BlackboardFragment;
+
 import android.app.Application;
 
 import org.acra.ACRA;
@@ -48,7 +50,7 @@ public class UTilitiesApplication extends Application {
 
         authCookies.put(BB_AUTH_COOKIE_KEY, new AuthCookie(BB_AUTH_COOKIE_KEY,
                     "s_session_id",
-                    ConnectionHelper.BLACKBOARD_DOMAIN + "/webapps/login/",
+                    BlackboardFragment.BLACKBOARD_DOMAIN + "/webapps/login/",
                     "user_id",
                     "password"));
 

@@ -50,7 +50,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.BuildingSaxHandler;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.NavigationDataSet;
 import com.nasageek.utexasutilities.NavigationSaxHandler;
 import com.nasageek.utexasutilities.R;

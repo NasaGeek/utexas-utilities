@@ -1,6 +1,7 @@
 
 package com.nasageek.utexasutilities;
 
+import com.nasageek.utexasutilities.fragments.BlackboardFragment;
 import com.nasageek.utexasutilities.model.CourseMapItem;
 
 import org.xml.sax.Attributes;
@@ -65,7 +66,7 @@ public class CourseMapSaxHandler extends DefaultHandler {
                 Boolean blackboardItem = false;
                 if (!(atts.getValue("viewurl").contains("http://") || atts.getValue("viewurl")
                         .contains("https://"))) {
-                    host = ConnectionHelper.BLACKBOARD_DOMAIN;
+                    host = BlackboardFragment.BLACKBOARD_DOMAIN;
                 }
                 content.add(new MyPair(new CourseMapItem(atts.getValue("name"), host
                         + atts.getValue("viewurl").replace("&amp;", "&"), atts

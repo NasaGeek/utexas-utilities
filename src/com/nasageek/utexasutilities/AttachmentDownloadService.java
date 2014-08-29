@@ -1,6 +1,8 @@
 
 package com.nasageek.utexasutilities;
 
+import com.nasageek.utexasutilities.fragments.BlackboardFragment;
+
 import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.app.Notification;
@@ -24,8 +26,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import static com.nasageek.utexasutilities.UTilitiesApplication.BB_AUTH_COOKIE_KEY;
-
 @SuppressLint("NewApi")
 public class AttachmentDownloadService extends IntentService {
 
@@ -45,7 +45,7 @@ public class AttachmentDownloadService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        String urlToDownload = ConnectionHelper.BLACKBOARD_DOMAIN + intent.getStringExtra("url");
+        String urlToDownload = BlackboardFragment.BLACKBOARD_DOMAIN + intent.getStringExtra("url");
         String fileName = intent.getStringExtra("fileName");
 
         NotificationCompat.Builder notbuild = new NotificationCompat.Builder(

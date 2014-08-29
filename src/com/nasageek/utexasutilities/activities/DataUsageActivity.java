@@ -28,17 +28,19 @@ import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.XYStepMode;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
+import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.acra.ACRA;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
@@ -56,7 +58,7 @@ import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_
 
 public class DataUsageActivity extends SherlockActivity implements OnTouchListener {
 
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private Float[] downdata, totaldata;
     private Long[] labels;
     private XYPlot graph;
@@ -105,8 +107,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
         downdata = new Float[288];
         totaldata = new Float[288];
 
-        httpclient = ConnectionHelper.getThreadSafeClient();
-        httpclient.getCookieStore().clear();
+        httpclient = new OkHttpClient();
 
         new fetchDataTask(httpclient).execute();
         new fetchProgressTask(httpclient).execute();
@@ -229,30 +230,27 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
     }
 
     private class fetchProgressTask extends AsyncTask<Object, Void, Void> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
 
-        public fetchProgressTask(DefaultHttpClient client) {
+        public fetchProgressTask(OkHttpClient client) {
             this.client = client;
         }
 
         @Override
         protected Void doInBackground(Object... params) {
-            String pnaAuthCookie = ((UTilitiesApplication) getApplication()).getPnaAuthCookie();
-            BasicClientCookie cookie = new BasicClientCookie("AUTHCOOKIE", pnaAuthCookie);
-            cookie.setDomain(".pna.utexas.edu");
-            httpclient.getCookieStore().addCookie(cookie);
-
-            HttpGet hget = new HttpGet("https://management.pna.utexas.edu/server/graph.cgi");
-
+            String reqUrl = "https://management.pna.utexas.edu/server/graph.cgi";
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-
-            } catch (Exception e) {
-                cancel(true);
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 e.printStackTrace();
+                cancel(true);
+                return null;
             }
 
             Pattern percentpattern = Pattern.compile("\\((.+?)%\\)");
@@ -285,31 +283,25 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
     }
 
     private class fetchDataTask extends AsyncTask<Object, Void, Character> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private String errorMsg;
         private Exception ex;
         private Boolean showButton = false;
         private String errorData;
 
-        public fetchDataTask(DefaultHttpClient client) {
+        public fetchDataTask(OkHttpClient client) {
             this.client = client;
         }
 
         @Override
         protected Character doInBackground(Object... params) {
-            String pnaAuthCookie = ((UTilitiesApplication) getApplication()).getPnaAuthCookie();
-            BasicClientCookie cookie = new BasicClientCookie("AUTHCOOKIE", pnaAuthCookie);
-            cookie.setDomain(".pna.utexas.edu");
-            httpclient.getCookieStore().addCookie(cookie);
-
-            HttpGet hget = null;
+            AuthCookie pnaCookie = ((UTilitiesApplication) getApplication()).getAuthCookie(PNA_AUTH_COOKIE_KEY);
             Pattern authidpattern = Pattern.compile("(?<=%20)\\d+");
-            Matcher authidmatcher = authidpattern.matcher(client.getCookieStore().getCookies()
-                    .get(0).getValue());
+            Matcher authidmatcher = authidpattern.matcher(pnaCookie.getAuthCookie(DataUsageActivity.this));
+            String reqUrl;
             if (authidmatcher.find()) {
-                hget = new HttpGet(
-                        "https://management.pna.utexas.edu/server/get-bw-graph-data.cgi?authid="
-                                + authidmatcher.group());
+                reqUrl = "https://management.pna.utexas.edu/server/get-bw-graph-data.cgi?authid="
+                                + authidmatcher.group();
             } else {
                 cancel(true);
                 errorMsg = "UTilities could not fetch your data usage";
@@ -317,15 +309,18 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
                 return ' ';
             }
 
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
-                cancel(true);
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 errorMsg = "UTilities could not fetch your data usage";
                 e.printStackTrace();
+                cancel(true);
                 return ' ';
             }
 

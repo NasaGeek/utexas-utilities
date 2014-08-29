@@ -7,7 +7,6 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -256,7 +255,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 
         @Override
         protected ArrayList<bbGrade> doInBackground(Object... params) {
-            String reqUrl = ConnectionHelper.BLACKBOARD_DOMAIN
+            String reqUrl = BLACKBOARD_DOMAIN
                     + "/webapps/Bb-mobile-BBLEARN/courseData?course_section=GRADES&course_id="
                     + courseID;
             Request request = new Request.Builder()

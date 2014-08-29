@@ -7,7 +7,6 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.CourseMapSaxHandler;
 import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
@@ -334,7 +333,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 
         @Override
         protected ArrayList<MyPair<CourseMapItem, ArrayList>> doInBackground(Object... params) {
-            String reqUrl = ConnectionHelper.BLACKBOARD_DOMAIN
+            String reqUrl = BLACKBOARD_DOMAIN
                     + "/webapps/Bb-mobile-BBLEARN/courseMap?course_id=" + bbID;
             Request request = new Request.Builder()
                     .url(reqUrl)

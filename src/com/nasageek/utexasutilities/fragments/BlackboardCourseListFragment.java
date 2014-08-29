@@ -6,7 +6,6 @@ import com.foound.widget.AmazingListView;
 import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.mapsaurus.paneslayout.PanesActivity;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.adapters.BBClassAdapter;
@@ -177,7 +176,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 
         @Override
         protected ArrayList<MyPair<String, List<BBClass>>> doInBackground(Object... params) {
-            String reqUrl = ConnectionHelper.BLACKBOARD_DOMAIN
+            String reqUrl = BlackboardFragment.BLACKBOARD_DOMAIN
                     + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE";
             Request request = new Request.Builder()
                     .url(reqUrl)

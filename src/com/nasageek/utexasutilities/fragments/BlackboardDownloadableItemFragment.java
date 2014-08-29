@@ -8,7 +8,6 @@ import com.actionbarsherlock.view.MenuItem;
 import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.AttachmentDownloadService;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.MyScrollView;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.UTilitiesApplication;
@@ -202,7 +201,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
                                             new IntentFilter(
                                                     DownloadManager.ACTION_NOTIFICATION_CLICKED));
 
-                                    Uri uri = Uri.parse(ConnectionHelper.BLACKBOARD_DOMAIN
+                                    Uri uri = Uri.parse(BLACKBOARD_DOMAIN
                                             + Uri.decode(item.getDlUri()));
 
                                     Environment.getExternalStoragePublicDirectory(
@@ -419,7 +418,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
         protected Object[] doInBackground(String... params) {
             String contentId = params[0];
 
-            String reqUrl = ConnectionHelper.BLACKBOARD_DOMAIN
+            String reqUrl = BLACKBOARD_DOMAIN
                     + "/webapps/Bb-mobile-BBLEARN/contentDetail?content_id=" + contentId
                     + "&course_id=" + getArguments().getString("courseID");
             Request request = new Request.Builder()

@@ -9,8 +9,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import com.nasageek.utexasutilities.activities.LoginActivity;
 import com.nasageek.utexasutilities.activities.UTilitiesActivity;
+import com.nasageek.utexasutilities.fragments.BlackboardFragment;
 
 import static com.nasageek.utexasutilities.UTilitiesApplication.*;
 
@@ -63,11 +63,11 @@ public class LoginWebViewClient extends WebViewClient {
                 break;
 
             case 'b':
-                if (url.contains(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT)) {
+                if (url.contains(BlackboardFragment.BLACKBOARD_DOMAIN_NOPROT)) {
                     cookies = CookieManager.getInstance().getCookie(
-                            ConnectionHelper.BLACKBOARD_DOMAIN);
+                            BlackboardFragment.BLACKBOARD_DOMAIN);
 
-                    if (url.equals(ConnectionHelper.BLACKBOARD_DOMAIN
+                    if (url.equals(BlackboardFragment.BLACKBOARD_DOMAIN
                             + "/webapps/portal/frameset.jsp")
                             && cookies != null) {
                         for (String s : cookies.split("; ")) {

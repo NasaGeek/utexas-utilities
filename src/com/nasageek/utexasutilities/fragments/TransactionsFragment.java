@@ -14,7 +14,6 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.adapters.TransactionAdapter;
@@ -147,7 +146,7 @@ public class TransactionsFragment extends SherlockFragment {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void parser(boolean refresh) {
-        httpclient = ConnectionHelper.getThreadSafeClient();
+        httpclient = new DefaultHttpClient();
         httpclient.getCookieStore().clear();
 
         BasicClientCookie screen = new BasicClientCookie("webBrowserSize", "B");
