@@ -1,8 +1,6 @@
 
 package com.nasageek.utexasutilities;
 
-import com.nasageek.utexasutilities.fragments.BlackboardFragment;
-
 import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.app.Notification;
@@ -17,14 +15,17 @@ import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
+import com.nasageek.utexasutilities.fragments.BlackboardFragment;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
 
 @SuppressLint("NewApi")
 public class AttachmentDownloadService extends IntentService {
@@ -63,13 +64,11 @@ public class AttachmentDownloadService extends IntentService {
 
         Uri dlLocation = null;
         try {
-            URL url = new URL(urlToDownload);
-
-            URLConnection connection = url.openConnection();
-            connection.addRequestProperty(
-                    "Cookie",
-                    "s_session_id="
-                            + ((UTilitiesApplication) getApplication()).getBbAuthCookie());
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(urlToDownload)
+                    .build();
+            Response response = client.newCall(request).execute();
 
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ECLAIR_MR1) {
                 (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download"))
@@ -85,7 +84,7 @@ public class AttachmentDownloadService extends IntentService {
                         fileName);
             }
             // download the file
-            InputStream input = new BufferedInputStream(url.openStream());
+            InputStream input = new BufferedInputStream(response.body().byteStream());
 
             OutputStream output = new FileOutputStream(dlLocation.getPath());
             byte data[] = new byte[2048];

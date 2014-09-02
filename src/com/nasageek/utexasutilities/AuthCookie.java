@@ -1,23 +1,22 @@
 package com.nasageek.utexasutilities;
 
-import org.apache.http.protocol.HTTP;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
-import java.io.BufferedOutputStream;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
 import java.io.IOException;
+import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.List;
-import java.util.Map;
-
-import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by Chris on 7/4/2014.
@@ -30,6 +29,7 @@ public class AuthCookie {
     protected String userNameKey;
     protected String passwordKey;
     protected boolean cookieHasBeenSet;
+    private OkHttpClient client;
 
     protected URL url;
 
@@ -44,6 +44,7 @@ public class AuthCookie {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+        this.client = new OkHttpClient();
     }
 
     public boolean hasCookieBeenSet() {
@@ -91,23 +92,24 @@ public class AuthCookie {
 
         String user = settings.getString("eid", "error");
         String pw = sp.getString("password");
-        String encodedForm =
-                userNameKey + "=" + URLEncoder.encode(user, HTTP.UTF_8) + "&" +
-                passwordKey + "=" + URLEncoder.encode(pw, HTTP.UTF_8);
 
-        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        connection.setDoOutput(true);
-        connection.setFixedLengthStreamingMode(encodedForm.getBytes().length);
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        connection.setInstanceFollowRedirects(true);
-        BufferedOutputStream bos = new BufferedOutputStream(connection.getOutputStream());
-        bos.write(encodedForm.getBytes());
-        bos.flush();
-        bos.close();
+        RequestBody requestBody = new FormEncodingBuilder()
+                .add(userNameKey, user)
+                .add(passwordKey, pw)
+                .build();
 
-        // if I don't call getHeaderFields, CookieStore is empty. ????
-        Map<String, List<String>> headers = connection.getHeaderFields();
-        CookieManager cm = (CookieManager) CookieManager.getDefault();
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        CookieManager cm = (CookieManager) CookieHandler.getDefault();
         List<HttpCookie> cookies = cm.getCookieStore().getCookies();
         for (HttpCookie cookie : cookies) {
             // special case for UTD login since I'm too lazy to subclass it
@@ -118,8 +120,6 @@ public class AuthCookie {
             }
         }
         // do something otherwise
-
-        connection.disconnect();
     }
 
     public void logout(Context con) {

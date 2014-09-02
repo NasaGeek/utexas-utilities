@@ -1,20 +1,6 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.mapsaurus.paneslayout.FragmentLauncher;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.AttachmentDownloadService;
-import com.nasageek.utexasutilities.MyScrollView;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.UTilitiesApplication;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
@@ -46,6 +32,20 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.AttachmentDownloadService;
+import com.nasageek.utexasutilities.MyScrollView;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.util.ArrayList;
