@@ -55,7 +55,7 @@ public class LoginWebViewClient extends WebViewClient {
                     if (!authCookie.equals("")) {
                         AuthCookie pnaAuthCookie = ((UTilitiesApplication) ((Activity) context)
                                 .getApplication()).getAuthCookie(PNA_AUTH_COOKIE_KEY);
-                        pnaAuthCookie.setAuthCookie(authCookie);
+                        pnaAuthCookie.setAuthCookieVal(authCookie);
                         continueToActivity("UT PNA");
                         return;
                     }
@@ -81,7 +81,7 @@ public class LoginWebViewClient extends WebViewClient {
                     if (!authCookie.equals("")) {
                         AuthCookie bbAuthCookie = ((UTilitiesApplication) ((Activity) context)
                                 .getApplication()).getAuthCookie(BB_AUTH_COOKIE_KEY);
-                        bbAuthCookie.setAuthCookie(authCookie);
+                        bbAuthCookie.setAuthCookieVal(authCookie);
                         continueToActivity("Blackboard");
                         return;
                     }
@@ -103,7 +103,7 @@ public class LoginWebViewClient extends WebViewClient {
                             && url.equals("https://utdirect.utexas.edu/security-443/logon_check.logonform")) {
                         AuthCookie utdAuthCookie = ((UTilitiesApplication) ((Activity) context)
                                 .getApplication()).getAuthCookie(UTD_AUTH_COOKIE_KEY);
-                        utdAuthCookie.setAuthCookie(authCookie);
+                        utdAuthCookie.setAuthCookieVal(authCookie);
                         continueToActivity("UTDirect");
                         return;
                     }

@@ -220,7 +220,7 @@ public class TransactionsFragment extends SherlockFragment {
         protected Character doInBackground(Boolean... params) {
             Boolean recursing = params[0];
             String utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
-                    .getAuthCookie(UTD_AUTH_COOKIE_KEY).getAuthCookieVal(getActivity());
+                    .getUtdAuthCookieVal();
             BasicClientCookie cookie = new BasicClientCookie("SC", utdAuthCookie);
             cookie.setDomain(".utexas.edu");
             httpclient.getCookieStore().addCookie(cookie);

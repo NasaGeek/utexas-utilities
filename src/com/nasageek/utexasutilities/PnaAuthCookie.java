@@ -96,7 +96,7 @@ public class PnaAuthCookie extends AuthCookie {
             }
             for (String cookie : cookies) {
                 if (cookie.startsWith(authCookieKey)) {
-                    setAuthCookie(cookie.split(";")[0].substring(cookie.indexOf('=') + 1));
+                    setAuthCookieVal(cookie.split(";")[0].substring(cookie.indexOf('=') + 1));
                     return;
                 }
             }

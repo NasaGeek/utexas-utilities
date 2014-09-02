@@ -224,7 +224,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
                                                     "Cookie",
                                                     "s_session_id="
                                                             + ((UTilitiesApplication) getActivity()
-                                                            .getApplication()).getBbAuthCookie());
+                                                            .getApplication()).getBbAuthCookieVal());
 
                                     try {
                                         manager.enqueue(request);

@@ -78,15 +78,15 @@ public class UTilitiesApplication extends Application {
         return !authCookies.isEmpty();
     }
 
-    public String getUtdAuthCookie() {
+    public String getUtdAuthCookieVal() {
         return authCookies.get(UTD_AUTH_COOKIE_KEY).getAuthCookieVal(this);
     }
 
-    public String getPnaAuthCookie() {
+    public String getPnaAuthCookieVal() {
         return authCookies.get(PNA_AUTH_COOKIE_KEY).getAuthCookieVal(this);
     }
 
-    public String getBbAuthCookie() {
+    public String getBbAuthCookieVal() {
         return authCookies.get(BB_AUTH_COOKIE_KEY).getAuthCookieVal(this);
     }
 

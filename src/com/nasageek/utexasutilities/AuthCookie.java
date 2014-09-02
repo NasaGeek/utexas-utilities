@@ -81,7 +81,7 @@ public class AuthCookie {
         cookieHasBeenSet = false;
     }
 
-    public void setAuthCookie(String authCookie) {
+    public void setAuthCookieVal(String authCookie) {
         this.cookieHasBeenSet = true;
         this.authCookie = authCookie;
     }
@@ -115,7 +115,7 @@ public class AuthCookie {
             // special case for UTD login since I'm too lazy to subclass it
             String cookieVal = cookie.getValue();
             if (cookie.getName().equals(authCookieKey) && !cookieVal.equals("NONE")) {
-                setAuthCookie(cookieVal);
+                setAuthCookieVal(cookieVal);
                 return;
             }
         }

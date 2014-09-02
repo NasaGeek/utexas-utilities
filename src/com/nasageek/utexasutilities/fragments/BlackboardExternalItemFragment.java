@@ -54,7 +54,7 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
         man.setCookie(
                 BLACKBOARD_DOMAIN_NOPROT,
                 "s_session_id="
-                        + ((UTilitiesApplication) getActivity().getApplication()).getBbAuthCookie());
+                        + ((UTilitiesApplication) getActivity().getApplication()).getBbAuthCookieVal());
 
         CookieSyncManager.getInstance().sync();
     }
