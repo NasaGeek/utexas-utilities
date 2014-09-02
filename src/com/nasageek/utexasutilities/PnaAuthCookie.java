@@ -1,16 +1,16 @@
 package com.nasageek.utexasutilities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
 import java.io.IOException;
 import java.net.CookieHandler;
@@ -101,69 +101,5 @@ public class PnaAuthCookie extends AuthCookie {
                 }
             }
         }
-
-/*
-        // sticking with the "tried and true" method because HttpsURLConnection is being difficult
-        HttpClient client = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost("https://management.pna.utexas.edu/server/graph.cgi");
-        try {
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("PNACLOGINusername", user));
-            nameValuePairs.add(new BasicNameValuePair("PNACLOGINpassword", pw));
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
-
-            // Execute HTTP Post Request
-            client.execute(httppost);
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        for (Cookie cookie : ((DefaultHttpClient)client).getCookieStore().getCookies()) {
-            if (cookie.getName().equals("AUTHCOOKIE")) {
-                setAuthCookie(cookie.getValue());
-                return;
-            }
-        }*/
-
-        // TODO: make this work correctly
-
-        /*
-        String boundary = "--------ututilitiesboundary";
-        String crlf = "\r\n";
-
-        String multipartForm = "--" + boundary + crlf + "Content-Disposition: form-data; name=\"PNACLOGINusername\"\r\n\r\n" + URLEncoder.encode(user, HTTP.UTF_8) + crlf +
-                boundary + crlf + "Content-Disposition: form-data; name=\"PNACLOGINpassword\"\r\n\r\n" + URLEncoder.encode(pw, HTTP.UTF_8) + "\r\n" + boundary + "--" + "\r\n";
-
-
-        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        connection.setDoOutput(true);
-        connection.setFixedLengthStreamingMode(multipartForm.getBytes().length);
-
-        connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-        connection.setRequestProperty("Connection", "keep-alive");
-        connection.setInstanceFollowRedirects(true);
-        BufferedOutputStream bos = new BufferedOutputStream(connection.getOutputStream());
-        bos.write(multipartForm.getBytes());
-        bos.flush();
-        bos.close();
-
-        //String pagedata = convertStreamToString(new BufferedInputStream(connection.getInputStream()));
-
-        Map<String, List<String>> headers = connection.getHeaderFields();
-        List<String> cookies = headers.get("Set-cookie");
-        if (cookies == null) {
-            Log.e("login", "no cookies headers for " + prefKey);
-            return;
-        }
-        for (String cookie : headers.get("Set-cookie")) {
-            // special case for UTD login since I'm too lazy to subclass it
-            if (cookie.startsWith(authCookieKey) && !cookie.equals("SC=NONE")) {
-                setAuthCookie(cookie.split(";")[0].substring(cookie.indexOf('=') + 1));
-                return;
-            }
-        }
-        */
     }
-
 }
