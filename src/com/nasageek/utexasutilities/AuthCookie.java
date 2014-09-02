@@ -84,8 +84,8 @@ public class AuthCookie {
 
     public void setAuthCookieVal(String authCookie) {
         this.authCookie = authCookie;
-
-        this.cookieHasBeenSet = true;
+        Utility.commit(settings.edit().putString(prefKey, authCookie));
+        cookieHasBeenSet = true;
     }
 
     public void login() throws IOException {
