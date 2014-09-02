@@ -1,20 +1,6 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.AuthCookie;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.UTilitiesApplication;
-import com.nasageek.utexasutilities.activities.CampusMapActivity;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +16,20 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.ActionMode;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.AuthCookie;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.nasageek.utexasutilities.activities.CampusMapActivity;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -142,7 +142,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
                     UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
                     if (!recursing) {
                         try {
-                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login(parentAct);
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
                         } catch (IOException e) {
                             errorMsg = "UTilities could not fetch your exam schedule";
                             cancel(true);

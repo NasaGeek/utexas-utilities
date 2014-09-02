@@ -1,9 +1,9 @@
 
 package com.nasageek.utexasutilities;
 
-import com.nasageek.utexasutilities.fragments.BlackboardFragment;
-
 import android.app.Application;
+
+import com.nasageek.utexasutilities.fragments.BlackboardFragment;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -44,15 +44,17 @@ public class UTilitiesApplication extends Application {
                     "SC",
                     "https://utdirect.utexas.edu/security-443/logon_check.logonform",
                     "LOGON",
-                    "PASSWORDS"));
+                    "PASSWORDS",
+                    this));
 
-        authCookies.put(PNA_AUTH_COOKIE_KEY, new PnaAuthCookie());
+        authCookies.put(PNA_AUTH_COOKIE_KEY, new PnaAuthCookie(this));
 
         authCookies.put(BB_AUTH_COOKIE_KEY, new AuthCookie(BB_AUTH_COOKIE_KEY,
                     "s_session_id",
                     BlackboardFragment.BLACKBOARD_DOMAIN + "/webapps/login/",
                     "user_id",
-                    "password"));
+                    "password",
+                    this));
 
         CookieManager cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
@@ -79,20 +81,20 @@ public class UTilitiesApplication extends Application {
     }
 
     public String getUtdAuthCookieVal() {
-        return authCookies.get(UTD_AUTH_COOKIE_KEY).getAuthCookieVal(this);
+        return authCookies.get(UTD_AUTH_COOKIE_KEY).getAuthCookieVal();
     }
 
     public String getPnaAuthCookieVal() {
-        return authCookies.get(PNA_AUTH_COOKIE_KEY).getAuthCookieVal(this);
+        return authCookies.get(PNA_AUTH_COOKIE_KEY).getAuthCookieVal();
     }
 
     public String getBbAuthCookieVal() {
-        return authCookies.get(BB_AUTH_COOKIE_KEY).getAuthCookieVal(this);
+        return authCookies.get(BB_AUTH_COOKIE_KEY).getAuthCookieVal();
     }
 
     public void logoutAll() {
         for (AuthCookie authCookie : authCookies.values()) {
-            authCookie.logout(this);
+            authCookie.logout();
         }
     }
 }

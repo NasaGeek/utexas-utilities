@@ -297,7 +297,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
         protected Character doInBackground(Object... params) {
             AuthCookie pnaCookie = ((UTilitiesApplication) getApplication()).getAuthCookie(PNA_AUTH_COOKIE_KEY);
             Pattern authidpattern = Pattern.compile("(?<=%20)\\d+");
-            Matcher authidmatcher = authidpattern.matcher(pnaCookie.getAuthCookieVal(DataUsageActivity.this));
+            Matcher authidmatcher = authidpattern.matcher(pnaCookie.getAuthCookieVal());
             String reqUrl;
             if (authidmatcher.find()) {
                 reqUrl = "https://management.pna.utexas.edu/server/get-bw-graph-data.cgi?authid="

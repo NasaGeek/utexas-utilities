@@ -1,20 +1,6 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.AuthCookie;
-import com.nasageek.utexasutilities.ChangeLog;
-import com.nasageek.utexasutilities.ChangeableContextTask;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.SecurePreferences;
-import com.nasageek.utexasutilities.UTilitiesApplication;
-import com.nasageek.utexasutilities.Utility;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,12 +19,28 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.AuthCookie;
+import com.nasageek.utexasutilities.ChangeLog;
+import com.nasageek.utexasutilities.ChangeableContextTask;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.SecurePreferences;
+import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.nasageek.utexasutilities.Utility;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static com.nasageek.utexasutilities.UTilitiesApplication.*;
+import static com.nasageek.utexasutilities.UTilitiesApplication.BB_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 public class UTilitiesActivity extends SherlockActivity {
 
@@ -475,7 +477,7 @@ public class UTilitiesActivity extends SherlockActivity {
         @Override
         protected Void doInBackground(AuthCookie... params) {
             try {
-                params[0].login(context);
+                params[0].login();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -585,7 +587,7 @@ public class UTilitiesActivity extends SherlockActivity {
 
     public void logout(Boolean silent) {
         for (AuthCookie cookie : authCookies) {
-            cookie.logout(this);
+            cookie.logout();
         }
         resetChecks();
         if (!silent) {

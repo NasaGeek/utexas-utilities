@@ -350,7 +350,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                     UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
                     if (!recursing) {
                         try {
-                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login(parentAct);
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
                         } catch (IOException e) {
                             errorMsg = "UTilities could not fetch your exam schedule";
                             cancel(true);

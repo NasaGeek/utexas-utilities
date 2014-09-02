@@ -30,11 +30,13 @@ public class AuthCookie {
     protected String passwordKey;
     protected boolean cookieHasBeenSet;
     private OkHttpClient client;
+    protected SharedPreferences settings;
+    protected SecurePreferences secureSettings;
 
     protected URL url;
 
 
-    public AuthCookie(String prefKey, String authCookieKey, String loginUrl, String userNameKey, String passwordKey) {
+    public AuthCookie(String prefKey, String authCookieKey, String loginUrl, String userNameKey, String passwordKey, Context con) {
         this.prefKey = prefKey;
         this.authCookieKey = authCookieKey;
         this.userNameKey = userNameKey;
@@ -45,6 +47,8 @@ public class AuthCookie {
             e.printStackTrace();
         }
         this.client = new OkHttpClient();
+        this.secureSettings = new SecurePreferences(con, "com.nasageek.utexasutilities.password", false);
+        this.settings = PreferenceManager.getDefaultSharedPreferences(con);
     }
 
     public boolean hasCookieBeenSet() {
@@ -55,9 +59,7 @@ public class AuthCookie {
         return prefKey;
     }
 
-    public String getAuthCookieVal(Context con) {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(con);
-
+    public String getAuthCookieVal() {
         if (cookieHasBeenSet) {
             return authCookie;
         } else if (settings.contains(prefKey)) {
@@ -66,7 +68,7 @@ public class AuthCookie {
             return authCookie;
         } else {
             try {
-                login(con);
+                login();
             } catch (IOException ie) {
                 ie.printStackTrace();
             }
@@ -74,24 +76,21 @@ public class AuthCookie {
         }
     }
 
-    private void resetCookie(Context con) {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(con);
+    private void resetCookie() {
         Utility.commit(settings.edit().remove(prefKey));
         authCookie = "";
         cookieHasBeenSet = false;
     }
 
     public void setAuthCookieVal(String authCookie) {
-        this.cookieHasBeenSet = true;
         this.authCookie = authCookie;
+
+        this.cookieHasBeenSet = true;
     }
 
-    public void login(final Context con) throws IOException {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(con);
-        SecurePreferences sp = new SecurePreferences(con, "com.nasageek.utexasutilities.password", false);
-
+    public void login() throws IOException {
         String user = settings.getString("eid", "error");
-        String pw = sp.getString("password");
+        String pw = secureSettings.getString("password");
 
         RequestBody requestBody = new FormEncodingBuilder()
                 .add(userNameKey, user)
@@ -122,7 +121,7 @@ public class AuthCookie {
         // do something otherwise
     }
 
-    public void logout(Context con) {
-        resetCookie(con);
+    public void logout() {
+        resetCookie();
     }
 }

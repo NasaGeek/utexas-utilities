@@ -245,7 +245,7 @@ public class TransactionsFragment extends SherlockFragment {
                     UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();
                     if (!recursing) {
                         try {
-                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login(getActivity());
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
                         } catch (IOException e) {
                             errorMsg
                                     = "UTilities could not fetch transaction data.  Try refreshing.";

@@ -1,8 +1,6 @@
 package com.nasageek.utexasutilities;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.squareup.okhttp.Headers;
@@ -29,12 +27,13 @@ import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_
 public class PnaAuthCookie extends AuthCookie {
 
 
-    public PnaAuthCookie() {
+    public PnaAuthCookie(Context con) {
         super(PNA_AUTH_COOKIE_KEY,
               "AUTHCOOKIE",
               "https://management.pna.utexas.edu/server/graph.cgi",
               "PNACLOGINusername",
-              "PNACLOGINpassword");
+              "PNACLOGINpassword",
+              con);
     }
 
 
@@ -44,8 +43,8 @@ public class PnaAuthCookie extends AuthCookie {
      * default CookieStore on logout.
      */
     @Override
-    public void logout(Context con) {
-        super.logout(con);
+    public void logout() {
+        super.logout();
         try {
             URI loginURI = url.toURI();
             CookieStore cookies = ((CookieManager) CookieHandler.getDefault()).getCookieStore();
@@ -57,12 +56,10 @@ public class PnaAuthCookie extends AuthCookie {
         }
     }
 
-    public void login(final Context con) throws IOException {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(con);
-        SecurePreferences sp = new SecurePreferences(con, "com.nasageek.utexasutilities.password", false);
-
+    @Override
+    public void login() throws IOException {
         String user = settings.getString("eid", "error").trim();
-        String pw = sp.getString("password");
+        String pw = secureSettings.getString("password");
 
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = new MultipartBuilder()
