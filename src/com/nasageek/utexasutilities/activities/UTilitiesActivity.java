@@ -66,19 +66,6 @@ public class UTilitiesActivity extends SherlockActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /*
-         * if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-         * StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-         * .detectAll() .penaltyLog() .build()); StrictMode.setVmPolicy(new
-         * StrictMode.VmPolicy.Builder() .detectAll() .penaltyLog() .build()); }
-         */
-
-        /*
-         * try { File httpCacheDir = new File(getCacheDir(), "http"); long
-         * httpCacheSize = 1024*1024; HttpResponseCache.install(httpCacheDir,
-         * httpCacheSize); } catch (IOException e) { e.printStackTrace(); }
-         */
-
         UTilitiesApplication mApp = (UTilitiesApplication) getApplication();
         utdAuthCookie = mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY);
         pnaAuthCookie = mApp.getAuthCookie(PNA_AUTH_COOKIE_KEY);
@@ -375,11 +362,6 @@ public class UTilitiesActivity extends SherlockActivity {
         }
     }
 
-    /*
-     * @Override protected void onStop() { super.onStop(); HttpResponseCache
-     * cache = HttpResponseCache.getInstalled(); if(cache != null)
-     * cache.flush(); }
-     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = this.getSupportMenuInflater();
