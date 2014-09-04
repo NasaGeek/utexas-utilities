@@ -167,9 +167,7 @@ public class UTilitiesActivity extends SherlockActivity {
 
                 if (settings.getBoolean("loginpref", false)) {
                     if (!utdAuthCookie.hasCookieBeenSet() || isLoggingIn()) {
-                        message.setText(R.string.login_first);
-                        message.setDuration(Toast.LENGTH_SHORT);
-                        message.show();
+                        showLoginFirstToast();
                     } else {
                         startActivity(schedule);
                     }
@@ -196,9 +194,7 @@ public class UTilitiesActivity extends SherlockActivity {
             public void onClick(View v) {
                 if (settings.getBoolean("loginpref", false)) {
                     if (!utdAuthCookie.hasCookieBeenSet() || isLoggingIn()) {
-                        message.setText(R.string.login_first);
-                        message.setDuration(Toast.LENGTH_SHORT);
-                        message.show();
+                        showLoginFirstToast();
                     } else {
                         startActivity(balance);
                     }
@@ -237,9 +233,7 @@ public class UTilitiesActivity extends SherlockActivity {
 
                 if (settings.getBoolean("loginpref", false)) {
                     if (!pnaAuthCookie.hasCookieBeenSet() || isLoggingIn()) {
-                        message.setText(R.string.login_pna_first);
-                        message.setDuration(Toast.LENGTH_SHORT);
-                        message.show();
+                        showLoginFirstToast();
                     } else {
                         startActivity(data);
                     }
@@ -279,9 +273,7 @@ public class UTilitiesActivity extends SherlockActivity {
 
                 if (settings.getBoolean("loginpref", false)) {
                     if (!bbAuthCookie.hasCookieBeenSet() || isLoggingIn()) {
-                        message.setText(R.string.login_bb_first);
-                        message.setDuration(Toast.LENGTH_SHORT);
-                        message.show();
+                        showLoginFirstToast();
                     } else {
                         startActivity(blackboard);
                     }
@@ -420,7 +412,7 @@ public class UTilitiesActivity extends SherlockActivity {
                 loadSettings();
                 break;
             case LOGOUT_MENU_ID:
-                logout(false);
+                logout();
                 invalidateOptionsMenu();
                 break;
             case CANCEL_LOGIN_MENU_ID:
@@ -501,11 +493,6 @@ public class UTilitiesActivity extends SherlockActivity {
                     return;
                 }
             }
-
-            Toast.makeText(mActivity,
-                    "You're now logged in; feel free to access any of the app's features",
-                    Toast.LENGTH_LONG).show();
-
             mActivity.invalidateOptionsMenu();
             mActivity.setSupportProgressBarIndeterminateVisibility(false);
         }
@@ -526,9 +513,6 @@ public class UTilitiesActivity extends SherlockActivity {
                 message.setDuration(Toast.LENGTH_LONG);
                 message.show();
             } else {
-                message.setText("Logging in...");
-                message.setDuration(Toast.LENGTH_SHORT);
-                message.show();
                 setSupportProgressBarIndeterminateVisibility(true);
 
                 loginTasks = new ArrayList<ChangeableContextTask>();
@@ -562,20 +546,21 @@ public class UTilitiesActivity extends SherlockActivity {
         for (ChangeableContextTask task : loginTasks) {
             ((AsyncTask) task).cancel(true);
         }
-        message.setText("Cancelled");
-        logout(true);
+        logout();
         setSupportProgressBarIndeterminateVisibility(false);
     }
 
-    public void logout(Boolean silent) {
+    public void logout() {
         for (AuthCookie cookie : authCookies) {
             cookie.logout();
         }
         resetChecks();
-        if (!silent) {
-            message.setText("You have been successfully logged out");
-            message.show();
-        }
+    }
+
+    public void showLoginFirstToast() {
+        message.setText(R.string.login_first);
+        message.setDuration(Toast.LENGTH_SHORT);
+        message.show();
     }
 
     @Override
