@@ -13,8 +13,10 @@ import com.squareup.okhttp.Response;
 import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -85,6 +87,22 @@ public class AuthCookie {
     public void setAuthCookieVal(String authCookie) {
         this.authCookie = authCookie;
         Utility.commit(settings.edit().putString(prefKey, authCookie));
+
+        /*
+        this is technically unnecessary if OkHttp handled the authentication, because it will
+        have already set the cookies in the CookieHandler. It doesn't seem to cause any issues
+        just to re-add the cookies, though
+        */
+        HttpCookie httpCookie = new HttpCookie(authCookieKey, authCookie);
+        httpCookie.setDomain(url.getHost());
+        // this is required for PNA login and does not appear to affect other services
+        httpCookie.setVersion(0);
+        try {
+            CookieStore cookies = ((CookieManager) CookieHandler.getDefault()).getCookieStore();
+            cookies.add(URI.create(url.getHost()), httpCookie);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
         cookieHasBeenSet = true;
     }
 

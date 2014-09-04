@@ -36,7 +36,6 @@ public class PnaAuthCookie extends AuthCookie {
               con);
     }
 
-
     /**
      * We have to do a little extra work here because the PNA website ignores future login requests
      * if you've already got an auth cookie. Explicitly delete all PNA-related cookies from the

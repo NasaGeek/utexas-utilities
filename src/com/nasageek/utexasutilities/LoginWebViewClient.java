@@ -12,7 +12,9 @@ import android.widget.Toast;
 import com.nasageek.utexasutilities.activities.UTilitiesActivity;
 import com.nasageek.utexasutilities.fragments.BlackboardFragment;
 
-import static com.nasageek.utexasutilities.UTilitiesApplication.*;
+import static com.nasageek.utexasutilities.UTilitiesApplication.BB_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 public class LoginWebViewClient extends WebViewClient {
 
@@ -73,7 +75,6 @@ public class LoginWebViewClient extends WebViewClient {
                         for (String s : cookies.split("; ")) {
                             if (s.startsWith("s_session_id=")) {
                                 authCookie = s.substring(13);
-                                ;
                                 break;
                             }
                         }
