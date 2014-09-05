@@ -56,7 +56,7 @@ public class UTilitiesActivity extends SherlockActivity {
     private AlertDialog nologin;
 
     private AuthCookie authCookies[];
-    private List<ChangeableContextTask> loginTasks;
+    private List<AsyncTask> loginTasks;
     private UpdateUiTask updateUiTask;
     private AuthCookie utdAuthCookie;
     private AuthCookie pnaAuthCookie;
@@ -72,17 +72,14 @@ public class UTilitiesActivity extends SherlockActivity {
         bbAuthCookie = mApp.getAuthCookie(BB_AUTH_COOKIE_KEY);
         authCookies = new AuthCookie[]{utdAuthCookie, pnaAuthCookie, bbAuthCookie};
 
-        @SuppressWarnings("deprecation")
-        final List<ChangeableContextTask> restoredLoginTasks = (List<ChangeableContextTask>) getLastNonConfigurationInstance();
-        if (restoredLoginTasks != null) {
-            updateUiTask = (UpdateUiTask) restoredLoginTasks.get(0);
-            for (ChangeableContextTask task : restoredLoginTasks) {
-                if (task != null) {
-                    task.setContext(this);
+        loginTasks = (List<AsyncTask>) getLastNonConfigurationInstance();
+        if (loginTasks != null) {
+            updateUiTask = (UpdateUiTask) loginTasks.get(0);
+            for (AsyncTask task : loginTasks) {
+                if (task != null && task instanceof ChangeableContextTask) {
+                    ((ChangeableContextTask) task).setContext(this);
                 }
             }
-        } else {
-            updateUiTask = new UpdateUiTask(this);
         }
 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
@@ -434,17 +431,15 @@ public class UTilitiesActivity extends SherlockActivity {
     }
 
     private boolean isLoggingIn() {
-        return updateUiTask.getStatus() == AsyncTask.Status.RUNNING;
+        // updateUiTask is null before login has begun
+        return updateUiTask != null && updateUiTask.getStatus() == AsyncTask.Status.RUNNING;
     }
 
-    static class LoginTask extends AsyncTask<AuthCookie, Void, Void> implements
-                                                                            ChangeableContextTask {
+    static class LoginTask extends AsyncTask<AuthCookie, Void, Void> {
 
-        private Context context;
         private CountDownLatch loginLatch;
 
-        public LoginTask(Context context, CountDownLatch loginLatch) {
-            this.context = context;
+        public LoginTask(CountDownLatch loginLatch) {
             this.loginLatch = loginLatch;
         }
 
@@ -456,13 +451,7 @@ public class UTilitiesActivity extends SherlockActivity {
                 e.printStackTrace();
             }
             loginLatch.countDown();
-
             return null;
-        }
-
-        @Override
-        public void setContext(Context con) {
-            this.context = con;
         }
     }
 
@@ -515,7 +504,7 @@ public class UTilitiesActivity extends SherlockActivity {
             } else {
                 setSupportProgressBarIndeterminateVisibility(true);
 
-                loginTasks = new ArrayList<ChangeableContextTask>();
+                loginTasks = new ArrayList<AsyncTask>();
                 CountDownLatch loginLatch = new CountDownLatch(authCookies.length);
                 updateUiTask = new UpdateUiTask(this);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -527,7 +516,7 @@ public class UTilitiesActivity extends SherlockActivity {
 
                 for (AuthCookie cookie : authCookies) {
                     ((UTilitiesApplication) getApplication()).putAuthCookie(cookie.getPrefKey(), cookie);
-                    LoginTask loginTask = new LoginTask(this, loginLatch);
+                    LoginTask loginTask = new LoginTask(loginLatch);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                         loginTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, cookie);
                     } else {
@@ -542,9 +531,9 @@ public class UTilitiesActivity extends SherlockActivity {
         }
     }
 
-    public void cancelLogin() {
-        for (ChangeableContextTask task : loginTasks) {
-            ((AsyncTask) task).cancel(true);
+    private void cancelLogin() {
+        for (AsyncTask task : loginTasks) {
+            task.cancel(true);
         }
         logout();
         setSupportProgressBarIndeterminateVisibility(false);
