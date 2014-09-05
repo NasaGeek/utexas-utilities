@@ -425,7 +425,7 @@ public class UTilitiesActivity extends SherlockActivity {
         return loginTasks;
     }
 
-    public void loadSettings() {
+    private void loadSettings() {
         final Intent pref_intent = new Intent(this, Preferences.class);
         startActivity(pref_intent);
     }
@@ -494,7 +494,7 @@ public class UTilitiesActivity extends SherlockActivity {
         }
     }
 
-    public void login() {
+    private void login() {
         SecurePreferences sp = new SecurePreferences(UTilitiesActivity.this, SECURE_PREF_PW_KEY, false);
         if (settings.getBoolean("loginpref", false)) {
             if (!settings.contains("eid") || !sp.containsKey("password")
@@ -541,14 +541,14 @@ public class UTilitiesActivity extends SherlockActivity {
         setSupportProgressBarIndeterminateVisibility(false);
     }
 
-    public void logout() {
+    private void logout() {
         for (AuthCookie cookie : authCookies) {
             cookie.logout();
         }
         resetChecks();
     }
 
-    public void showLoginFirstToast() {
+    private void showLoginFirstToast() {
         message.setText(R.string.login_first);
         message.setDuration(Toast.LENGTH_SHORT);
         message.show();
