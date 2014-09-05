@@ -238,17 +238,18 @@ public class TransactionsFragment extends SherlockFragment {
                 cancel(true);
                 return null;
             }
-            // TODO: automatically log them back in
+
             if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
                 if (getActivity() != null) {
                     UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();
                     if (!recursing) {
                         try {
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
                             mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
                         } catch (IOException e) {
                             errorMsg
-                                    = "UTilities could not fetch transaction data.  Try refreshing.";
+                                    = "UTilities could not fetch your transaction data.  Try refreshing.";
                             cancel(true);
                             e.printStackTrace();
                             return null;

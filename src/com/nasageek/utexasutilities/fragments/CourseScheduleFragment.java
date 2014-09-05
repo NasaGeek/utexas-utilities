@@ -1,6 +1,24 @@
 
 package com.nasageek.utexasutilities.fragments;
 
+import android.annotation.TargetApi;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SlidingDrawer;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.ActionMode;
@@ -19,24 +37,6 @@ import com.nasageek.utexasutilities.model.UTClass;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
-import android.annotation.TargetApi;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.SlidingDrawer;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -350,9 +350,10 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                     UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
                     if (!recursing) {
                         try {
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
                             mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
                         } catch (IOException e) {
-                            errorMsg = "UTilities could not fetch your exam schedule";
+                            errorMsg = "UTilities could not fetch your class listing";
                             cancel(true);
                             e.printStackTrace();
                             return -1;
