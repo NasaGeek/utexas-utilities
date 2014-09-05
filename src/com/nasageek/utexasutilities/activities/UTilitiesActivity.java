@@ -432,7 +432,8 @@ public class UTilitiesActivity extends SherlockActivity {
 
     private boolean isLoggingIn() {
         // updateUiTask is null before login has begun
-        return updateUiTask != null && updateUiTask.getStatus() == AsyncTask.Status.RUNNING;
+        return updateUiTask != null && updateUiTask.getStatus() == AsyncTask.Status.RUNNING &&
+                !updateUiTask.isCancelled();
     }
 
     static class LoginTask extends AsyncTask<AuthCookie, Void, Void> {
@@ -479,6 +480,7 @@ public class UTilitiesActivity extends SherlockActivity {
         protected void onPostExecute(Void result) {
             for (AuthCookie cookie : mActivity.authCookies) {
                 if (!cookie.hasCookieBeenSet()) {
+                    ((UTilitiesApplication) mActivity.getApplication()).logoutAll();
                     return;
                 }
             }
