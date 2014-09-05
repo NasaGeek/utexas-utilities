@@ -31,7 +31,7 @@ public class AuthCookie {
     protected String userNameKey;
     protected String passwordKey;
     protected boolean cookieHasBeenSet;
-    private OkHttpClient client;
+    protected OkHttpClient client;
     protected SharedPreferences settings;
     protected SecurePreferences secureSettings;
 
@@ -81,6 +81,19 @@ public class AuthCookie {
     private void resetCookie() {
         Utility.commit(settings.edit().remove(prefKey));
         authCookie = "";
+        try {
+            /**
+             * This step is *required* for PNA, and nicety for other services. PNA won't let you
+             * log in if you're still holding on to a valid authcookie, so we clear them out.
+             */
+            URI loginURI = URI.create(url.getHost());
+            CookieStore cookies = ((CookieManager) CookieHandler.getDefault()).getCookieStore();
+            for (HttpCookie cookie : cookies.get(loginURI)) {
+                cookies.remove(loginURI, cookie);
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
         cookieHasBeenSet = false;
     }
 
@@ -107,25 +120,15 @@ public class AuthCookie {
     }
 
     public void login() throws IOException {
-        String user = settings.getString("eid", "error");
-        String pw = secureSettings.getString("password");
+        Request request = buildLoginRequest();
+        performLogin(request);
+    }
 
-        RequestBody requestBody = new FormEncodingBuilder()
-                .add(userNameKey, user)
-                .add(passwordKey, pw)
-                .build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
-
-        try {
-            Response response = client.newCall(request).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
+    protected void performLogin(Request request) throws IOException {
+        Response response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            throw new IOException("Bad response code " + response);
         }
-
         CookieManager cm = (CookieManager) CookieHandler.getDefault();
         List<HttpCookie> cookies = cm.getCookieStore().getCookies();
         for (HttpCookie cookie : cookies) {
@@ -137,6 +140,21 @@ public class AuthCookie {
             }
         }
         // do something otherwise
+    }
+
+    protected Request buildLoginRequest() {
+        String user = settings.getString("eid", "error");
+        String pw = secureSettings.getString("password");
+
+        RequestBody requestBody = new FormEncodingBuilder()
+                .add(userNameKey, user)
+                .add(passwordKey, pw)
+                .build();
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+        return request;
     }
 
     public void logout() {
