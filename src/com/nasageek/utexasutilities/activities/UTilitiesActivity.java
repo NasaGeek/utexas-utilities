@@ -517,7 +517,6 @@ public class UTilitiesActivity extends SherlockActivity {
                 loginTasks.add(updateUiTask);
 
                 for (AuthCookie cookie : authCookies) {
-                    ((UTilitiesApplication) getApplication()).putAuthCookie(cookie.getPrefKey(), cookie);
                     LoginTask loginTask = new LoginTask(loginLatch);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                         loginTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, cookie);
