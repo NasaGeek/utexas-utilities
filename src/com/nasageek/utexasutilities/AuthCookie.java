@@ -70,12 +70,7 @@ public class AuthCookie {
             authCookie = settings.getString(prefKey, "");
             return authCookie;
         } else {
-            try {
-                login();
-            } catch (IOException ie) {
-                ie.printStackTrace();
-            }
-            return authCookie;
+           return null;
         }
     }
 
