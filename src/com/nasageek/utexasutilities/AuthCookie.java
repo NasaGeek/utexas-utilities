@@ -34,11 +34,11 @@ public class AuthCookie {
     protected OkHttpClient client;
     protected SharedPreferences settings;
     protected SecurePreferences secureSettings;
-
     protected URL url;
 
 
-    public AuthCookie(String prefKey, String authCookieKey, String loginUrl, String userNameKey, String passwordKey, Context con) {
+    public AuthCookie(String prefKey, String authCookieKey, String loginUrl, String userNameKey,
+                      String passwordKey, Context con) {
         this.prefKey = prefKey;
         this.authCookieKey = authCookieKey;
         this.userNameKey = userNameKey;
@@ -49,7 +49,8 @@ public class AuthCookie {
             e.printStackTrace();
         }
         this.client = new OkHttpClient();
-        this.secureSettings = new SecurePreferences(con, "com.nasageek.utexasutilities.password", false);
+        this.secureSettings = new SecurePreferences(con, "com.nasageek.utexasutilities.password",
+                false);
         this.settings = PreferenceManager.getDefaultSharedPreferences(con);
     }
 
@@ -82,9 +83,9 @@ public class AuthCookie {
         Utility.commit(settings.edit().remove(prefKey));
         authCookie = "";
         try {
-            /**
-             * This step is *required* for PNA, and nicety for other services. PNA won't let you
-             * log in if you're still holding on to a valid authcookie, so we clear them out.
+            /*
+            This step is *required* for PNA, and nicety for other services. PNA won't let you
+            log in if you're still holding on to a valid authcookie, so we clear them out.
              */
             URI loginURI = URI.create(url.getHost());
             CookieStore cookies = ((CookieManager) CookieHandler.getDefault()).getCookieStore();
@@ -105,7 +106,7 @@ public class AuthCookie {
         this is technically unnecessary if OkHttp handled the authentication, because it will
         have already set the cookies in the CookieHandler. It doesn't seem to cause any issues
         just to re-add the cookies, though
-        */
+         */
         HttpCookie httpCookie = new HttpCookie(authCookieKey, authCookie);
         httpCookie.setDomain(url.getHost());
         // this is required for PNA login and does not appear to affect other services
