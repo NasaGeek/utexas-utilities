@@ -2,6 +2,7 @@
 package com.nasageek.utexasutilities.fragments;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,8 +15,10 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.TempLoginException;
+import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.nasageek.utexasutilities.activities.LoginActivity;
 import com.nasageek.utexasutilities.adapters.TransactionAdapter;
 import com.nasageek.utexasutilities.model.Transaction;
 
@@ -27,10 +30,13 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 //TODO: last transaction doesn't show when loading dialog is present at the bottom, low priority fix
 
@@ -48,12 +54,11 @@ public class TransactionsFragment extends SherlockFragment {
     // private SherlockFragmentActivity parentAct;
 
     private View vg;
-
     private String balance;
     private fetchTransactionDataTask fetch;
 
     public enum TransactionType {
-        Bevo, Dinein;
+        Bevo, Dinein
     }
 
     private TransactionType mType;
@@ -144,22 +149,18 @@ public class TransactionsFragment extends SherlockFragment {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void parser(boolean refresh) {
-        httpclient = ConnectionHelper.getThreadSafeClient();
+        httpclient = new DefaultHttpClient();
         httpclient.getCookieStore().clear();
 
         BasicClientCookie screen = new BasicClientCookie("webBrowserSize", "B");
         screen.setDomain(".utexas.edu");
         httpclient.getCookieStore().addCookie(screen);
-        BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getUtdAuthCookie(
-                getActivity(), httpclient));
-        cookie.setDomain(".utexas.edu");
-        httpclient.getCookieStore().addCookie(cookie);
 
         fetch = new fetchTransactionDataTask(httpclient, refresh);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
         } else {
-            fetch.execute();
+            fetch.execute(false);
         }
     }
 
@@ -194,7 +195,7 @@ public class TransactionsFragment extends SherlockFragment {
         tlv.setSelectionFromTop(0, 0);
     }
 
-    private class fetchTransactionDataTask extends AsyncTask<Object, Void, Character> {
+    private class fetchTransactionDataTask extends AsyncTask<Boolean, Void, Character> {
         private DefaultHttpClient client;
         private boolean refresh;
         private String errorMsg;
@@ -219,7 +220,14 @@ public class TransactionsFragment extends SherlockFragment {
         }
 
         @Override
-        protected Character doInBackground(Object... params) {
+        protected Character doInBackground(Boolean... params) {
+            Boolean recursing = params[0];
+            String utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
+                    .getUtdAuthCookieVal();
+            BasicClientCookie cookie = new BasicClientCookie("SC", utdAuthCookie);
+            cookie.setDomain(".utexas.edu");
+            httpclient.getCookieStore().addCookie(cookie);
+
             HttpPost hpost = new HttpPost("https://utdirect.utexas.edu/hfis/transactions.WBX");
             String pagedata = "";
             tempTransactionList = new ArrayList<Transaction>();
@@ -233,10 +241,41 @@ public class TransactionsFragment extends SherlockFragment {
                 cancel(true);
                 return null;
             }
-            // TODO: automatically log them back in
+
             if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-                ConnectionHelper.logout(getActivity());
+                if (getActivity() != null) {
+                    UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();
+                    if (!recursing) {
+                        try {
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
+                        } catch (IOException e) {
+                            errorMsg
+                                    = "UTilities could not fetch your transaction data.  Try refreshing.";
+                            cancel(true);
+                            e.printStackTrace();
+                            return null;
+                        } catch (TempLoginException tle) {
+                            /*
+                            ooooh boy is this lazy. I'd rather not init SharedPreferences here
+                            to check if persistent login is on, so we'll just catch the exception
+                             */
+                            Intent login = new Intent(getActivity(), LoginActivity.class);
+                            login.putExtra("activity", getActivity().getIntent().getComponent()
+                                    .getClassName());
+                            login.putExtra("service", 'u');
+                            getActivity().startActivity(login);
+                            getActivity().finish();
+                            errorMsg = "Session expired, please log in again";
+                            cancel(true);
+                            return null;
+                        }
+                        return doInBackground(true);
+                    } else {
+                      mApp.logoutAll();
+                    }
+                }
                 cancel(true);
                 return null;
             }

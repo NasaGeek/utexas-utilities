@@ -1,6 +1,23 @@
 
 package com.nasageek.utexasutilities.fragments;
 
+import com.actionbarsherlock.app.SherlockFragment;
+import com.foound.widget.AmazingAdapter;
+import com.foound.widget.AmazingListView;
+import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.BlackboardDashboardXmlParser;
+import com.nasageek.utexasutilities.MyPair;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.model.BBClass;
+import com.nasageek.utexasutilities.model.FeedItem;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import org.acra.ACRA;
+import org.xmlpull.v1.XmlPullParserException;
+
 import android.annotation.TargetApi;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -21,40 +38,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.foound.widget.AmazingAdapter;
-import com.foound.widget.AmazingListView;
-import com.mapsaurus.paneslayout.FragmentLauncher;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.BlackboardDashboardXmlParser;
-import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.MyPair;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.model.BBClass;
-import com.nasageek.utexasutilities.model.FeedItem;
-
-import org.acra.ACRA;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.io.StringReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.net.ssl.HttpsURLConnection;
-
 public class BlackboardDashboardFragment extends SherlockFragment {
 
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private LinearLayout d_pb_ll;
     private AmazingListView dlv;
     private TextView etv;
@@ -102,13 +95,6 @@ public class BlackboardDashboardFragment extends SherlockFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View vg = inflater.inflate(R.layout.blackboard_dashboard_fragment, container, false);
-
-        httpclient = ConnectionHelper.getThreadSafeClient();
-        String bbAuthCookie = ConnectionHelper.getBbAuthCookie(getActivity(), httpclient);
-        httpclient.getCookieStore().clear();
-        BasicClientCookie cookie = new BasicClientCookie("s_session_id", bbAuthCookie);
-        cookie.setDomain(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT);
-        httpclient.getCookieStore().addCookie(cookie);
 
         dlv = (AmazingListView) vg.findViewById(R.id.dash_listview);
         d_pb_ll = (LinearLayout) vg.findViewById(R.id.dash_progressbar_ll);
@@ -200,12 +186,13 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         });
 
         if (feedList.size() == 0) {
+            httpclient = new OkHttpClient();
             fetch = new fetchDashboardTask(httpclient);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, bbAuthCookie);
+                fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
-                fetch.execute(bbAuthCookie);
+                fetch.execute();
             }
         }
 
@@ -244,14 +231,14 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 
     private class fetchDashboardTask extends
             AsyncTask<String, Void, List<MyPair<String, List<FeedItem>>>> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private String errorMsg = "";
         private List<MyPair<String, List<FeedItem>>> tempFeedList;
         private Exception ex;
         private String pagedata;
         private Boolean showButton = false;
 
-        public fetchDashboardTask(DefaultHttpClient client) {
+        public fetchDashboardTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -264,76 +251,39 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 
         @Override
         protected List<MyPair<String, List<FeedItem>>> doInBackground(String... params) {
-            String pagedata = "";
-            String bbAuthCookie = params[0];
             tempFeedList = new ArrayList<MyPair<String, List<FeedItem>>>();
 
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
-                URL location;
-                HttpsURLConnection conn = null;
-                try {
-                    location = new URL(
-                            ConnectionHelper.BLACKBOARD_DOMAIN
-                                    + "/webapps/Bb-mobile-BBLEARN/dashboard?course_type=COURSE&with_notifications=true");
-                    conn = (HttpsURLConnection) location.openConnection();
-                    conn.setRequestProperty("Cookie", "s_session_id=" + bbAuthCookie);
-                    conn.setRequestMethod("GET");
-                    conn.setDoInput(true);
-                    conn.connect();
-                    InputStream in = conn.getInputStream();
-                    BlackboardDashboardXmlParser parser = new BlackboardDashboardXmlParser();
-                    tempFeedList = parser.parse(in);
-                    courses = parser.getCourses();
-                    in.close();
-                    // tl.addSplit("XML downloaded");
+            String reqUrl = BlackboardFragment.BLACKBOARD_DOMAIN
+                    + "/webapps/Bb-mobile-BBLEARN/dashboard?course_type=COURSE&with_notifications=true";
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
 
-                } catch (IOException e) {
-                    errorMsg = "UTilities could not fetch your Blackboard Dashboard";
-                    e.printStackTrace();
-                    cancel(true);
-                    return null;
-                } catch (XmlPullParserException e) {
-                    errorMsg = "UTilities could not parse the downloaded Dashboard data.";
-                    showButton = true;
-                    this.pagedata = pagedata;
-                    ex = e;
-                    e.printStackTrace();
-                    cancel(true);
-                    return null;
-
-                } finally {
-                    if (conn != null) {
-                        conn.disconnect();
-                    }
-                }
-            } else {
-                try {
-                    HttpGet hget = new HttpGet(
-                            ConnectionHelper.BLACKBOARD_DOMAIN
-                                    + "/webapps/Bb-mobile-BBLEARN/dashboard?course_type=COURSE&with_notifications=true");
-                    HttpResponse response = client.execute(hget);
-                    pagedata = EntityUtils.toString(response.getEntity());
-                    BlackboardDashboardXmlParser parser = new BlackboardDashboardXmlParser();
-                    tempFeedList = parser.parse(new StringReader(pagedata));
-                    courses = parser.getCourses();
-
-                } catch (IOException e) {
-                    errorMsg = "UTilities could not fetch your Blackboard Dashboard";
-                    e.printStackTrace();
-                    cancel(true);
-                    return null;
-                } catch (XmlPullParserException e) {
-                    errorMsg = "UTilities could not parse the downloaded Dashboard data.";
-                    showButton = true;
-                    this.pagedata = pagedata;
-                    ex = e;
-                    e.printStackTrace();
-                    cancel(true);
-                    return null;
-                }
+            try {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
+                errorMsg = "UTilities could not fetch your Blackboard Dashboard";
+                e.printStackTrace();
+                cancel(true);
+                return null;
             }
-            // tl.addSplit("XML parsed");
-            // tl.dumpToLog();
+
+            try {
+                BlackboardDashboardXmlParser parser = new BlackboardDashboardXmlParser();
+                tempFeedList = parser.parse(new StringReader(pagedata));
+                courses = parser.getCourses();
+            } catch (IOException|XmlPullParserException e) {
+                errorMsg = "UTilities could not parse the downloaded Dashboard data.";
+                // only show the button if setting pagedata didn't cause the exception
+                if (pagedata != null) {
+                    showButton = true;
+                }
+                ex = e;
+                e.printStackTrace();
+                cancel(true);
+                return null;
+            }
             return feedList;
         }
 
@@ -357,7 +307,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 
                     @Override
                     public void onClick(View v) {
-                        if (pagedata != null && ex != null) {
+                        if (ex != null) {
                             SharedPreferences sp = PreferenceManager
                                     .getDefaultSharedPreferences(getActivity().getBaseContext());
                             if (!sp.getBoolean("acra.enable", true)) {

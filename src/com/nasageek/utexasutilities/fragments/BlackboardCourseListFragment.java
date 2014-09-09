@@ -1,6 +1,19 @@
 
 package com.nasageek.utexasutilities.fragments;
 
+import com.actionbarsherlock.app.SherlockFragment;
+import com.foound.widget.AmazingListView;
+import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.mapsaurus.paneslayout.PanesActivity;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.MyPair;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.adapters.BBClassAdapter;
+import com.nasageek.utexasutilities.model.BBClass;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,23 +27,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.foound.widget.AmazingListView;
-import com.mapsaurus.paneslayout.FragmentLauncher;
-import com.mapsaurus.paneslayout.PanesActivity;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.MyPair;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.adapters.BBClassAdapter;
-import com.nasageek.utexasutilities.model.BBClass;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
-
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +37,7 @@ import java.util.regex.Pattern;
 
 public class BlackboardCourseListFragment extends SherlockFragment {
 
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private LinearLayout bb_pb_ll;
     private TextView bbetv;
     private LinearLayout bbell;
@@ -76,13 +73,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
                     .getSerializable("classSectionList");
         }
 
-        httpclient = ConnectionHelper.getThreadSafeClient();
-        httpclient.getCookieStore().clear();
-        BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBbAuthCookie(getActivity(), httpclient));
-        cookie.setDomain(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT);
-        httpclient.getCookieStore().addCookie(cookie);
-
+        httpclient = new OkHttpClient();
         classAdapter = new BBClassAdapter(getActivity(), classSectionList);
     }
 
@@ -169,10 +160,10 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 
     private class fetchClassesTask extends
             AsyncTask<Object, Void, ArrayList<MyPair<String, List<BBClass>>>> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private String errorMsg;
 
-        public fetchClassesTask(DefaultHttpClient client) {
+        public fetchClassesTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -185,14 +176,17 @@ public class BlackboardCourseListFragment extends SherlockFragment {
 
         @Override
         protected ArrayList<MyPair<String, List<BBClass>>> doInBackground(Object... params) {
-            HttpGet hget = new HttpGet(ConnectionHelper.BLACKBOARD_DOMAIN
-                    + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
+            String reqUrl = BlackboardFragment.BLACKBOARD_DOMAIN
+                    + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE";
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 errorMsg = "UTilities could not fetch the Blackboard course list";
                 e.printStackTrace();
                 cancel(true);

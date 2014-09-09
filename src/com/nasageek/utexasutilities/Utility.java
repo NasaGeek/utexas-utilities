@@ -1,6 +1,10 @@
 
 package com.nasageek.utexasutilities;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -96,25 +100,29 @@ public class Utility {
             // Context.MODE_PRIVATE);
             File folder = con.getDir("stops", Context.MODE_PRIVATE);
 
-            DefaultHttpClient client = ConnectionHelper.getThreadSafeClient();
+            OkHttpClient client = new OkHttpClient();
             for (int route : routes) {
                 // BufferedOutputStream bos = new
                 // BufferedOutputStream(con.openFileOutput(route+"_stops.txt",
                 // Context.MODE_PRIVATE));
 
-                HttpGet hget = new HttpGet("http://www.capmetro.org/schedulemap-ut.aspx?f1="
-                        + route + "&map=stops");
+                String reqUrl = "http://www.capmetro.org/schedulemap-ut.aspx?f1="
+                        + route + "&map=stops";
+                Request request = new Request.Builder()
+                        .url(reqUrl)
+                        .build();
                 String pagedata = "";
 
                 try {
-                    HttpResponse response = client.execute(hget);
-                    pagedata = EntityUtils.toString(response.getEntity());
-                } catch (Exception e) {
+                    Response response = client.newCall(request).execute();
+                    pagedata = response.body().string();
+                } catch (IOException e) {
                     errorText = "Connection to CapMetro failed.";
-                    cancel(true);
                     e.printStackTrace();
+                    cancel(true);
                     return null;
                 }
+
                 File stopsfile = new File(folder, route + "_stops.txt");
                 BufferedOutputStream bos = null;
 

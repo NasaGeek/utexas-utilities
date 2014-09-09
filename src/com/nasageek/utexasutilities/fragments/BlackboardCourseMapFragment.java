@@ -1,6 +1,25 @@
 
 package com.nasageek.utexasutilities.fragments;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.CourseMapSaxHandler;
+import com.nasageek.utexasutilities.MyPair;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.adapters.CourseMapAdapter;
+import com.nasageek.utexasutilities.model.CourseMapItem;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import org.acra.ACRA;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,28 +41,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.mapsaurus.paneslayout.FragmentLauncher;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.CourseMapSaxHandler;
-import com.nasageek.utexasutilities.MyPair;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.adapters.CourseMapAdapter;
-import com.nasageek.utexasutilities.model.CourseMapItem;
-
-import org.acra.ACRA;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 
@@ -52,7 +50,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 public class BlackboardCourseMapFragment extends BlackboardFragment {
 
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private LinearLayout cm_pb_ll;
     private ListView cmlv;
     private fetchCoursemapTask fetch;
@@ -109,15 +107,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
                     .getSerializable("mainList");
             itemNumber = getArguments().getInt("itemNumber");
         }
-
-        // settings = PreferenceManager.getDefaultSharedPreferences(this);
-
-        httpclient = ConnectionHelper.getThreadSafeClient();
-        httpclient.getCookieStore().clear();
-        BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBbAuthCookie(getActivity(), httpclient));
-        cookie.setDomain(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT);
-        httpclient.getCookieStore().addCookie(cookie);
+        httpclient = new OkHttpClient();
     }
 
     @Override
@@ -324,13 +314,13 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 
     private class fetchCoursemapTask extends
             AsyncTask<Object, Void, ArrayList<MyPair<CourseMapItem, ArrayList>>> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private String failureMessage = "";
         private String pagedata;
         private Exception ex;
         private Boolean showButton = false;
 
-        public fetchCoursemapTask(DefaultHttpClient client) {
+        public fetchCoursemapTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -343,14 +333,17 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 
         @Override
         protected ArrayList<MyPair<CourseMapItem, ArrayList>> doInBackground(Object... params) {
-            HttpGet hget = new HttpGet(ConnectionHelper.BLACKBOARD_DOMAIN
-                    + "/webapps/Bb-mobile-BBLEARN/courseMap?course_id=" + bbID);
+            String reqUrl = BLACKBOARD_DOMAIN
+                    + "/webapps/Bb-mobile-BBLEARN/courseMap?course_id=" + bbID;
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 failureMessage = "UTilities could not fetch this course map";
                 e.printStackTrace();
                 cancel(true);

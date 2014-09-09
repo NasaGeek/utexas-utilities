@@ -23,25 +23,28 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
+import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.TempLoginException;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
+import com.nasageek.utexasutilities.activities.LoginActivity;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 public class ExamScheduleFragment extends SherlockFragment implements ActionModeFragment {
 
     private boolean noExams;
     private TextView login_first;
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private ArrayList<String> examlist;
     private ListView examlistview;
     private ExamAdapter ea;
@@ -53,6 +56,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     private TextView eetv;
     private LinearLayout ell;
     String semId;
+    private AuthCookie utdAuthCookie;
 
     public static ExamScheduleFragment newInstance(String title, String id) {
         ExamScheduleFragment esf = new ExamScheduleFragment();
@@ -77,6 +81,8 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         super.onCreate(savedInstanceState);
         parentAct = this.getActivity();
         semId = getArguments().getString("semId");
+        utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
+                .getAuthCookie(UTD_AUTH_COOKIE_KEY);
     }
 
     public void updateView(String semId, View vg) {
@@ -89,7 +95,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         ell = (LinearLayout) vg.findViewById(R.id.examschedule_error);
         eetv = (TextView) vg.findViewById(R.id.tv_failure);
 
-        if (!ConnectionHelper.utdCookieHasBeenSet()) {
+        if (!utdAuthCookie.hasCookieBeenSet()) {
             pb_ll.setVisibility(View.GONE);
             login_first.setVisibility(View.VISIBLE);
         } else {
@@ -98,15 +104,8 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     }
 
     public void parser() {
-        httpclient = ConnectionHelper.getThreadSafeClient();
-        httpclient.getCookieStore().clear();
-
-        BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getUtdAuthCookie(
-                parentAct, httpclient));
-        cookie.setDomain(".utexas.edu");
-        httpclient.getCookieStore().addCookie(cookie);
-
-        new fetchExamDataTask(httpclient).execute();
+        httpclient = new OkHttpClient();
+        new fetchExamDataTask(httpclient).execute(false);
     }
 
     @Override
@@ -114,11 +113,11 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         return mode;
     }
 
-    private class fetchExamDataTask extends AsyncTask<Object, Void, Character> {
-        private DefaultHttpClient client;
+    private class fetchExamDataTask extends AsyncTask<Boolean, Void, Character> {
+        private OkHttpClient client;
         private String errorMsg;
 
-        public fetchExamDataTask(DefaultHttpClient client) {
+        public fetchExamDataTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -131,26 +130,60 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         }
 
         @Override
-        protected Character doInBackground(Object... params) {
-            HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registrar/exam_schedule.WBX");
+        protected Character doInBackground(Boolean... params) {
+            Boolean recursing = params[0];
+
+            String reqUrl = "https://utdirect.utexas.edu/registrar/exam_schedule.WBX";
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 errorMsg = "UTilities could not fetch your exam schedule";
-                cancel(true);
                 e.printStackTrace();
-                return 'e';
+                cancel(true);
+                return null;
             }
+
             if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
                 if (parentAct != null) {
-                    ConnectionHelper.logout(parentAct);
+                    UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
+                    if (!recursing) {
+                        try {
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
+                        } catch (IOException e) {
+                            errorMsg = "UTilities could not fetch your exam schedule";
+                            cancel(true);
+                            e.printStackTrace();
+                            return null;
+                        } catch (TempLoginException tle) {
+                            /*
+                            ooooh boy is this lazy. I'd rather not init SharedPreferences here
+                            to check if persistent login is on, so we'll just catch the exception
+                             */
+                            Intent login = new Intent(parentAct, LoginActivity.class);
+                            login.putExtra("activity", parentAct.getIntent().getComponent()
+                                    .getClassName());
+                            login.putExtra("service", 'u');
+                            parentAct.startActivity(login);
+                            parentAct.finish();
+                            errorMsg = "Session expired, please log in again";
+                            cancel(true);
+                            return null;
+                        }
+                        return doInBackground(true);
+                    } else {
+                        mApp.logoutAll();
+                    }
                 }
                 cancel(true);
-                return 'e';
+                return null;
             }
             if (pagedata.contains("will be available approximately three weeks")) {// ||
                                                                                    // !tempId.equals(semId))

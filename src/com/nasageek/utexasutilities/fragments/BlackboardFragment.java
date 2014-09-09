@@ -7,6 +7,10 @@ import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesSc
 public abstract class BlackboardFragment extends SherlockFragment implements
         OnPanesScrolledListener {
 
+    public static final String BLACKBOARD_DOMAIN_NOPROT = "blackboard.utexas.edu";
+
+    public static final String BLACKBOARD_DOMAIN = "https://" + BLACKBOARD_DOMAIN_NOPROT;
+
     abstract String getBbid();
 
     abstract String getCourseName();

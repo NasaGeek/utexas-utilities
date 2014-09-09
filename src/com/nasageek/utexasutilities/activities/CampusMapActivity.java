@@ -50,18 +50,16 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.BuildingSaxHandler;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.NavigationDataSet;
 import com.nasageek.utexasutilities.NavigationSaxHandler;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.model.BuildingPlacemark;
 import com.nasageek.utexasutilities.model.RoutePlacemark;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -762,14 +760,19 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                 int i = (Integer) params[0];
                 stopMarker = (Marker) params[1];
                 String times;
-                DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
+                OkHttpClient httpclient = new OkHttpClient();
                 String data;
-                HttpResponse response;
-                String request = "http://www.capmetro.org/planner/s_service.asp?tool=NB&stopid=" + i;
+                String requestUrl = "http://www.capmetro.org/planner/s_service.asp?tool=NB&stopid=" + i;
 
                 try {
-                    response = httpclient.execute(new HttpGet(request));
-                    data = EntityUtils.toString(response.getEntity());
+                    Request get = new Request.Builder()
+                            .url(requestUrl)
+                            .build();
+                    Response response = httpclient.newCall(get).execute();
+                    if(!response.isSuccessful()) {
+                        throw new IOException("Bad response code " + response);
+                    }
+                    data = response.body().string();
                 } catch (Exception e) {
                     times = ERROR_COULD_NOT_REACH_CAPMETRO;
                     e.printStackTrace();

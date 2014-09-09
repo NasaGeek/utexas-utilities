@@ -1,6 +1,7 @@
 
 package com.nasageek.utexasutilities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.webkit.CookieManager;
@@ -8,8 +9,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import com.nasageek.utexasutilities.activities.LoginActivity;
 import com.nasageek.utexasutilities.activities.UTilitiesActivity;
+import com.nasageek.utexasutilities.fragments.BlackboardFragment;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.BB_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 public class LoginWebViewClient extends WebViewClient {
 
@@ -19,7 +24,7 @@ public class LoginWebViewClient extends WebViewClient {
 
     public LoginWebViewClient(Context con, String nextActivity, char service) {
         super();
-        context = con;
+        this.context = con;
         this.nextActivity = nextActivity;
         this.service = service;
     }
@@ -36,7 +41,7 @@ public class LoginWebViewClient extends WebViewClient {
         String cookies = "";
         switch (service) {
             case 'z':
-                ((LoginActivity) context).finish();
+                ((Activity) context).finish();
                 break;
             case 'p':
                 if (url.contains("pna.utexas.edu")) {
@@ -50,7 +55,9 @@ public class LoginWebViewClient extends WebViewClient {
                         }
                     }
                     if (!authCookie.equals("")) {
-                        ConnectionHelper.setPnaAuthCookie(authCookie, context);
+                        AuthCookie pnaAuthCookie = ((UTilitiesApplication) ((Activity) context)
+                                .getApplication()).getAuthCookie(PNA_AUTH_COOKIE_KEY);
+                        pnaAuthCookie.setAuthCookieVal(authCookie);
                         continueToActivity("UT PNA");
                         return;
                     }
@@ -58,23 +65,24 @@ public class LoginWebViewClient extends WebViewClient {
                 break;
 
             case 'b':
-                if (url.contains(ConnectionHelper.BLACKBOARD_DOMAIN_NOPROT)) {
+                if (url.contains(BlackboardFragment.BLACKBOARD_DOMAIN_NOPROT)) {
                     cookies = CookieManager.getInstance().getCookie(
-                            ConnectionHelper.BLACKBOARD_DOMAIN);
+                            BlackboardFragment.BLACKBOARD_DOMAIN);
 
-                    if (url.equals(ConnectionHelper.BLACKBOARD_DOMAIN
+                    if (url.equals(BlackboardFragment.BLACKBOARD_DOMAIN
                             + "/webapps/portal/frameset.jsp")
                             && cookies != null) {
                         for (String s : cookies.split("; ")) {
                             if (s.startsWith("s_session_id=")) {
                                 authCookie = s.substring(13);
-                                ;
                                 break;
                             }
                         }
                     }
                     if (!authCookie.equals("")) {
-                        ConnectionHelper.setBbAuthCookie(authCookie, context);
+                        AuthCookie bbAuthCookie = ((UTilitiesApplication) ((Activity) context)
+                                .getApplication()).getAuthCookie(BB_AUTH_COOKIE_KEY);
+                        bbAuthCookie.setAuthCookieVal(authCookie);
                         continueToActivity("Blackboard");
                         return;
                     }
@@ -94,7 +102,9 @@ public class LoginWebViewClient extends WebViewClient {
                     if (!authCookie.equals("")
                             && !authCookie.equals("NONE")
                             && url.equals("https://utdirect.utexas.edu/security-443/logon_check.logonform")) {
-                        ConnectionHelper.setUtdAuthCookie(authCookie, context);
+                        AuthCookie utdAuthCookie = ((UTilitiesApplication) ((Activity) context)
+                                .getApplication()).getAuthCookie(UTD_AUTH_COOKIE_KEY);
+                        utdAuthCookie.setAuthCookieVal(authCookie);
                         continueToActivity("UTDirect");
                         return;
                     }

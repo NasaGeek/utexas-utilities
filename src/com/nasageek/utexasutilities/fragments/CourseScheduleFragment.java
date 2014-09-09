@@ -26,30 +26,26 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.TempLoginException;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
+import com.nasageek.utexasutilities.activities.LoginActivity;
 import com.nasageek.utexasutilities.activities.ScheduleActivity;
 import com.nasageek.utexasutilities.adapters.ScheduleClassAdapter;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.net.ssl.HttpsURLConnection;
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 @SuppressWarnings("deprecation")
 public class CourseScheduleFragment extends SherlockFragment implements ActionModeFragment,
@@ -123,13 +119,13 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         slidingDrawer.setOnDrawerOpenListener(this);
         slidingDrawer.setVisibility(View.INVISIBLE);
 
-        DefaultHttpClient client = ConnectionHelper.getThreadSafeClient();
+        OkHttpClient client = new OkHttpClient();
         fetch = new parseTask(client);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
         } else {
-            fetch.execute();
+            fetch.execute(false);
         }
 
         return vg;
@@ -307,13 +303,12 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         }
     }
 
-    private class parseTask extends AsyncTask<Object, String, Integer> {
-        private DefaultHttpClient client;
+    private class parseTask extends AsyncTask<Boolean, String, Integer> {
+        private OkHttpClient client;
         private String errorMsg;
         private boolean classParseIssue = false;
-        private String authCookie;
 
-        public parseTask(DefaultHttpClient client) {
+        public parseTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -322,14 +317,6 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             progress.setVisibility(View.VISIBLE);
             scheduleGridView.setVisibility(View.GONE);
             errorLayout.setVisibility(View.GONE);
-
-            client.getCookieStore().clear();
-            authCookie = ConnectionHelper.getUtdAuthCookie(parentAct, client);
-
-            BasicClientCookie cookie = new BasicClientCookie("SC", authCookie);
-            cookie.setDomain(".utexas.edu");
-            client.getCookieStore().addCookie(cookie);
-
         }
 
         @Override
@@ -340,82 +327,30 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             ((ScheduleActivity) parentAct).getIndicator().notifyDataSetChanged();
         }
 
-        private String convertStreamToString(InputStream is) {
-            @SuppressWarnings("resource")
-            Scanner s = new Scanner(is, "iso-8859-1").useDelimiter("\\A");
-            String out = s.hasNext() ? s.next() : "";
-            s.close();
-            return out;
-        }
-
         @Override
-        protected Integer doInBackground(Object... params) {
+        protected Integer doInBackground(Boolean... params) {
+            Boolean recursing = params[0];
+
             // "stateful" stuff, I'll get it figured out in the next release
             // if(classList == null)
             classList = new ArrayList<UTClass>();
             // else
             // return classList.size();
 
+            String reqUrl = "https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId;
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
-                URL location;
-                HttpsURLConnection conn = null;
-                try {
-                    location = new URL(
-                            "https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId);
-                    conn = (HttpsURLConnection) location.openConnection();
-
-                    if (getActivity() == null) {
-                        cancel(true);
-                        errorMsg = "";
-                        return -1;
-                    }
-                    // TODO: why not just do this in onPreExecute?
-                    conn.setRequestProperty("Cookie", "SC=" + authCookie);
-
-                    // conn.setUseCaches(true);
-                    // conn.setRequestProperty("Cache-Control",
-                    // "only-if-cached");
-                    conn.setRequestMethod("GET");
-                    conn.setDoInput(true);
-                    /*
-                     * if(HttpResponseCache.getInstalled().get(new URI(
-                     * "https://utdirect.utexas.edu/registration/classlist.WBX?sem="
-                     * +semId), "GET", conn.getHeaderFields()) != null) {
-                     * pagedata =
-                     * convertStreamToString(HttpResponseCache.getInstalled
-                     * ().get(new URI(
-                     * "https://utdirect.utexas.edu/registration/classlist.WBX?sem="
-                     * +semId), "GET", conn.getHeaderFields()).getBody()); }
-                     * else {
-                     */
-                    conn.connect();
-                    pagedata = convertStreamToString(conn.getInputStream());
-                    // }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    errorMsg = "UTilities could not fetch your class listing";
-                    cancel(true);
-                    return -1;
-                } finally {
-                    if (conn != null) {
-                        conn.disconnect();
-                    }
-                }
-            } else {
-                HttpGet hget = new HttpGet(
-                        "https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId);
-                try {
-                    HttpResponse res = client.execute(hget);
-                    pagedata = EntityUtils.toString(res.getEntity());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    errorMsg = "UTilities could not fetch your class listing";
-                    cancel(true);
-                    return -1;
-                }
+            try {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
+                errorMsg = "UTilities could not fetch your class listing";
+                e.printStackTrace();
+                cancel(true);
+                return -1;
             }
 
             // now parse the Class Listing data
@@ -424,10 +359,38 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
                 if (parentAct != null) {
-                    ConnectionHelper.logout(parentAct);
+                    UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
+                    if (!recursing) {
+                        try {
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
+                        } catch (IOException e) {
+                            errorMsg = "UTilities could not fetch your class listing";
+                            cancel(true);
+                            e.printStackTrace();
+                            return null;
+                        } catch (TempLoginException tle) {
+                            /*
+                            ooooh boy is this lazy. I'd rather not init SharedPreferences here
+                            to check if persistent login is on, so we'll just catch the exception
+                             */
+                            Intent login = new Intent(parentAct, LoginActivity.class);
+                            login.putExtra("activity", parentAct.getIntent().getComponent()
+                                    .getClassName());
+                            login.putExtra("service", 'u');
+                            parentAct.startActivity(login);
+                            parentAct.finish();
+                            errorMsg = "Session expired, please log in again";
+                            cancel(true);
+                            return null;
+                        }
+                        return doInBackground(true);
+                    } else {
+                        mApp.logoutAll();
+                    }
                 }
                 cancel(true);
-                return -1;
+                return null;
             }
             Pattern semSelectPattern = Pattern.compile("<select  name=\"sem\">.*</select>",
                     Pattern.DOTALL);
