@@ -2,6 +2,7 @@
 package com.nasageek.utexasutilities.fragments;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,7 +16,9 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.TempLoginException;
 import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.nasageek.utexasutilities.activities.LoginActivity;
 import com.nasageek.utexasutilities.adapters.TransactionAdapter;
 import com.nasageek.utexasutilities.model.Transaction;
 
@@ -253,6 +256,17 @@ public class TransactionsFragment extends SherlockFragment {
                             cancel(true);
                             e.printStackTrace();
                             return null;
+                        } catch (TempLoginException tle) {
+                            /*
+                            ooooh boy is this lazy. I'd rather not init SharedPreferences here
+                            to check if persistent login is on, so we'll just catch the exception
+                             */
+                            Intent login = new Intent(getActivity(), LoginActivity.class);
+                            login.putExtra("activity", getActivity().getIntent().getComponent()
+                                    .getClassName());
+                            login.putExtra("service", 'u');
+                            getActivity().startActivity(login);
+                            getActivity().finish();
                         }
                         return doInBackground(true);
                     } else {

@@ -27,9 +27,11 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.TempLoginException;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
+import com.nasageek.utexasutilities.activities.LoginActivity;
 import com.nasageek.utexasutilities.activities.ScheduleActivity;
 import com.nasageek.utexasutilities.adapters.ScheduleClassAdapter;
 import com.nasageek.utexasutilities.model.Classtime;
@@ -357,6 +359,17 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                             cancel(true);
                             e.printStackTrace();
                             return -1;
+                        } catch (TempLoginException tle) {
+                            /*
+                            ooooh boy is this lazy. I'd rather not init SharedPreferences here
+                            to check if persistent login is on, so we'll just catch the exception
+                             */
+                            Intent login = new Intent(parentAct, LoginActivity.class);
+                            login.putExtra("activity", parentAct.getIntent().getComponent()
+                                    .getClassName());
+                            login.putExtra("service", 'u');
+                            parentAct.startActivity(login);
+                            parentAct.finish();
                         }
                         return doInBackground(true);
                     } else {

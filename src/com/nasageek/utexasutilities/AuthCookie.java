@@ -119,8 +119,14 @@ public class AuthCookie {
      * Builds a login request and executes it to produce a valid AuthCookie.
      * @return true if the cookie was set successfully, false if the cookie was not set
      * @throws IOException
+     * @throws com.nasageek.utexasutilities.TempLoginException if persistent login is
+     * not activated
      */
     public boolean login() throws IOException {
+        if (!settings.getBoolean("loginpref", false)) {
+            throw new TempLoginException("login() cannot be called when persistent login" +
+                    " is turned off.");
+        }
         Request request = buildLoginRequest();
         return performLogin(request);
     }
