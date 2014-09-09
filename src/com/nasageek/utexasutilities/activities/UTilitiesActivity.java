@@ -35,8 +35,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 public class UTilitiesActivity extends SherlockActivity {
 
-    private final static int LOGOUT_MENU_ID = 11;
-    private final static int CANCEL_LOGIN_MENU_ID = 12;
     private final static int BUTTON_ANIMATION_DURATION = 90;
 
     private SharedPreferences settings;
@@ -366,33 +364,33 @@ public class UTilitiesActivity extends SherlockActivity {
             if (!ConnectionHelper.isLoggingIn()) {
                 if (ConnectionHelper.utdCookieHasBeenSet() && ConnectionHelper.bbCookieHasBeenSet()
                         && ConnectionHelper.pnaCookieHasBeenSet()) {
-                    menu.removeGroup(R.id.log);
-                    menu.add(R.id.log, 11, Menu.NONE, "Log out");
-                    MenuItem item = menu.findItem(11);
+                    menu.removeGroup(R.id.login_menu_group);
+                    menu.add(R.id.login_menu_group, R.id.logout_button, Menu.NONE, "Log out");
+                    MenuItem item = menu.findItem(R.id.logout_button);
                     item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                 } else if (!ConnectionHelper.utdCookieHasBeenSet()
                         || !ConnectionHelper.bbCookieHasBeenSet()
                         || !ConnectionHelper.pnaCookieHasBeenSet()) {
-                    menu.removeGroup(R.id.log);
-                    menu.add(R.id.log, R.id.login, Menu.NONE, "Log in");
-                    MenuItem item = menu.findItem(R.id.login);
+                    menu.removeGroup(R.id.login_menu_group);
+                    menu.add(R.id.login_menu_group, R.id.login_button, Menu.NONE, "Log in");
+                    MenuItem item = menu.findItem(R.id.login_button);
                     item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                 }
             } else if (ConnectionHelper.isLoggingIn()) {
-                menu.removeGroup(R.id.log);
-                menu.add(R.id.log, CANCEL_LOGIN_MENU_ID, Menu.NONE, "Cancel");
-                MenuItem item = menu.findItem(CANCEL_LOGIN_MENU_ID);
+                menu.removeGroup(R.id.login_menu_group);
+                menu.add(R.id.login_menu_group, R.id.cancel_button, Menu.NONE, "Cancel");
+                MenuItem item = menu.findItem(R.id.cancel_button);
                 item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             }
         } else {
             if (ConnectionHelper.utdCookieHasBeenSet() || ConnectionHelper.bbCookieHasBeenSet()
                     || ConnectionHelper.pnaCookieHasBeenSet()) {
-                menu.removeGroup(R.id.log);
-                menu.add(R.id.log, LOGOUT_MENU_ID, Menu.NONE, "Log out");
-                MenuItem item = menu.findItem(LOGOUT_MENU_ID);
+                menu.removeGroup(R.id.login_menu_group);
+                menu.add(R.id.login_menu_group, R.id.logout_button, Menu.NONE, "Log out");
+                MenuItem item = menu.findItem(R.id.logout_button);
                 item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             } else {
-                menu.removeGroup(R.id.log);
+                menu.removeGroup(R.id.login_menu_group);
             }
         }
         return true;
@@ -402,18 +400,18 @@ public class UTilitiesActivity extends SherlockActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.login:
-                login();
-                invalidateOptionsMenu();
-                break;
             case R.id.settings:
                 loadSettings();
                 break;
-            case LOGOUT_MENU_ID:
+            case R.id.login_button:
+                login();
+                invalidateOptionsMenu();
+                break;
+            case R.id.logout_button:
                 logout();
                 invalidateOptionsMenu();
                 break;
-            case CANCEL_LOGIN_MENU_ID:
+            case R.id.cancel_button:
                 cancelLogin();
                 invalidateOptionsMenu();
                 break;

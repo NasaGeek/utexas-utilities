@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="login_button" type="id" />
+    <item name="cancel_button" type="id" />
+    <item name="logout_button" type="id" />
+</resources>

@@ -5,9 +5,6 @@
     		android:icon="@drawable/ic_menu_preferences"
             android:title="Settings" />
 	<group
-	    android:id="@+id/log">  
-	    <item android:id="@+id/login"
-        	  android:showAsAction="always"
-    		  android:title="Log in"/>
+	    android:id="@+id/login_menu_group">
     </group>
 </menu>
