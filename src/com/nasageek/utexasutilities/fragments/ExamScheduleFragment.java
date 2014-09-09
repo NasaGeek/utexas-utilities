@@ -42,7 +42,6 @@ import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_
 
 public class ExamScheduleFragment extends SherlockFragment implements ActionModeFragment {
 
-    private boolean noExams;
     private TextView login_first;
     private OkHttpClient httpclient;
     private ArrayList<String> examlist;
@@ -113,9 +112,14 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         return mode;
     }
 
-    private class fetchExamDataTask extends AsyncTask<Boolean, Void, Character> {
+    private class fetchExamDataTask extends AsyncTask<Boolean, Void, Integer> {
         private OkHttpClient client;
         private String errorMsg;
+
+        private final static int RESULT_SUCCESS = 0;
+        private final static int RESULT_FAIL_NOT_ENROLLED = 1;
+        private final static int RESULT_FAIL_TOO_EARLY = 2;
+
 
         public fetchExamDataTask(OkHttpClient client) {
             this.client = client;
@@ -130,7 +134,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         }
 
         @Override
-        protected Character doInBackground(Boolean... params) {
+        protected Integer doInBackground(Boolean... params) {
             Boolean recursing = params[0];
 
             String reqUrl = "https://utdirect.utexas.edu/registrar/exam_schedule.WBX";
@@ -185,17 +189,13 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
                 cancel(true);
                 return null;
             }
-            if (pagedata.contains("will be available approximately three weeks")) {// ||
-                                                                                   // !tempId.equals(semId))
-                noExams = true;
-                return 'c';
-            } else if (pagedata
-                    .contains("Our records indicate that you are not enrolled for the current semester.")) {
-                noExams = true;
-                return 'b';
-            } else {
-                noExams = false;
+            if (pagedata.contains("will be available approximately three weeks")) {
+                return RESULT_FAIL_TOO_EARLY;
+            } else if (pagedata.contains("Our records indicate that you are not enrolled" +
+                    " for the current semester.")) {
+                return RESULT_FAIL_NOT_ENROLLED;
             }
+
             Pattern rowpattern = Pattern.compile("<tr >.*?</tr>", Pattern.DOTALL);
             Matcher rowmatcher = rowpattern.matcher(pagedata);
 
@@ -214,37 +214,30 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
                     Spanned span = Html.fromHtml(field);
                     String out = span.toString();
                     rowstring += out + "^";
-
                 }
                 examlist.add(rowstring);
             }
-            return ' ';
+            return RESULT_SUCCESS;
         }
 
         @Override
-        protected void onPostExecute(Character result) {
-            if (!noExams) {
-                ea = new ExamAdapter(parentAct, examlist);
-                examlistview.setAdapter(ea);
-                examlistview.setOnItemClickListener(ea);
-                examlistview.setVisibility(View.VISIBLE);
-            } else {
-                // TODO: check for null here? or figure out why result would be
-                // null to begin with
-                switch (result) {
-                    case 'c':
-                        netv.setText("'Tis not the season for final exams.\nTry back later!\n(about 3 weeks before they begin)");
-                        break;
-                    case 'b':
-                        netv.setText("You aren't enrolled for the current semester.");
-                        break;
-                    // this should never be executed, anytime dIB returns 'e' it
-                    // should go to onCancelled
-                    case 'e':
-                        netv.setText("There was a problem loading the exam schedule.\nPlease try again.");
-                        break;
-                }
-                netv.setVisibility(View.VISIBLE);
+        protected void onPostExecute(Integer result) {
+            switch (result) {
+                case RESULT_SUCCESS:
+                    ea = new ExamAdapter(parentAct, examlist);
+                    examlistview.setAdapter(ea);
+                    examlistview.setOnItemClickListener(ea);
+                    examlistview.setVisibility(View.VISIBLE);
+                    break;
+                case RESULT_FAIL_TOO_EARLY:
+                    netv.setText("'Tis not the season for final exams.\nTry back later!" +
+                            "\n(about 3 weeks before they begin)");
+                    netv.setVisibility(View.VISIBLE);
+                    break;
+                case RESULT_FAIL_NOT_ENROLLED:
+                    netv.setText("You aren't enrolled for the current semester.");
+                    netv.setVisibility(View.VISIBLE);
+                    break;
             }
             pb_ll.setVisibility(View.GONE);
         }
