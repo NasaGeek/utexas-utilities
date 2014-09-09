@@ -69,7 +69,8 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         View vg = inflater.inflate(R.layout.exam_schedule_fragment_layout, container, false);
         updateView(semId, vg);
         return vg;
@@ -153,7 +154,8 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
                 return null;
             }
 
-            if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
+            if (pagedata
+                    .contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
                 if (parentAct != null) {
                     UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
