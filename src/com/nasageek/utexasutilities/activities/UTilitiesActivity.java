@@ -84,7 +84,6 @@ public class UTilitiesActivity extends SherlockActivity {
 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
         setContentView(R.layout.main);
         if (isLoggingIn()) {
             setSupportProgressBarIndeterminateVisibility(true);
@@ -449,6 +448,11 @@ public class UTilitiesActivity extends SherlockActivity {
             try {
                 params[0].login();
             } catch (IOException e) {
+                /*
+                TODO: Inform the user that the login request failed due to a network error.
+                This will require a change to AuthCookie or some other sort of shared state
+                between LoginTask and UpdateUITask.
+                 */
                 e.printStackTrace();
             }
             loginLatch.countDown();
@@ -481,7 +485,8 @@ public class UTilitiesActivity extends SherlockActivity {
             for (AuthCookie cookie : mActivity.authCookies) {
                 if (!cookie.hasCookieBeenSet()) {
                     ((UTilitiesApplication) mActivity.getApplication()).logoutAll();
-                    return;
+                    Toast.makeText(mActivity, "Login failed", Toast.LENGTH_SHORT).show();
+                    break;
                 }
             }
             mActivity.invalidateOptionsMenu();
