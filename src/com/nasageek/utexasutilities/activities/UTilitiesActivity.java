@@ -446,6 +446,10 @@ public class UTilitiesActivity extends SherlockActivity {
         @Override
         protected Void doInBackground(AuthCookie... params) {
             try {
+                /*
+                We can ignore the return value of login() because UpdateUITask ensures all of the
+                cookies have been set before completing the login.
+                  */
                 params[0].login();
             } catch (IOException e) {
                 /*

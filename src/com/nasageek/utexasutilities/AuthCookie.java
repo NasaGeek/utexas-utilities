@@ -115,15 +115,27 @@ public class AuthCookie {
         cookieHasBeenSet = true;
     }
 
-    public void login() throws IOException {
+    /**
+     * Builds a login request and executes it to produce a valid AuthCookie.
+     * @return true if the cookie was set successfully, false if the cookie was not set
+     * @throws IOException
+     */
+    public boolean login() throws IOException {
         Request request = buildLoginRequest();
-        performLogin(request);
+        return performLogin(request);
     }
 
-    protected void performLogin(Request request) throws IOException {
+    /**
+     * Executes a login request with the AuthCookie's OkHttpClient. This should only be called
+     * when persistent login is activated.
+     * @param request Request to execute
+     * @return true if the cookie was set successfully, false if the cookie was not set
+     * @throws IOException
+     */
+    protected boolean performLogin(Request request) throws IOException {
         Response response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
-            throw new IOException("Bad response code " + response);
+            throw new IOException("Bad response code: " + response + " during login.");
         }
         CookieManager cm = (CookieManager) CookieHandler.getDefault();
         List<HttpCookie> cookies = cm.getCookieStore().getCookies();
@@ -132,10 +144,10 @@ public class AuthCookie {
             String cookieVal = cookie.getValue();
             if (cookie.getName().equals(authCookieKey) && !cookieVal.equals("NONE")) {
                 setAuthCookieVal(cookieVal);
-                return;
+                return true;
             }
         }
-        // do something otherwise
+        return false;
     }
 
     protected Request buildLoginRequest() {
