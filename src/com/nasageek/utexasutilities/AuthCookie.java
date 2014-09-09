@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Chris on 7/4/2014.
@@ -49,6 +50,7 @@ public class AuthCookie {
             e.printStackTrace();
         }
         this.client = new OkHttpClient();
+        this.client.setConnectTimeout(10, TimeUnit.SECONDS);
         this.secureSettings = new SecurePreferences(con, "com.nasageek.utexasutilities.password",
                 false);
         this.settings = PreferenceManager.getDefaultSharedPreferences(con);
