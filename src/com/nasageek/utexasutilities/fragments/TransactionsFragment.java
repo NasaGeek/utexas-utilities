@@ -267,6 +267,9 @@ public class TransactionsFragment extends SherlockFragment {
                             login.putExtra("service", 'u');
                             getActivity().startActivity(login);
                             getActivity().finish();
+                            errorMsg = "Session expired, please log in again";
+                            cancel(true);
+                            return null;
                         }
                         return doInBackground(true);
                     } else {

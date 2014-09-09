@@ -29,7 +29,6 @@ import com.nasageek.utexasutilities.TempLoginException;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
 import com.nasageek.utexasutilities.activities.LoginActivity;
-import com.nasageek.utexasutilities.activities.ScheduleActivity;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -136,7 +135,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
                 errorMsg = "UTilities could not fetch your exam schedule";
                 e.printStackTrace();
                 cancel(true);
-                return 'e';
+                return null;
             }
 
             if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
@@ -151,7 +150,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
                             errorMsg = "UTilities could not fetch your exam schedule";
                             cancel(true);
                             e.printStackTrace();
-                            return 'e';
+                            return null;
                         } catch (TempLoginException tle) {
                             /*
                             ooooh boy is this lazy. I'd rather not init SharedPreferences here
@@ -163,6 +162,9 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
                             login.putExtra("service", 'u');
                             parentAct.startActivity(login);
                             parentAct.finish();
+                            errorMsg = "Session expired, please log in again";
+                            cancel(true);
+                            return null;
                         }
                         return doInBackground(true);
                     } else {
@@ -170,7 +172,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
                     }
                 }
                 cancel(true);
-                return 'e';
+                return null;
             }
             if (pagedata.contains("will be available approximately three weeks")) {// ||
                                                                                    // !tempId.equals(semId))

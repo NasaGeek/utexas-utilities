@@ -358,7 +358,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                             errorMsg = "UTilities could not fetch your class listing";
                             cancel(true);
                             e.printStackTrace();
-                            return -1;
+                            return null;
                         } catch (TempLoginException tle) {
                             /*
                             ooooh boy is this lazy. I'd rather not init SharedPreferences here
@@ -370,6 +370,9 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                             login.putExtra("service", 'u');
                             parentAct.startActivity(login);
                             parentAct.finish();
+                            errorMsg = "Session expired, please log in again";
+                            cancel(true);
+                            return null;
                         }
                         return doInBackground(true);
                     } else {
@@ -377,7 +380,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                     }
                 }
                 cancel(true);
-                return -1;
+                return null;
             }
             Pattern semSelectPattern = Pattern.compile("<select  name=\"sem\">.*</select>",
                     Pattern.DOTALL);
