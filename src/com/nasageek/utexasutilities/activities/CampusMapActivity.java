@@ -101,6 +101,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     private HashMap<String, Polyline> polylineMap;
     private GoogleMap mMap;
 
+    private static final int CURRENT_ROUTES_VERSION = 1;
     private static final int BURNT_ORANGE = Color.parseColor("#DDCC5500");
     private static final LatLng UT_TOWER_LOC = new LatLng(30.285706, -97.739423);
     private static final int GPS_SETTINGS_REQ_CODE = 0;
@@ -252,15 +253,23 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         spinner.setAdapter(adapter);
 
         int default_route = Integer.parseInt(settings.getString("default_bus_route", NO_ROUTE_ID));
-        // TODO: Handle all route changes, not just changes that cause obvious errors
-        if (default_route >= adapter.getCount()) {
+        // use a simple versioning scheme to ensure that I can trigger a wipe
+        // of the default route on an update
+        int routesVersion = settings.getInt("routes_version", 0);
+        if (routesVersion < CURRENT_ROUTES_VERSION) {
             settings.edit().putString("default_bus_route", NO_ROUTE_ID).apply();
-            Toast.makeText(
-                    this,
-                    "Your default bus route has been reset due to either an application error" +
-                            " or a change in UT's shuttle system.",
-                    Toast.LENGTH_LONG).show();
+            settings.edit().putInt("routes_version", CURRENT_ROUTES_VERSION).apply();
+            // only bother the user if they've set a default route
+            if (default_route != 0) {
+                Toast.makeText(
+                        this,
+                        "Your default bus route has been reset due to" +
+                                " a change in UT's shuttle system.",
+                        Toast.LENGTH_LONG).show();
+            }
+            default_route = 0;
         }
+
         routeid = ((Route) spinner.getAdapter().getItem(default_route)).getCode();
         actionbar.setSelectedNavigationItem(default_route);
     }
