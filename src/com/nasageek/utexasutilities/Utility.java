@@ -78,8 +78,9 @@ public class Utility {
         protected Void doInBackground(Void... v) {
 
             // 675, 684, 685 were retired on 1/7/14
+            // 651, 652 retired in 8/14
             int[] routes = {
-                    640, 641, 642, 651, 652, 653, 656, 661, 663, 670, 671, 672, 680, 681
+                    640, 641, 642, 653, 656, 661, 663, 670, 671, 672, 680, 681
             };
 
             // FileOutputStream fos = con.openFileOutput("stops",

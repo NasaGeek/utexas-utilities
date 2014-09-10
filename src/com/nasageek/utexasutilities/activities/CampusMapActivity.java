@@ -53,7 +53,6 @@ import com.nasageek.utexasutilities.BuildingSaxHandler;
 import com.nasageek.utexasutilities.NavigationDataSet;
 import com.nasageek.utexasutilities.NavigationSaxHandler;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.model.BuildingPlacemark;
 import com.nasageek.utexasutilities.model.RoutePlacemark;
 import com.squareup.okhttp.OkHttpClient;
@@ -111,7 +110,6 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     public enum Route {
         No_Overlay(0, "No Bus Route Overlay"),
         Crossing_Place(670, "Crossing Place"),
-        Camino_La_Costa(651, "Camino La Costa"),
         East_Campus(641, "East Campus"),
         Forty_Acres(640, "Forty Acres"),
         Far_West(661, "Far West"),
@@ -121,7 +119,6 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         Lakeshore(672, "Lakeshore"),
         North_Riverside(671, "North Riverside"),
         North_Riverside_Lakeshore(680, "North Riverside/Lakeshore"),
-        Pickle_Research_Campus(652, "Pickle Research Campus"),
         Red_River(653, "Red River"),
         West_Campus(642, "West Campus");
         //@formatter:on
@@ -260,7 +257,8 @@ public class CampusMapActivity extends SherlockFragmentActivity {
             settings.edit().putString("default_bus_route", NO_ROUTE_ID).apply();
             Toast.makeText(
                     this,
-                    "Your default bus route has been reset due to either an application error or a change in UT's shuttle system.",
+                    "Your default bus route has been reset due to either an application error" +
+                            " or a change in UT's shuttle system.",
                     Toast.LENGTH_LONG).show();
         }
         routeid = ((Route) spinner.getAdapter().getItem(default_route)).getCode();

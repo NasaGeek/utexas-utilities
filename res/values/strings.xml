@@ -107,7 +107,6 @@ Also a big thanks to yukuku for his AmazingListView library (http://code.google.
 	<string-array name="routes_array">	
 		<item>No Bus Route</item>
 		<item>Crossing Place</item>
-		<item>Camino La Costa</item>
 		<item>East Campus</item>
 		<item>Forty Acres</item>
 		<item>Far West</item>
@@ -117,7 +116,6 @@ Also a big thanks to yukuku for his AmazingListView library (http://code.google.
 		<item>Lakeshore</item>
 		<item>North Riverside</item>
 		<item>North Riverside/Lakeshore</item>
-		<item>Pickle Research Campus</item>
 		<item>Red River</item>
 		<item>West Campus</item>
 	</string-array>   
@@ -135,8 +133,6 @@ Also a big thanks to yukuku for his AmazingListView library (http://code.google.
         <item>10</item>
         <item>11</item>
         <item>12</item>
-        <item>13</item>
-        <item>14</item>
     </string-array>
     <string-array name="restaurants_array">	
 		<item>No Restaurant</item>
