@@ -45,8 +45,8 @@ public class BuildingProvider extends ContentProvider {
         if (PreferenceManager.getDefaultSharedPreferences(this.getContext()).getInt(
                 "buildingdbversion", 1) < 4) {
             if (this.getContext().deleteDatabase("buildings")) {
-                Utility.commit(PreferenceManager.getDefaultSharedPreferences(this.getContext())
-                        .edit().putInt("buildingdbversion", 4));
+               PreferenceManager.getDefaultSharedPreferences(this.getContext())
+                        .edit().putInt("buildingdbversion", 4).apply();
             }
         }
         bdb = new BuildingDatabase(this.getContext());

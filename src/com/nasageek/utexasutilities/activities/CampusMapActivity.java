@@ -257,7 +257,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         int default_route = Integer.parseInt(settings.getString("default_bus_route", NO_ROUTE_ID));
         // TODO: Handle all route changes, not just changes that cause obvious errors
         if (default_route >= adapter.getCount()) {
-            Utility.commit(settings.edit().putString("default_bus_route", NO_ROUTE_ID));
+            settings.edit().putString("default_bus_route", NO_ROUTE_ID).apply();
             Toast.makeText(
                     this,
                     "Your default bus route has been reset due to either an application error or a change in UT's shuttle system.",

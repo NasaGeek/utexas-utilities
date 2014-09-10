@@ -77,7 +77,7 @@ public class AuthCookie {
     }
 
     private void resetCookie() {
-        Utility.commit(settings.edit().remove(prefKey));
+        settings.edit().remove(prefKey).apply();
         authCookie = "";
         try {
             /*
@@ -97,7 +97,7 @@ public class AuthCookie {
 
     public void setAuthCookieVal(String authCookie) {
         this.authCookie = authCookie;
-        Utility.commit(settings.edit().putString(prefKey, authCookie));
+        settings.edit().putString(prefKey, authCookie).apply();
 
         /*
         this is technically unnecessary if OkHttp handled the authentication, because it will

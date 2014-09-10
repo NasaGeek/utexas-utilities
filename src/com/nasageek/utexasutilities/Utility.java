@@ -26,11 +26,6 @@ public class Utility {
     private static String sID = null;
     private static final String INSTALLATION = "UUID";
 
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public static void commit(SharedPreferences.Editor editor) {
-        editor.apply();
-    }
-
     public static String id(Context context) {
         if (sID == null) {
             File installation = new File(context.getFilesDir(), INSTALLATION);

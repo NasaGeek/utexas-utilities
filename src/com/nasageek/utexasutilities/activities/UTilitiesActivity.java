@@ -358,7 +358,7 @@ public class UTilitiesActivity extends SherlockActivity {
                     .setNegativeButton("No thanks", null);
             nologin = nologin_builder.create();
             nologin.show();
-            Utility.commit(settings.edit().putBoolean("firstRun", false));
+            settings.edit().putBoolean("firstRun", false).apply();
             Utility.id(this);
         } else {
             ChangeLog cl = new ChangeLog(this);
@@ -378,10 +378,10 @@ public class UTilitiesActivity extends SherlockActivity {
     private void handleUnencryptedPassword() {
         if (!settings.contains("encryptedpassword") && settings.contains("firstRun")
                 && settings.contains("password")) {
-            Utility.commit(settings.edit().remove("password"));
-            Utility.commit(settings.edit().putBoolean("encryptedpassword", true));
+            settings.edit().remove("password").apply();
+            settings.edit().putBoolean("encryptedpassword", true).apply();
             // turn off autologin, they can re-activate it when they enter their password
-            Utility.commit(settings.edit().putBoolean("autologin", false));
+            settings.edit().putBoolean("autologin", false).apply();
             showUnencryptedPasswordDialog();
         }
     }
