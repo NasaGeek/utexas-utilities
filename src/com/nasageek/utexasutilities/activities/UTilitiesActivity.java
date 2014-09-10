@@ -480,6 +480,11 @@ public class UTilitiesActivity extends SherlockActivity {
                     break;
                 }
             }
+            /*
+             trick to make sure that the login is seen as "done" before onCreateOptionsMenu()
+             is called.
+              */
+            cancel(false);
             mActivity.invalidateOptionsMenu();
             mActivity.setSupportProgressBarIndeterminateVisibility(false);
         }
