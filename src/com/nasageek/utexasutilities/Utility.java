@@ -1,20 +1,15 @@
 
 package com.nasageek.utexasutilities;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -205,5 +200,10 @@ public class Utility {
      */
     public static String makeFragmentName(int viewId, int position) {
         return "android:switcher:" + viewId + ":" + position;
+    }
+
+    public static <P> void parallelExecute(AsyncTask<P, ?, ?> task, P... params) {
+        // always call executeOnExecutor because I pulled in a current AsyncTask
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
     }
 }

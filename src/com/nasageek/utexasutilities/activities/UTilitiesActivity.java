@@ -512,20 +512,12 @@ public class UTilitiesActivity extends SherlockActivity {
                 loginTasks = new ArrayList<AsyncTask>();
                 CountDownLatch loginLatch = new CountDownLatch(authCookies.length);
                 updateUiTask = new UpdateUiTask(this);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    updateUiTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, loginLatch);
-                } else {
-                    updateUiTask.execute(loginLatch);
-                }
+                Utility.parallelExecute(updateUiTask, loginLatch);
                 loginTasks.add(updateUiTask);
 
                 for (AuthCookie cookie : authCookies) {
                     LoginTask loginTask = new LoginTask(loginLatch);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        loginTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, cookie);
-                    } else {
-                        loginTask.execute(cookie);
-                    }
+                    Utility.parallelExecute(loginTask, cookie);
                     loginTasks.add(loginTask);
                 }
             }

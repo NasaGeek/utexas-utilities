@@ -18,6 +18,7 @@ import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.TempLoginException;
 import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.activities.LoginActivity;
 import com.nasageek.utexasutilities.adapters.TransactionAdapter;
 import com.nasageek.utexasutilities.model.Transaction;
@@ -157,11 +158,7 @@ public class TransactionsFragment extends SherlockFragment {
         httpclient.getCookieStore().addCookie(screen);
 
         fetch = new fetchTransactionDataTask(httpclient, refresh);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
-        } else {
-            fetch.execute(false);
-        }
+        Utility.parallelExecute(fetch, false);
     }
 
     @Override

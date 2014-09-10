@@ -7,6 +7,7 @@ import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.activities.NutritionInfoActivity;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -117,13 +118,8 @@ public class MenuFragment extends SherlockFragment {
         if (listOfLists.size() == 0 || update) {
             listOfLists.clear();
             fetchMTask = new fetchMenuTask(httpclient);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                fetchMTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, restId, this
-                        .getArguments().getString("title"), mlv);
-            } else {
-                fetchMTask.execute(restId, this.getArguments().getString("title"), mlv);
-            }
+            Utility.parallelExecute(fetchMTask, restId,
+                    this.getArguments().getString("title"), mlv);
         }
     }
 

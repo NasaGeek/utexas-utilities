@@ -9,6 +9,7 @@ import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.BlackboardDashboardXmlParser;
 import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.model.BBClass;
 import com.nasageek.utexasutilities.model.FeedItem;
 import com.squareup.okhttp.OkHttpClient;
@@ -188,12 +189,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         if (feedList.size() == 0) {
             httpclient = new OkHttpClient();
             fetch = new fetchDashboardTask(httpclient);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
-                fetch.execute();
-            }
+            Utility.parallelExecute(fetch);
         }
 
         return vg;

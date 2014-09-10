@@ -8,6 +8,7 @@ import com.mapsaurus.paneslayout.PanesActivity;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.adapters.BBClassAdapter;
 import com.nasageek.utexasutilities.model.BBClass;
 import com.squareup.okhttp.OkHttpClient;
@@ -142,12 +143,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
         // remember writing this...
         if (classSectionList.size() == 0) {
             fetch = new fetchClassesTask(httpclient);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
-                fetch.execute();
-            }
+            Utility.parallelExecute(fetch);
         }
         return vg;
     }

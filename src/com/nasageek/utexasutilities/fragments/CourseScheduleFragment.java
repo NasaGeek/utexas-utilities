@@ -29,6 +29,7 @@ import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.TempLoginException;
 import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
 import com.nasageek.utexasutilities.activities.LoginActivity;
@@ -121,13 +122,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
         OkHttpClient client = new OkHttpClient();
         fetch = new parseTask(client);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
-        } else {
-            fetch.execute(false);
-        }
-
+        Utility.parallelExecute(fetch, false);
         return vg;
     }
 
