@@ -28,11 +28,7 @@ public class Utility {
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public static void commit(SharedPreferences.Editor editor) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-            editor.apply();
-        } else {
-            editor.commit();
-        }
+        editor.apply();
     }
 
     public static String id(Context context) {

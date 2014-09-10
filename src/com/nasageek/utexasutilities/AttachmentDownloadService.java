@@ -70,19 +70,11 @@ public class AttachmentDownloadService extends IntentService {
                     .build();
             Response response = client.newCall(request).execute();
 
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ECLAIR_MR1) {
-                (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download"))
-                        .mkdirs();
-                dlLocation = Uri.withAppendedPath(
-                        Uri.fromFile(Environment.getExternalStorageDirectory()), "Download/"
-                                + fileName);
-            } else {
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                        .mkdirs();
-                dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment
-                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)),
-                        fileName);
-            }
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    .mkdirs();
+            dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment
+                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)),
+                    fileName);
             // download the file
             InputStream input = new BufferedInputStream(response.body().byteStream());
 
