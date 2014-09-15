@@ -1,3 +1,4 @@
+
 buildscript {
     repositories {
         mavenCentral()
@@ -47,6 +48,11 @@ android {
         }
     }
 
+    android.packagingOptions {
+        pickFirst 'META-INF/LICENSE.txt'
+        pickFirst 'META-INF/NOTICE.txt'
+    }
+
     // TODO: You can put sensitive keystore data in an untracked .properties file or ENV variables
     // Example: http://stackoverflow.com/a/20872275/3034339
     signingConfigs {
@@ -78,6 +84,12 @@ android {
 
 dependencies {
     compile 'com.squareup.okhttp:okhttp:2.0.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
+
+    compile 'com.octo.android.robospice:robospice:1.4.14'
+    compile 'com.octo.android.robospice:robospice-retrofit:1.4.14'
+    compile 'com.google.code.gson:gson:2.3'
+
     compile 'com.android.support:support-v4:19.1.0'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
 
