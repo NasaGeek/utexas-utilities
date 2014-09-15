@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.adapters.ActivityStreamAdapter;
