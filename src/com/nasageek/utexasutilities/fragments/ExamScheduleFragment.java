@@ -1,19 +1,10 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -27,35 +18,59 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
+import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.TempLoginException;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
+import com.nasageek.utexasutilities.activities.LoginActivity;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 public class ExamScheduleFragment extends SherlockFragment implements ActionModeFragment {
 
-    private boolean noExams;
     private TextView login_first;
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private ArrayList<String> examlist;
     private ListView examlistview;
     private ExamAdapter ea;
     private LinearLayout pb_ll;
-    private SherlockFragmentActivity parentAct;
+    private FragmentActivity parentAct;
     // private View vg;
     public ActionMode mode;
     private TextView netv;
     private TextView eetv;
     private LinearLayout ell;
     String semId;
+    private AuthCookie utdAuthCookie;
+
+    public static ExamScheduleFragment newInstance(String title, String id) {
+        ExamScheduleFragment esf = new ExamScheduleFragment();
+
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        args.putString("semId", id);
+        esf.setArguments(args);
+
+        return esf;
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         View vg = inflater.inflate(R.layout.exam_schedule_fragment_layout, container, false);
         updateView(semId, vg);
         return vg;
@@ -64,8 +79,10 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        parentAct = this.getSherlockActivity();
-        semId = getArguments().getString("semdId");
+        parentAct = this.getActivity();
+        semId = getArguments().getString("semId");
+        utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
+                .getAuthCookie(UTD_AUTH_COOKIE_KEY);
     }
 
     public void updateView(String semId, View vg) {
@@ -78,7 +95,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         ell = (LinearLayout) vg.findViewById(R.id.examschedule_error);
         eetv = (TextView) vg.findViewById(R.id.tv_failure);
 
-        if (!ConnectionHelper.cookieHasBeenSet()) {
+        if (!utdAuthCookie.hasCookieBeenSet()) {
             pb_ll.setVisibility(View.GONE);
             login_first.setVisibility(View.VISIBLE);
         } else {
@@ -87,15 +104,8 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
     }
 
     public void parser() {
-        httpclient = ConnectionHelper.getThreadSafeClient();
-        httpclient.getCookieStore().clear();
-
-        BasicClientCookie cookie = new BasicClientCookie("SC", ConnectionHelper.getAuthCookie(
-                parentAct, httpclient));
-        cookie.setDomain(".utexas.edu");
-        httpclient.getCookieStore().addCookie(cookie);
-
-        new fetchExamDataTask(httpclient).execute();
+        httpclient = new OkHttpClient();
+        new fetchExamDataTask(httpclient).execute(false);
     }
 
     @Override
@@ -103,11 +113,16 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         return mode;
     }
 
-    private class fetchExamDataTask extends AsyncTask<Object, Void, Character> {
-        private DefaultHttpClient client;
+    private class fetchExamDataTask extends AsyncTask<Boolean, Void, Integer> {
+        private OkHttpClient client;
         private String errorMsg;
 
-        public fetchExamDataTask(DefaultHttpClient client) {
+        private final static int RESULT_SUCCESS = 0;
+        private final static int RESULT_FAIL_NOT_ENROLLED = 1;
+        private final static int RESULT_FAIL_TOO_EARLY = 2;
+
+
+        public fetchExamDataTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -120,38 +135,69 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
         }
 
         @Override
-        protected Character doInBackground(Object... params) {
-            HttpGet hget = new HttpGet("https://utdirect.utexas.edu/registrar/exam_schedule.WBX");
+        protected Integer doInBackground(Boolean... params) {
+            Boolean recursing = params[0];
+
+            String reqUrl = "https://utdirect.utexas.edu/registrar/exam_schedule.WBX";
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 errorMsg = "UTilities could not fetch your exam schedule";
-                cancel(true);
                 e.printStackTrace();
-                return 'e';
+                cancel(true);
+                return null;
             }
-            if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
+
+            if (pagedata
+                    .contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
                 if (parentAct != null) {
-                    ConnectionHelper.logout(parentAct);
+                    UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
+                    if (!recursing) {
+                        try {
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
+                        } catch (IOException e) {
+                            errorMsg = "UTilities could not fetch your exam schedule";
+                            cancel(true);
+                            e.printStackTrace();
+                            return null;
+                        } catch (TempLoginException tle) {
+                            /*
+                            ooooh boy is this lazy. I'd rather not init SharedPreferences here
+                            to check if persistent login is on, so we'll just catch the exception
+                             */
+                            Intent login = new Intent(parentAct, LoginActivity.class);
+                            login.putExtra("activity", parentAct.getIntent().getComponent()
+                                    .getClassName());
+                            login.putExtra("service", 'u');
+                            parentAct.startActivity(login);
+                            parentAct.finish();
+                            errorMsg = "Session expired, please log in again";
+                            cancel(true);
+                            return null;
+                        }
+                        return doInBackground(true);
+                    } else {
+                        mApp.logoutAll();
+                    }
                 }
                 cancel(true);
-                return 'e';
+                return null;
             }
-            if (pagedata.contains("will be available approximately three weeks")) {// ||
-                                                                                   // !tempId.equals(semId))
-                noExams = true;
-                return 'c';
-            } else if (pagedata
-                    .contains("Our records indicate that you are not enrolled for the current semester.")) {
-                noExams = true;
-                return 'b';
-            } else {
-                noExams = false;
+            if (pagedata.contains("will be available approximately three weeks")) {
+                return RESULT_FAIL_TOO_EARLY;
+            } else if (pagedata.contains("Our records indicate that you are not enrolled" +
+                    " for the current semester.")) {
+                return RESULT_FAIL_NOT_ENROLLED;
             }
+
             Pattern rowpattern = Pattern.compile("<tr >.*?</tr>", Pattern.DOTALL);
             Matcher rowmatcher = rowpattern.matcher(pagedata);
 
@@ -170,37 +216,30 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
                     Spanned span = Html.fromHtml(field);
                     String out = span.toString();
                     rowstring += out + "^";
-
                 }
                 examlist.add(rowstring);
             }
-            return ' ';
+            return RESULT_SUCCESS;
         }
 
         @Override
-        protected void onPostExecute(Character result) {
-            if (!noExams) {
-                ea = new ExamAdapter(parentAct, examlist);
-                examlistview.setAdapter(ea);
-                examlistview.setOnItemClickListener(ea);
-                examlistview.setVisibility(View.VISIBLE);
-            } else {
-                // TODO: check for null here? or figure out why result would be
-                // null to begin with
-                switch (result) {
-                    case 'c':
-                        netv.setText("'Tis not the season for final exams.\nTry back later!\n(about 3 weeks before they begin)");
-                        break;
-                    case 'b':
-                        netv.setText("You aren't enrolled for the current semester.");
-                        break;
-                    // this should never be executed, anytime dIB returns 'e' it
-                    // should go to onCancelled
-                    case 'e':
-                        netv.setText("There was a problem loading the exam schedule.\nPlease try again.");
-                        break;
-                }
-                netv.setVisibility(View.VISIBLE);
+        protected void onPostExecute(Integer result) {
+            switch (result) {
+                case RESULT_SUCCESS:
+                    ea = new ExamAdapter(parentAct, examlist);
+                    examlistview.setAdapter(ea);
+                    examlistview.setOnItemClickListener(ea);
+                    examlistview.setVisibility(View.VISIBLE);
+                    break;
+                case RESULT_FAIL_TOO_EARLY:
+                    netv.setText("'Tis not the season for final exams.\nTry back later!" +
+                            "\n(about 3 weeks before they begin)");
+                    netv.setVisibility(View.VISIBLE);
+                    break;
+                case RESULT_FAIL_NOT_ENROLLED:
+                    netv.setText("You aren't enrolled for the current semester.");
+                    netv.setVisibility(View.VISIBLE);
+                    break;
             }
             pb_ll.setVisibility(View.GONE);
         }
@@ -302,8 +341,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            mode = ExamScheduleFragment.this.parentAct.startActionMode(new ScheduleActionMode(
-                    position));
+            mode = getSherlockActivity().startActionMode(new ScheduleActionMode(position));
         }
 
         final class ScheduleActionMode implements ActionMode.Callback {

@@ -39,7 +39,7 @@
     <ExtendedData>
     </ExtendedData>
     <Point>
-      <coordinates>-97.73555517196655,30.287902164880588</coordinates>
+      <coordinates>-97.736375,30.288675</coordinates>
     </Point>
   </Placemark>
 
@@ -537,6 +537,20 @@
     </Point>
   </Placemark>
 
+  <Placemark id="CCF">
+    <name>Caven Lacrosse and Sports Center at Clark Field</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.734872,30.281686</coordinates>
+    </Point>
+  </Placemark>
+
   <Placemark id="CCG">
     <name>Conference Center Garage</name>
     <visibility>0</visibility> 
@@ -721,6 +735,20 @@
     </Point>
   </Placemark>
 
+  <Placemark id="CRB">
+    <name>Computational Resource Building</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.726458,30.282219</coordinates>
+    </Point>
+  </Placemark>
+
   <Placemark id="CRD">
     <name>Carothers Dormitory</name>
     <visibility>0</visibility> 
@@ -772,6 +800,34 @@
     </Point>
   </Placemark>
   
+  <Placemark id="CS3">
+    <name>Chilling Station No. 3</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.735510,30.280706</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="CS4">
+    <name>Chilling Station No. 4</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.732460,30.288688</coordinates>
+    </Point>
+  </Placemark>
+
   <Placemark id="CS5">
     <name>Chilling Station No. 5</name>
     <visibility>0</visibility> 
@@ -786,6 +842,20 @@
     </ExtendedData>
     <Point>
       <coordinates>-97.7355444431305,30.29073702176409</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="CTR">
+    <name>Center for Transportation Research</name>
+    <visibility>0</visibility> 
+    <address>...</address>
+    <description>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.742786,30.279244</coordinates>
     </Point>
   </Placemark>
   
@@ -962,20 +1032,17 @@
     </Point>
   </Placemark>
 
-  <Placemark id="ESB">
-    <name>Experimental Science Building</name>
+  <Placemark id="ESS">
+    <name>Engineering Student Services Building</name>
     <visibility>0</visibility> 
     <address>...</address>
     <description>
-    <![CDATA[
-cat: esb.html: No such file or directory
-    ]]>
     </description>
     <styleUrl>#building</styleUrl> 
     <ExtendedData>
     </ExtendedData>
     <Point>
-      <coordinates>-97.73792624473572,30.287559382515912</coordinates>
+      <coordinates>-97.736667,30.287583</coordinates>
     </Point>
   </Placemark>
 
@@ -1321,20 +1388,17 @@ Rehabilitative Services</a></li>
     </Point>
   </Placemark>
 
-  <Placemark id="GIA">
-    <name>Graduate and International Admissions</name>
+  <Placemark id="GIAC">
+    <name>Graduate and International Admissions Center</name>
     <visibility>0</visibility> 
     <address>...</address>
     <description>
-    <![CDATA[
-    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/gia.jpg" border="0" alt="" />
-    ]]>
     </description>
     <styleUrl>#building</styleUrl> 
     <ExtendedData>
     </ExtendedData>
     <Point>
-      <coordinates>-97.74066209793091,30.29024602300666</coordinates>
+      <coordinates>-97.7417067,30.289317</coordinates>
     </Point>
   </Placemark>
 
@@ -1513,6 +1577,20 @@ Rehabilitative Services</a></li>
     </ExtendedData>
     <Point>
       <coordinates>-97.740743,30.28894</coordinates>
+    </Point>
+  </Placemark>
+
+  <Placemark id="INT">
+    <name>International Office</name>
+    <visibility>0</visibility>
+    <address>...</address>
+    <description>
+    </description>
+    <styleUrl>#building</styleUrl> 
+    <ExtendedData>
+    </ExtendedData>
+    <Point>
+      <coordinates>-97.743487,30.288063</coordinates>
     </Point>
   </Placemark>
 
@@ -2463,23 +2541,6 @@ Rehabilitative Services</a></li>
     </Point>
   </Placemark>
 
-  <Placemark id="RAS">
-    <name>Russell A. Steindam Hall</name>
-    <visibility>0</visibility> 
-    <address>...</address>
-    <description>
-    <![CDATA[
-    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/ras.jpg" border="0" alt="" />
-    ]]>
-    </description>
-    <styleUrl>#building</styleUrl> 
-    <ExtendedData>
-    </ExtendedData>
-    <Point>
-      <coordinates>-97.73566246032715,30.284956050331797</coordinates>
-    </Point>
-  </Placemark>
-
   <Placemark id="RHD">
     <name>Roberts Hall Dormitory</name>
     <visibility>0</visibility> 
@@ -2540,23 +2601,6 @@ Rehabilitative Services</a></li>
     </ExtendedData>
     <Point>
       <coordinates>-97.73634,30.28892</coordinates>
-    </Point>
-  </Placemark>
-
-  <Placemark id="RRN">
-    <name>ROTC Rifle Range Building</name>
-    <visibility>0</visibility> 
-    <address>...</address>
-    <description>
-    <![CDATA[
-    <img src="http://www.utexas.edu/maps/main/buildings/graphics/buildings/rrn.gif" border="0" alt="" />
-    ]]>
-    </description>
-    <styleUrl>#building</styleUrl> 
-    <ExtendedData>
-    </ExtendedData>
-    <Point>
-      <coordinates>-97.73544788360596,30.284641051716992</coordinates>
     </Point>
   </Placemark>
 

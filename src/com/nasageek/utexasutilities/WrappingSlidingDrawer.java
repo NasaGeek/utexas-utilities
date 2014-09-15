@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.SlidingDrawer;
 
+@SuppressWarnings("deprecation")
 public class WrappingSlidingDrawer extends SlidingDrawer {
 
     public WrappingSlidingDrawer(Context context, AttributeSet attrs, int defStyle) {

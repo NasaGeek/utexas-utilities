@@ -1,14 +1,15 @@
 
 package com.nasageek.utexasutilities;
 
-import java.util.ArrayList;
-import java.util.Stack;
+import com.nasageek.utexasutilities.fragments.BlackboardFragment;
+import com.nasageek.utexasutilities.model.CourseMapItem;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.nasageek.utexasutilities.model.CourseMapItem;
+import java.util.ArrayList;
+import java.util.Stack;
 
 public class CourseMapSaxHandler extends DefaultHandler {
 
@@ -65,7 +66,7 @@ public class CourseMapSaxHandler extends DefaultHandler {
                 Boolean blackboardItem = false;
                 if (!(atts.getValue("viewurl").contains("http://") || atts.getValue("viewurl")
                         .contains("https://"))) {
-                    host = ConnectionHelper.blackboard_domain;
+                    host = BlackboardFragment.BLACKBOARD_DOMAIN;
                 }
                 content.add(new MyPair(new CourseMapItem(atts.getValue("name"), host
                         + atts.getValue("viewurl").replace("&amp;", "&"), atts

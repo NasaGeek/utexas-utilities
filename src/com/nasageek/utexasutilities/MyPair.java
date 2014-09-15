@@ -16,6 +16,8 @@
 
 package com.nasageek.utexasutilities;
 
+import android.util.Pair;
+
 import java.io.Serializable;
 
 /**
@@ -24,6 +26,7 @@ import java.io.Serializable;
  * each of the contained objects.
  */
 public class MyPair<F, S> implements Serializable {
+
     private static final long serialVersionUID = 1L;
     public final F first;
     public final S second;

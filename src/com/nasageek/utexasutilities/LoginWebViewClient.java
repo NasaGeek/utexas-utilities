@@ -11,6 +11,11 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import com.nasageek.utexasutilities.activities.UTilitiesActivity;
+import com.nasageek.utexasutilities.fragments.BlackboardFragment;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.BB_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 public class LoginWebViewClient extends WebViewClient {
 
@@ -20,7 +25,7 @@ public class LoginWebViewClient extends WebViewClient {
 
     public LoginWebViewClient(Context con, String nextActivity, char service) {
         super();
-        context = con;
+        this.context = con;
         this.nextActivity = nextActivity;
         this.service = service;
     }
@@ -34,12 +39,9 @@ public class LoginWebViewClient extends WebViewClient {
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         if (service == 'c') {
             if (url.contains("https://utexas.instructure.com/login/oauth2/auth?code=")) {
-                // ConnectionHelper.setCanvasAuthToken(url.substring(url.indexOf("code=")),
-                // context);
                 Intent sendData = new Intent();
                 sendData.putExtra("oauth2_code", url.substring(url.indexOf("code=") + 5));
                 ((Activity) context).setResult(Activity.RESULT_OK, sendData);
-                // continueToActivity("Canvas");
                 ((Activity) context).finish();
             } else if (url.contains("https://utexas.instructure.com/login/oauth2/auth?error=")) {
                 // only error that is currently returned is access_denied
@@ -71,33 +73,36 @@ public class LoginWebViewClient extends WebViewClient {
                         }
                     }
                     if (!authCookie.equals("")) {
-                        ConnectionHelper.setPNAAuthCookie(authCookie, context);
+                        AuthCookie pnaAuthCookie = ((UTilitiesApplication) ((Activity) context)
+                                .getApplication()).getAuthCookie(PNA_AUTH_COOKIE_KEY);
+                        pnaAuthCookie.setAuthCookieVal(authCookie);
                         continueToActivity("UT PNA");
                         return;
                     }
                 }
                 break;
             case 'b':
-                if (url.contains(ConnectionHelper.blackboard_domain_noprot)) {
+                if (url.contains(BlackboardFragment.BLACKBOARD_DOMAIN_NOPROT)) {
                     cookies = CookieManager.getInstance().getCookie(
-                            ConnectionHelper.blackboard_domain);
+                            BlackboardFragment.BLACKBOARD_DOMAIN);
 
-                    if (url.equals(ConnectionHelper.blackboard_domain
+                    if (url.equals(BlackboardFragment.BLACKBOARD_DOMAIN
                             + "/webapps/portal/frameset.jsp")
                             && cookies != null) {
                         for (String s : cookies.split("; ")) {
                             if (s.startsWith("s_session_id=")) {
                                 authCookie = s.substring(13);
-                                ;
                                 break;
                             }
                         }
                     }
-                }
-                if (!authCookie.equals("")) {
-                    ConnectionHelper.setBBAuthCookie(authCookie, context);
-                    continueToActivity("Blackboard");
-                    return;
+                    if (!authCookie.equals("")) {
+                        AuthCookie bbAuthCookie = ((UTilitiesApplication) ((Activity) context)
+                                .getApplication()).getAuthCookie(BB_AUTH_COOKIE_KEY);
+                        bbAuthCookie.setAuthCookieVal(authCookie);
+                        continueToActivity("Blackboard");
+                        return;
+                    }
                 }
                 break;
             case 'u':
@@ -114,7 +119,9 @@ public class LoginWebViewClient extends WebViewClient {
                     if (!authCookie.equals("")
                             && !authCookie.equals("NONE")
                             && url.equals("https://utdirect.utexas.edu/security-443/logon_check.logonform")) {
-                        ConnectionHelper.setAuthCookie(authCookie, context);
+                        AuthCookie utdAuthCookie = ((UTilitiesApplication) ((Activity) context)
+                                .getApplication()).getAuthCookie(UTD_AUTH_COOKIE_KEY);
+                        utdAuthCookie.setAuthCookieVal(authCookie);
                         continueToActivity("UTDirect");
                         return;
                     }
@@ -141,7 +148,6 @@ public class LoginWebViewClient extends WebViewClient {
         }
         CookieManager.getInstance().removeAllCookie();
         context.startActivity(intent);
-        ((Activity) context).finish();
         return;
     }
 }

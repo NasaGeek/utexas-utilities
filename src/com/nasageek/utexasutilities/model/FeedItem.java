@@ -1,13 +1,13 @@
 
 package com.nasageek.utexasutilities.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import android.os.Parcel;
-import android.os.Parcelable;
 
 public class FeedItem implements Parcelable, Serializable {
 

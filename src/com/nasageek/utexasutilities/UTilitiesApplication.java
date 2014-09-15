@@ -1,15 +1,21 @@
 
 package com.nasageek.utexasutilities;
 
+import android.app.Application;
+
+import com.nasageek.utexasutilities.fragments.BlackboardFragment;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 
-import android.app.Application;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.util.HashMap;
+import java.util.Map;
 
 @ReportsCrashes(formKey = "", // This is required for backward compatibility but
-                              // not
-// used
+// not used
 customReportContent = {
         ReportField.ANDROID_VERSION, ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME,
         ReportField.BRAND, ReportField.BUILD, ReportField.PACKAGE_NAME,
@@ -20,14 +26,75 @@ customReportContent = {
 
 // formUriBasicAuthLogin = "releasereporter",
 // formUriBasicAuthPassword = "raebpcorterpxayszsword"
+
 )
 public class UTilitiesApplication extends Application {
+
+    public static final String UTD_AUTH_COOKIE_KEY = "utd_auth_cookie";
+    public static final String PNA_AUTH_COOKIE_KEY = "pna_auth_cookie";
+    public static final String BB_AUTH_COOKIE_KEY = "bb_auth_cookie";
+
+    private Map<String, AuthCookie> authCookies;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        authCookies = new HashMap<String, AuthCookie>();
+        authCookies.put(UTD_AUTH_COOKIE_KEY, new AuthCookie(UTD_AUTH_COOKIE_KEY,
+                    "SC",
+                    "https://utdirect.utexas.edu/security-443/logon_check.logonform",
+                    "LOGON",
+                    "PASSWORDS",
+                    this));
+
+        authCookies.put(PNA_AUTH_COOKIE_KEY, new PnaAuthCookie(this));
+
+        authCookies.put(BB_AUTH_COOKIE_KEY, new AuthCookie(BB_AUTH_COOKIE_KEY,
+                    "s_session_id",
+                    BlackboardFragment.BLACKBOARD_DOMAIN + "/webapps/login/",
+                    "user_id",
+                    "password",
+                    this));
+
+        CookieManager cookieManager = new CookieManager();
+        CookieHandler.setDefault(cookieManager);
 
         // The following line triggers the initialization of ACRA
         ACRA.init(this);
+    }
+
+    public AuthCookie getAuthCookie(String key) {
+        return authCookies.get(key);
+    }
+
+    public void putAuthCookie(String key, AuthCookie cookie) {
+        authCookies.put(key, cookie);
+    }
+
+    public boolean allCookiesSet() {
+        for (AuthCookie cookie : authCookies.values()) {
+            if (!cookie.hasCookieBeenSet()) {
+                return false;
+            }
+        }
+        return !authCookies.isEmpty();
+    }
+
+    public String getUtdAuthCookieVal() {
+        return authCookies.get(UTD_AUTH_COOKIE_KEY).getAuthCookieVal();
+    }
+
+    public String getPnaAuthCookieVal() {
+        return authCookies.get(PNA_AUTH_COOKIE_KEY).getAuthCookieVal();
+    }
+
+    public String getBbAuthCookieVal() {
+        return authCookies.get(BB_AUTH_COOKIE_KEY).getAuthCookieVal();
+    }
+
+    public void logoutAll() {
+        for (AuthCookie authCookie : authCookies.values()) {
+            authCookie.logout();
+        }
     }
 }

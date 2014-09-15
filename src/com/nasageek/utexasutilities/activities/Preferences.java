@@ -1,7 +1,7 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import java.io.IOException;
+import com.google.android.gms.internal.is;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -22,11 +22,16 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.nasageek.utexasutilities.ConnectionHelper;
+import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.retrofit.Canvas;
+
+import java.io.IOException;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.*;
 
 public class Preferences extends SherlockPreferenceActivity {
 
@@ -37,6 +42,7 @@ public class Preferences extends SherlockPreferenceActivity {
     private ActionBar actionbar;
     private SecurePreferences sp;
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,25 +118,14 @@ public class Preferences extends SherlockPreferenceActivity {
                     sp.removeValue("password");
                     ba.notifyDataSetChanged();
                 }
-                // whenever they switch between temp and persistent, log them
-                // out
-                ConnectionHelper.logout(Preferences.this);
-
+                // whenever they switch between temp and persistent, log them out
+                UTilitiesApplication mApp = (UTilitiesApplication) getApplication();
+                mApp.logoutAll();
                 return true;
             }
         });
 
-        // disable the EID and password preferences if the user is logged in
-        // TODO: make a method to check if user is logged in, it's cleaner that
-        // way
-        if (ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet()
-                && ConnectionHelper.bbCookieHasBeenSet()) {
-            loginfield.setEnabled(false);
-            passwordfield.setEnabled(false);
-        } else {
-            loginfield.setEnabled(true);
-            passwordfield.setEnabled(true);
-        }
+        setupLoginFields();
 
         final CheckBoxPreference sendcrashes = (CheckBoxPreference) findPreference("acra.enable");
         sendcrashes.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -203,6 +198,18 @@ public class Preferences extends SherlockPreferenceActivity {
         });
     }
 
+    private void setupLoginFields() {
+        // disable the EID and password preferences if the user is logged in
+        // TODO: make a method to check if user is logged in, it's cleaner that way
+        if (isUserLoggedIn()) {
+            loginfield.setEnabled(false);
+            passwordfield.setEnabled(false);
+        } else {
+            loginfield.setEnabled(true);
+            passwordfield.setEnabled(true);
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -218,15 +225,14 @@ public class Preferences extends SherlockPreferenceActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.PNACookieHasBeenSet()
-                && ConnectionHelper.bbCookieHasBeenSet()) {
-            loginfield.setEnabled(false);
-            passwordfield.setEnabled(false);
-            ba.notifyDataSetChanged();
-        } else {
-            loginfield.setEnabled(true);
-            passwordfield.setEnabled(true);
-            ba.notifyDataSetChanged();
-        }
+        setupLoginFields();
+        ba.notifyDataSetChanged();
+    }
+
+    private boolean isUserLoggedIn() {
+        UTilitiesApplication mApp = (UTilitiesApplication) getApplication();
+        return mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).hasCookieBeenSet() &&
+                mApp.getAuthCookie(PNA_AUTH_COOKIE_KEY).hasCookieBeenSet() &&
+                mApp.getAuthCookie(BB_AUTH_COOKIE_KEY).hasCookieBeenSet();
     }
 }

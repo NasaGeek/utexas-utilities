@@ -6,6 +6,10 @@ import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesSc
 public abstract class BlackboardFragment extends BaseSpiceFragment implements
         OnPanesScrolledListener {
 
+    public static final String BLACKBOARD_DOMAIN_NOPROT = "blackboard.utexas.edu";
+
+    public static final String BLACKBOARD_DOMAIN = "https://" + BLACKBOARD_DOMAIN_NOPROT;
+
     abstract String getBbid();
 
     abstract String getCourseName();
@@ -16,7 +20,7 @@ public abstract class BlackboardFragment extends BaseSpiceFragment implements
      * @Override public void onPanesScrolled() { //woops! turns out I don't need
      * this. We'll hang onto it for the time being just in case I change my
      * mind. // if(isAdded()) //
-     * getSherlockActivity().supportInvalidateOptionsMenu(); }
+     * getActivity().supportInvalidateOptionsMenu(); }
      */
 
 }

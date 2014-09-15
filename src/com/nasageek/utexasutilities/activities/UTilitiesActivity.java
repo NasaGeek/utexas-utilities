@@ -1,9 +1,8 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.widget.ImageButton;
@@ -26,12 +24,13 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.CanvasRetrofitSpiceService;
 import com.nasageek.utexasutilities.ChangeLog;
 import com.nasageek.utexasutilities.ChangeableContextTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.model.canvas.OAuthResponse;
 import com.nasageek.utexasutilities.requests.CanvasPostOAuthCodeRequest;
@@ -39,23 +38,39 @@ import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.BB_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
+
+/**
+ * Main entry point for UTilities. Allows the user to log in and contains a dashboard
+ * of buttons to launch UT web services.
+ */
 public class UTilitiesActivity extends SherlockActivity {
 
-    private final static int LOGOUT_MENU_ID = 11;
-    private final static int CANCEL_LOGIN_MENU_ID = 12;
-    private final static int CANVAS_LOGIN_REQUEST_CODE = 13;
     private final static int BUTTON_ANIMATION_DURATION = 90;
+    private final static int CANVAS_LOGIN_REQUEST_CODE = 13;
 
-    private boolean shouldAutologin;
+    private final static String SECURE_PREF_PW_KEY = "com.nasageek.utexasutilities.password";
+
     private SharedPreferences settings;
     private Toast message;
     private ImageView scheduleCheck, balanceCheck, dataCheck, blackboardCheck;
-    private ConnectionHelper.loginTask lt;
-    private ConnectionHelper.PNALoginTask plt;
-    private ConnectionHelper.bbLoginTask bblt;
     private AlertDialog nologin;
 
+    private AuthCookie authCookies[];
+    private List<AsyncTask> loginTasks;
+    private UpdateUiTask updateUiTask;
+    private AuthCookie utdAuthCookie;
+    private AuthCookie pnaAuthCookie;
+    private AuthCookie bbAuthCookie;
     private SpiceManager spiceManager = new SpiceManager(CanvasRetrofitSpiceService.class);
+    private boolean shouldAutologin;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,37 +81,51 @@ public class UTilitiesActivity extends SherlockActivity {
         } else {
             shouldAutologin = savedInstanceState.getBoolean("shouldAutologin");
         }
-        /*
-         * if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-         * StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-         * .detectAll() .penaltyLog() .build()); StrictMode.setVmPolicy(new
-         * StrictMode.VmPolicy.Builder() .detectAll() .penaltyLog() .build()); }
-         */
 
-        /*
-         * try { File httpCacheDir = new File(getCacheDir(), "http"); long
-         * httpCacheSize = 1024*1024; HttpResponseCache.install(httpCacheDir,
-         * httpCacheSize); } catch (IOException e) { e.printStackTrace(); }
-         */
+        UTilitiesApplication mApp = (UTilitiesApplication) getApplication();
+        utdAuthCookie = mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY);
+        pnaAuthCookie = mApp.getAuthCookie(PNA_AUTH_COOKIE_KEY);
+        bbAuthCookie = mApp.getAuthCookie(BB_AUTH_COOKIE_KEY);
+        authCookies = new AuthCookie[]{utdAuthCookie, pnaAuthCookie, bbAuthCookie};
 
-        final ChangeableContextTask[] loginTasks = (ChangeableContextTask[]) getLastNonConfigurationInstance();
+        loginTasks = (List<AsyncTask>) getLastNonConfigurationInstance();
         if (loginTasks != null) {
-            for (ChangeableContextTask at : loginTasks) {
-                if (at != null) {
-                    at.setContext(this);
-                }
+            updateUiTask = (UpdateUiTask) loginTasks.get(0);
+            if (updateUiTask != null) {
+                updateUiTask.setContext(this);
             }
         }
 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
         setContentView(R.layout.main);
-        if (ConnectionHelper.isLoggingIn()) {
-            setSupportProgressBarIndeterminateVisibility(true);
-        } else {
-            setSupportProgressBarIndeterminateVisibility(false);
+        setSupportProgressBarIndeterminateVisibility(isLoggingIn());
+
+        // use one Activity-wide Toast so they don't stack up
+        message = Toast.makeText(this, R.string.login_first, Toast.LENGTH_SHORT);
+
+        handleUnencryptedPassword();
+        handleFirstLaunch();
+
+        // auto-login, only run on first launch (if it gets rotated, etc, no more auto-login)
+        if (settings.getBoolean("autologin", false) && !isLoggingIn() && !mApp.allCookiesSet()
+                && shouldAutologin) {
+            shouldAutologin = false;
+            initLogin();
         }
+        setupDashBoardButtons();
+    }
+
+    /**
+     * Set up the dashboard of buttons to launch the various services of the
+     * app. This covers things like touch/focus listeners, authentication,
+     * intent to launch, etc.
+     */
+    private void setupDashBoardButtons() {
+        scheduleCheck = (ImageView) findViewById(R.id.scheduleCheck);
+        balanceCheck = (ImageView) findViewById(R.id.balanceCheck);
+        dataCheck = (ImageView) findViewById(R.id.dataCheck);
+        blackboardCheck = (ImageView) findViewById(R.id.blackboardCheck);
 
         final Intent schedule = new Intent(this, ScheduleActivity.class);
         final Intent balance = new Intent(this, BalanceActivity.class);
@@ -105,210 +134,87 @@ public class UTilitiesActivity extends SherlockActivity {
         final Intent menu = new Intent(this, MenuActivity.class);
         final Intent blackboard = new Intent(this, BlackboardPanesActivity.class);
 
-        message = Toast.makeText(this, R.string.login_first, Toast.LENGTH_SHORT);
+        // simple struct-like class to help handle related data
+        class DashboardButtonData {
+            public Intent intent;
+            public int imageButtonId;
+            public AuthCookie authCookie;
+            public Character serviceChar;
+            public ImageView checkOverlay;
 
-        scheduleCheck = (ImageView) findViewById(R.id.scheduleCheck);
-        balanceCheck = (ImageView) findViewById(R.id.balanceCheck);
-        dataCheck = (ImageView) findViewById(R.id.dataCheck);
-        blackboardCheck = (ImageView) findViewById(R.id.blackboardCheck);
+            // for authenticated services
+            public DashboardButtonData(Intent intent, int id, AuthCookie authCookie,
+                                       Character service, ImageView check) {
+                this.intent = intent;
+                this.imageButtonId = id;
+                this.authCookie = authCookie;
+                this.serviceChar = service;
+                this.checkOverlay = check;
+            }
 
-        if (!settings.contains("encryptedpassword") && settings.contains("firstRun")
-                && settings.contains("password")) {
-            Utility.commit(settings.edit().remove("password"));
-            Utility.commit(settings.edit().putBoolean("encryptedpassword", true));
-            Utility.commit(settings.edit().putBoolean("autologin", false));
-            AlertDialog.Builder passwordcleared_builder = new AlertDialog.Builder(this);
-            passwordcleared_builder
-                    .setMessage(
-                            "With this update to UTilities, your stored password will be encrypted. Your currently stored password "
-                                    + "has been wiped for security purposes and you will need to re-enter it.")
-                    .setCancelable(true).setPositiveButton("Ok", null);
-            AlertDialog passwordcleared = passwordcleared_builder.create();
-            passwordcleared.show();
+            // for unauthenticated services
+            public DashboardButtonData(Intent intent, int id) {
+                this(intent, id, null, null, null);
+            }
         }
 
-        if (!settings.contains("firstRun")) {
-            AlertDialog.Builder nologin_builder = new AlertDialog.Builder(this);
-            nologin_builder
-                    .setMessage(
-                            "This is your first time running UTilities; why don't you try logging in to get the most use out of the app?")
-                    .setCancelable(false)
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            loadSettings();
+        DashboardButtonData buttonData[] = new DashboardButtonData[6];
+        buttonData[0] = new DashboardButtonData(schedule, R.id.schedule_button, utdAuthCookie, 'u',
+                scheduleCheck);
+        buttonData[1] = new DashboardButtonData(balance, R.id.balance_button, utdAuthCookie, 'u',
+                balanceCheck);
+        buttonData[2] = new DashboardButtonData(blackboard, R.id.blackboard_button, bbAuthCookie,
+                'b', blackboardCheck);
+        buttonData[3] = new DashboardButtonData(data, R.id.data_button, pnaAuthCookie, 'p',
+                dataCheck);
+        buttonData[4] = new DashboardButtonData(map, R.id.map_button);
+        buttonData[5] = new DashboardButtonData(menu, R.id.menu_button);
+
+        for (int i = 0; i < 6; i++) {
+            ImageButton ib = (ImageButton) findViewById(buttonData[i].imageButtonId);
+            ib.setOnTouchListener(new ImageButtonTouchListener(
+                    (TransitionDrawable) ib.getDrawable()));
+            ib.setOnFocusChangeListener(new ImageButtonFocusListener());
+            ib.setTag(buttonData[i]);
+            ib.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DashboardButtonData data = (DashboardButtonData) v.getTag();
+                    // null cookie means the service doesn't need an EID
+                    if (data.authCookie == null) {
+                        startActivity(data.intent);
+                    } else {
+                        if (settings.getBoolean("loginpref", false)) {
+                            // persistent login
+                            if (!data.authCookie.hasCookieBeenSet() || isLoggingIn()) {
+                                showLoginFirstToast();
+                            } else {
+                                startActivity(data.intent);
+                            }
+                        } else {
+                            // temp login
+                            if (!data.authCookie.hasCookieBeenSet()) {
+                                Intent login = new Intent(UTilitiesActivity.this,
+                                        LoginActivity.class);
+                                login.putExtra("activity", data.intent.getComponent()
+                                        .getClassName());
+                                login.putExtra("service", data.serviceChar);
+                                startActivity(login);
+                            } else {
+                                startActivity(data.intent);
+                            }
                         }
-                    }).setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
-            nologin = nologin_builder.create();
-            nologin.show();
-            Utility.commit(settings.edit().putBoolean("firstRun", false));
-            Utility.id(this);
-        } else {
-            ChangeLog cl = new ChangeLog(this);
-            if (cl.isFirstRun()) {
-                cl.getFullLogDialog().show();
-            }
+                    }
+                }
+            });
         }
-
-        // auto-login, only run on first launch (if it gets rotated, etc, no
-        // more auto-login)
-        // we do this so weirdness doesn't occur when you rotate while logging
-        // in and then go back here
-        if (settings.getBoolean("autologin", false) && !ConnectionHelper.cookieHasBeenSet()
-                && !ConnectionHelper.isLoggingIn() && shouldAutologin) {
-            shouldAutologin = false;
-            initLogin();
-        }
-
-        final ImageButton schedulebutton = (ImageButton) findViewById(R.id.schedule_button);
-        schedulebutton.setOnTouchListener(new imageButtonTouchListener(
-                (TransitionDrawable) schedulebutton.getDrawable()));
-        schedulebutton.setOnFocusChangeListener(new imageButtonFocusListener());
-        schedulebutton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (settings.getBoolean("loginpref", false)) {
-                    if (!ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
-                        message.setText(R.string.login_first);
-                        message.setDuration(Toast.LENGTH_SHORT);
-                        message.show();
-                    } else {
-                        startActivity(schedule);
-                    }
-                } else {
-                    if (!ConnectionHelper.cookieHasBeenSet()) {
-                        Intent login_intent = new Intent(UTilitiesActivity.this,
-                                LoginActivity.class);
-                        login_intent.putExtra("activity", schedule.getComponent().getClassName());
-                        login_intent.putExtra("service", 'u');
-                        startActivity(login_intent);
-                    } else {
-                        startActivity(schedule);
-                    }
-                }
-            }
-        });
-
-        final ImageButton balancebutton = (ImageButton) findViewById(R.id.balance_button);
-        balancebutton.setOnTouchListener(new imageButtonTouchListener(
-                (TransitionDrawable) balancebutton.getDrawable()));
-        balancebutton.setOnFocusChangeListener(new imageButtonFocusListener());
-        balancebutton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (settings.getBoolean("loginpref", false)) {
-                    if (!ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
-                        message.setText(R.string.login_first);
-                        message.setDuration(Toast.LENGTH_SHORT);
-                        message.show();
-                    } else {
-                        startActivity(balance);
-                    }
-                } else {
-                    if (!ConnectionHelper.cookieHasBeenSet()) {
-                        Intent login_intent = new Intent(UTilitiesActivity.this,
-                                LoginActivity.class);
-                        login_intent.putExtra("activity", balance.getComponent().getClassName());
-                        login_intent.putExtra("service", 'u');
-                        startActivity(login_intent);
-                    } else {
-                        startActivity(balance);
-                    }
-                }
-            }
-        });
-
-        final ImageButton mapbutton = (ImageButton) findViewById(R.id.map_button);
-        mapbutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) mapbutton
-                .getDrawable()));
-        mapbutton.setOnFocusChangeListener(new imageButtonFocusListener());
-        mapbutton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(map);
-            }
-        });
-
-        final ImageButton databutton = (ImageButton) findViewById(R.id.data_button);
-        databutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) databutton
-                .getDrawable()));
-        databutton.setOnFocusChangeListener(new imageButtonFocusListener());
-        databutton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (settings.getBoolean("loginpref", false)) {
-                    if (!ConnectionHelper.PNACookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
-                        message.setText(R.string.login_pna_first);
-                        message.setDuration(Toast.LENGTH_SHORT);
-                        message.show();
-                    } else {
-                        startActivity(data);
-                    }
-                } else {
-                    if (!ConnectionHelper.PNACookieHasBeenSet()) {
-                        Intent login_intent = new Intent(UTilitiesActivity.this,
-                                LoginActivity.class);
-                        login_intent.putExtra("activity", data.getComponent().getClassName());
-                        login_intent.putExtra("service", 'p');
-                        startActivity(login_intent);
-                    } else {
-                        startActivity(data);
-                    }
-                }
-            }
-        });
-
-        final ImageButton menubutton = (ImageButton) findViewById(R.id.menu_button);
-        menubutton.setOnTouchListener(new imageButtonTouchListener((TransitionDrawable) menubutton
-                .getDrawable()));
-        menubutton.setOnFocusChangeListener(new imageButtonFocusListener());
-        menubutton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(menu);
-            }
-
-        });
-
-        final ImageButton blackboardbutton = (ImageButton) findViewById(R.id.blackboard_button);
-        blackboardbutton.setOnTouchListener(new imageButtonTouchListener(
-                (TransitionDrawable) blackboardbutton.getDrawable()));
-        blackboardbutton.setOnFocusChangeListener(new imageButtonFocusListener());
-        blackboardbutton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (settings.getBoolean("loginpref", false)) {
-                    if (!ConnectionHelper.bbCookieHasBeenSet() || ConnectionHelper.isLoggingIn()) {
-                        message.setText(R.string.login_bb_first);
-                        message.setDuration(Toast.LENGTH_SHORT);
-                        message.show();
-                    } else {
-                        startActivity(blackboard);
-                    }
-                } else {
-                    if (!ConnectionHelper.bbCookieHasBeenSet()) {
-                        Intent login_intent = new Intent(UTilitiesActivity.this,
-                                LoginActivity.class);
-                        login_intent.putExtra("activity", blackboard.getComponent().getClassName());
-                        login_intent.putExtra("service", 'b');
-                        startActivity(login_intent);
-                    } else {
-                        startActivity(blackboard);
-                    }
-                }
-            }
-
-        });
     }
 
-    private class imageButtonFocusListener implements OnFocusChangeListener {
+    /**
+     * FocusListener that triggers a TransitionDrawable when the item goes
+     * in and out of focus.
+     */
+    private class ImageButtonFocusListener implements OnFocusChangeListener {
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
             if (hasFocus) {
@@ -322,11 +228,14 @@ public class UTilitiesActivity extends SherlockActivity {
         }
     }
 
-    private class imageButtonTouchListener implements OnTouchListener {
+    /**
+     * TouchListener that triggers a TransitionDrawable on touch and release.
+     */
+    private class ImageButtonTouchListener implements OnTouchListener {
         private boolean buttonPressed = false;
         private TransitionDrawable crossfade;
 
-        public imageButtonTouchListener(TransitionDrawable transDrawable) {
+        public ImageButtonTouchListener(TransitionDrawable transDrawable) {
             crossfade = transDrawable;
         }
 
@@ -379,69 +288,72 @@ public class UTilitiesActivity extends SherlockActivity {
     protected void onStop() {
         spiceManager.shouldStop();
         super.onStop();
-
-        /*
-         * HttpResponseCache cache = HttpResponseCache.getInstalled(); if(cache
-         * != null) cache.flush();
-         */
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = this.getSupportMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
+        boolean allLoggedIn = true;
+        boolean anyLoggedIn = false;
+        for (AuthCookie cookie : authCookies) {
+            if (!cookie.hasCookieBeenSet()) {
+                allLoggedIn = false;
+            } else {
+                anyLoggedIn = true;
+            }
+        }
 
+        // update the displayed login state
         if (settings.getBoolean("loginpref", false)) {
-            if (!ConnectionHelper.isLoggingIn()) {
-                if (ConnectionHelper.cookieHasBeenSet() && ConnectionHelper.bbCookieHasBeenSet()
-                        && ConnectionHelper.PNACookieHasBeenSet()) {
-                    menu.removeGroup(R.id.log);
-                    menu.add(R.id.log, 11, Menu.NONE, "Log out");
-                    MenuItem item = menu.findItem(11);
-                    item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                } else if (!ConnectionHelper.cookieHasBeenSet()
-                        || !ConnectionHelper.bbCookieHasBeenSet()
-                        || !ConnectionHelper.PNACookieHasBeenSet()) {
-                    menu.removeGroup(R.id.log);
-                    menu.add(R.id.log, R.id.login, Menu.NONE, "Log in");
-                    MenuItem item = menu.findItem(R.id.login);
-                    item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            if (!isLoggingIn()) {
+                if (allLoggedIn) {
+                    replaceLoginButton(menu, R.id.logout_button, "Log out");
+                } else {
+                    replaceLoginButton(menu, R.id.login_button, "Log in");
                 }
-            } else if (ConnectionHelper.isLoggingIn()) {
-                menu.removeGroup(R.id.log);
-                menu.add(R.id.log, CANCEL_LOGIN_MENU_ID, Menu.NONE, "Cancel");
-                MenuItem item = menu.findItem(CANCEL_LOGIN_MENU_ID);
-                item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            } else {
+                replaceLoginButton(menu, R.id.cancel_button, "Cancel");
             }
         } else {
-            if (ConnectionHelper.cookieHasBeenSet() || ConnectionHelper.bbCookieHasBeenSet()
-                    || ConnectionHelper.PNACookieHasBeenSet()) {
-                menu.removeGroup(R.id.log);
-                menu.add(R.id.log, LOGOUT_MENU_ID, Menu.NONE, "Log out");
-                MenuItem item = menu.findItem(LOGOUT_MENU_ID);
-                item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            if (anyLoggedIn) {
+                replaceLoginButton(menu, R.id.logout_button, "Log out");
             } else {
-                menu.removeGroup(R.id.log);
+                menu.removeGroup(R.id.login_menu_group);
             }
         }
         return true;
+    }
+
+    /**
+     * Replace current login button with another (typically "Log-in", "Cancel", or "Log out")
+     * @param menu menu to add to
+     * @param id id of button being added
+     * @param text text of the button being added
+     */
+    private void replaceLoginButton(Menu menu, int id, String text) {
+        menu.removeGroup(R.id.login_menu_group);
+        menu.add(R.id.login_menu_group, id, Menu.NONE, text);
+        MenuItem item = menu.findItem(id);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.login:
-                initLogin();
-                break;
             case R.id.settings:
                 loadSettings();
                 break;
-            case LOGOUT_MENU_ID:
+            case R.id.login_button:
+                initLogin();
+                invalidateOptionsMenu();
+                break;
+            case R.id.logout_button:
                 logout();
                 invalidateOptionsMenu();
                 break;
-            case CANCEL_LOGIN_MENU_ID:
+            case R.id.cancel_button:
                 cancelLogin();
                 invalidateOptionsMenu();
                 break;
@@ -451,63 +363,166 @@ public class UTilitiesActivity extends SherlockActivity {
 
     @Override
     public Object onRetainNonConfigurationInstance() {
-        return new ChangeableContextTask[] {
-                bblt, lt, plt
-        };
+        return loginTasks;
     }
 
-    public void loadSettings() {
+    /**
+     * Show "first launch" dialogs. Either the changelog for the first launch after an update
+     * or the actual first-launch dialog letting the user known they should save their
+     * credentials to get full use of the app.
+     */
+    private void handleFirstLaunch() {
+        if (!settings.contains("firstRun")) {
+            // first launch ever
+            AlertDialog.Builder nologin_builder = new AlertDialog.Builder(this);
+            nologin_builder
+                    .setMessage(
+                            "This is your first time running UTilities; why don't you try" +
+                                    " logging in to get the most use out of the app?")
+                    .setCancelable(false)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            loadSettings();
+                        }
+                    })
+                    .setNegativeButton("No thanks", null);
+            nologin = nologin_builder.create();
+            nologin.show();
+            settings.edit().putBoolean("firstRun", false).apply();
+            Utility.id(this);
+        } else {
+            ChangeLog cl = new ChangeLog(this);
+            if (cl.isFirstRun()) {
+                // first launch after an update
+                // this will actually show after the second launch if it's a fresh install
+                cl.getFullLogDialog().show();
+            }
+        }
+    }
+
+    /**
+     * Legacy method, probably not used anymore.
+     * Removes any unencrypted password and stores a boolean so this doesn't happen again
+     * and shows the user a dialog informing them of what's happened.
+     */
+    private void handleUnencryptedPassword() {
+        if (!settings.contains("encryptedpassword") && settings.contains("firstRun")
+                && settings.contains("password")) {
+            settings.edit().remove("password").apply();
+            settings.edit().putBoolean("encryptedpassword", true).apply();
+            // turn off autologin, they can re-activate it when they enter their password
+            settings.edit().putBoolean("autologin", false).apply();
+            showUnencryptedPasswordDialog();
+        }
+    }
+
+    /**
+     * Show dialog informing the user that their password has been reset.
+     */
+    private void showUnencryptedPasswordDialog() {
+        AlertDialog.Builder passwordcleared_builder = new AlertDialog.Builder(this);
+        passwordcleared_builder
+                .setMessage(
+                        "With this update to UTilities, your stored password will be " +
+                                "encrypted. Your currently stored password has been wiped " +
+                                "for security purposes and you will need to re-enter it.")
+                .setCancelable(true)
+                .setPositiveButton("Ok", null);
+        AlertDialog passwordcleared = passwordcleared_builder.create();
+        passwordcleared.show();
+    }
+
+    private void loadSettings() {
         final Intent pref_intent = new Intent(this, Preferences.class);
         startActivity(pref_intent);
     }
 
-    public void initLogin() {
-        SecurePreferences sp = new SecurePreferences(UTilitiesActivity.this,
-                "com.nasageek.utexasutilities.password", false);
-        if (settings.getBoolean("loginpref", false)) {
-            if (!settings.contains("eid") || !sp.containsKey("password")
-                    || settings.getString("eid", "error").equals("")
-                    || sp.getString("password").equals("")) {
+    // FIXME: merge note: make sure this still works after Canvas integration
+    private boolean isLoggingIn() {
+        // updateUiTask is null before login has begun
+        return updateUiTask != null && updateUiTask.getStatus() == AsyncTask.Status.RUNNING &&
+                !updateUiTask.isCancelled();
+    }
 
-                message.setText("Please enter your credentials to log in");
-                message.setDuration(Toast.LENGTH_LONG);
-                message.show();
-            } else {
-                canvasLoginFlow();
+    /**
+     * Call login on the given AuthCookie and decrement the given CountDownLatch afterwards.
+     * This doesn't really need to be an AsyncTask, that's just what I'm most familiar with.
+     */
+    static class LoginTask extends AsyncTask<AuthCookie, Void, Void> {
+
+        private CountDownLatch loginLatch;
+
+        public LoginTask(CountDownLatch loginLatch) {
+            this.loginLatch = loginLatch;
+        }
+
+        @Override
+        protected Void doInBackground(AuthCookie... params) {
+            try {
+                /*
+                We can ignore the return value of login() because UpdateUITask ensures all of the
+                cookies have been set before completing the login.
+                  */
+                params[0].login();
+            } catch (IOException e) {
+                /*
+                TODO: Inform the user that the login request failed due to a network error.
+                This will require a change to AuthCookie or some other sort of shared state
+                between LoginTask and UpdateUITask.
+                 */
+                e.printStackTrace();
             }
-        } else {
-            // dead condition I think
-            Intent login_intent = new Intent(this, LoginActivity.class);
-            startActivity(login_intent);
+            loginLatch.countDown();
+            return null;
         }
     }
 
-    public void login() {
-        message.setText("Logging in...");
-        message.setDuration(Toast.LENGTH_SHORT);
-        message.show();
-        ConnectionHelper.loggingIn = true;
-        invalidateOptionsMenu();
+    /**
+     * AsyncTask that waits on the given CountDownLatch to deplete. It then checks to see if all
+     * of the Activity's AuthCookies have been set and changes the UI accordingly.
+     */
+    static class UpdateUiTask extends AsyncTask<CountDownLatch, Void, Void> implements
+                                                                            ChangeableContextTask {
 
-        setSupportProgressBarIndeterminateVisibility(true);
-        ConnectionHelper ch = new ConnectionHelper();
-        DefaultHttpClient httpclient = ConnectionHelper.getThreadSafeClient();
-        DefaultHttpClient pnahttpclient = ConnectionHelper.getThreadSafeClient();
-        DefaultHttpClient bbhttpclient = ConnectionHelper.getThreadSafeClient();
+        private UTilitiesActivity mActivity;
 
-        ConnectionHelper.resetCookies(this);
+        public UpdateUiTask(UTilitiesActivity act) {
+            mActivity = act;
+        }
 
-        bblt = ch.new bbLoginTask(this, httpclient, pnahttpclient, bbhttpclient);
-        lt = ch.new loginTask(this, httpclient, pnahttpclient, bbhttpclient);
-        plt = ch.new PNALoginTask(this, httpclient, pnahttpclient, bbhttpclient);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            bblt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ch);
-            lt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ch);
-            plt.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ch);
-        } else {
-            bblt.execute(ch);
-            lt.execute(ch);
-            plt.execute(ch);
+        @Override
+        protected Void doInBackground(CountDownLatch... params) {
+            CountDownLatch loginLatch = params[0];
+            try {
+                loginLatch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            for (AuthCookie cookie : mActivity.authCookies) {
+                if (!cookie.hasCookieBeenSet()) {
+                    ((UTilitiesApplication) mActivity.getApplication()).logoutAll();
+                    Toast.makeText(mActivity, "Login failed", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+            }
+            /*
+             trick to make sure that the login is seen as "done" before onCreateOptionsMenu()
+             is called.
+              */
+            cancel(false);
+            mActivity.invalidateOptionsMenu();
+            mActivity.setSupportProgressBarIndeterminateVisibility(false);
+        }
+
+        @Override
+        public void setContext(Context con) {
+            mActivity = (UTilitiesActivity) con;
         }
     }
 
@@ -543,7 +558,7 @@ public class UTilitiesActivity extends SherlockActivity {
 
         @Override
         public void onRequestSuccess(final OAuthResponse result) {
-            Utility.commit(settings.edit().putString("canvas_auth_token", result.access_token));
+            settings.edit().putString("canvas_auth_token", result.access_token).apply();
             login();
         }
     }
@@ -558,30 +573,72 @@ public class UTilitiesActivity extends SherlockActivity {
             startActivityForResult(login_intent, CANVAS_LOGIN_REQUEST_CODE);
             return;
         } else { // we've already got one
-
             login();
             return;
         }
     }
 
-    public void cancelLogin() {
-        if (lt != null) {
-            lt.cancel(true);
+    public void initLogin() {
+        SecurePreferences sp = new SecurePreferences(UTilitiesActivity.this,
+                SECURE_PREF_PW_KEY, false);
+        if (settings.getBoolean("loginpref", false)) {
+            if (!settings.contains("eid") || !sp.containsKey("password")
+                    || settings.getString("eid", "error").equals("")
+                    || sp.getString("password").equals("")) {
+                message.setText("Please enter your credentials to log in");
+                message.setDuration(Toast.LENGTH_LONG);
+                message.show();
+            } else {
+                canvasLoginFlow();
+            }
+        } else {
+            // dead condition I think
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivity(loginIntent);
         }
-        if (plt != null) {
-            plt.cancel(true);
+    }
+
+    /**
+     * Perform a login with the user's saved credentials.
+     */
+    private void login() {
+        setSupportProgressBarIndeterminateVisibility(true);
+        loginTasks = new ArrayList<AsyncTask>();
+        CountDownLatch loginLatch = new CountDownLatch(authCookies.length);
+        updateUiTask = new UpdateUiTask(this);
+        Utility.parallelExecute(updateUiTask, loginLatch);
+        loginTasks.add(updateUiTask);
+
+        for (AuthCookie cookie : authCookies) {
+            LoginTask loginTask = new LoginTask(loginLatch);
+            Utility.parallelExecute(loginTask, cookie);
+            loginTasks.add(loginTask);
         }
-        if (bblt != null) {
-            bblt.cancel(true);
+    }
+
+    /**
+     * Cancel the login process.
+     */
+    private void cancelLogin() {
+        for (AsyncTask task : loginTasks) {
+            task.cancel(true);
         }
-        ConnectionHelper.logout(this);
+        logout();
         setSupportProgressBarIndeterminateVisibility(false);
     }
 
-    public void logout() {
-        ConnectionHelper.logout(this);
+    /**
+     * Log the user out of all UT web services.
+     */
+    private void logout() {
+        for (AuthCookie cookie : authCookies) {
+            cookie.logout();
+        }
         resetChecks();
-        message.setText("You have been successfully logged out");
+    }
+
+    private void showLoginFirstToast() {
+        message.setText(R.string.login_first);
         message.setDuration(Toast.LENGTH_SHORT);
         message.show();
     }
@@ -609,6 +666,10 @@ public class UTilitiesActivity extends SherlockActivity {
         outState.putBoolean("shouldAutologin", shouldAutologin);
     }
 
+    /**
+     * Reset the checkmark overlays that act as temp login indicators to
+     * ensure they show the correct login status.
+     */
     private void resetChecks() {
         if (settings.getBoolean("loginpref", false)) {
             scheduleCheck.setVisibility(View.GONE);
@@ -616,19 +677,19 @@ public class UTilitiesActivity extends SherlockActivity {
             dataCheck.setVisibility(View.GONE);
             blackboardCheck.setVisibility(View.GONE);
         } else {
-            if (!ConnectionHelper.cookieHasBeenSet()) {
+            if (!utdAuthCookie.hasCookieBeenSet()) {
                 scheduleCheck.setImageResource(R.drawable.ic_done_translucent);
                 balanceCheck.setImageResource(R.drawable.ic_done_translucent);
             } else {
                 scheduleCheck.setImageResource(R.drawable.ic_done);
                 balanceCheck.setImageResource(R.drawable.ic_done);
             }
-            if (!ConnectionHelper.bbCookieHasBeenSet()) {
+            if (!bbAuthCookie.hasCookieBeenSet()) {
                 blackboardCheck.setImageResource(R.drawable.ic_done_translucent);
             } else {
                 blackboardCheck.setImageResource(R.drawable.ic_done);
             }
-            if (!ConnectionHelper.PNACookieHasBeenSet()) {
+            if (!pnaAuthCookie.hasCookieBeenSet()) {
                 dataCheck.setImageResource(R.drawable.ic_done_translucent);
             } else {
                 dataCheck.setImageResource(R.drawable.ic_done);

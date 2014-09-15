@@ -1,43 +1,35 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.foound.widget.AmazingListView;
+import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.mapsaurus.paneslayout.PanesActivity;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.MyPair;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.Utility;
+import com.nasageek.utexasutilities.adapters.BBClassAdapter;
+import com.nasageek.utexasutilities.retrofit.Canvas;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import retrofit.RetrofitError;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.foound.widget.AmazingListView;
-import com.mapsaurus.paneslayout.FragmentLauncher;
-import com.mapsaurus.paneslayout.PanesActivity;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.MyPair;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.adapters.BBClassAdapter;
 import com.nasageek.utexasutilities.fragments.canvas.CanvasCourseMapFragment;
 import com.nasageek.utexasutilities.model.BBCourse;
 import com.nasageek.utexasutilities.model.Course;
@@ -46,14 +38,20 @@ import com.nasageek.utexasutilities.requests.CanvasCourseListRequest;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BlackboardCourseListFragment extends BaseSpiceFragment {
 
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private LinearLayout bb_pb_ll;
     private TextView bbetv;
     private LinearLayout bbell;
-    private Button bbeb;
 
     private AmazingListView bblv;
     private ArrayList<Course> classList;
@@ -75,11 +73,12 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
         return f;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         classList = new ArrayList<Course>();
-
         canvasCourseListRequest = new CanvasCourseListRequest(
                 ConnectionHelper.getCanvasAuthCookie(getActivity()));
         if (savedInstanceState == null) {
@@ -89,13 +88,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
                     .getSerializable("classSectionList");
         }
 
-        httpclient = ConnectionHelper.getThreadSafeClient();
-        httpclient.getCookieStore().clear();
-        BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient));
-        cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
-        httpclient.getCookieStore().addCookie(cookie);
-
+        httpclient = new OkHttpClient();
         classAdapter = new BBClassAdapter(getActivity(), classSectionList);
     }
 
@@ -109,10 +102,9 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 
         bbell = (LinearLayout) vg.findViewById(R.id.blackboard_error);
         bbetv = (TextView) vg.findViewById(R.id.tv_failure);
-        bbeb = (Button) vg.findViewById(R.id.button_send_data);
 
         bblv.setAdapter(classAdapter);
-        bblv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(
+        bblv.setPinnedHeaderView(getActivity().getLayoutInflater().inflate(
                 R.layout.menu_header_item_view, bblv, false));
         bblv.setOnItemClickListener(new OnItemClickListener() {
 
@@ -121,8 +113,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
                 // TODO: figure out course id stuff here
                 Course course = (Course) (parent.getItemAtPosition(position));
                 String type = course.getType();
-
-                SherlockFragmentActivity act = getSherlockActivity();
+                FragmentActivity act = getActivity();
                 Fragment topFragment = null;
                 if (act != null && act instanceof PanesActivity) {
                     topFragment = ((PanesActivity) act).getTopFragment();
@@ -131,35 +122,22 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
                         topFragment = null;
                     }
                 }
-                // don't re-add the current displayed course, instead just show
-                // it
+                
                 if (act != null && act instanceof FragmentLauncher) {
                     if (type.equals("blackboard")) {
                         BBCourse bbclass = (BBCourse) course;
-                        /*
-                         * if(topFragment == null || (topFragment != null &&
-                         * topFragment instanceof BlackboardFragment &&
-                         * (!((BlackboardFragment
-                         * )topFragment).getBbid().equals(bbclass.getId())) ||
-                         * ((BlackboardFragment)topFragment).isFromDashboard()))
-                         * {
-                         */((FragmentLauncher) act).addFragment(BlackboardCourseListFragment.this
+
+                        ((FragmentLauncher) act).addFragment(BlackboardCourseListFragment.this
                                 .getParentFragment(), BlackboardCourseMapFragment.newInstance(
                                 getString(R.string.coursemap_intent), null, bbclass.getId(),
                                 bbclass.getCourseCode(), "Course Map", "", -1, false));
-
-                        /*
-                         * } else if(act instanceof PanesActivity)
-                         * ((PanesActivity) act).showContent();
-                         */
                     } else if (type.equals("canvas")) {
                         CanvasCourse ccourse = (CanvasCourse) course;
-                        // launch canvas coursemap
+                        // Launch canvas coursemap
                         ((FragmentLauncher) act).addFragment(
                                 BlackboardCourseListFragment.this.getParentFragment(),
                                 CanvasCourseMapFragment.newInstance(ccourse.getId(),
                                         ccourse.getName(), ccourse.getCourseCode()));
-
                     }
                 }
             }
@@ -169,12 +147,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
         // remember writing this...
         if (classSectionList.size() == 0) {
             fetch = new fetchClassesTask(httpclient);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
-                fetch.execute();
-            }
+            Utility.parallelExecute(fetch);
         }
         return vg;
     }
@@ -227,12 +200,10 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 
     private class fetchClassesTask extends
             AsyncTask<Object, Void, ArrayList<MyPair<String, List<Course>>>> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private String errorMsg;
-        private Exception ex;
-        private String pagedata;
 
-        public fetchClassesTask(DefaultHttpClient client) {
+        public fetchClassesTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -245,14 +216,17 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 
         @Override
         protected ArrayList<MyPair<String, List<Course>>> doInBackground(Object... params) {
-            HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain
-                    + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE");
+            String reqUrl = BlackboardFragment.BLACKBOARD_DOMAIN
+                    + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE";
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 errorMsg = "UTilities could not fetch the Blackboard course list";
                 e.printStackTrace();
                 cancel(true);
@@ -267,54 +241,39 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
                 classList.add(new BBCourse(class_matcher.group(2).replace("&amp;", "&"),
                         class_matcher.group(1).replace("&amp;", "&"), class_matcher.group(3)));
             }
-            // build the sectioned list now
-            String currentCategory = "";
-            ArrayList<Course> sectionList = null;
-            ArrayList<MyPair<String, List<Course>>> tempClassSectionList = new ArrayList<MyPair<String, List<Course>>>();
-
+            // section the class list by semester
+            String currentSemester = "";
+            ArrayList<Course> currentSemesterList = null;
+            ArrayList<MyPair<String, List<Course>>> sectionedClassList =
+                    new ArrayList<MyPair<String, List<Course>>>();
             for (int i = 0; i < classList.size(); i++) {
-                // first course is always in a new category (the first category)
+                // first course always starts a new semester
                 if (i == 0) {
-                    currentCategory = classList.get(i).getTermName();
-                    sectionList = new ArrayList<Course>();
-                    sectionList.add(classList.get(i));
+                    currentSemester = classList.get(i).getTermName();
+                    currentSemesterList = new ArrayList<Course>();
+                    currentSemesterList.add(classList.get(i));
                 }
-                // if the current course is not part of the current category or
-                // we're on the last course
-                // weird stuff going on here depending on if we're at the end of
-                // the course list
-                else if (!classList.get(i).getTermName().equals(currentCategory)
-                        || i == classList.size() - 1) {
+                // hit a new semester, finalize current semester and init the new one
+                else if (!classList.get(i).getTermName().equals(currentSemester)) {
+                    sectionedClassList.add(new MyPair<String, List<Course>>(currentSemester,
+                            currentSemesterList));
 
-                    if (i == classList.size() - 1) {
-                        sectionList.add(classList.get(i));
-                    }
-
-                    tempClassSectionList.add(new MyPair<String, List<Course>>(currentCategory,
-                            sectionList));
-
-                    currentCategory = classList.get(i).getTermName();
-                    sectionList = new ArrayList<Course>();
-
-                    if (i != classList.size() - 1) {
-                        sectionList.add(classList.get(i));
-                    }
+                    currentSemester = classList.get(i).getTermName();
+                    currentSemesterList = new ArrayList<Course>();
+                    currentSemesterList.add(classList.get(i));
                 }
-                // otherwise just add to the current category
+                // otherwise just add to the current semester
                 else {
-                    sectionList.add(classList.get(i));
+                    currentSemesterList.add(classList.get(i));
+                }
+                // add final semester once we're through
+                if (i == classList.size() - 1) {
+                    sectionedClassList.add(new MyPair<String, List<Course>>(currentSemester,
+                            currentSemesterList));
                 }
             }
-            Collections.reverse(tempClassSectionList);
-            // TODO: implement sorting of classes so BB's ordering won't matter
-            /*
-             * Collections.sort(tempClassSectionList, new
-             * Comparator<MyPair<String, List<BBClass>>>() {
-             * @Override public int compare(ParcelableMyPair<String,
-             * List<BBClass>> lhs, ParcelableMyPair<String, List<BBClass>> rhs)
-             * { return -lhs.first.compareTo(rhs.first); } });
-             */
-            return tempClassSectionList;
+            Collections.reverse(sectionedClassList);
+            return sectionedClassList;
         }
 
         @Override
@@ -325,6 +284,9 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
             getSpiceManager().execute(canvasCourseListRequest, "courses",
                     DurationInMillis.ONE_MINUTE * 5, new CanvasCourseListRequestListener());
 
+            bb_pb_ll.setVisibility(View.GONE);
+            bbell.setVisibility(View.GONE);
+            bblv.setVisibility(View.VISIBLE);
         }
 
         @Override

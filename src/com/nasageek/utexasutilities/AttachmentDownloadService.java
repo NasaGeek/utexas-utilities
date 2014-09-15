@@ -1,15 +1,6 @@
 
 package com.nasageek.utexasutilities;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-
 import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.app.Notification;
@@ -23,6 +14,18 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
+
+import com.nasageek.utexasutilities.fragments.BlackboardFragment;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 @SuppressLint("NewApi")
 public class AttachmentDownloadService extends IntentService {
@@ -42,17 +45,8 @@ public class AttachmentDownloadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        String urlToDownload = "";
-        String service = intent.getStringExtra("service");
-        if (service.equals("blackboard")) {
-            urlToDownload = ConnectionHelper.blackboard_domain + intent.getStringExtra("url");
-        } else if (service.equals("canvas")) {
-            urlToDownload = intent.getStringExtra("url");
-        } else {
-            throw new RuntimeException(
-                    "You must pass either \"canvas\" or \"blackboard\" to Attachment"
-                            + "DownloadService by putting an extra called \"service\" in the intent");
-        }
+
+        String urlToDownload = BlackboardFragment.BLACKBOARD_DOMAIN + intent.getStringExtra("url");
         String fileName = intent.getStringExtra("fileName");
 
         NotificationCompat.Builder notbuild = new NotificationCompat.Builder(
@@ -70,30 +64,19 @@ public class AttachmentDownloadService extends IntentService {
 
         Uri dlLocation = null;
         try {
-            URL url = new URL(urlToDownload);
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(urlToDownload)
+                    .build();
+            Response response = client.newCall(request).execute();
 
-            URLConnection connection = url.openConnection();
-            connection.addRequestProperty(
-                    "Cookie",
-                    "s_session_id="
-                            + ConnectionHelper.getBBAuthCookie(AttachmentDownloadService.this,
-                                    ConnectionHelper.getThreadSafeClient()));
-
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.ECLAIR_MR1) {
-                (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download"))
-                        .mkdirs();
-                dlLocation = Uri.withAppendedPath(
-                        Uri.fromFile(Environment.getExternalStorageDirectory()), "Download/"
-                                + fileName);
-            } else {
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                        .mkdirs();
-                dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment
-                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)),
-                        fileName);
-            }
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    .mkdirs();
+            dlLocation = Uri.withAppendedPath(Uri.fromFile(Environment
+                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)),
+                    fileName);
             // download the file
-            InputStream input = new BufferedInputStream(url.openStream());
+            InputStream input = new BufferedInputStream(response.body().byteStream());
 
             OutputStream output = new FileOutputStream(dlLocation.getPath());
             byte data[] = new byte[2048];

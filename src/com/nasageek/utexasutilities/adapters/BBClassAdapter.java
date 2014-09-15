@@ -1,9 +1,6 @@
 
 package com.nasageek.utexasutilities.adapters;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
@@ -19,10 +16,12 @@ import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.model.BBCourse;
 import com.nasageek.utexasutilities.model.Course;
 
+import java.util.List;
+
 public class BBClassAdapter extends AmazingAdapter {
 
     private Context con;
-    private ArrayList<Course> classes;
+    private List<Course> classes;
     private List<MyPair<String, List<Course>>> all;
     private LayoutInflater li;
     private Boolean longform;

@@ -1,10 +1,10 @@
 
 package com.nasageek.utexasutilities.model;
 
-import java.io.Serializable;
-
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.io.Serializable;
 
 public class Transaction implements Parcelable, Serializable {
 

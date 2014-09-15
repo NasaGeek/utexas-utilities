@@ -18,8 +18,6 @@
     <string name="email">Chris_Roberts@utexas.edu</string>
     <string name="loading_content">Loading content…</string>
     <string name="login_first">Please log in before using this feature</string>
-    <string name="login_bb_first">Please log in before using this feature</string>
-    <string name="login_pna_first">Please log in before using this feature</string>
     <string name="preference_blackboard_class_longform_summary">Check this if Blackboard crashes on launch, might fix it.</string>
     <string name="preference_sendcrashes_summary">Help me help you! No personal information will be sent.</string>
     <string name="button_send_data">Send anonymous information about my courses to help improve UTilities.</string>
@@ -109,7 +107,6 @@ Also a big thanks to yukuku for his AmazingListView library (http://code.google.
 	<string-array name="routes_array">	
 		<item>No Bus Route</item>
 		<item>Crossing Place</item>
-		<item>Camino La Costa</item>
 		<item>East Campus</item>
 		<item>Forty Acres</item>
 		<item>Far West</item>
@@ -119,7 +116,6 @@ Also a big thanks to yukuku for his AmazingListView library (http://code.google.
 		<item>Lakeshore</item>
 		<item>North Riverside</item>
 		<item>North Riverside/Lakeshore</item>
-		<item>Pickle Research Campus</item>
 		<item>Red River</item>
 		<item>West Campus</item>
 	</string-array>   
@@ -137,8 +133,6 @@ Also a big thanks to yukuku for his AmazingListView library (http://code.google.
         <item>10</item>
         <item>11</item>
         <item>12</item>
-        <item>13</item>
-        <item>14</item>
     </string-array>
     <string-array name="restaurants_array">	
 		<item>No Restaurant</item>

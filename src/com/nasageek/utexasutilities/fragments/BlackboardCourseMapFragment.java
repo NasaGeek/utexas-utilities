@@ -1,18 +1,22 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import java.io.StringReader;
-import java.util.ArrayList;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.CourseMapSaxHandler;
+import com.nasageek.utexasutilities.MyPair;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.adapters.CourseMapAdapter;
+import com.nasageek.utexasutilities.model.CourseMapItem;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.acra.ACRA;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -24,6 +28,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,28 +41,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.mapsaurus.paneslayout.FragmentLauncher;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.CourseMapSaxHandler;
-import com.nasageek.utexasutilities.MyPair;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.adapters.CourseMapAdapter;
-import com.nasageek.utexasutilities.model.BBCourse;
-import com.nasageek.utexasutilities.model.CourseMapItem;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 public class BlackboardCourseMapFragment extends BlackboardFragment {
 
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private LinearLayout cm_pb_ll;
     private ListView cmlv;
-    private ArrayList<BBCourse> classList;
-    private ArrayList<MyPair<CourseMapItem, ArrayList<BBCourse>>> classSectionList;
     private fetchCoursemapTask fetch;
     private XMLReader xmlreader;
     private CourseMapSaxHandler courseMapSaxHandler;
@@ -95,6 +90,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         return bcmf;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,15 +107,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
                     .getSerializable("mainList");
             itemNumber = getArguments().getInt("itemNumber");
         }
-
-        // settings = PreferenceManager.getDefaultSharedPreferences(this);
-
-        httpclient = ConnectionHelper.getThreadSafeClient();
-        httpclient.getCookieStore().clear();
-        BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient));
-        cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
-        httpclient.getCookieStore().addCookie(cookie);
+        httpclient = new OkHttpClient();
     }
 
     @Override
@@ -141,7 +129,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 
                 final String linkType = mainList.get(position).first.getLinkType();
                 final String url = mainList.get(position).first.getViewUrl();
-                final SherlockFragmentActivity act = getSherlockActivity();
+                final FragmentActivity act = getActivity();
 
                 if (mainList.get(position).second.size() != 0) // a folder was
                                                                // clicked
@@ -164,11 +152,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
                     String contentid = mainList.get(position).first.getContentId();
                     String itemName = "";
                     if (itemNumber == -1) {
-                        itemName = mainList.get(position).first.getName(); // will
-                                                                           // be
-                                                                           // used
-                                                                           // as
-                                                                           // Subtitle
+                        itemName = mainList.get(position).first.getName(); // Subtitle
                     } else {
                         itemName = absSubtitle.getText() + "/"
                                 + mainList.get(position).first.getName(); // Subtitle
@@ -195,11 +179,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
                 {
                     String itemName = "";
                     if (itemNumber == -1) {
-                        itemName = mainList.get(position).first.getName(); // will
-                                                                           // be
-                                                                           // used
-                                                                           // as
-                                                                           // Subtitle
+                        itemName = mainList.get(position).first.getName(); // Subtitle
                     } else {
                         itemName = absSubtitle.getText() + "/"
                                 + mainList.get(position).first.getName(); // Subtitle
@@ -219,7 +199,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         }
         // now we've got the whole course tree, navigate as necessary
         else if (mainList != null && mainList.size() != 0) {
-            cmlv.setAdapter(new CourseMapAdapter(getSherlockActivity(), mainList));
+            cmlv.setAdapter(new CourseMapAdapter(getActivity(), mainList));
             cm_pb_ll.setVisibility(View.GONE);
             cmlv.setVisibility(View.VISIBLE);
         }
@@ -274,7 +254,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         int id = item.getItemId();
         switch (id) {
             case R.id.course_map_view_in_web:
-                showAreYouSureDlg(getSherlockActivity());
+                showAreYouSureDlg(getActivity());
                 break;
         }
         return false;
@@ -297,7 +277,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
 
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(con);
                 if (sp.getBoolean("embedded_browser", true)) {
-                    ((FragmentLauncher) getSherlockActivity()).addFragment(
+                    ((FragmentLauncher) getActivity()).addFragment(
                             BlackboardCourseMapFragment.this, BlackboardExternalItemFragment
                                     .newInstance(viewUri, bbID, courseName, folderName, false));
                 } else {
@@ -332,14 +312,15 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         return getArguments().getBoolean("fromDashboard");
     }
 
-    private class fetchCoursemapTask extends AsyncTask<Object, Void, ArrayList> {
-        private DefaultHttpClient client;
+    private class fetchCoursemapTask extends
+            AsyncTask<Object, Void, ArrayList<MyPair<CourseMapItem, ArrayList>>> {
+        private OkHttpClient client;
         private String failureMessage = "";
         private String pagedata;
         private Exception ex;
         private Boolean showButton = false;
 
-        public fetchCoursemapTask(DefaultHttpClient client) {
+        public fetchCoursemapTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -351,15 +332,18 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         }
 
         @Override
-        protected ArrayList doInBackground(Object... params) {
-            HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain
-                    + "/webapps/Bb-mobile-BBLEARN/courseMap?course_id=" + bbID);
+        protected ArrayList<MyPair<CourseMapItem, ArrayList>> doInBackground(Object... params) {
+            String reqUrl = BLACKBOARD_DOMAIN
+                    + "/webapps/Bb-mobile-BBLEARN/courseMap?course_id=" + bbID;
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 failureMessage = "UTilities could not fetch this course map";
                 e.printStackTrace();
                 cancel(true);
@@ -399,10 +383,10 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
         }
 
         @Override
-        protected void onPostExecute(ArrayList result) {
+        protected void onPostExecute(ArrayList<MyPair<CourseMapItem, ArrayList>> result) {
             if (!this.isCancelled()) {
-                if (getSherlockActivity() != null) {
-                    cmlv.setAdapter(new CourseMapAdapter(getSherlockActivity(), result));
+                if (getActivity() != null) {
+                    cmlv.setAdapter(new CourseMapAdapter(getActivity(), result));
                 }
 
                 cm_pb_ll.setVisibility(View.GONE);
@@ -422,7 +406,7 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
                 public void onClick(View v) {
                     if (pagedata != null && ex != null) {
                         SharedPreferences sp = PreferenceManager
-                                .getDefaultSharedPreferences(getSherlockActivity().getBaseContext());
+                                .getDefaultSharedPreferences(getActivity().getBaseContext());
                         if (!sp.getBoolean("acra.enable", true)) {
                             ACRA.getErrorReporter().setEnabled(true);
                         }
@@ -432,11 +416,11 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
                         if (!sp.getBoolean("acra.enable", true)) {
                             ACRA.getErrorReporter().setEnabled(false);
                         }
-                        Toast.makeText(getSherlockActivity(),
+                        Toast.makeText(getActivity(),
                                 "Data is being sent, thanks for helping out!", Toast.LENGTH_SHORT)
                                 .show();
                     } else {
-                        Toast.makeText(getSherlockActivity(),
+                        Toast.makeText(getActivity(),
                                 "Couldn't send the course data for some reason :(",
                                 Toast.LENGTH_SHORT).show();
                     }

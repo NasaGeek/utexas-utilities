@@ -27,8 +27,8 @@ public class DatePickerFragment extends SherlockFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // View view = new View(getActivity());
         // view.
-        // FrameLayout layout = new FrameLayout(getSherlockActivity())
-        DatePicker picker = new DatePicker(getSherlockActivity());
+        // FrameLayout layout = new FrameLayout(getActivity())
+        DatePicker picker = new DatePicker(getActivity());
         picker.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT));
         return picker;

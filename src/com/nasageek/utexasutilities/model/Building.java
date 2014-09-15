@@ -1,10 +1,10 @@
 
 package com.nasageek.utexasutilities.model;
 
-import java.io.Serializable;
-
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.io.Serializable;
 
 public class Building implements Parcelable, Serializable {
     private static final long serialVersionUID = 1L;
@@ -33,6 +33,10 @@ public class Building implements Parcelable, Serializable {
     public Building(String i, String r) {
         id = i;
         room = r;
+    }
+
+    public Building(Building building) {
+        this(building.getId(), building.getRoom());
     }
 
     public String getRoom() {

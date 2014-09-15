@@ -1,8 +1,6 @@
 
 package com.nasageek.utexasutilities.adapters;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +11,8 @@ import com.foound.widget.AmazingAdapter;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.fragments.TransactionsFragment;
 import com.nasageek.utexasutilities.model.Transaction;
+
+import java.util.ArrayList;
 
 public class TransactionAdapter extends AmazingAdapter {
     private Context con;

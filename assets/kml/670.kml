@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
 <Document>
-<name><![CDATA[670]]></name>
+<name><![CDATA[670_june2014]]></name>
 <open>1</open>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
-<description><![CDATA[Exported from 670 on 7/22/2011]]></description>
+<description><![CDATA[Exported from 670 on 6/2/2014]]></description>
 <Style id="FEATURES">
 <LineStyle>
 <color>FF1134FA</color>
@@ -20,7 +20,7 @@
 <name>Features</name>
 <open>0</open>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -44,7 +44,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -67,7 +67,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -88,7 +88,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -112,7 +112,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -128,7 +128,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -144,7 +144,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -164,7 +164,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -185,7 +185,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -217,7 +217,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -247,7 +247,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -278,7 +278,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -296,7 +296,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -315,7 +315,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -338,7 +338,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -358,7 +358,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -374,7 +374,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -390,7 +390,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -406,7 +406,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -422,7 +422,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -439,7 +439,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -455,7 +455,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -475,7 +475,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -495,7 +495,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -513,7 +513,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -530,7 +530,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -549,7 +549,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -567,7 +567,7 @@
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -645,11 +645,16 @@
 -97.731982,30.274126,0
 -97.731858,30.274491,0
 -97.731761,30.274777,0
+-97.731564,30.275468,0
+-97.731322,30.276141,0
+-97.731193,30.276673,0
+-97.730919,30.277456,0
+-97.730486,30.278559,0
 </coordinates>
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -657,89 +662,84 @@
 <tessellate>1</tessellate>
 <altitudeMode>clampedToGround</altitudeMode>
 <coordinates>
--97.731761,30.274777,0
--97.731650,30.274798,0
--97.731570,30.274781,0
--97.731553,30.274777,0
--97.731367,30.274736,0
--97.731238,30.274707,0
--97.731107,30.274678,0
--97.730983,30.274611,0
--97.731085,30.274209,0
--97.731271,30.273880,0
--97.731616,30.273167,0
--97.731675,30.273037,0
--97.731766,30.272836,0
--97.732171,30.272078,0
--97.732256,30.271852,0
--97.732305,30.271723,0
--97.732793,30.270418,0
--97.732795,30.270413,0
--97.732891,30.270203,0
--97.733163,30.269472,0
--97.733523,30.268503,0
--97.733837,30.267656,0
--97.733857,30.267602,0
--97.733863,30.267588,0
--97.734194,30.266695,0
--97.734210,30.266654,0
--97.734226,30.266608,0
--97.734543,30.265740,0
--97.734555,30.265705,0
--97.735055,30.264333,0
--97.735154,30.264074,0
--97.735164,30.264047,0
--97.735216,30.263907,0
--97.735255,30.263800,0
--97.735259,30.263790,0
--97.735261,30.263782,0
--97.735563,30.262952,0
--97.735885,30.262071,0
--97.736178,30.261266,0
--97.736217,30.261160,0
--97.736223,30.261144,0
--97.736254,30.261060,0
--97.736551,30.260182,0
--97.736682,30.259795,0
--97.736815,30.259335,0
--97.736862,30.259172,0
--97.736963,30.258470,0
--97.737003,30.258149,0
--97.737016,30.257782,0
--97.737031,30.257448,0
--97.737032,30.257292,0
--97.737031,30.257251,0
--97.737027,30.257063,0
--97.736859,30.256017,0
--97.736646,30.254832,0
--97.736511,30.254085,0
--97.736203,30.253121,0
--97.735960,30.252362,0
--97.735924,30.252134,0
--97.735885,30.251998,0
--97.735881,30.251982,0
--97.735832,30.251752,0
--97.735798,30.251592,0
--97.735677,30.251103,0
--97.735542,30.250462,0
--97.735446,30.250055,0
--97.735321,30.249531,0
--97.735189,30.248980,0
--97.735013,30.248488,0
--97.734851,30.248168,0
--97.734747,30.248035,0
--97.734607,30.247931,0
--97.734446,30.247858,0
--97.734142,30.247736,0
--97.733946,30.247677,0
--97.733781,30.247623,0
--97.733639,30.247566,0
 -97.733579,30.247484,0
+-97.733639,30.247566,0
+-97.733781,30.247623,0
+-97.733946,30.247677,0
+-97.734142,30.247736,0
+-97.734446,30.247858,0
+-97.734607,30.247931,0
+-97.734747,30.248035,0
+-97.734851,30.248168,0
+-97.735013,30.248488,0
+-97.735189,30.248980,0
+-97.735321,30.249531,0
+-97.735446,30.250055,0
+-97.735542,30.250462,0
+-97.735677,30.251103,0
+-97.735798,30.251592,0
+-97.735832,30.251752,0
+-97.735881,30.251982,0
+-97.735885,30.251998,0
+-97.735924,30.252134,0
+-97.735960,30.252362,0
+-97.736203,30.253121,0
+-97.736511,30.254085,0
+-97.736646,30.254832,0
+-97.736859,30.256017,0
+-97.737027,30.257063,0
+-97.737031,30.257251,0
+-97.737032,30.257292,0
+-97.737031,30.257448,0
+-97.737016,30.257782,0
+-97.737003,30.258149,0
+-97.736963,30.258470,0
+-97.736862,30.259172,0
+-97.736815,30.259335,0
+-97.736682,30.259795,0
+-97.736551,30.260182,0
+-97.736254,30.261060,0
+-97.736223,30.261144,0
+-97.736217,30.261160,0
+-97.736178,30.261266,0
+-97.735885,30.262071,0
+-97.735563,30.262952,0
+-97.735261,30.263782,0
+-97.735259,30.263790,0
+-97.735255,30.263800,0
+-97.735216,30.263907,0
+-97.735164,30.264047,0
+-97.735154,30.264074,0
+-97.735055,30.264333,0
+-97.734555,30.265705,0
+-97.734543,30.265740,0
+-97.734226,30.266608,0
+-97.734210,30.266654,0
+-97.734194,30.266695,0
+-97.733863,30.267588,0
+-97.733857,30.267602,0
+-97.733837,30.267656,0
+-97.733523,30.268503,0
+-97.733163,30.269472,0
+-97.732891,30.270203,0
+-97.732795,30.270413,0
+-97.732793,30.270418,0
+-97.732305,30.271723,0
+-97.732256,30.271852,0
+-97.732171,30.272078,0
+-97.731766,30.272836,0
+-97.731675,30.273037,0
+-97.731616,30.273167,0
+-97.731271,30.273880,0
+-97.731085,30.274209,0
+-97.730983,30.274611,0
+-97.730874,30.275125,0
+-97.730501,30.275948,0
 </coordinates>
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -747,14 +747,22 @@
 <tessellate>1</tessellate>
 <altitudeMode>clampedToGround</altitudeMode>
 <coordinates>
--97.733904,30.275348,0
--97.731922,30.274815,0
--97.731761,30.274777,0
+-97.730458,30.276063,0
+-97.729078,30.278510,0
+-97.729426,30.278489,0
+-97.729513,30.278490,0
+-97.729715,30.278490,0
+-97.729809,30.278494,0
+-97.729951,30.278500,0
+-97.730048,30.278506,0
+-97.730182,30.278515,0
+-97.730264,30.278520,0
+-97.730486,30.278559,0
 </coordinates>
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>
@@ -762,53 +770,13 @@
 <tessellate>1</tessellate>
 <altitudeMode>clampedToGround</altitudeMode>
 <coordinates>
--97.734845,30.275618,0
--97.734816,30.275544,0
--97.733973,30.275320,0
--97.733904,30.275348,0
-</coordinates>
-</LineString>
-</Placemark>
-<Placemark>
-<name><![CDATA[1]]></name>
-<Snippet maxLines="0"><![CDATA[]]></Snippet>
-<styleUrl>#FEATURES</styleUrl>
-<LineString>
-<extrude>0</extrude>
-<tessellate>1</tessellate>
-<altitudeMode>clampedToGround</altitudeMode>
-<coordinates>
--97.734845,30.275618,0
--97.734753,30.275659,0
--97.733950,30.275429,0
--97.733904,30.275348,0
-</coordinates>
-</LineString>
-</Placemark>
-<Placemark>
-<name><![CDATA[1]]></name>
-<Snippet maxLines="0"><![CDATA[]]></Snippet>
-<styleUrl>#FEATURES</styleUrl>
-<LineString>
-<extrude>0</extrude>
-<tessellate>1</tessellate>
-<altitudeMode>clampedToGround</altitudeMode>
-<coordinates>
--97.734845,30.275618,0
--97.734246,30.276278,0
--97.733510,30.276775,0
--97.733191,30.277211,0
--97.732911,30.278055,0
--97.732799,30.278294,0
--97.732691,30.278475,0
--97.732547,30.278656,0
--97.732409,30.278816,0
 -97.732193,30.278975,0
+-97.730486,30.278559,0
 </coordinates>
 </LineString>
 </Placemark>
 <Placemark>
-<name><![CDATA[1]]></name>
+<name><![CDATA[670_june2014]]></name>
 <Snippet maxLines="0"><![CDATA[]]></Snippet>
 <styleUrl>#FEATURES</styleUrl>
 <LineString>

@@ -1,9 +1,6 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import java.util.List;
-import java.util.Vector;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,6 +17,9 @@ import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
 import com.nasageek.utexasutilities.fragments.TransactionsFragment;
 import com.nasageek.utexasutilities.fragments.TransactionsFragment.TransactionType;
 import com.viewpagerindicator.MyTabPageIndicator;
+
+import java.util.List;
+import java.util.Vector;
 
 public class BalanceActivity extends SherlockFragmentActivity {
 

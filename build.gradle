@@ -1,0 +1,92 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.12.+'
+    }
+}
+
+apply plugin: 'com.android.application'
+
+repositories {
+    maven { url "http://dl.bintray.com/populov/maven" }
+    mavenCentral()
+}
+
+// Some constant information you could use in builds, accessible via BuildConfig.<field-name>
+//def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
+def buildTime = new Date().format("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"))
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.1.0"
+
+    defaultConfig {
+        minSdkVersion 10
+        targetSdkVersion 19
+        versionCode 32
+        versionName "1.99.5"
+
+        // The git sha of the current head and build time
+        //buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
+        buildConfigField "String", "BUILD_TIME", "\"${buildTime}\""
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+
+    // TODO: You can put sensitive keystore data in an untracked .properties file or ENV variables
+    // Example: http://stackoverflow.com/a/20872275/3034339
+    signingConfigs {
+        release {
+            storeFile file('keystore-file-here')
+            storePassword ''
+            keyAlias ''
+            keyPassword ''
+        }
+    }
+
+    buildTypes {
+
+        debug {
+            // Can add package and versionName suffixes, makes it easier to differentiate if you have play store and debug builds installed
+            versionNameSuffix "-debug"
+        }
+
+        // Release build task. Uses the release signing config above for signing it
+        // To run from command line, use './gradlew.bat assembleRelease' from project root
+        release {
+            runProguard false
+            zipAlign true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.cfg'
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    compile 'com.squareup.okhttp:okhttp:2.0.0'
+    compile 'com.android.support:support-v4:19.1.0'
+    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+
+    compile 'com.google.android.gms:play-services:4.4.52'
+
+    compile 'com.viewpagerindicator:library:2.4.1@aar'
+    compile('ch.acra:acra:4.5.0') {
+        exclude group: 'org.json'
+    }
+    compile project(':libs:Android-PanesLibrary')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}

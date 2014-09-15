@@ -15,8 +15,8 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.mapsaurus.paneslayout.MySlidingPaneLayout;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 
 public class BlackboardExternalItemFragment extends BlackboardFragment {
 
@@ -49,14 +49,12 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
-        CookieSyncManager.createInstance(getSherlockActivity());
+        CookieSyncManager.createInstance(getActivity());
         CookieManager man = CookieManager.getInstance();
         man.setCookie(
-                ConnectionHelper.blackboard_domain_noprot,
+                BLACKBOARD_DOMAIN_NOPROT,
                 "s_session_id="
-                        + ConnectionHelper.getBBAuthCookie(getSherlockActivity(),
-                                ConnectionHelper.getThreadSafeClient()));
-
+                        + ((UTilitiesApplication) getActivity().getApplication()).getBbAuthCookieVal());
         CookieSyncManager.getInstance().sync();
     }
 
@@ -64,7 +62,7 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // if we're on a phone, let the SlidingPaneLayout know that it's got a
         // webview
-        mspl = (MySlidingPaneLayout) getSherlockActivity().findViewById(R.id.slidingpane_layout);
+        mspl = (MySlidingPaneLayout) getActivity().findViewById(R.id.slidingpane_layout);
         if (mspl != null) {
             mspl.setIsShowingWebView(true);
         }
@@ -72,7 +70,7 @@ public class BlackboardExternalItemFragment extends BlackboardFragment {
         setupActionBar();
 
         // TODO: figure out how to save state of the WebView
-        final WebView wv = new WebView(getSherlockActivity());
+        final WebView wv = new WebView(getActivity());
         wv.getSettings().setJavaScriptEnabled(true);
         wv.getSettings().setBuiltInZoomControls(true);
         wv.setWebViewClient(new WebViewClient() {

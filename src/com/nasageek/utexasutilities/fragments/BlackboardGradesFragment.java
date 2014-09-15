@@ -1,16 +1,6 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -37,10 +27,17 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.adapters.GradesAdapter;
 import com.nasageek.utexasutilities.model.BBGrade;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BlackboardGradesFragment extends BlackboardFragment {
 
@@ -51,7 +48,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
     private TextView getv;
 
     private String courseID, courseName, viewUri;
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private fetchGradesTask fetch;
 
     private ArrayList<BBGrade> grades;
@@ -84,15 +81,8 @@ public class BlackboardGradesFragment extends BlackboardFragment {
         setHasOptionsMenu(true);
 
         grades = new ArrayList<BBGrade>();
-        gradeAdapter = new GradesAdapter(getSherlockActivity(), grades);
-
-        httpclient = ConnectionHelper.getThreadSafeClient();
-        httpclient.getCookieStore().clear();
-        BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient));
-        cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
-        httpclient.getCookieStore().addCookie(cookie);
-
+        gradeAdapter = new GradesAdapter(getActivity(), grades);
+        httpclient = new OkHttpClient();
     }
 
     @Override
@@ -116,7 +106,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 BBGrade grade = (BBGrade) arg0.getAdapter().getItem(arg2);
 
-                Dialog dlg = new Dialog(getSherlockActivity());// ,R.style.Theme_Sherlock_Light_Dialog);
+                Dialog dlg = new Dialog(getActivity());// ,R.style.Theme_Sherlock_Light_Dialog);
                 dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dlg.setContentView(R.layout.grade_info_dialog);
                 dlg.setTitle("Grade Info");
@@ -173,7 +163,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
         int id = item.getItemId();
         switch (id) {
             case R.id.grades_view_in_web:
-                showAreYouSureDlg(getSherlockActivity());
+                showAreYouSureDlg(getActivity());
                 break;
         }
         return false;
@@ -199,7 +189,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(con);
                 if (sp.getBoolean("embedded_browser", true)) {
-                    ((FragmentLauncher) getSherlockActivity()).addFragment(
+                    ((FragmentLauncher) getActivity()).addFragment(
                             BlackboardGradesFragment.this, BlackboardExternalItemFragment
                                     .newInstance(viewUri, courseID, courseName, "Grades", false));
                 } else {
@@ -248,10 +238,10 @@ public class BlackboardGradesFragment extends BlackboardFragment {
     }
 
     private class fetchGradesTask extends AsyncTask<Object, Void, ArrayList<BBGrade>> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private String errorMsg;
 
-        public fetchGradesTask(DefaultHttpClient client) {
+        public fetchGradesTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -264,21 +254,24 @@ public class BlackboardGradesFragment extends BlackboardFragment {
 
         @Override
         protected ArrayList<BBGrade> doInBackground(Object... params) {
-
-            HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain
+            String reqUrl = BLACKBOARD_DOMAIN
                     + "/webapps/Bb-mobile-BBLEARN/courseData?course_section=GRADES&course_id="
-                    + courseID);
+                    + courseID;
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 errorMsg = "UTilities could not fetch this course's grades";
-                cancel(true);
                 e.printStackTrace();
+                cancel(true);
                 return null;
             }
+
             ArrayList<BBGrade> data = new ArrayList<BBGrade>();
 
             Pattern gradeItemPattern = Pattern.compile("<grade-item.*?/>", Pattern.DOTALL);
@@ -337,3 +330,4 @@ public class BlackboardGradesFragment extends BlackboardFragment {
         return R.integer.blackboard_content_width_percentage;
     }
 }
+    

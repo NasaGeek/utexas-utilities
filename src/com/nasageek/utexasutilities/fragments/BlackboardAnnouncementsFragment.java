@@ -1,15 +1,16 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.R;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -28,14 +29,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.mapsaurus.paneslayout.FragmentLauncher;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.R;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 
@@ -44,7 +41,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
     private TextView atv;
     private TextView etv;
     private LinearLayout ell;
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private fetchAnnouncementsTask fetch;
     private AnnouncementsAdapter announceAdapter;
     private ArrayList<bbAnnouncement> announcements;
@@ -79,15 +76,8 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
         fromDashboard = getArguments().getBoolean("fromDashboard");
         setHasOptionsMenu(true);
         announcements = new ArrayList<bbAnnouncement>();
-        announceAdapter = new AnnouncementsAdapter(getSherlockActivity(), announcements);
-
-        httpclient = ConnectionHelper.getThreadSafeClient();
-        httpclient.getCookieStore().clear();
-        BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBBAuthCookie(getSherlockActivity(), httpclient));
-        cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
-        httpclient.getCookieStore().addCookie(cookie);
-
+        announceAdapter = new AnnouncementsAdapter(getActivity(), announcements);
+        httpclient = new OkHttpClient();
     }
 
     @Override
@@ -153,7 +143,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
         int id = item.getItemId();
         switch (id) {
             case R.id.announcements_view_in_web:
-                showAreYouSureDlg(getSherlockActivity());
+                showAreYouSureDlg(getActivity());
                 break;
         }
         return false;
@@ -179,7 +169,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(con);
                 if (sp.getBoolean("embedded_browser", true)) {
-                    ((FragmentLauncher) getSherlockActivity()).addFragment(
+                    ((FragmentLauncher) getActivity()).addFragment(
                             BlackboardAnnouncementsFragment.this, BlackboardExternalItemFragment
                                     .newInstance(viewUri, courseID, courseName, "Announcements",
                                             false));
@@ -206,10 +196,10 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
     }
 
     private class fetchAnnouncementsTask extends AsyncTask<Object, Void, ArrayList<bbAnnouncement>> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private String errorMsg;
 
-        public fetchAnnouncementsTask(DefaultHttpClient client) {
+        public fetchAnnouncementsTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -223,21 +213,24 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
 
         @Override
         protected ArrayList<bbAnnouncement> doInBackground(Object... params) {
-            HttpGet hget = new HttpGet(
-                    ConnectionHelper.blackboard_domain
-                            + "/webapps/Bb-mobile-BBLEARN/courseData?course_section=ANNOUNCEMENTS&course_id="
-                            + getArguments().getString("courseID"));
+            String reqUrl = BLACKBOARD_DOMAIN
+                    + "/webapps/Bb-mobile-BBLEARN/courseData?course_section=ANNOUNCEMENTS&course_id="
+                    + getArguments().getString("courseID");
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 errorMsg = "UTilities could not fetch this course's announcements";
                 e.printStackTrace();
                 cancel(true);
                 return null;
             }
+
             ArrayList<bbAnnouncement> data = new ArrayList<bbAnnouncement>();
             // pagedata = pagedata.replaceAll("comments=\".*?\"", ""); //might
             // include later, need to strip for now for grade recognition

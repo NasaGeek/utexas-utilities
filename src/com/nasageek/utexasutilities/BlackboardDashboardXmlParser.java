@@ -1,6 +1,15 @@
 
 package com.nasageek.utexasutilities;
 
+import android.util.TimingLogger;
+import android.util.Xml;
+
+import com.nasageek.utexasutilities.model.BBCourse;
+import com.nasageek.utexasutilities.model.FeedItem;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -11,15 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import android.util.TimingLogger;
-import android.util.Xml;
-
-import com.nasageek.utexasutilities.model.BBCourse;
-import com.nasageek.utexasutilities.model.FeedItem;
 
 public class BlackboardDashboardXmlParser {
 
@@ -164,7 +164,7 @@ public class BlackboardDashboardXmlParser {
 
     private FeedItem readFeedItem(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, null, "feeditem");
-        // if sourcetype=="AN" then it is a notification
+        // if sourcetype="AN" then it is a notification
 
         // String itemid = parser.getAttributeValue(null, "itemid");
         String type = parser.getAttributeValue(null, "type");
@@ -195,24 +195,6 @@ public class BlackboardDashboardXmlParser {
         } else {
             throw new IllegalStateException(
                     "You must parse the feed before you can call getCourses()");
-        }
-    }
-
-    // unused, will remove later
-    private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
-        if (parser.getEventType() != XmlPullParser.START_TAG) {
-            throw new IllegalStateException();
-        }
-        int depth = 1;
-        while (depth != 0) {
-            switch (parser.next()) {
-                case XmlPullParser.END_TAG:
-                    depth--;
-                    break;
-                case XmlPullParser.START_TAG:
-                    depth++;
-                    break;
-            }
         }
     }
 }

@@ -1,28 +1,11 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.net.ssl.HttpsURLConnection;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
-
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,83 +25,103 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.TempLoginException;
+import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
+import com.nasageek.utexasutilities.activities.LoginActivity;
 import com.nasageek.utexasutilities.activities.ScheduleActivity;
-import com.nasageek.utexasutilities.adapters.ClassAdapter;
+import com.nasageek.utexasutilities.adapters.ScheduleClassAdapter;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
+
+@SuppressWarnings("deprecation")
 public class CourseScheduleFragment extends SherlockFragment implements ActionModeFragment,
         SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener,
         AdapterView.OnItemClickListener {
 
-    private GridView gv;
-    private WrappingSlidingDrawer sd;
-    private LinearLayout sdll;
-    private ClassAdapter ca;
-    private DefaultHttpClient client;
-    private String[] colors = {
+    public static final int TRANSLUCENT_GRAY = 0x99F0F0F0;
+
+    private GridView scheduleGridView;
+    private WrappingSlidingDrawer slidingDrawer;
+    private ScheduleClassAdapter adapter;
+
+    private final String[] colors = {
             "488ab0", "00b060", "b56eb3", "94c6ff", "81b941", "ff866e", "ffad46", "ffe45e"
     };
 
     private Menu mMenu;
-    private LinearLayout pb_ll;
-    private LinearLayout daylist;
-    private ImageView ci_iv;
-    private TextView ci_tv;
-    private TextView nc_tv;
-    private TextView etv;
-    private LinearLayout ell;
+    private LinearLayout progress;
+    private LinearLayout dayList;
+    private ImageView classInfoImageView;
+    private TextView classInfoTextView;
+    private TextView noCoursesTextView;
+    private TextView errorTextView;
+    private LinearLayout errorLayout;
 
     private ArrayList<UTClass> classList;
-    private Classtime current_clt;
+    private Classtime currentClasstime;
     private parseTask fetch;
 
     private ActionMode mode;
 
     private SherlockFragmentActivity parentAct;
-    String semId;
+    private String semId;
+    private Boolean initialFragment;
+
+    public static CourseScheduleFragment newInstance(boolean initialFragment, String title, String id) {
+        CourseScheduleFragment csf = new CourseScheduleFragment();
+
+        Bundle args = new Bundle();
+        args.putBoolean("initialFragment", initialFragment);
+        args.putString("title", title);
+        args.putString("semId", id);
+        csf.setArguments(args);
+
+        return csf;
+    }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View vg = inflater.inflate(R.layout.course_schedule_fragment_layout, container, false);
 
-        sd = (WrappingSlidingDrawer) vg.findViewById(R.id.drawer);
-        sdll = (LinearLayout) vg.findViewById(R.id.llsd);
+        slidingDrawer = (WrappingSlidingDrawer) vg.findViewById(R.id.drawer);
 
-        ci_iv = (ImageView) vg.findViewById(R.id.class_info_color);
-        ci_tv = (TextView) vg.findViewById(R.id.class_info_text);
-        ell = (LinearLayout) vg.findViewById(R.id.schedule_error);
-        etv = (TextView) vg.findViewById(R.id.tv_failure);
+        classInfoImageView = (ImageView) vg.findViewById(R.id.class_info_color);
+        classInfoTextView = (TextView) vg.findViewById(R.id.class_info_text);
+        errorLayout = (LinearLayout) vg.findViewById(R.id.schedule_error);
+        errorTextView = (TextView) vg.findViewById(R.id.tv_failure);
 
-        pb_ll = (LinearLayout) vg.findViewById(R.id.schedule_progressbar_ll);
-        nc_tv = (TextView) vg.findViewById(R.id.no_courses);
-        gv = (GridView) vg.findViewById(R.id.scheduleview);
-        daylist = (LinearLayout) vg.findViewById(R.id.daylist);
-
-        client = ConnectionHelper.getThreadSafeClient();
+        progress = (LinearLayout) vg.findViewById(R.id.schedule_progressbar_ll);
+        noCoursesTextView = (TextView) vg.findViewById(R.id.no_courses);
+        scheduleGridView = (GridView) vg.findViewById(R.id.scheduleview);
+        dayList = (LinearLayout) vg.findViewById(R.id.daylist);
 
         /*
          * if(savedInstanceState != null) classList =
          * savedInstanceState.getParcelableArrayList("classList");
          */
 
-        sd.setOnDrawerCloseListener(this);
-        sd.setOnDrawerOpenListener(this);
-        sd.setVisibility(View.INVISIBLE);
+        slidingDrawer.setOnDrawerCloseListener(this);
+        slidingDrawer.setOnDrawerOpenListener(this);
+        slidingDrawer.setVisibility(View.INVISIBLE);
 
+        OkHttpClient client = new OkHttpClient();
         fetch = new parseTask(client);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            fetch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            fetch.execute();
-        }
-
+        Utility.parallelExecute(fetch, false);
         return vg;
     }
 
@@ -128,16 +131,17 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         setHasOptionsMenu(true);
         parentAct = this.getSherlockActivity();
         semId = getArguments().getString("semId");
+        initialFragment = getArguments().getBoolean("initialFragment");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (ca != null) {
-            ca.updateTime();
+        if (adapter != null) {
+            adapter.updateTime();
         }
-        if (gv != null) {
-            gv.invalidateViews();
+        if (scheduleGridView != null) {
+            scheduleGridView.invalidateViews();
         }
     }
 
@@ -185,10 +189,9 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         switch (id) {
             case R.id.map_all_classes:
                 // check to see if we're done loading the schedules (the
-                // ClassAdapter is initialized in onPostExecute)
-                if (ca != null) {
-                    // populate an array with the buildings IDs of all of the
-                    // user's classtimes
+                // ScheduleClassAdapter is initialized in onPostExecute)
+                if (adapter != null) {
+                    // populate an array with the buildings IDs of all of the user's classtimes
                     ArrayList<String> buildings = new ArrayList<String>();
 
                     for (UTClass clz : classList) {
@@ -199,8 +202,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                         }
                     }
 
-                    Intent map = new Intent(getString(R.string.building_intent), null, parentAct,
-                            CampusMapActivity.class);
+                    Intent map = new Intent(getString(R.string.building_intent), null, parentAct, CampusMapActivity.class);
                     map.putStringArrayListExtra("buildings", buildings);
                     startActivity(map);
                     break;
@@ -209,8 +211,8 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                 // version-gate handled by xml, but just to make sure...
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                     // check to see if we're done loading the schedules (the
-                    // ClassAdapter is initialized in onPostExecute)
-                    if (ca != null) {
+                    // ScheduleClassAdapter is initialized in onPostExecute)
+                    if (adapter != null) {
                         FragmentManager fm = parentAct.getSupportFragmentManager();
                         DoubleDatePickerDialogFragment ddpDlg = DoubleDatePickerDialogFragment
                                 .newInstance(classList);
@@ -236,38 +238,38 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
     @Override
     public void onDrawerClosed() {
-        ((ImageView) (sd.getHandle())).setImageResource(R.drawable.ic_expand_half);
+        ((ImageView) (slidingDrawer.getHandle())).setImageResource(R.drawable.ic_expand_half);
     }
 
     @Override
     public void onDrawerOpened() {
-        ((ImageView) (sd.getHandle())).setImageResource(R.drawable.ic_collapse_half);
+        ((ImageView) (slidingDrawer.getHandle())).setImageResource(R.drawable.ic_collapse_half);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        sd.close();
-        current_clt = (Classtime) parent.getItemAtPosition(position);
+        slidingDrawer.close();
+        currentClasstime = (Classtime) parent.getItemAtPosition(position);
 
-        if (current_clt != null) {
+        if (currentClasstime != null) {
             mode = parentAct.startActionMode(new ScheduleActionMode());
-            sd.setVisibility(View.VISIBLE);
+            slidingDrawer.setVisibility(View.VISIBLE);
 
             String text = " ";
-            text += current_clt.getCourseId() + " - " + current_clt.getName() + " ";
+            text += currentClasstime.getCourseId() + " - " + currentClasstime.getName() + " ";
 
             String daytext = "\n\t";
-            String building = current_clt.getBuilding().getId() + " "
-                    + current_clt.getBuilding().getRoom();
-            String unique = current_clt.getUnique();
+            String building = currentClasstime.getBuilding().getId() + " "
+                    + currentClasstime.getBuilding().getRoom();
+            String unique = currentClasstime.getUnique();
 
-            String time = current_clt.getStartTime();
-            String end = current_clt.getEndTime();
+            String time = currentClasstime.getStartTime();
+            String end = currentClasstime.getEndTime();
 
-            if (current_clt.getDay() == 'H') {
+            if (currentClasstime.getDay() == 'H') {
                 daytext += "TH";
             } else {
-                daytext += current_clt.getDay();
+                daytext += currentClasstime.getDay();
             }
 
             // TODO: stringbuilder
@@ -275,171 +277,137 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
             text += "\tUnique: " + unique + "\n";
 
-            ci_iv.setBackgroundColor(Color.parseColor("#" + current_clt.getColor()));
-            ci_iv.setMinimumHeight(10);
-            ci_iv.setMinimumWidth(10);
+            classInfoImageView.setBackgroundColor(Color.parseColor("#" + currentClasstime.getColor()));
+            classInfoImageView.setMinimumHeight(10);
+            classInfoImageView.setMinimumWidth(10);
 
-            ci_tv.setTextColor(Color.BLACK);
-            ci_tv.setTextSize(14f);
-            ci_tv.setBackgroundColor(0x99F0F0F0);
-            ci_tv.setText(text);
+            classInfoTextView.setTextColor(Color.BLACK);
+            classInfoTextView.setTextSize(14f);
+            classInfoTextView.setBackgroundColor(TRANSLUCENT_GRAY);
+            classInfoTextView.setText(text);
 
-            sd.open();
+            slidingDrawer.open();
         }
         // they clicked an empty cell
         else {
             if (mode != null) {
                 mode.finish();
             }
-            sd.setVisibility(View.INVISIBLE);
+            slidingDrawer.setVisibility(View.INVISIBLE);
         }
     }
 
-    private class parseTask extends AsyncTask<Object, String, Integer> {
-        private DefaultHttpClient client;
+    private class parseTask extends AsyncTask<Boolean, String, Integer> {
+        private OkHttpClient client;
         private String errorMsg;
         private boolean classParseIssue = false;
-        private String authCookie;
 
-        public parseTask(DefaultHttpClient client) {
+        public parseTask(OkHttpClient client) {
             this.client = client;
         }
 
         @Override
         protected void onPreExecute() {
-            pb_ll.setVisibility(View.VISIBLE);
-            gv.setVisibility(View.GONE);
-            ell.setVisibility(View.GONE);
-
-            client.getCookieStore().clear();
-            authCookie = ConnectionHelper.getAuthCookie(parentAct, client);
-
-            BasicClientCookie cookie = new BasicClientCookie("SC", authCookie);
-            cookie.setDomain(".utexas.edu");
-            client.getCookieStore().addCookie(cookie);
-
+            progress.setVisibility(View.VISIBLE);
+            scheduleGridView.setVisibility(View.GONE);
+            errorLayout.setVisibility(View.GONE);
         }
 
         @Override
         protected void onProgressUpdate(String... params) {
-            Bundle args = new Bundle(2);
-            args.putString("title", params[0].trim());
-            args.putString("semId", params[1]);
             ((ScheduleActivity) parentAct).getFragments().add(
-                    (SherlockFragment) Fragment.instantiate(parentAct,
-                            CourseScheduleFragment.class.getName(), args));
+                    CourseScheduleFragment.newInstance(false, params[0].trim(), params[1]));
             ((ScheduleActivity) parentAct).getAdapter().notifyDataSetChanged();
             ((ScheduleActivity) parentAct).getIndicator().notifyDataSetChanged();
         }
 
-        private String convertStreamToString(InputStream is) {
-            Scanner s = new Scanner(is, "iso-8859-1").useDelimiter("\\A");
-            return s.hasNext() ? s.next() : "";
-        }
-
         @Override
-        protected Integer doInBackground(Object... params) {
+        protected Integer doInBackground(Boolean... params) {
+            Boolean recursing = params[0];
+
             // "stateful" stuff, I'll get it figured out in the next release
             // if(classList == null)
             classList = new ArrayList<UTClass>();
             // else
             // return classList.size();
 
+            String reqUrl = "https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId;
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO) {
-                URL location;
-                HttpsURLConnection conn = null;
-                try {
-                    location = new URL(
-                            "https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId);
-                    conn = (HttpsURLConnection) location.openConnection();
-
-                    if (getSherlockActivity() == null) {
-                        cancel(true);
-                        errorMsg = "";
-                        return -1;
-                    }
-                    // TODO: why not just do this in onPreExecute?
-                    conn.setRequestProperty("Cookie", "SC=" + authCookie);
-
-                    // conn.setUseCaches(true);
-                    // conn.setRequestProperty("Cache-Control",
-                    // "only-if-cached");
-                    conn.setRequestMethod("GET");
-                    conn.setDoInput(true);
-                    /*
-                     * if(HttpResponseCache.getInstalled().get(new URI(
-                     * "https://utdirect.utexas.edu/registration/classlist.WBX?sem="
-                     * +semId), "GET", conn.getHeaderFields()) != null) {
-                     * pagedata =
-                     * convertStreamToString(HttpResponseCache.getInstalled
-                     * ().get(new URI(
-                     * "https://utdirect.utexas.edu/registration/classlist.WBX?sem="
-                     * +semId), "GET", conn.getHeaderFields()).getBody()); }
-                     * else {
-                     */
-                    conn.connect();
-                    pagedata = convertStreamToString(conn.getInputStream());
-                    // }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    errorMsg = "UTilities could not fetch your class listing";
-                    cancel(true);
-                    return -1;
-                } finally {
-                    if (conn != null) {
-                        conn.disconnect();
-                    }
-                }
-            } else {
-                HttpGet hget = new HttpGet(
-                        "https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId);
-                try {
-                    HttpResponse res = client.execute(hget);
-                    pagedata = EntityUtils.toString(res.getEntity());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    errorMsg = "UTilities could not fetch your class listing";
-                    cancel(true);
-                    return -1;
-                }
+            try {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
+                errorMsg = "UTilities could not fetch your class listing";
+                e.printStackTrace();
+                cancel(true);
+                return -1;
             }
 
+            // now parse the Class Listing data
+
+            // did we hit the login screen?
             if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
                 if (parentAct != null) {
-                    ConnectionHelper.logout(parentAct);
+                    UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
+                    if (!recursing) {
+                        try {
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
+                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
+                        } catch (IOException e) {
+                            errorMsg = "UTilities could not fetch your class listing";
+                            cancel(true);
+                            e.printStackTrace();
+                            return null;
+                        } catch (TempLoginException tle) {
+                            /*
+                            ooooh boy is this lazy. I'd rather not init SharedPreferences here
+                            to check if persistent login is on, so we'll just catch the exception
+                             */
+                            Intent login = new Intent(parentAct, LoginActivity.class);
+                            login.putExtra("activity", parentAct.getIntent().getComponent()
+                                    .getClassName());
+                            login.putExtra("service", 'u');
+                            parentAct.startActivity(login);
+                            parentAct.finish();
+                            errorMsg = "Session expired, please log in again";
+                            cancel(true);
+                            return null;
+                        }
+                        return doInBackground(true);
+                    } else {
+                        mApp.logoutAll();
+                    }
                 }
                 cancel(true);
-                return -1;
+                return null;
             }
             Pattern semSelectPattern = Pattern.compile("<select  name=\"sem\">.*</select>",
                     Pattern.DOTALL);
             Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
 
-            // TODO: un-hardcode this eventually! Shouldn't be too hard to
-            // figure out the dropdown size
-            if (semSelectMatcher.find() && parentAct != null
-                    && ((ScheduleActivity) parentAct).getFragments().size() < 3) {
+            if (semSelectMatcher.find() && initialFragment) {
                 Pattern semesterPattern = Pattern.compile(
                         "<option.*?value=\"(\\d*)\"\\s*>([\\w\\s]*?)</option>", Pattern.DOTALL);
                 Matcher semesterMatcher = semesterPattern.matcher(semSelectMatcher.group());
                 while (semesterMatcher.find()) {
-                    if (semesterMatcher.group(0).contains("selected=\"selected\"")) {
-                        continue;
-                    } else {
+                    // the "current" semester that has been downloaded is the one with the
+                    // "selected" attribute, so we don't want to load it again
+                    if (!semesterMatcher.group(0).contains("selected=\"selected\"")) {
                         publishProgress(semesterMatcher.group(2), semesterMatcher.group(1));
                     }
                 }
             }
 
-            Pattern pattern3 = Pattern.compile("<table.*</table>", Pattern.DOTALL);
-            Matcher matcher3 = pattern3.matcher(pagedata);
+            Pattern scheduleTablePattern = Pattern.compile("<table.*</table>", Pattern.DOTALL);
+            Matcher scheduletableMatcher = scheduleTablePattern.matcher(pagedata);
 
-            if (matcher3.find()) {
-                pagedata = matcher3.group(0);
+            if (scheduletableMatcher.find()) {
+                pagedata = scheduletableMatcher.group(0);
             } else {
                 // if no <table>, user probably isn't enrolled for semester
                 return 0;
@@ -452,7 +420,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                 String classContent = classMatcher.group();
 
                 String uniqueid = "", classid = "", classname = "";
-                String[] buildings = null, rooms = null, days = null, times = null;
+                String[] buildings, rooms, days, times;
                 boolean dropped = false;
 
                 Pattern classAttPattern = Pattern.compile("<td >(.*?)</td>", Pattern.DOTALL);
@@ -495,8 +463,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                 }
                 if (classAttMatcher.find()) {
                     days = classAttMatcher.group(1).split("<br />");
-                    // Thursday represented by H so I can treat all days as
-                    // characters
+                    // Thursday represented by H so I can treat all days as single characters
                     for (int a = 0; a < days.length; a++) {
                         days[a] = days[a].replaceAll("TH", "H").trim();
                     }
@@ -513,7 +480,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                     classParseIssue = true;
                     continue;
                 }
-                if (classAttMatcher.find()) { // check remarks for Dropped class
+                if (classAttMatcher.find()) {
                     String remark = classAttMatcher.group(1);
                     if (remark.contains("Dropped")) {
                         dropped = true;
@@ -529,7 +496,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                     classCount++;
                 }
             }
-            return Integer.valueOf(classCount);
+            return classCount;
 
         }
 
@@ -537,30 +504,28 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         // pretty sure it was because of stupid broken AsyncTask on <2.3
         @Override
         protected void onPostExecute(Integer result) {
-            pb_ll.setVisibility(View.GONE);
+            progress.setVisibility(View.GONE);
 
             if (result != null && result >= 0) {
-                if (result.intValue() == 0) {
-                    daylist.setVisibility(View.GONE);
-                    nc_tv.setText("You aren't enrolled for this semester.");
-                    nc_tv.setVisibility(View.VISIBLE);
+                if (result == 0) {
+                    dayList.setVisibility(View.GONE);
+                    noCoursesTextView.setText("You aren't enrolled for this semester.");
+                    noCoursesTextView.setVisibility(View.VISIBLE);
 
                     // if they're not enrolled for the semester, disable the
                     // calendar-specific options
                     setMenuItemsEnabled(false);
                     return;
                 } else {
-                    ca = new ClassAdapter(parentAct, sd, sdll, ci_iv, ci_tv, semId, classList);
-                    ca.updateTime(); // not really necessary
+                    adapter = new ScheduleClassAdapter(parentAct, classList);
+                    scheduleGridView.setOnItemClickListener(CourseScheduleFragment.this);
+                    scheduleGridView.setAdapter(adapter);
 
-                    gv.setOnItemClickListener(CourseScheduleFragment.this);
-                    gv.setAdapter(ca);
+                    // scrolls down to the user's earliest class
+                    scheduleGridView.setSelection(adapter.getEarliestClassPos());
 
-                    // scrolls down to the users earliest class
-                    gv.setSelection(ca.getEarliestClassPos());
-
-                    gv.setVisibility(View.VISIBLE);
-                    daylist.setVisibility(View.VISIBLE);
+                    scheduleGridView.setVisibility(View.VISIBLE);
+                    dayList.setVisibility(View.VISIBLE);
 
                     setMenuItemsEnabled(true);
                     if (!parentAct.isFinishing()) {
@@ -570,12 +535,12 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                 }
             } else {
                 errorMsg = "UTilities could not fetch your class listing";
-                etv.setText(errorMsg);
-                etv.setVisibility(View.VISIBLE);
-                pb_ll.setVisibility(View.GONE);
-                daylist.setVisibility(View.GONE);
-                nc_tv.setVisibility(View.GONE);
-                gv.setVisibility(View.GONE);
+                errorTextView.setText(errorMsg);
+                errorTextView.setVisibility(View.VISIBLE);
+                progress.setVisibility(View.GONE);
+                dayList.setVisibility(View.GONE);
+                noCoursesTextView.setVisibility(View.GONE);
+                scheduleGridView.setVisibility(View.GONE);
 
                 setMenuItemsEnabled(false);
             }
@@ -589,12 +554,12 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
         @Override
         protected void onCancelled() {
-            etv.setText(errorMsg);
-            ell.setVisibility(View.VISIBLE);
-            pb_ll.setVisibility(View.GONE);
-            daylist.setVisibility(View.GONE);
-            nc_tv.setVisibility(View.GONE);
-            gv.setVisibility(View.GONE);
+            errorTextView.setText(errorMsg);
+            errorLayout.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.GONE);
+            dayList.setVisibility(View.GONE);
+            noCoursesTextView.setVisibility(View.GONE);
+            scheduleGridView.setVisibility(View.GONE);
 
             setMenuItemsEnabled(false);
         }
@@ -632,7 +597,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                     ArrayList<String> building = new ArrayList<String>();
                     Intent map = new Intent(getString(R.string.building_intent), null, parentAct,
                             CampusMapActivity.class);
-                    building.add(current_clt.getBuilding().getId());
+                    building.add(currentClasstime.getBuilding().getId());
                     map.putStringArrayListExtra("buildings", building);
                     startActivity(map);
                     break;

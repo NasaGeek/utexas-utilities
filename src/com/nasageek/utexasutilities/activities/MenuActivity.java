@@ -1,10 +1,6 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.Vector;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -24,29 +20,35 @@ import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
 import com.nasageek.utexasutilities.fragments.MenuFragment;
 import com.viewpagerindicator.MyTabPageIndicator;
 
+import java.util.Calendar;
+import java.util.List;
+import java.util.Vector;
+
 public class MenuActivity extends SherlockFragmentActivity {
 
+    //@formatter:off
     public enum Restaurant {
-        No_Overlay("0", "No Restaurant"), JesterCityLimits("01", "Jester City Limits",
-                new String[][] {
-                        {
-                            "9am - 11pm"
-                        }, {
-                            "7am - 11pm"
-                        }, {
-                            "7am - 11pm"
-                        }, {
-                            "7am - 11pm"
-                        }, {
-                            "7am - 11pm"
-                        }, {
-                            "7am - 11pm"
-                        }, {
-                            "7am - 9pm"
-                        }, {
-                            "9am - 8pm"
-                        }
-                }, true), JesterCityMarket("05", "Jester City Market", new String[][] {
+        No_Overlay("0", "No Restaurant"), 
+        JesterCityLimits("01", "Jester City Limits", new String[][] {
+                {
+                    "9am - 11pm"
+                }, {
+                    "7am - 11pm"
+                }, {
+                    "7am - 11pm"
+                }, {
+                    "7am - 11pm"
+                }, {
+                    "7am - 11pm"
+                }, {
+                    "7am - 11pm"
+                }, {
+                    "7am - 9pm"
+                }, {
+                    "9am - 8pm"
+                }
+            }, true), 
+        JesterCityMarket("05", "Jester City Market", new String[][] {
                 {
                     "2pm - 11pm"
                 }, {
@@ -64,7 +66,8 @@ public class MenuActivity extends SherlockFragmentActivity {
                 }, {
                     "2pm - 8pm"
                 }
-        }, true), J2("12", "Jester 2nd Floor Dining", new String[][] {
+            }, true), 
+        J2("12", "Jester 2nd Floor Dining", new String[][] {
                 {
                         "", "", ""
                 }, {
@@ -82,7 +85,8 @@ public class MenuActivity extends SherlockFragmentActivity {
                 }, {
                         "", "", ""
                 }
-        }, false), Kinsolving("03", "Kinsolving Dining Hall", new String[][] {
+            }, false), 
+        Kinsolving("03", "Kinsolving Dining Hall", new String[][] {
                 {
                         "", "11am - 2pm", ""
                 }, {
@@ -100,7 +104,8 @@ public class MenuActivity extends SherlockFragmentActivity {
                 }, {
                         "", "11am - 2pm", "4:30pm - 7pm"
                 }
-        }, false), KinsMarket("14", "Kin's Market", new String[][] {
+            }, false), 
+        KinsMarket("14", "Kin's Market", new String[][] {
                 {
                     "4pm - 11pm"
                 }, {
@@ -118,7 +123,8 @@ public class MenuActivity extends SherlockFragmentActivity {
                 }, {
                     "3pm - 7pm"
                 }
-        }, true), CypressBend("08", "Cypress Bend", new String[][] {
+            }, true), 
+        CypressBend("08", "Cypress Bend", new String[][] {
                 {
                     "12pm - 7pm"
                 }, {
@@ -136,7 +142,8 @@ public class MenuActivity extends SherlockFragmentActivity {
                 }, {
                     "12pm - 7pm"
                 }
-        }, true), Littlefield("19", "Littlefield Patio Cafe", new String[][] {
+            }, true), 
+        Littlefield("19", "Littlefield Patio Cafe", new String[][] {
                 {
                     "2pm - 8pm"
                 }, {
@@ -154,7 +161,8 @@ public class MenuActivity extends SherlockFragmentActivity {
                 }, {
                     ""
                 }
-        }, true), JestAPizza("26", "Jest A' Pizza", new String[][] {
+            }, true), 
+        JestAPizza("26", "Jest A' Pizza", new String[][] {
                 {
                     "5pm - 12am"
                 }, {
@@ -172,7 +180,8 @@ public class MenuActivity extends SherlockFragmentActivity {
                 }, {
                     ""
                 }
-        }, true);
+            }, true);
+        //@formatter:on
 
         private String code;
         private String fullName;
@@ -211,13 +220,8 @@ public class MenuActivity extends SherlockFragmentActivity {
 
     private ViewPager pager;
     private ActionBar actionbar;
-    // private DefaultHttpClient httpclient;
     private SharedPreferences settings;
-
     private MultiPanePagerAdapter mPagerAdapter;
-    // private MultiPanePagerAdapter landPagerAdapter;
-
-    // private MenuFragment breakfast,lunch,dinner;
 
     private int previousItem;
 
@@ -236,6 +240,9 @@ public class MenuActivity extends SherlockFragmentActivity {
 
         final Spinner spinner = new Spinner(this);
         spinner.setPromptId(R.string.restaurantprompt);
+        @SuppressWarnings({
+                "rawtypes", "unchecked"
+        })
         final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(actionbar.getThemedContext(),
                 android.R.layout.simple_spinner_item, Restaurant.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

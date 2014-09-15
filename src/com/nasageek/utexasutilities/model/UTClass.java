@@ -1,12 +1,12 @@
 
 package com.nasageek.utexasutilities.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 
 public class UTClass implements Parcelable, Serializable {
 
@@ -47,14 +47,27 @@ public class UTClass implements Parcelable, Serializable {
         this.courseId = courseId;
         this.name = name;
 
+        if (buildingIds.length != buildingRooms.length) {
+            Log.e("UTClass creation", "building/room size inconsistency: b" + buildingIds.length
+                    + " r" + buildingRooms.length);
+        }
+
         ArrayList<Building> buildings = new ArrayList<Building>();
         for (int i = 0; i < buildingIds.length; i++) {
             buildings.add(new Building(buildingIds[i], buildingRooms[i]));
         }
 
+        /* Class Listing page leaves out building info if there are multiple sections in the same
+           location at different times. See Chris Roberts Fall 2014 Class Listing. Here we check
+           to see if location info was absent from a row.
+        */
+        if (buildings.size() < days.length) {
+            buildings.add(new Building(buildings.get(0)));
+        }
+
         classtimes = new ArrayList<Classtime>();
         if (!(days.length == times.length && days.length == buildings.size() && buildings.size() == times.length)) {
-            Log.d("UTClass creation", "building/day/time size inconsistency: b" + buildings.size()
+            Log.e("UTClass creation", "building/day/time size inconsistency: b" + buildings.size()
                     + " d" + days.length + " t" + times.length);
         }
         for (int i = 0; i < days.length && i < times.length && i < buildings.size(); i++) {
@@ -63,12 +76,8 @@ public class UTClass implements Parcelable, Serializable {
             for (int k = 1; k < dayArray.length; k++) {
                 classtimes.add(new Classtime(dayArray[k], times[i], buildings.get(i), color,
                         courseId, name, unique));
-                // Log.d("DAYTIME", days[k]+" "+t[i]);
             }
-
         }
-        // Log.d("BLENGTH", b.length+ " "+br.length);
-
         this.semId = semId;
         this.color = color;
     }
@@ -77,17 +86,16 @@ public class UTClass implements Parcelable, Serializable {
     public String toString() {
         String out = courseId + " in ";
         for (int i = 0; i < classtimes.size(); i++) {
-            out += classtimes.get(i).getBuilding().getId() + " in room "
-                    + classtimes.get(i).getBuilding().getRoom() + " at "
-                    + classtimes.get(i).getStartTime() + "-" + classtimes.get(i).getEndTime()
-                    + " on " + classtimes.get(i).getDay();
-            if (i == classtimes.size() - 1) {
-                continue;
-            } else {
+            Classtime classtime = classtimes.get(i);
+
+            out += classtime.getBuilding().getId() + " in room "
+                    + classtime.getBuilding().getRoom() + " at "
+                    + classtime.getStartTime() + "-" + classtime.getEndTime()
+                    + " on " + classtime.getDay();
+            if (i != classtimes.size() - 1) {
                 out += " and in ";
             }
         }
-
         return out;
     }
 

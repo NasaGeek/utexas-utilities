@@ -1,14 +1,17 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.foound.widget.AmazingAdapter;
+import com.foound.widget.AmazingListView;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.MyPair;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.Utility;
+import com.nasageek.utexasutilities.activities.NutritionInfoActivity;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -25,17 +28,13 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.foound.widget.AmazingAdapter;
-import com.foound.widget.AmazingListView;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
-import com.nasageek.utexasutilities.MyPair;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.activities.NutritionInfoActivity;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MenuFragment extends SherlockFragment {
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private ArrayList<MyPair<String, ArrayList<food>>> listOfLists;
     private AmazingListView mlv;
     private LinearLayout m_pb_ll;
@@ -79,7 +78,7 @@ public class MenuFragment extends SherlockFragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         restId = getArguments().getString("restId");
-        httpclient = ConnectionHelper.getThreadSafeClient();
+        httpclient = new OkHttpClient();
         listOfLists = new ArrayList<MyPair<String, ArrayList<food>>>();
         mAdapter = new MenuAdapter(listOfLists);
     }
@@ -89,7 +88,7 @@ public class MenuFragment extends SherlockFragment {
         this.restId = restId;
 
         mlv.setAdapter(mAdapter);
-        mlv.setPinnedHeaderView(getSherlockActivity().getLayoutInflater().inflate(
+        mlv.setPinnedHeaderView(getActivity().getLayoutInflater().inflate(
                 R.layout.menu_header_item_view, mlv, false));
         mlv.setOnItemClickListener(new OnItemClickListener() {
 
@@ -100,10 +99,10 @@ public class MenuFragment extends SherlockFragment {
                         + ((food) (arg0.getItemAtPosition(arg2))).nutritionLink;
 
                 SharedPreferences sp = PreferenceManager
-                        .getDefaultSharedPreferences(getSherlockActivity());
+                        .getDefaultSharedPreferences(getActivity());
                 if (sp.getBoolean("embedded_browser", true)) {
 
-                    Intent i = new Intent(getSherlockActivity(), NutritionInfoActivity.class);
+                    Intent i = new Intent(getActivity(), NutritionInfoActivity.class);
                     i.putExtra("url", url);
                     i.putExtra("title", ((food) arg0.getItemAtPosition(arg2)).name);
                     startActivity(i);
@@ -119,13 +118,8 @@ public class MenuFragment extends SherlockFragment {
         if (listOfLists.size() == 0 || update) {
             listOfLists.clear();
             fetchMTask = new fetchMenuTask(httpclient);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                fetchMTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, restId, this
-                        .getArguments().getString("title"), mlv);
-            } else {
-                fetchMTask.execute(restId, this.getArguments().getString("title"), mlv);
-            }
+            Utility.parallelExecute(fetchMTask, restId,
+                    this.getArguments().getString("title"), mlv);
         }
     }
 
@@ -138,12 +132,12 @@ public class MenuFragment extends SherlockFragment {
     }
 
     private class fetchMenuTask extends AsyncTask<Object, Integer, String> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private String meal;
         private String errorMsg;
         private ArrayList<MyPair<String, ArrayList<food>>> tempListOfLists;
 
-        public fetchMenuTask(DefaultHttpClient client) {
+        public fetchMenuTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -160,7 +154,7 @@ public class MenuFragment extends SherlockFragment {
             ArrayList<food> foodList = new ArrayList<food>();
             tempListOfLists = new ArrayList<MyPair<String, ArrayList<food>>>();
             meal = (String) params[1];
-            String location = "";
+            String location;
 
             // Special case for JCM, which combines Lunch and Dinner
             if (restId.equals("05") && (meal.equals("Lunch") || meal.equals("Dinner"))) {
@@ -171,18 +165,22 @@ public class MenuFragment extends SherlockFragment {
                         + "&mealName=" + meal;
             }
 
-            HttpGet hget = new HttpGet(location);
+
+            Request request = new Request.Builder()
+                    .url(location)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 errorMsg = "UTilities could not fetch this menu";
-                cancel(true);
                 e.printStackTrace();
+                cancel(true);
                 return null;
             }
+
             if (pagedata.contains("No Data Available")) {
                 foodList.add(new food("", ""));
                 listOfLists.add(new MyPair<String, ArrayList<food>>("No Food Offered at this Time",

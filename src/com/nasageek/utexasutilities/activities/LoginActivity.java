@@ -9,8 +9,8 @@ import android.webkit.WebView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.LoginWebViewClient;
+import com.nasageek.utexasutilities.fragments.BlackboardFragment;
 
 public class LoginActivity extends SherlockActivity {
 
@@ -38,7 +38,7 @@ public class LoginActivity extends SherlockActivity {
                 actionbar.setSubtitle("UTDirect");
                 break;
             case 'b':
-                wv.loadUrl(ConnectionHelper.blackboard_domain);
+                wv.loadUrl(BlackboardFragment.BLACKBOARD_DOMAIN);
                 actionbar.setSubtitle("Blackboard");
                 break;
             case 'p':

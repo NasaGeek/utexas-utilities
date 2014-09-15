@@ -1,14 +1,14 @@
 
 package com.nasageek.utexasutilities;
 
-import java.io.IOException;
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+
+import java.io.IOException;
 
 public class BuildingProvider extends ContentProvider {
 
@@ -41,12 +41,14 @@ public class BuildingProvider extends ContentProvider {
         // entire official building list now
         // V3 CLA - Liberal Arts Building
         // V4 POB, GDC - POB is ACES but renamed, leave them both in there
+        // V5 Add INT, ESS, CTR, CS3, CS4, CRB, CCF; remove ESB, RAS, RRN;
+        //      rename GIA to GIAC
 
         if (PreferenceManager.getDefaultSharedPreferences(this.getContext()).getInt(
-                "buildingdbversion", 1) < 4) {
+                "buildingdbversion", 1) < 5) {
             if (this.getContext().deleteDatabase("buildings")) {
-                Utility.commit(PreferenceManager.getDefaultSharedPreferences(this.getContext())
-                        .edit().putInt("buildingdbversion", 4));
+               PreferenceManager.getDefaultSharedPreferences(this.getContext())
+                        .edit().putInt("buildingdbversion", 5).apply();
             }
         }
         bdb = new BuildingDatabase(this.getContext());

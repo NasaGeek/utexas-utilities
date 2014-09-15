@@ -1,16 +1,6 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
-
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
@@ -50,9 +40,17 @@ import com.actionbarsherlock.view.MenuItem;
 import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.AttachmentDownloadService;
-import com.nasageek.utexasutilities.ConnectionHelper;
 import com.nasageek.utexasutilities.MyScrollView;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BlackboardDownloadableItemFragment extends BlackboardFragment {
 
@@ -61,13 +59,12 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
     private LinearLayout dlil_pb_ll;
     private TextView dlil_etv;
     private LinearLayout dlil_ell;
-    private DefaultHttpClient client;
+    private OkHttpClient client;
     private BroadcastReceiver onNotificationClick;
     private ArrayList<bbFile> attachments;
     private dlableItemAdapter attachmentAdapter;
     private String content;
     private String courseID, courseName, viewUri, itemName;
-
     private MyScrollView msv;
 
     public BlackboardDownloadableItemFragment() {
@@ -102,14 +99,10 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
         setHasOptionsMenu(true);
 
         attachments = new ArrayList<bbFile>();
-        attachmentAdapter = new dlableItemAdapter(getSherlockActivity(), attachments);
+        attachmentAdapter = new dlableItemAdapter(getActivity(), attachments);
         content = "";
 
-        client = ConnectionHelper.getThreadSafeClient();
-        BasicClientCookie cookie = new BasicClientCookie("s_session_id",
-                ConnectionHelper.getBBAuthCookie(getSherlockActivity(), client));
-        cookie.setDomain(ConnectionHelper.blackboard_domain_noprot);
-        client.getCookieStore().addCookie(cookie);
+        client = new OkHttpClient();
     }
 
     @Override
@@ -133,8 +126,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View arg1, int position, long id) {
                 final bbFile item = (bbFile) (parent.getAdapter().getItem(position));
-
-                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getSherlockActivity());
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
                 alertBuilder.setMessage("Would you like to download this attached file?")
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
@@ -142,18 +134,19 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
                                 dialog.dismiss();
                             }
                         }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @SuppressWarnings("deprecation")
                             @Override
                             @TargetApi(Build.VERSION_CODES.HONEYCOMB)
                             public void onClick(DialogInterface dialog, int which) {
                                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB
                                         && Environment.getExternalStorageState().equals(
                                                 Environment.MEDIA_MOUNTED)) {
-                                    Intent downloadAttachment = new Intent(getSherlockActivity(),
+                                    Intent downloadAttachment = new Intent(getActivity(),
                                             AttachmentDownloadService.class);
                                     downloadAttachment.putExtra("fileName", item.getFileName());
                                     downloadAttachment.putExtra("url", item.getDlUri());
                                     downloadAttachment.putExtra("service", "blackboard");
-                                    getSherlockActivity().startService(downloadAttachment);
+                                    getActivity().startService(downloadAttachment);
                                 } else if (Environment.getExternalStorageState().equals(
                                         Environment.MEDIA_MOUNTED)
                                         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -202,12 +195,12 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
                                             }
                                         }
                                     };
-                                    getSherlockActivity().registerReceiver(
+                                    getActivity().registerReceiver(
                                             onNotificationClick,
                                             new IntentFilter(
                                                     DownloadManager.ACTION_NOTIFICATION_CLICKED));
 
-                                    Uri uri = Uri.parse(ConnectionHelper.blackboard_domain
+                                    Uri uri = Uri.parse(BLACKBOARD_DOMAIN
                                             + Uri.decode(item.getDlUri()));
 
                                     Environment.getExternalStoragePublicDirectory(
@@ -229,28 +222,27 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
                                             .addRequestHeader(
                                                     "Cookie",
                                                     "s_session_id="
-                                                            + ConnectionHelper.getBBAuthCookie(
-                                                                    getSherlockActivity(), client));
+                                                            + ((UTilitiesApplication) getActivity()
+                                                            .getApplication()).getBbAuthCookieVal());
 
                                     try {
-                                        final long dlID = manager.enqueue(request);
+                                        manager.enqueue(request);
                                     } catch (IllegalArgumentException iae) {
                                         // fallback for people with messed up
                                         // Downloads provider
-                                        Intent downloadAttachment = new Intent(
-                                                getSherlockActivity(),
+                                        Intent downloadAttachment = new Intent(getActivity(),
                                                 AttachmentDownloadService.class);
                                         downloadAttachment.putExtra("fileName", item.getFileName());
                                         downloadAttachment.putExtra("url", item.getDlUri());
-                                        getSherlockActivity().startService(downloadAttachment);
+                                        getActivity().startService(downloadAttachment);
                                     }
                                     Toast.makeText(
-                                            getSherlockActivity(),
+                                            getActivity(),
                                             "Download started, item should appear in the \"Download\" folder on your external storage.",
                                             Toast.LENGTH_LONG).show();
                                 } else {
                                     AlertDialog.Builder build = new AlertDialog.Builder(
-                                            getSherlockActivity());
+                                            getActivity());
                                     build.setNeutralButton("Okay",
                                             new DialogInterface.OnClickListener() {
                                                 @Override
@@ -282,7 +274,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
         super.onDestroy();
         if (onNotificationClick != null) {
             try {
-                getSherlockActivity().unregisterReceiver(onNotificationClick);
+                getActivity().unregisterReceiver(onNotificationClick);
                 onNotificationClick = null;
             } catch (IllegalArgumentException e) { // if it's already been
                                                    // unregistered
@@ -308,7 +300,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
         int id = item.getItemId();
         switch (id) {
             case R.id.dlable_item_view_in_web:
-                showAreYouSureDlg(getSherlockActivity());
+                showAreYouSureDlg(getActivity());
                 break;
         }
         return false;
@@ -332,7 +324,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
 
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(con);
                 if (sp.getBoolean("embedded_browser", true)) {
-                    ((FragmentLauncher) getSherlockActivity()).addFragment(
+                    ((FragmentLauncher) getActivity()).addFragment(
                             BlackboardDownloadableItemFragment.this, BlackboardExternalItemFragment
                                     .newInstance(viewUri, courseID, courseName, itemName, false));
                 } else {
@@ -370,6 +362,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
         if (msv.getViewTreeObserver().isAlive()) {
             msv.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 
+                @SuppressWarnings("deprecation")
                 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
                 @Override
                 public void onGlobalLayout() {
@@ -391,26 +384,24 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
                 }
             });
         }
-        if (("".equals(content) || "No description".equals(content))
-                && getSherlockActivity() != null) {
+        if (("".equals(content) || "No description".equals(content)) && getActivity() != null) {
             content = "No description";
             TypedValue tv = new TypedValue();
-            if (getSherlockActivity().getTheme().resolveAttribute(android.R.attr.textColorTertiary,
-                    tv, true)) {
-                TypedArray arr = getSherlockActivity().obtainStyledAttributes(tv.resourceId,
-                        new int[] {
-                            android.R.attr.textColorTertiary
-                        });
+            if (getActivity().getTheme().resolveAttribute(android.R.attr.textColorTertiary, tv,
+                    true)) {
+                TypedArray arr = getActivity().obtainStyledAttributes(tv.resourceId, new int[] {
+                    android.R.attr.textColorTertiary
+                });
                 contentDescription.setTextColor(arr.getColor(0, Color.BLACK));
             }
         }
     }
 
     private class fetchData extends AsyncTask<String, Object, Object[]> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private String errorMsg;
 
-        public fetchData(DefaultHttpClient client) {
+        public fetchData(OkHttpClient client) {
             this.client = client;
         }
 
@@ -424,22 +415,26 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
 
         @Override
         protected Object[] doInBackground(String... params) {
-            String contentid = params[0];
+            String contentId = params[0];
 
-            HttpGet hget = new HttpGet(ConnectionHelper.blackboard_domain
-                    + "/webapps/Bb-mobile-BBLEARN/contentDetail?content_id=" + contentid
-                    + "&course_id=" + getArguments().getString("courseID"));
+            String reqUrl = BLACKBOARD_DOMAIN
+                    + "/webapps/Bb-mobile-BBLEARN/contentDetail?content_id=" + contentId
+                    + "&course_id=" + getArguments().getString("courseID");
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 errorMsg = "UTilities could not fetch this download";
-                cancel(true);
                 e.printStackTrace();
+                cancel(true);
                 return null;
             }
+
             Object[] result = new Object[2];
             ArrayList<bbFile> data = new ArrayList<bbFile>();
 
@@ -479,8 +474,9 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
             return result;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        protected void onPostExecute(Object... result) {
+        protected void onPostExecute(Object[] result) {
             if (!this.isCancelled()) {
                 content = Html
                         .fromHtml(
@@ -499,7 +495,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
         }
 
         @Override
-        protected void onCancelled(Object... o) {
+        protected void onCancelled(Object[] o) {
             dlil_etv.setText(errorMsg);
 
             dlil_ell.setVisibility(View.VISIBLE);
@@ -576,7 +572,6 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
         private String name;
         private String size;
         private String dlUri;
-        private String viewUri;
         private String fileName;
 
         public bbFile(String name, String fileName, String size, String dlUri, String viewUri) {
@@ -584,35 +579,18 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
             this.fileName = fileName;
             this.size = size;
             this.dlUri = dlUri;
-            this.viewUri = viewUri;
         }
 
         public String getName() {
             return name;
         }
 
-        public void setName(String name) {
-            this.name = name;
-        }
-
         public String getSize() {
             return size;
         }
 
-        public void setSize(String size) {
-            this.size = size;
-        }
-
         public String getDlUri() {
             return dlUri;
-        }
-
-        public void setDlUri(String dlUri) {
-            this.dlUri = dlUri;
-        }
-
-        public String getViewUri() {
-            return viewUri;
         }
 
         public String getFileName() {

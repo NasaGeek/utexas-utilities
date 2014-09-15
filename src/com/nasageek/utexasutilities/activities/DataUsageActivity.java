@@ -1,26 +1,6 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import java.text.FieldPosition;
-import java.text.Format;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.acra.ACRA;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.util.EntityUtils;
-
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -48,12 +28,34 @@ import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.XYStepMode;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.ConnectionHelper;
+import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import org.acra.ACRA;
+
+import java.io.IOException;
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
 
 public class DataUsageActivity extends SherlockActivity implements OnTouchListener {
 
-    private DefaultHttpClient httpclient;
+    private OkHttpClient httpclient;
     private Float[] downdata, totaldata;
     private Long[] labels;
     private XYPlot graph;
@@ -102,12 +104,8 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
         downdata = new Float[288];
         totaldata = new Float[288];
 
-        httpclient = ConnectionHelper.getThreadSafeClient();
-        httpclient.getCookieStore().clear();
-        BasicClientCookie cookie = new BasicClientCookie("AUTHCOOKIE",
-                ConnectionHelper.getPNAAuthCookie(this, httpclient));
-        cookie.setDomain(".pna.utexas.edu");
-        httpclient.getCookieStore().addCookie(cookie);
+        httpclient = new OkHttpClient();
+
         new fetchDataTask(httpclient).execute();
         new fetchProgressTask(httpclient).execute();
 
@@ -229,25 +227,27 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
     }
 
     private class fetchProgressTask extends AsyncTask<Object, Void, Void> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
 
-        public fetchProgressTask(DefaultHttpClient client) {
+        public fetchProgressTask(OkHttpClient client) {
             this.client = client;
         }
 
         @Override
         protected Void doInBackground(Object... params) {
-            HttpGet hget = new HttpGet("https://management.pna.utexas.edu/server/graph.cgi");
-
+            String reqUrl = "https://management.pna.utexas.edu/server/graph.cgi";
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-
-            } catch (Exception e) {
-                cancel(true);
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 e.printStackTrace();
+                cancel(true);
+                return null;
             }
 
             Pattern percentpattern = Pattern.compile("\\((.+?)%\\)");
@@ -264,7 +264,6 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
             if (usedmatcher.find()) {
                 usedText = usedmatcher.group(1);
             }
-
             return null;
         }
 
@@ -281,26 +280,25 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
     }
 
     private class fetchDataTask extends AsyncTask<Object, Void, Character> {
-        private DefaultHttpClient client;
+        private OkHttpClient client;
         private String errorMsg;
         private Exception ex;
         private Boolean showButton = false;
         private String errorData;
 
-        public fetchDataTask(DefaultHttpClient client) {
+        public fetchDataTask(OkHttpClient client) {
             this.client = client;
         }
 
         @Override
         protected Character doInBackground(Object... params) {
-            HttpGet hget = null;
+            AuthCookie pnaCookie = ((UTilitiesApplication) getApplication()).getAuthCookie(PNA_AUTH_COOKIE_KEY);
             Pattern authidpattern = Pattern.compile("(?<=%20)\\d+");
-            Matcher authidmatcher = authidpattern.matcher(client.getCookieStore().getCookies()
-                    .get(0).getValue());
+            Matcher authidmatcher = authidpattern.matcher(pnaCookie.getAuthCookieVal());
+            String reqUrl;
             if (authidmatcher.find()) {
-                hget = new HttpGet(
-                        "https://management.pna.utexas.edu/server/get-bw-graph-data.cgi?authid="
-                                + authidmatcher.group());
+                reqUrl = "https://management.pna.utexas.edu/server/get-bw-graph-data.cgi?authid="
+                                + authidmatcher.group();
             } else {
                 cancel(true);
                 errorMsg = "UTilities could not fetch your data usage";
@@ -308,15 +306,18 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
                 return ' ';
             }
 
+            Request request = new Request.Builder()
+                    .url(reqUrl)
+                    .build();
             String pagedata = "";
 
             try {
-                HttpResponse response = client.execute(hget);
-                pagedata = EntityUtils.toString(response.getEntity());
-            } catch (Exception e) {
-                cancel(true);
+                Response response = client.newCall(request).execute();
+                pagedata = response.body().string();
+            } catch (IOException e) {
                 errorMsg = "UTilities could not fetch your data usage";
                 e.printStackTrace();
+                cancel(true);
                 return ' ';
             }
 
@@ -400,8 +401,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
 
             graph.calculateMinMaxVals();
             minXY = new PointD(graph.getCalculatedMinX().doubleValue(), graph.getCalculatedMinY()
-                    .doubleValue()); // initial minimum
-                                     // data point
+                    .doubleValue()); // initial minimum data point
             absMinX = minXY.x; // absolute minimum data point
             // TODO: this crashes with a NPE sometimes. ??
             // absolute minimum value for the domain boundary maximum
@@ -415,8 +415,7 @@ public class DataUsageActivity extends SherlockActivity implements OnTouchListen
             }
             minNoError = Math.round(temp.doubleValue() + 2);
             maxXY = new PointD(graph.getCalculatedMaxX().doubleValue(), graph.getCalculatedMaxY()
-                    .doubleValue()); // initial maximum
-                                     // data point
+                    .doubleValue()); // initial maximum data point
 
             graph.setTicksPerRangeLabel(maxXY.y > 61 ? 2 : 1);
 
