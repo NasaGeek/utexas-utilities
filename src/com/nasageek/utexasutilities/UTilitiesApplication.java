@@ -40,12 +40,7 @@ public class UTilitiesApplication extends Application {
     public void onCreate() {
         super.onCreate();
         authCookies = new HashMap<String, AuthCookie>();
-        authCookies.put(UTD_AUTH_COOKIE_KEY, new AuthCookie(UTD_AUTH_COOKIE_KEY,
-                    "utlogin-prod",
-                    "https://login.utexas.edu/openam/UI/Login",
-                    "IDToken1",
-                    "IDToken2",
-                    this));
+        authCookies.put(UTD_AUTH_COOKIE_KEY, new UtdAuthCookie(this));
 
         authCookies.put(PNA_AUTH_COOKIE_KEY, new PnaAuthCookie(this));
 
