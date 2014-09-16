@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
     <release version="1.99.6" versioncode="33">
+        <change>UTLogin support</change>
         <change>Update campus buildings</change>
         <change>Update bus routes and stops</change>
         <change>Fix bug causing some classes to show in the wrong semester on Blackboard</change>

@@ -154,8 +154,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
                 return null;
             }
 
-            if (pagedata
-                    .contains("<title>Information Technology Services - UT EID Logon</title>")) {
+            if (pagedata.contains("<title>UT EID Login</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
                 if (parentAct != null) {
                     UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
