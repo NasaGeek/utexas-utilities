@@ -351,7 +351,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
             // now parse the Class Listing data
 
             // did we hit the login screen?
-            if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
+            if (pagedata.contains("<title>UT EID Login</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
                 if (parentAct != null) {
                     UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();

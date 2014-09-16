@@ -239,7 +239,7 @@ public class TransactionsFragment extends SherlockFragment {
                 return null;
             }
 
-            if (pagedata.contains("<title>Information Technology Services - UT EID Logon</title>")) {
+            if (pagedata.contains("<title>UT EID Login</title>")) {
                 errorMsg = "You've been logged out of UTDirect, back out and log in again.";
                 if (getActivity() != null) {
                     UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();

@@ -41,10 +41,10 @@ public class UTilitiesApplication extends Application {
         super.onCreate();
         authCookies = new HashMap<String, AuthCookie>();
         authCookies.put(UTD_AUTH_COOKIE_KEY, new AuthCookie(UTD_AUTH_COOKIE_KEY,
-                    "SC",
-                    "https://utdirect.utexas.edu/security-443/logon_check.logonform",
-                    "LOGON",
-                    "PASSWORDS",
+                    "utlogin-prod",
+                    "https://login.utexas.edu/openam/UI/Login",
+                    "IDToken1",
+                    "IDToken2",
                     this));
 
         authCookies.put(PNA_AUTH_COOKIE_KEY, new PnaAuthCookie(this));
