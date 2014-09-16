@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="1.99.6" versioncode="33">
+        <change>Update campus buildings</change>
+        <change>Update bus routes and stops</change>
+        <change>Fix bug causing some classes to show in the wrong semester on Blackboard</change>
+    </release>
     <release version="1.99.5" versioncode="32">
         <change>Fix crashes for people with West Campus set as their default bus route. Sorry!</change>
     </release>
@@ -28,7 +33,6 @@
         <change>Added GDC and POB to map</change>
         <change>Fixed inability to show certain University Extension courses in Blackboard (thanks for the email!)</change>
     </release>
-    
     <release version="1.92" versioncode="22">
         <change>Fixed crash for some users with early classes</change>
     </release>
@@ -41,5 +45,5 @@
         <change>Tweaked sizes of lots of list items to make them a bit more "touchable"</change>
         <change>Blackboard notification dashboard added</change>
         <change>Lots of tweaking</change>
-    </release>      
+    </release>
 </changelog>
