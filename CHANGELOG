@@ -192,6 +192,7 @@ Fix crashes for people with West Campus set as their default bus route. Sorry!
 
 Versioncode 33 - 1.99.6
 
+UTLogin support
 Update buildings on campus map
 Update bus routes and stops
 Fix bug causing Blackboard classes to sometimes show in the wrong semester
