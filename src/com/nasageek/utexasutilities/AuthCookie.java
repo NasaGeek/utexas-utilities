@@ -64,6 +64,10 @@ public class AuthCookie {
         return prefKey;
     }
 
+    public String getAuthCookieKey() {
+        return authCookieKey;
+    }
+
     public String getAuthCookieVal() {
         if (cookieHasBeenSet) {
             return authCookie;

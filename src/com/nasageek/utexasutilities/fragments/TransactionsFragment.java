@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.TempLoginException;
 import com.nasageek.utexasutilities.UTilitiesApplication;
@@ -219,9 +220,10 @@ public class TransactionsFragment extends SherlockFragment {
         @Override
         protected Character doInBackground(Boolean... params) {
             Boolean recursing = params[0];
-            String utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
-                    .getUtdAuthCookieVal();
-            BasicClientCookie cookie = new BasicClientCookie("SC", utdAuthCookie);
+            AuthCookie utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
+                    .getAuthCookie(UTD_AUTH_COOKIE_KEY);
+            BasicClientCookie cookie = new BasicClientCookie(utdAuthCookie.getAuthCookieKey(),
+                    utdAuthCookie.getAuthCookieVal());
             cookie.setDomain(".utexas.edu");
             httpclient.getCookieStore().addCookie(cookie);
 
