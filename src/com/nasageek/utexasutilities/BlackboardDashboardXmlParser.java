@@ -73,39 +73,35 @@ public class BlackboardDashboardXmlParser {
         Collections.reverse(feeditems);
         tl.addSplit("Collections.reverse()");
         List<MyPair<String, List<FeedItem>>> categorizedList = new ArrayList<MyPair<String, List<FeedItem>>>();
-        String currentCategory = "";
-        ArrayList<FeedItem> sectionList = null;
+        String currentDate = "";
+        ArrayList<FeedItem> currentDateList = null;
         DateFormat df = DateFormat.getDateInstance();
         for (int i = 0; i < feeditems.size(); i++) {
+            String formattedDate = df.format(feeditems.get(i).getDate());
+
             // first FeedItem is always in a new category (the first category)
             if (i == 0) {
-                currentCategory = df.format(feeditems.get(i).getDate());
-                sectionList = new ArrayList<FeedItem>();
-                sectionList.add(feeditems.get(i));
+                currentDate = formattedDate;
+                currentDateList = new ArrayList<>();
+                currentDateList.add(feeditems.get(i));
             }
-            // if the current course is not part of the current category or
-            // we're on the last course
-            // weird stuff going on here depending on if we're at the end of the
-            // list
-            else if (!df.format(feeditems.get(i).getDate()).equals(currentCategory)
-                    || i == feeditems.size() - 1) {
-                if (i == feeditems.size() - 1) {
-                    sectionList.add(feeditems.get(i));
-                }
-
-                categorizedList
-                        .add(new MyPair<String, List<FeedItem>>(currentCategory, sectionList));
-
-                currentCategory = df.format(feeditems.get(i).getDate());
-                sectionList = new ArrayList<FeedItem>();
-
-                if (i != feeditems.size() - 1) {
-                    sectionList.add(feeditems.get(i));
-                }
+            // if the current FeedItem is not on the current date or
+            // we're on the last FeedItem
+            else if (!formattedDate.equals(currentDate)) {
+                categorizedList.add(
+                        new MyPair<String, List<FeedItem>>(currentDate, currentDateList));
+                currentDate = formattedDate;
+                currentDateList = new ArrayList<>();
+                currentDateList.add(feeditems.get(i));
             }
-            // otherwise just add to the current category
+            // otherwise just add to the current date
             else {
-                sectionList.add(feeditems.get(i));
+                currentDateList.add(feeditems.get(i));
+            }
+            // add final date at the end
+            if (i == feeditems.size() - 1) {
+                categorizedList.add(
+                        new MyPair<String, List<FeedItem>>(currentDate, currentDateList));
             }
 
         }
