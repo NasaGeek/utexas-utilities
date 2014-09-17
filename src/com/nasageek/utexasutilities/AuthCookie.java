@@ -80,7 +80,7 @@ public class AuthCookie {
         }
     }
 
-    private void resetCookie() {
+    protected void resetCookie() {
         settings.edit().remove(prefKey).apply();
         authCookie = "";
         try {

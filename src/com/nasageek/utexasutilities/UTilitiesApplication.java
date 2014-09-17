@@ -33,6 +33,7 @@ public class UTilitiesApplication extends Application {
     public static final String UTD_AUTH_COOKIE_KEY = "utd_auth_cookie";
     public static final String PNA_AUTH_COOKIE_KEY = "pna_auth_cookie";
     public static final String BB_AUTH_COOKIE_KEY = "bb_auth_cookie";
+    public static final String CANVAS_AUTH_COOKIE_KEY = "canvas_auth_cookie";
 
     private Map<String, AuthCookie> authCookies;
 
@@ -50,6 +51,7 @@ public class UTilitiesApplication extends Application {
                     "user_id",
                     "password",
                     this));
+        authCookies.put(CANVAS_AUTH_COOKIE_KEY, new CanvasAuthCookie(this));
 
         CookieManager cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
@@ -87,9 +89,17 @@ public class UTilitiesApplication extends Application {
         return authCookies.get(BB_AUTH_COOKIE_KEY).getAuthCookieVal();
     }
 
+    public String getCanvasAuthCookieVal() {
+        return authCookies.get(CANVAS_AUTH_COOKIE_KEY).getAuthCookieVal();
+    }
+
     public void logoutAll() {
         for (AuthCookie authCookie : authCookies.values()) {
-            authCookie.logout();
+            // Canvas has a long-lived token, so don't lump it in
+            // with the rest of the cookies
+            if (!authCookie.getPrefKey().equals(CANVAS_AUTH_COOKIE_KEY)) {
+                authCookie.logout();
+            }
         }
     }
 }
