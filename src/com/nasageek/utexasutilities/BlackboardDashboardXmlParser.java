@@ -1,7 +1,6 @@
 
 package com.nasageek.utexasutilities;
 
-import android.util.TimingLogger;
 import android.util.Xml;
 
 import com.nasageek.utexasutilities.model.BBClass;
@@ -11,7 +10,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -24,23 +22,10 @@ import java.util.Locale;
 public class BlackboardDashboardXmlParser {
 
     private HashMap<String, BBClass> courses;
-    private TimingLogger tl;
     private boolean feedParsed = false;
     // need this so we don't instantiate it every time we make a new FeedItem
     private SimpleDateFormat feedItemDateFormat;
 
-    public List<MyPair<String, List<FeedItem>>> parse(InputStream in)
-            throws XmlPullParserException, IOException {
-        try {
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(in, null);
-            parser.nextTag();
-            return actuallyParse(parser);
-        } finally {
-            in.close();
-        }
-    }
 
     public List<MyPair<String, List<FeedItem>>> parse(Reader in) throws XmlPullParserException,
             IOException {
@@ -62,17 +47,12 @@ public class BlackboardDashboardXmlParser {
      */
     private List<MyPair<String, List<FeedItem>>> actuallyParse(XmlPullParser parser)
             throws XmlPullParserException, IOException {
-        tl = new TimingLogger("Dashboard", "Parser");
-
         List<FeedItem> feeditems = readDashboard(parser);
-
-        tl.addSplit("readDashboard()");
 
         // want to show most recent date at top and ListView's stackFromBottom
         // is broken by AmazingListView
         Collections.reverse(feeditems);
-        tl.addSplit("Collections.reverse()");
-        List<MyPair<String, List<FeedItem>>> categorizedList = new ArrayList<MyPair<String, List<FeedItem>>>();
+        List<MyPair<String, List<FeedItem>>> categorizedList = new ArrayList<>();
         String currentDate = "";
         ArrayList<FeedItem> currentDateList = null;
         DateFormat df = DateFormat.getDateInstance();
@@ -105,8 +85,6 @@ public class BlackboardDashboardXmlParser {
             }
 
         }
-        tl.addSplit("CategorizedList created");
-        // tl.dumpToLog();
         feedParsed = true;
         return categorizedList;
     }
@@ -115,8 +93,8 @@ public class BlackboardDashboardXmlParser {
             IOException {
         feedItemDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
 
-        courses = new HashMap<String, BBClass>();
-        List<FeedItem> feed = new ArrayList<FeedItem>();
+        courses = new HashMap<>();
+        List<FeedItem> feed = new ArrayList<>();
         parser.require(XmlPullParser.START_TAG, null, "mobileresponse");
         parser.nextTag();
 
@@ -153,8 +131,8 @@ public class BlackboardDashboardXmlParser {
             return null;
         }
         while (parser.next() != XmlPullParser.END_TAG) {
+            // do nothing
         }
-        ;
         return new BBClass(name, bbid, fullcourseid);
     }
 
@@ -179,8 +157,8 @@ public class BlackboardDashboardXmlParser {
         // String id = parser.getAttributeValue(null, "contentid");
         // TODO sourceid?
         while (parser.next() != XmlPullParser.END_TAG) {
+            // do nothing
         }
-        ;
         return new FeedItem(type, message, contentid, courseid, sourcetype, date,
                 feedItemDateFormat);
     }
