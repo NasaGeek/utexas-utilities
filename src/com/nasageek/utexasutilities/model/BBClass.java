@@ -92,17 +92,11 @@ public class BBClass implements Parcelable, Serializable {
             this.name = name;
         }
 
-        // Remove anything in parentheses, it's usually all superfluous
+        // remove anything in parentheses, it's usually all superfluous
         this.name = this.name.replaceAll("\\(.*?\\)", "");
-
-        /*
-         * sometimes the name will still contain parentheses, this seems to
-         * largely be caused by a parenthesized semester at the beginning being
-         * filtered out instead of the unique at the end. Filter out remaining
-         * parenthesized stuff. TODO: couldn't I just do a replaceAll with some
-         * regex? Why am I not doing that?
-         */
-        // if(this.name.contains("("))
+        // because the stuff in parentheses is generally at the beginning
+        // or end, it leaves leading/trailing whitespace when removed
+        this.name = this.name.trim();
 
         // the course ID seems to relatively consistently be the last 2 tokens
         // in the full ID, maybe just pull those out
