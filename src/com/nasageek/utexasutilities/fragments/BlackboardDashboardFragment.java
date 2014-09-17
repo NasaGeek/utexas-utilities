@@ -132,7 +132,8 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 
                     ((FragmentLauncher) act).addFragment(
                             BlackboardDashboardFragment.this.getParentFragment(),
-                            BlackboardGradesFragment.newInstance(courseid, coursename, "", true));
+                            BlackboardGradesFragment.newInstance(courseid, coursename, "", true,
+                                    fi.getMessage()));
                 } else if ("Content".equals(fi.getType())) {
                     /*
                      * final Intent bbItemLaunch = new Intent(null, null,
@@ -151,7 +152,6 @@ public class BlackboardDashboardFragment extends SherlockFragment {
                             .getParentFragment(), BlackboardDownloadableItemFragment.newInstance(
                             contentid, courseid, coursename, message, "", true));
                 } else if ("Announcement".equals(fi.getType())) {
-                    // TODO: figure out how to seek to a specific announcement
                     /*
                      * final Intent announcementsLaunch = new Intent(null, null,
                      * getActivity(), BlackboardAnnouncementsActivity.class); //
@@ -164,7 +164,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 
                     ((FragmentLauncher) act).addFragment(BlackboardDashboardFragment.this
                             .getParentFragment(), BlackboardAnnouncementsFragment.newInstance(
-                            courseid, coursename, "", true));
+                            courseid, coursename, "", true, fi.getMessage()));
                 } else if ("Courses".equals(fi.getType())) {
                     /*
                      * final Intent classLaunch = new

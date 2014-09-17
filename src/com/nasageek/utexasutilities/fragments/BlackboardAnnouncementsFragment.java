@@ -47,13 +47,14 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
     private ArrayList<bbAnnouncement> announcements;
     private boolean noAnnouncements = false;
     private String courseID, courseName, viewUri;
+    private String selection;
     private boolean fromDashboard;
 
     public BlackboardAnnouncementsFragment() {
     }
 
     public static BlackboardAnnouncementsFragment newInstance(String courseID, String courseName,
-            String viewUri, Boolean fromDashboard) {
+            String viewUri, Boolean fromDashboard, String selection) {
         BlackboardAnnouncementsFragment baf = new BlackboardAnnouncementsFragment();
 
         Bundle args = new Bundle();
@@ -61,6 +62,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
         args.putString("courseName", courseName);
         args.putString("viewUri", viewUri);
         args.putBoolean("fromDashboard", fromDashboard);
+        args.putString("selection", selection);
         baf.setArguments(args);
 
         return baf;
@@ -74,6 +76,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
         courseName = getArguments().getString("courseName");
         viewUri = getArguments().getString("viewUri");
         fromDashboard = getArguments().getBoolean("fromDashboard");
+        selection = getArguments().getString("selection");
         setHasOptionsMenu(true);
         announcements = new ArrayList<bbAnnouncement>();
         announceAdapter = new AnnouncementsAdapter(getActivity(), announcements);
@@ -198,6 +201,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
     private class fetchAnnouncementsTask extends AsyncTask<Object, Void, ArrayList<bbAnnouncement>> {
         private OkHttpClient client;
         private String errorMsg;
+        private int selectIndex = 0;
 
         public fetchAnnouncementsTask(OkHttpClient client) {
             this.client = client;
@@ -245,6 +249,14 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
                 data.add(new bbAnnouncement(announcementMatcher.group(1), announcementMatcher
                         .group(2), announcementMatcher.group(3)));
             }
+
+            if (!selection.equals("")) {
+                for (int i = 0; i < data.size(); i++) {
+                    if (data.get(i).getSubject().equals(selection)) {
+                        selectIndex = i;
+                    }
+                }
+            }
             return data;
         }
 
@@ -260,6 +272,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
                     noAnnouncements = true;
                 }
                 announceAdapter.notifyDataSetChanged();
+                alv.setSelection(selectIndex);
                 // alv.setVisibility(View.VISIBLE);
                 // atv.setVisibility(View.GONE);
                 /*
