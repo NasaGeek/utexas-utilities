@@ -107,22 +107,21 @@ public class LoginWebViewClient extends WebViewClient {
                 break;
             case 'u':
                 if (url.contains("utexas.edu")) {
-                    cookies = CookieManager.getInstance().getCookie("https://utexas.edu");
-                    if (cookies != null && !cookies.contains("SC=NONE")) {
+                    cookies = CookieManager.getInstance().getCookie("https://login.utexas.edu");
+                    if (cookies != null) {
                         for (String s : cookies.split("; ")) {
-                            if (s.startsWith("SC=")) {
-                                authCookie = s.substring(3);
+                            if (s.startsWith("utlogin-prod=")) {
+                                authCookie = s.substring(13);
                                 break;
                             }
                         }
                     }
                     if (!authCookie.equals("")
-                            && !authCookie.equals("NONE")
-                            && url.equals("https://utdirect.utexas.edu/security-443/logon_check.logonform")) {
+                            && url.equals("https://www.utexas.edu/")) {
                         AuthCookie utdAuthCookie = ((UTilitiesApplication) ((Activity) context)
                                 .getApplication()).getAuthCookie(UTD_AUTH_COOKIE_KEY);
                         utdAuthCookie.setAuthCookieVal(authCookie);
-                        continueToActivity("UTDirect");
+                        continueToActivity("UTLogin");
                         return;
                     }
                 }

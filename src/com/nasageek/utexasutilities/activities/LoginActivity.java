@@ -34,8 +34,9 @@ public class LoginActivity extends SherlockActivity {
 
         switch (service) {
             case 'u':
-                wv.loadUrl("https://utdirect.utexas.edu");
-                actionbar.setSubtitle("UTDirect");
+                wv.getSettings().setJavaScriptEnabled(true);
+                wv.loadUrl("https://login.utexas.edu/login/UI/Login");
+                actionbar.setSubtitle("UTLogin");
                 break;
             case 'b':
                 wv.loadUrl(BlackboardFragment.BLACKBOARD_DOMAIN);
