@@ -26,7 +26,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,16 +46,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Fragment for displaying the user's Blackboard notification dashboard, a list of
+ * all course updates arranged in reverse chronological order.
+ */
 public class BlackboardDashboardFragment extends SherlockFragment {
 
-    private OkHttpClient httpclient;
     private LinearLayout d_pb_ll;
     private AmazingListView dlv;
     private TextView etv;
     private LinearLayout ell;
     private Button eb;
-    // private TimingLogger tl;
-    private fetchDashboardTask fetch;
+    private FetchDashboardTask fetch;
     private boolean longform;
 
     private HashMap<String, BBClass> courses;
@@ -75,15 +77,15 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         return f;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // tl = new TimingLogger("Dashboard", "loadTime");
 
         longform = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(
                 "blackboard_class_longform", false);
         if (savedInstanceState == null) {
-            feedList = new ArrayList<MyPair<String, List<FeedItem>>>();
+            feedList = new ArrayList<>();
         } else {
             feedList = (List<MyPair<String, List<FeedItem>>>) savedInstanceState
                     .getSerializable("feedList");
@@ -109,89 +111,45 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                FragmentActivity act = getActivity();
                 FeedItem fi = (FeedItem) parent.getAdapter().getItem(position);
                 String courseid = fi.getBbId();
                 String contentid = fi.getContentId();
                 String coursename = courses.get(fi.getBbId()).getCourseId();
                 String message = fi.getMessage();
 
-                if ("Grades".equals(fi.getType())) {
-                    /*
-                     * final Intent gradesLaunch = new Intent(null, null,
-                     * getActivity(), BlackboardGradesActivity.class); //
-                     * gradesLaunch.putExtra("viewUri", url); //TODO: fetch
-                     * coursemap for viewurl gradesLaunch.putExtra("courseid",
-                     * courseid); gradesLaunch.putExtra("coursename",
-                     * coursename); gradesLaunch.putExtra("showViewInWeb",
-                     * false); startActivity(gradesLaunch);
-                     */
-
-                    // TODO: reconsider passing blank string as viewUri
-
-                    ((FragmentLauncher) act).addFragment(
-                            BlackboardDashboardFragment.this.getParentFragment(),
-                            BlackboardGradesFragment.newInstance(courseid, coursename, "", true,
-                                    fi.getMessage()));
-                } else if ("Content".equals(fi.getType())) {
-                    /*
-                     * final Intent bbItemLaunch = new Intent(null, null,
-                     * getActivity(), BlackboardDownloadableItemActivity.class);
-                     * bbItemLaunch.putExtra("contentid", contentid);
-                     * bbItemLaunch.putExtra("itemName", message); //TODO: not
-                     * sure if I want to keep this //
-                     * bbItemLaunch.putExtra("viewUri", url); TODO
-                     * bbItemLaunch.putExtra("courseid", courseid);
-                     * bbItemLaunch.putExtra("coursename", coursename);
-                     * bbItemLaunch.putExtra("showViewInWeb", false);
-                     * startActivity(bbItemLaunch);
-                     */
-
-                    ((FragmentLauncher) act).addFragment(BlackboardDashboardFragment.this
-                            .getParentFragment(), BlackboardDownloadableItemFragment.newInstance(
-                            contentid, courseid, coursename, message, "", true));
-                } else if ("Announcement".equals(fi.getType())) {
-                    /*
-                     * final Intent announcementsLaunch = new Intent(null, null,
-                     * getActivity(), BlackboardAnnouncementsActivity.class); //
-                     * announcementsLaunch.putExtra("viewUri", url); TODO
-                     * announcementsLaunch.putExtra("courseid", courseid);
-                     * announcementsLaunch.putExtra("coursename", coursename);
-                     * announcementsLaunch.putExtra("showViewInWeb", false);
-                     * startActivity(announcementsLaunch);
-                     */
-
-                    ((FragmentLauncher) act).addFragment(BlackboardDashboardFragment.this
-                            .getParentFragment(), BlackboardAnnouncementsFragment.newInstance(
-                            courseid, coursename, "", true, fi.getMessage()));
-                } else if ("Courses".equals(fi.getType())) {
-                    /*
-                     * final Intent classLaunch = new
-                     * Intent(getString(R.string.coursemap_intent), null,
-                     * getActivity(), CourseMapActivity.class);
-                     * classLaunch.putExtra("courseid", fi.getBbId());
-                     * classLaunch.setData(Uri.parse(fi.getBbId()));
-                     * classLaunch.putExtra("folderName", "Course Map");
-                     * classLaunch.putExtra("coursename", fi.getCourseId()); //
-                     * classLaunch.putExtra("showViewInWeb", false);
-                     * startActivity(classLaunch);
-                     */
-
-                    ((FragmentLauncher) act).addFragment(BlackboardDashboardFragment.this
-                            .getParentFragment(), BlackboardCourseMapFragment.newInstance(
-                            getString(R.string.coursemap_intent), null, courseid, coursename,
-                            "Course Map", "", -1, false));
+                FragmentLauncher launcher = (FragmentLauncher) getActivity();
+                Fragment currentFragment = BlackboardDashboardFragment.this.getParentFragment();
+                switch (fi.getType()) {
+                    case "Grades":
+                        launcher.addFragment(currentFragment,
+                                BlackboardGradesFragment.newInstance(courseid, coursename, "", true,
+                                        fi.getMessage()));
+                        break;
+                    case "Content":
+                        launcher.addFragment(currentFragment,
+                                BlackboardDownloadableItemFragment.newInstance(contentid, courseid,
+                                        coursename, message, "", true));
+                        break;
+                    case "Announcement":
+                        launcher.addFragment(currentFragment,
+                                BlackboardAnnouncementsFragment.newInstance(courseid, coursename,
+                                        "", true, fi.getMessage()));
+                        break;
+                    case "Courses":
+                        launcher.addFragment(currentFragment,
+                                BlackboardCourseMapFragment.newInstance(
+                                        getString(R.string.coursemap_intent), null, courseid,
+                                        coursename, "Course Map", "", -1, false));
+                        break;
                 }
             }
         });
 
         if (feedList.size() == 0) {
-            httpclient = new OkHttpClient();
-            fetch = new fetchDashboardTask(httpclient);
+            OkHttpClient httpclient = new OkHttpClient();
+            fetch = new FetchDashboardTask(httpclient);
             Utility.parallelExecute(fetch);
         }
-
         return vg;
     }
 
@@ -210,22 +168,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         outState.putSerializable("courses", courses);
     }
 
-    public void refresh() {
-        // tlv.setVisibility(View.GONE);
-        // etv.setVisibility(View.GONE);
-        // t_pb_ll.setVisibility(View.VISIBLE);
-        if (fetch != null) {
-            fetch.cancel(true);
-            fetch = null;
-        }
-        // transactionlist.clear();
-
-        // parser(true);
-        // ta.resetPage();
-        // tlv.setSelectionFromTop(0, 0);
-    }
-
-    private class fetchDashboardTask extends
+    private class FetchDashboardTask extends
             AsyncTask<String, Void, List<MyPair<String, List<FeedItem>>>> {
         private OkHttpClient client;
         private String errorMsg = "";
@@ -234,7 +177,7 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         private String pagedata;
         private Boolean showButton = false;
 
-        public fetchDashboardTask(OkHttpClient client) {
+        public FetchDashboardTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -247,10 +190,11 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 
         @Override
         protected List<MyPair<String, List<FeedItem>>> doInBackground(String... params) {
-            tempFeedList = new ArrayList<MyPair<String, List<FeedItem>>>();
+            tempFeedList = new ArrayList<>();
 
             String reqUrl = BlackboardFragment.BLACKBOARD_DOMAIN
-                    + "/webapps/Bb-mobile-BBLEARN/dashboard?course_type=COURSE&with_notifications=true";
+                    + "/webapps/Bb-mobile-BBLEARN/dashboard?course_type=COURSE&" +
+                    "with_notifications=true";
             Request request = new Request.Builder()
                     .url(reqUrl)
                     .build();
@@ -285,10 +229,8 @@ public class BlackboardDashboardFragment extends SherlockFragment {
 
         @Override
         protected void onPostExecute(List<MyPair<String, List<FeedItem>>> result) {
-            // dlv.setAdapter(new BlackboardDashboardAdapter(result));
             feedList.addAll(tempFeedList);
             bda.notifyDataSetChanged();
-            // tl.addSplit("Adapter created");
             d_pb_ll.setVisibility(View.GONE);
             dlv.setVisibility(View.VISIBLE);
             ell.setVisibility(View.GONE);
@@ -335,7 +277,6 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         }
     }
 
-    // TODO: figure out fast scroll, maybe the min-sdk is just too low...
     class BlackboardDashboardAdapter extends AmazingAdapter {
 
         private List<MyPair<String, List<FeedItem>>> items;
@@ -347,26 +288,26 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         @Override
         public int getCount() {
             int res = 0;
-            for (int i = 0; i < items.size(); i++) {
-                res += items.get(i).second.size();
+            for (MyPair<String, List<FeedItem>> pair : items) {
+                res += pair.second.size();
             }
             return res;
         }
 
         @Override
         public boolean isEnabled(int position) {
-            return !("Unknown".equals(getItem(position).getType()) || "Notification"
-                    .equals(getItem(position).getType()));
+            return !("Unknown".equals(getItem(position).getType()) ||
+                    "Notification".equals(getItem(position).getType()));
         }
 
         @Override
         public FeedItem getItem(int position) {
             int c = 0;
-            for (int i = 0; i < items.size(); i++) {
-                if (position >= c && position < c + items.get(i).second.size()) {
-                    return items.get(i).second.get(position - c);
+            for (MyPair<String, List<FeedItem>> pair : items) {
+                if (position >= c && position < c + pair.second.size()) {
+                    return pair.second.get(position - c);
                 }
-                c += items.get(i).second.size();
+                c += pair.second.size();
             }
             return null;
         }
@@ -391,7 +332,6 @@ public class BlackboardDashboardFragment extends SherlockFragment {
             }
         }
 
-        // TODO
         @Override
         public View getAmazingView(int position, View convertView, ViewGroup parent) {
             View res = convertView;
