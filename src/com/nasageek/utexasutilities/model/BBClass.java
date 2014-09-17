@@ -49,18 +49,6 @@ public class BBClass implements Parcelable, Serializable {
 
     // TODO: move auto-formatting into a separate method?
     public BBClass(String name, String bbid, String fullcourseid) {
-        // name is now blank, and the Course ID is mysteriously absent :( - all
-        // as of 8/29/2012
-        // oh ho ho! It was fixed, how wonderful. Ignore commented stuff below
-        // checks to see if it is what is now a legitimate courseid
-        // year (2 digits) followed by semester (in caps) followed by name
-        // followed by unique (digits in parentheses)
-        // if(courseid.matches("^\\d\\d[A-Z]{1,2} .*?(\\d+?)$"))
-        // Log.d("BBClass check", "Class format is good");
-
-        // TODO: check for longform in here somewhere and don't format if it is
-        // set
-
         if (!fullcourseid.matches("^\\d{4}_[a-z]+?_\\d{5}_[A-Za-z]+?_\\w+$")) {
             Log.d("BBClass check", "Course ID malformed: " + fullcourseid);
         }
@@ -68,17 +56,8 @@ public class BBClass implements Parcelable, Serializable {
             Log.d("BBClass check", "Course Name malformed: " + name);
         }
 
-        // filter out the year and semester at the beginning and the unique at
-        // the end
-        // year/semester should never fail. If no space, indexOf returns -1 and
-        // you get the whole string
-        // this.name = (name.contains("(") && name.charAt(0) != '(' &&
-        // name.indexOf(" ")+1 <= name.indexOf("(")-1)
-        // ? name.substring(name.indexOf(" ")+1,name.indexOf("(")-1)
-        // : name.substring(name.indexOf(" ")+1);
-
-        // Check if the name has spaces, apparently they don't always have them
-        if (name.indexOf(" ") >= 0) {
+        // names don't always have spaces, be careful!
+        if (name.contains(" ")) {
             // TODO: might try this with a split[0] rather than the substring
             // TODO: this might not trim off Summer semester identifier, check
             // Alex's tablet
@@ -124,9 +103,8 @@ public class BBClass implements Parcelable, Serializable {
             // will fail if unique start is less than 6 characters from the end
             // of the string.
             try {
-                courseid = fullcourseid.substring(fullcourseid.indexOf(unique) + 6).replaceAll("_",
-                        " ");
-
+                courseid = fullcourseid.substring(fullcourseid.indexOf(unique) + 6)
+                        .replaceAll("_", " ");
                 courseIdAvailable = true;
             } catch (Exception ex) {
                 courseIdAvailable = false;
