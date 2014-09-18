@@ -438,11 +438,19 @@ public class UTilitiesActivity extends SherlockActivity {
         startActivity(pref_intent);
     }
 
-    // FIXME: merge note: make sure this still works after Canvas integration
+    /**
+     * Indicates whether the user is being logged in right now or not.
+     *
+     * @return true if the user is being logged in and false otherwise
+     */
     private boolean isLoggingIn() {
-        // updateUiTask is null before login has begun
-        return updateUiTask != null && updateUiTask.getStatus() == AsyncTask.Status.RUNNING &&
-                !updateUiTask.isCancelled();
+        // updateUiTask is started when the transient login process begins and stops once
+        // the UI has been updated to reflect the new login status.
+        return (updateUiTask != null && updateUiTask.getStatus() == AsyncTask.Status.RUNNING &&
+                !updateUiTask.isCancelled())
+                // these are for when the user does their one-time Canvas auth
+                || spiceManager.getPendingRequestCount() > 0
+                || spiceManager.getRequestToLaunchCount() > 0;
     }
 
     /**
