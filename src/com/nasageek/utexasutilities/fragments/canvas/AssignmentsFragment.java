@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.nasageek.utexasutilities.CanvasRequestListener;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.adapters.AssignmentAdapter;
 import com.nasageek.utexasutilities.fragments.BaseSpiceListFragment;
@@ -65,8 +66,9 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
         AssignmentAdapter mAdapter = new AssignmentAdapter(getActivity(), R.layout.grade_item_view,
                 mItems);
 
-        canvasAssignmentsRequest = new CanvasAssignmentsRequest(
-                ConnectionHelper.getCanvasAuthCookie(getActivity()), courseId);
+        String canvasAuthToken = ((UTilitiesApplication) getActivity().getApplication())
+                .getCanvasAuthCookieVal();
+        canvasAssignmentsRequest = new CanvasAssignmentsRequest(canvasAuthToken, courseId);
         getSpiceManager()
                 .execute(
                         canvasAssignmentsRequest,

@@ -1,21 +1,6 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.foound.widget.AmazingListView;
-import com.mapsaurus.paneslayout.FragmentLauncher;
-import com.mapsaurus.paneslayout.PanesActivity;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.MyPair;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.Utility;
-import com.nasageek.utexasutilities.adapters.BBClassAdapter;
-import com.nasageek.utexasutilities.retrofit.Canvas;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
-import retrofit.RetrofitError;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,6 +15,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.foound.widget.AmazingListView;
+import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.mapsaurus.paneslayout.PanesActivity;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.MyPair;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
+import com.nasageek.utexasutilities.Utility;
+import com.nasageek.utexasutilities.adapters.BBClassAdapter;
 import com.nasageek.utexasutilities.fragments.canvas.CanvasCourseMapFragment;
 import com.nasageek.utexasutilities.model.BBCourse;
 import com.nasageek.utexasutilities.model.Course;
@@ -38,6 +32,10 @@ import com.nasageek.utexasutilities.requests.CanvasCourseListRequest;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -45,6 +43,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import retrofit.RetrofitError;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.CANVAS_AUTH_COOKIE_KEY;
 
 public class BlackboardCourseListFragment extends BaseSpiceFragment {
 
@@ -80,7 +82,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
         
         classList = new ArrayList<Course>();
         canvasCourseListRequest = new CanvasCourseListRequest(
-                ConnectionHelper.getCanvasAuthCookie(getActivity()));
+                ((UTilitiesApplication) getActivity().getApplication()).getCanvasAuthCookieVal());
         if (savedInstanceState == null) {
             classSectionList = new ArrayList<MyPair<String, List<Course>>>();
         } else {
@@ -166,7 +168,8 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
             Toast.makeText(getSherlockActivity(), "failure", Toast.LENGTH_SHORT).show();
             // if request was unauthorized, token's probably bad
             if (((RetrofitError) spiceException.getCause()).getResponse().getStatus() == 401) {
-                ConnectionHelper.resetCanvasAuthToken(getActivity());
+                ((UTilitiesApplication) getActivity().getApplication())
+                        .getAuthCookie(CANVAS_AUTH_COOKIE_KEY).logout();
             }
             bb_pb_ll.setVisibility(View.GONE);
             bbell.setVisibility(View.GONE);

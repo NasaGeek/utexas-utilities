@@ -8,6 +8,7 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.ActionBar;
 import com.nasageek.utexasutilities.CanvasRequestListener;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.adapters.ModuleAdapter;
 import com.nasageek.utexasutilities.fragments.BaseSpiceListFragment;
@@ -58,8 +59,9 @@ public class ModulesFragment extends BaseSpiceListFragment implements OnPanesScr
         // TODO: pinned headers. Doesn't work now because not an AmazingListView
         ModuleAdapter mAdapter = new ModuleAdapter(getActivity(), mItems);
 
-        canvasModulesRequest = new CanvasModulesRequest(
-                ConnectionHelper.getCanvasAuthCookie(getActivity()), courseId);
+        String canvasAuthToken = ((UTilitiesApplication) getActivity().getApplication())
+                .getCanvasAuthCookieVal();
+        canvasModulesRequest = new CanvasModulesRequest(canvasAuthToken, courseId);
         getSpiceManager().execute(canvasModulesRequest, courseId + "modules",
                 DurationInMillis.ONE_MINUTE * 5,
                 new CanvasRequestListener<Module.List>(this, mAdapter, mItems, "No modules"));

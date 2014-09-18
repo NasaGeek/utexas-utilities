@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.adapters.ActivityStreamAdapter;
 import com.nasageek.utexasutilities.adapters.AssignmentAdapter;
@@ -59,8 +60,9 @@ public class ActivityStreamFragment extends BaseSpiceListFragment implements
         courseCode = getArguments().getString("courseCode");
         setupActionBar();
 
-        canvasActivityStreamRequest = new CanvasActivityStreamRequest(
-                ConnectionHelper.getCanvasAuthCookie(getActivity()), courseId);
+        String canvasAuthToken = ((UTilitiesApplication) getActivity().getApplication())
+                .getCanvasAuthCookieVal();
+        canvasActivityStreamRequest = new CanvasActivityStreamRequest(canvasAuthToken, courseId);
         getSpiceManager().execute(canvasActivityStreamRequest, courseId + "activitystream",
                 DurationInMillis.ONE_MINUTE * 5, new CanvasActivityStreamRequestListener());
     }

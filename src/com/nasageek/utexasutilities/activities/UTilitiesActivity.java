@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.TransitionDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.MotionEvent;
@@ -44,6 +43,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static com.nasageek.utexasutilities.UTilitiesApplication.BB_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.CANVAS_AUTH_COOKIE_KEY;
 import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
 import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
@@ -531,15 +531,11 @@ public class UTilitiesActivity extends SherlockActivity {
         if (requestCode == CANVAS_LOGIN_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 // Canvas is good to go, continue login
-
-                // indicate we are logging in during the final OAuth POST
-                ConnectionHelper.loggingIn = true;
                 setSupportProgressBarIndeterminateVisibility(true);
-                invalidateOptionsMenu();
-
                 String oauth2_code = data.getExtras().getString("oauth2_code");
                 CanvasPostOAuthCodeRequest req = new CanvasPostOAuthCodeRequest(oauth2_code);
                 spiceManager.execute(req, new CanvasPostOAuthCodeRequestListener());
+                invalidateOptionsMenu();
             } else if (resultCode == RESULT_CANCELED) {
                 // User cancelled
                 message.setText("Login cancelled");
@@ -558,14 +554,14 @@ public class UTilitiesActivity extends SherlockActivity {
 
         @Override
         public void onRequestSuccess(final OAuthResponse result) {
-            settings.edit().putString("canvas_auth_token", result.access_token).apply();
+            settings.edit().putString(CANVAS_AUTH_COOKIE_KEY, result.access_token).apply();
             login();
         }
     }
 
     public void canvasLoginFlow() {
         // check if we've got a Canvas token
-        if (settings.getString("canvas_auth_token", "").equals("")) {
+        if (settings.getString(CANVAS_AUTH_COOKIE_KEY, "").equals("")) {
             Intent login_intent = new Intent(UTilitiesActivity.this, LoginActivity.class);
             login_intent.putExtra("activity", UTilitiesActivity.this.getComponentName()
                     .getClassName());

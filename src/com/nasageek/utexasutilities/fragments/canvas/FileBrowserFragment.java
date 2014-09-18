@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.nasageek.utexasutilities.AttachmentDownloadService;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.adapters.FileAdapter;
 import com.nasageek.utexasutilities.fragments.BaseSpiceListFragment;
@@ -72,8 +73,9 @@ public class FileBrowserFragment extends BaseSpiceListFragment implements OnPane
         courseCode = getArguments().getString("courseCode");
         setupActionBar();
 
-        canvasFilesRequest = new CanvasFilesRequest(
-                ConnectionHelper.getCanvasAuthCookie(getActivity()), courseId);
+        String canvasAuthToken = ((UTilitiesApplication) getActivity().getApplication())
+                .getCanvasAuthCookieVal();
+        canvasFilesRequest = new CanvasFilesRequest(canvasAuthToken, courseId);
         getSpiceManager().execute(canvasFilesRequest, courseId + "files",
                 DurationInMillis.ONE_MINUTE * 5, new CanvasFilesRequestListener());
     }

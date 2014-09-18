@@ -1,8 +1,6 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import com.google.android.gms.internal.is;
-
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -22,7 +20,6 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.UTilitiesApplication;
@@ -31,7 +28,11 @@ import com.nasageek.utexasutilities.retrofit.Canvas;
 
 import java.io.IOException;
 
-import static com.nasageek.utexasutilities.UTilitiesApplication.*;
+
+import static com.nasageek.utexasutilities.UTilitiesApplication.BB_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.CANVAS_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 public class Preferences extends SherlockPreferenceActivity {
 
@@ -166,18 +167,20 @@ public class Preferences extends SherlockPreferenceActivity {
 
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                if (preference.getSharedPreferences().contains("canvas_auth_token")) {
-                    RestAdapter ra = new RestAdapter.Builder().setServer(
-                            "https://utexas.instructure.com").build();
+                if (preference.getSharedPreferences().contains(CANVAS_AUTH_COOKIE_KEY)) {
+                    final UTilitiesApplication mApp = (UTilitiesApplication) getApplication();
+                    RestAdapter ra = new RestAdapter.Builder()
+                            .setEndpoint("https://utexas.instructure.com")
+                            .build();
                     Canvas canvas = ra.create(Canvas.class);
-                    String auth = ConnectionHelper.getCanvasAuthCookie(Preferences.this);
+                    String auth = mApp.getCanvasAuthCookieVal();
                     canvas.deauthorize(auth, new Callback<Object>() {
 
                         @Override
                         public void success(Object arg0, Response arg1) {
                             Toast.makeText(Preferences.this, "UTilities Canvas access revoked",
                                     Toast.LENGTH_SHORT).show();
-                            ConnectionHelper.logout(Preferences.this);
+                            mApp.logoutAll();
                         }
 
                         @Override
@@ -185,10 +188,10 @@ public class Preferences extends SherlockPreferenceActivity {
                             Toast.makeText(Preferences.this,
                                     "Could not deauthorize Canvas, but deleted local token",
                                     Toast.LENGTH_SHORT).show();
-                            ConnectionHelper.logout(Preferences.this);
+                            ((UTilitiesApplication) getApplication()).logoutAll();
                         }
                     });
-                    ConnectionHelper.resetCanvasAuthToken(Preferences.this);
+                    mApp.getAuthCookie(CANVAS_AUTH_COOKIE_KEY).logout();
                 } else {
                     Toast.makeText(Preferences.this, "UTilities is not authorized for Canvas",
                             Toast.LENGTH_SHORT).show();
