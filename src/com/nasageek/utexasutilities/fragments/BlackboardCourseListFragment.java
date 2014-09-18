@@ -180,7 +180,8 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
         public void onRequestSuccess(final CanvasCourse.List result) {
             int i = 0;
 
-            Collections.reverse(result);
+            // TODO: sort the result in reverse chronological order
+            //Collections.reverse(result);
             // classSectionList guaranteed to be populated, this supposes the
             // two lists are ordered the same
             // in this case most recent to least
