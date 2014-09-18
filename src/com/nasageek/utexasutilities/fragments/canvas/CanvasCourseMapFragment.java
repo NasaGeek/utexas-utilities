@@ -10,7 +10,7 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.ActionBar;
 import com.mapsaurus.paneslayout.FragmentLauncher;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
+import com.nasageek.utexasutilities.activities.CoursesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.fragments.BaseSpiceListFragment;
 
 public class CanvasCourseMapFragment extends BaseSpiceListFragment implements

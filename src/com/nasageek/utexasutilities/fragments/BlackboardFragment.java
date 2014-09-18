@@ -1,7 +1,7 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
+import com.nasageek.utexasutilities.activities.CoursesActivity.OnPanesScrolledListener;
 
 public abstract class BlackboardFragment extends BaseSpiceFragment implements
         OnPanesScrolledListener {

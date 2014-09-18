@@ -15,7 +15,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.Utility;
-import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
+import com.nasageek.utexasutilities.activities.CoursesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
 import com.viewpagerindicator.TabPageIndicator;
 

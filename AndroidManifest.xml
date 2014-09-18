@@ -60,7 +60,7 @@
             android:name=".activities.DataUsageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" >
         </activity>
-        <activity android:name=".activities.BlackboardPanesActivity" >
+        <activity android:name=".activities.CoursesActivity" >
         </activity>
         <activity
             android:name=".activities.AboutMeActivity"

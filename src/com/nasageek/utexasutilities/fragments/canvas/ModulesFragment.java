@@ -9,7 +9,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.nasageek.utexasutilities.CanvasRequestListener;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.UTilitiesApplication;
-import com.nasageek.utexasutilities.activities.BlackboardPanesActivity.OnPanesScrolledListener;
+import com.nasageek.utexasutilities.activities.CoursesActivity.OnPanesScrolledListener;
 import com.nasageek.utexasutilities.adapters.ModuleAdapter;
 import com.nasageek.utexasutilities.fragments.BaseSpiceListFragment;
 import com.nasageek.utexasutilities.model.canvas.Module;

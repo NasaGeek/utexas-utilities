@@ -14,7 +14,7 @@ import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.fragments.BlackboardExternalItemFragment;
 import com.nasageek.utexasutilities.fragments.BlackboardPagerFragment;
 
-public class BlackboardPanesActivity extends PanesActivity implements OnIndexChangedListener {
+public class CoursesActivity extends PanesActivity implements OnIndexChangedListener {
     private ActionBar actionbar;
     private PanesLayout panes;
     private int lastCompleteIndex = 0;
@@ -24,7 +24,7 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
         super.onCreate(savedInstanceState);
 
         actionbar = getSupportActionBar();
-        actionbar.setTitle("Blackboard");
+        actionbar.setTitle("Courses");
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         if (getResources().getBoolean(com.mapsaurus.paneslayout.R.bool.largeScreen)) {

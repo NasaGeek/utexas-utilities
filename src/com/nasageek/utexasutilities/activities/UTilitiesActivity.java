@@ -132,7 +132,7 @@ public class UTilitiesActivity extends SherlockActivity {
         final Intent map = new Intent(this, CampusMapActivity.class);
         final Intent data = new Intent(this, DataUsageActivity.class);
         final Intent menu = new Intent(this, MenuActivity.class);
-        final Intent blackboard = new Intent(this, BlackboardPanesActivity.class);
+        final Intent blackboard = new Intent(this, CoursesActivity.class);
 
         // simple struct-like class to help handle related data
         class DashboardButtonData {
