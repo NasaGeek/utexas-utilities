@@ -554,7 +554,8 @@ public class UTilitiesActivity extends SherlockActivity {
 
         @Override
         public void onRequestSuccess(final OAuthResponse result) {
-            settings.edit().putString(CANVAS_AUTH_COOKIE_KEY, result.access_token).apply();
+            settings.edit().putString(CANVAS_AUTH_COOKIE_KEY, "Bearer " + result.access_token)
+                    .apply();
             login();
         }
     }
