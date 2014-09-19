@@ -94,7 +94,7 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
         String score = "-";
         String comment = "";// "No comments"; <-- will put in the future,
                             // comments broken atm
-        if (assignment.submission != null) {
+        if (assignment.submission != null && assignment.submission.score != null) {
             score = assignment.submission.score;
             if (assignment.submission.submission_comments != null
                     && assignment.submission.submission_comments.comment != null) {
