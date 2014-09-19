@@ -72,7 +72,7 @@ public class ActivityStreamFragment extends BaseSpiceListFragment implements
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            Toast.makeText(getSherlockActivity(), "failure", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "failure", Toast.LENGTH_SHORT).show();
         }
 
         @Override

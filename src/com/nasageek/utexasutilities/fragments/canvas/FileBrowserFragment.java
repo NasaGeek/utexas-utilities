@@ -107,7 +107,7 @@ public class FileBrowserFragment extends BaseSpiceListFragment implements OnPane
                         } else if (Environment.getExternalStorageState().equals(
                                 Environment.MEDIA_MOUNTED)
                                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                            final DownloadManager manager = (DownloadManager) getSherlockActivity()
+                            final DownloadManager manager = (DownloadManager) getActivity()
                                     .getSystemService(Context.DOWNLOAD_SERVICE);
 
                             onNotificationClick = new BroadcastReceiver() {
@@ -149,7 +149,7 @@ public class FileBrowserFragment extends BaseSpiceListFragment implements OnPane
                                     }
                                 }
                             };
-                            getSherlockActivity().registerReceiver(onNotificationClick,
+                            getActivity().registerReceiver(onNotificationClick,
                                     new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
 
                             Uri uri = Uri.parse(Uri.decode(item.url));
@@ -175,20 +175,19 @@ public class FileBrowserFragment extends BaseSpiceListFragment implements OnPane
                             } catch (IllegalArgumentException iae) {
                                 // fallback for people with messed up Downloads
                                 // provider
-                                Intent downloadAttachment = new Intent(getSherlockActivity(),
+                                Intent downloadAttachment = new Intent(getActivity(),
                                         AttachmentDownloadService.class);
                                 downloadAttachment.putExtra("fileName", item.display_name);
                                 downloadAttachment.putExtra("url", item.url);
                                 downloadAttachment.putExtra("service", "canvas");
-                                getSherlockActivity().startService(downloadAttachment);
+                                getActivity().startService(downloadAttachment);
                             }
                             Toast.makeText(
-                                    getSherlockActivity(),
+                                    getActivity(),
                                     "Download started, item should appear in the \"Download\" folder on your external storage.",
                                     Toast.LENGTH_LONG).show();
                         } else {
-                            AlertDialog.Builder build = new AlertDialog.Builder(
-                                    getSherlockActivity());
+                            AlertDialog.Builder build = new AlertDialog.Builder(getActivity());
                             build.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -229,7 +228,7 @@ public class FileBrowserFragment extends BaseSpiceListFragment implements OnPane
             // because there are no files,
             // or it is a specific setting activated by the instructor.
             if (((RetrofitError) spiceException.getCause()).getResponse().getStatus() == 401) {
-                Toast.makeText(getSherlockActivity(), "No files available", Toast.LENGTH_SHORT)
+                Toast.makeText(getActivity(), "No files available", Toast.LENGTH_SHORT)
                         .show();
                 setListAdapter(new FileAdapter(getActivity(), R.layout.file_view,
                         new ArrayList<File>()));

@@ -13,7 +13,7 @@ public class BaseSpiceListFragment extends SherlockListFragment {
     @Override
     public void onStart() {
         super.onStart();
-        spiceManager.start(getSherlockActivity());
+        spiceManager.start(getActivity());
     }
 
     @Override

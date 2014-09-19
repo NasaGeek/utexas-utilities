@@ -82,7 +82,7 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
     public void onListItemClick(ListView l, View v, int position, long id) {
         Assignment assignment = (Assignment) l.getAdapter().getItem(position);
 
-        Dialog dlg = new Dialog(getSherlockActivity());
+        Dialog dlg = new Dialog(getActivity());
         dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlg.setContentView(R.layout.grade_info_dialog);
         dlg.setTitle("Assignment Info");
@@ -114,7 +114,7 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            Toast.makeText(getSherlockActivity(), "failure", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "failure", Toast.LENGTH_SHORT).show();
         }
 
         @Override
