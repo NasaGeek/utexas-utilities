@@ -9,7 +9,7 @@ public class Assignment implements Serializable {
     private static final long serialVersionUID = 1L;
     private String id;
     public String name;
-    private String description;
+    public String description;
     private String due_at; // possibly null
     private String course_id;
     private String html_url;

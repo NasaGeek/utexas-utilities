@@ -1,10 +1,10 @@
 
 package com.nasageek.utexasutilities.fragments.canvas;
 
-import java.util.List;
-
 import android.app.Dialog;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.View;
 import android.view.Window;
 import android.widget.ListView;
@@ -23,6 +23,8 @@ import com.nasageek.utexasutilities.requests.CanvasAssignmentsRequest;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+
+import java.util.List;
 
 public class AssignmentsFragment extends BaseSpiceListFragment implements OnPanesScrolledListener {
 
@@ -89,25 +91,37 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
 
         TextView nameview = (TextView) dlg.findViewById(R.id.grade_info_name);
         TextView scoreview = (TextView) dlg.findViewById(R.id.grade_info_value);
-        TextView commentview = (TextView) dlg.findViewById(R.id.grade_info_comment);
+        TextView descriptionview = (TextView) dlg.findViewById(R.id.grade_info_comment);
 
         String score = "-";
-        String comment = "";// "No comments"; <-- will put in the future,
-                            // comments broken atm
+        CharSequence description = "No description";
+        if (assignment.description != null) {
+            description = trim(Html.fromHtml(assignment.description));
+        }
         if (assignment.submission != null && assignment.submission.score != null) {
             score = assignment.submission.score;
-            if (assignment.submission.submission_comments != null
-                    && assignment.submission.submission_comments.comment != null) {
-                comment = assignment.submission.submission_comments.comment;
-            }
         }
         nameview.setText(assignment.name);
         scoreview.setText(score + "/" + assignment.points_possible);
-        commentview.setText(comment);
+        descriptionview.setText(description);
 
         dlg.setCanceledOnTouchOutside(true);
         dlg.show();
         // TODO: DialogFragment or showDialog
+    }
+
+    private CharSequence trim(CharSequence s) {
+        int start = 0;
+        int end = s.length();
+        while (start < end && Character.isWhitespace(s.charAt(start))) {
+            start++;
+        }
+
+        while (end > start && Character.isWhitespace(s.charAt(end - 1))) {
+            end--;
+        }
+
+        return s.subSequence(start, end);
     }
 
     public final class CanvasAssignmentsRequestListener implements RequestListener<Assignment.List> {

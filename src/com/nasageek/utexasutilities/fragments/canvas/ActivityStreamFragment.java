@@ -78,7 +78,7 @@ public class ActivityStreamFragment extends BaseSpiceListFragment implements
         @Override
         public void onRequestSuccess(final ActivityStreamItem.List result) {
             Log.d("ACTSTREAM", result + "");
-            setListAdapter(new ActivityStreamAdapter(getActivity(), R.layout.grade_item_view,
+            setListAdapter(new ActivityStreamAdapter(getActivity(), R.layout.announcement_item_view,
                     result));
         }
     }
