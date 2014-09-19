@@ -127,6 +127,7 @@ public class BBCourse extends Course implements Parcelable, Serializable {
             // will fail if unique start is less than 6 characters from the end
             // of the string.
             try {
+                // TODO: check validity of this with regex after merge
                 super.course_code = fullcourseid.substring(fullcourseid.indexOf(unique) + 6)
                         .replaceAll("_", " ");
                 courseIdAvailable = true;

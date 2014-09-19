@@ -178,23 +178,40 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
 
         @Override
         public void onRequestSuccess(final CanvasCourse.List result) {
-            int i = 0;
+            classList.addAll(result);
+            Collections.sort(classList);
 
-            // TODO: sort the result in reverse chronological order
-            //Collections.reverse(result);
-            // classSectionList guaranteed to be populated, this supposes the
-            // two lists are ordered the same
-            // in this case most recent to least
-            for (int j = 0; j < classSectionList.size(); j++) {
-                while (i < result.size()
-                        && result.get(i).getTermName().equals(classSectionList.get(j).first)) {
-                    classSectionList.get(j).second.add(result.get(i));
-                    i++;
+            // section the class list by semester
+            String currentSemester = "";
+            ArrayList<Course> currentSemesterList = null;
+
+            for (int i = 0; i < classList.size(); i++) {
+                // first course always starts a new semester
+                if (i == 0) {
+                    currentSemester = classList.get(i).getTermName();
+                    currentSemesterList = new ArrayList<>();
+                    currentSemesterList.add(classList.get(i));
                 }
-                if (j == classSectionList.size() - 1) {
-                    classSectionList.get(j).second.addAll(result.subList(i, result.size()));
+                // hit a new semester, finalize current semester and init the new one
+                else if (!classList.get(i).getTermName().equals(currentSemester)) {
+                    classSectionList.add(new MyPair<String, List<Course>>(currentSemester,
+                            currentSemesterList));
+
+                    currentSemester = classList.get(i).getTermName();
+                    currentSemesterList = new ArrayList<>();
+                    currentSemesterList.add(classList.get(i));
+                }
+                // otherwise just add to the current semester
+                else {
+                    currentSemesterList.add(classList.get(i));
+                }
+                // add final semester once we're through
+                if (i == classList.size() - 1) {
+                    classSectionList.add(new MyPair<String, List<Course>>(currentSemester,
+                            currentSemesterList));
                 }
             }
+
             classAdapter.notifyDataSetChanged();
             bb_pb_ll.setVisibility(View.GONE);
             bbell.setVisibility(View.GONE);
@@ -202,8 +219,8 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
         }
     }
 
-    private class fetchClassesTask extends
-            AsyncTask<Object, Void, ArrayList<MyPair<String, List<Course>>>> {
+
+    private class fetchClassesTask extends AsyncTask<Object, Void, Void> {
         private OkHttpClient client;
         private String errorMsg;
 
@@ -219,7 +236,7 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
         }
 
         @Override
-        protected ArrayList<MyPair<String, List<Course>>> doInBackground(Object... params) {
+        protected Void doInBackground(Object... params) {
             String reqUrl = BlackboardFragment.BLACKBOARD_DOMAIN
                     + "/webapps/Bb-mobile-BBLEARN/enrollments?course_type=COURSE";
             Request request = new Request.Builder()
@@ -245,52 +262,14 @@ public class BlackboardCourseListFragment extends BaseSpiceFragment {
                 classList.add(new BBCourse(class_matcher.group(2).replace("&amp;", "&"),
                         class_matcher.group(1).replace("&amp;", "&"), class_matcher.group(3)));
             }
-            // section the class list by semester
-            String currentSemester = "";
-            ArrayList<Course> currentSemesterList = null;
-            ArrayList<MyPair<String, List<Course>>> sectionedClassList =
-                    new ArrayList<MyPair<String, List<Course>>>();
-            for (int i = 0; i < classList.size(); i++) {
-                // first course always starts a new semester
-                if (i == 0) {
-                    currentSemester = classList.get(i).getTermName();
-                    currentSemesterList = new ArrayList<Course>();
-                    currentSemesterList.add(classList.get(i));
-                }
-                // hit a new semester, finalize current semester and init the new one
-                else if (!classList.get(i).getTermName().equals(currentSemester)) {
-                    sectionedClassList.add(new MyPair<String, List<Course>>(currentSemester,
-                            currentSemesterList));
-
-                    currentSemester = classList.get(i).getTermName();
-                    currentSemesterList = new ArrayList<Course>();
-                    currentSemesterList.add(classList.get(i));
-                }
-                // otherwise just add to the current semester
-                else {
-                    currentSemesterList.add(classList.get(i));
-                }
-                // add final semester once we're through
-                if (i == classList.size() - 1) {
-                    sectionedClassList.add(new MyPair<String, List<Course>>(currentSemester,
-                            currentSemesterList));
-                }
-            }
-            Collections.reverse(sectionedClassList);
-            return sectionedClassList;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<MyPair<String, List<Course>>> result) {
-            classSectionList.addAll(result);
-            classAdapter.notifyDataSetChanged();
+        protected void onPostExecute(Void result) {
             // TODO: learn to thread properly :(
             getSpiceManager().execute(canvasCourseListRequest, "courses",
                     DurationInMillis.ONE_MINUTE * 5, new CanvasCourseListRequestListener());
-
-            bb_pb_ll.setVisibility(View.GONE);
-            bbell.setVisibility(View.GONE);
-            bblv.setVisibility(View.VISIBLE);
         }
 
         @Override
