@@ -1,6 +1,14 @@
 
 package com.nasageek.utexasutilities.retrofit;
 
+import com.nasageek.utexasutilities.model.canvas.ActivityStreamItem;
+import com.nasageek.utexasutilities.model.canvas.Assignment;
+import com.nasageek.utexasutilities.model.canvas.CanvasCourse;
+import com.nasageek.utexasutilities.model.canvas.File;
+import com.nasageek.utexasutilities.model.canvas.Folder;
+import com.nasageek.utexasutilities.model.canvas.Module;
+import com.nasageek.utexasutilities.model.canvas.OAuthResponse;
+
 import retrofit.Callback;
 import retrofit.http.DELETE;
 import retrofit.http.Field;
@@ -10,21 +18,13 @@ import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.Path;
 
-import com.nasageek.utexasutilities.model.canvas.ActivityStreamItem;
-import com.nasageek.utexasutilities.model.canvas.Assignment;
-import com.nasageek.utexasutilities.model.canvas.CanvasCourse;
-import com.nasageek.utexasutilities.model.canvas.File;
-import com.nasageek.utexasutilities.model.canvas.Folder;
-import com.nasageek.utexasutilities.model.canvas.Module;
-import com.nasageek.utexasutilities.model.canvas.OAuthResponse;
-
 public interface Canvas {
 
     //@formatter:off
 
     // hardcoded access token for chris
     // 12~9LxMuYQfyNAM4qI3e9mdzxq7AkRTfwpgnX9D1ge5DUx3oaNcapoMwmDvibDXNkH9
-    @GET("/api/v1/courses?include[]=term")
+    @GET("/api/v1/courses?include[]=term&state[]=available&state[]=completed")
     CanvasCourse.List courseList(
         @Header("Authorization") String canvas_auth_token);
 
