@@ -198,3 +198,7 @@ Update bus routes and stops
 Fix bug causing Blackboard classes to sometimes show in the wrong semester
 Rewrite all login/networking code to use OkHttp
 
+Versioncode 39 - 2.0-beta1
+
+Initial Canvas support
+

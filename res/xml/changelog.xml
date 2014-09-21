@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="2.0-beta1" versioncode="39">
+        <change>Initial Canvas support</change>
+    </release>
     <release version="1.99.6" versioncode="33">
         <change>UTLogin support</change>
         <change>Update campus buildings</change>
