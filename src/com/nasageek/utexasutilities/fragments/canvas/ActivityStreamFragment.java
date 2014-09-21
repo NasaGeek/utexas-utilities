@@ -1,13 +1,9 @@
 
 package com.nasageek.utexasutilities.fragments.canvas;
 
-import java.util.List;
-
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -23,6 +19,9 @@ import com.nasageek.utexasutilities.requests.CanvasActivityStreamRequest;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ActivityStreamFragment extends BaseSpiceListFragment implements
         OnPanesScrolledListener {
@@ -46,8 +45,10 @@ public class ActivityStreamFragment extends BaseSpiceListFragment implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_canvas_list, null);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setEmptyText("No announcements available");
+        ((TextView) getListView().getEmptyView()).setTextSize(20);
     }
 
     @Override
@@ -77,9 +78,14 @@ public class ActivityStreamFragment extends BaseSpiceListFragment implements
 
         @Override
         public void onRequestSuccess(final ActivityStreamItem.List result) {
-            Log.d("ACTSTREAM", result + "");
+            List<ActivityStreamItem> filteredResult = new ArrayList<>();
+            for (ActivityStreamItem item : result) {
+                if ("Announcement".equals(item.type)) {
+                    filteredResult.add(item);
+                }
+            }
             setListAdapter(new ActivityStreamAdapter(getActivity(), R.layout.announcement_item_view,
-                    result));
+                    filteredResult));
         }
     }
 
@@ -88,7 +94,7 @@ public class ActivityStreamFragment extends BaseSpiceListFragment implements
         actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE
                 | ActionBar.DISPLAY_SHOW_CUSTOM);
         actionbar.setTitle(courseCode);
-        actionbar.setSubtitle("Activity Stream");
+        actionbar.setSubtitle("Announcements");
     }
 
     @Override

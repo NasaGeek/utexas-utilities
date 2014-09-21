@@ -51,7 +51,7 @@ public class CanvasCourseMapFragment extends BaseSpiceListFragment implements
         setupActionBar();
         setListAdapter(new ArrayAdapter<String>(getActivity(), R.layout.coursemap_item_view,
                 R.id.coursemap_item_name, new String[] {
-                        "Activity Stream", "Assignments", "Files", "Modules"
+                        "Announcements", "Assignments", "Files", "Modules"
                 }));
 
         // canvasAssignmentsRequest = new CanvasAssignmentsRequest(course_id);
@@ -64,7 +64,7 @@ public class CanvasCourseMapFragment extends BaseSpiceListFragment implements
             launch(AssignmentsFragment.newInstance(courseId, courseName, courseCode));
         } else if (feature.equals("Files")) {
             launch(FileBrowserFragment.newInstance(courseId, courseName, courseCode));
-        } else if (feature.equals("Activity Stream")) {
+        } else if (feature.equals("Announcements")) {
             launch(ActivityStreamFragment.newInstance(courseId, courseName, courseCode));
         } else if (feature.equals("Modules")) {
             launch(ModulesFragment.newInstance(courseId, courseName, courseCode));
