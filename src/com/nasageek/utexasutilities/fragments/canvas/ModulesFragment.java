@@ -60,7 +60,7 @@ public class ModulesFragment extends BaseSpiceListFragment implements OnPanesScr
         canvasModulesRequest = new CanvasModulesRequest(canvasAuthToken, courseId);
         getSpiceManager().execute(canvasModulesRequest, courseId + "modules",
                 DurationInMillis.ONE_MINUTE * 5,
-                new CanvasRequestListener<Module.List>(this, mAdapter, mItems, "No modules"));
+                new CanvasRequestListener<Module.List>(this, mAdapter, mItems));
     }
 
     @Override

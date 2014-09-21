@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -57,6 +58,8 @@ public class FileBrowserFragment extends BaseSpiceListFragment implements OnPane
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setEmptyText("No files available");
+        ((TextView) getListView().getEmptyView()).setTextSize(20);
         getListView().setBackgroundResource(R.drawable.background_holo_light);
         setupActionBar();
     }
@@ -224,18 +227,14 @@ public class FileBrowserFragment extends BaseSpiceListFragment implements OnPane
             // because there are no files,
             // or it is a specific setting activated by the instructor.
             if (((RetrofitError) spiceException.getCause()).getResponse().getStatus() == 401) {
-                Toast.makeText(getActivity(), "No files available", Toast.LENGTH_SHORT)
-                        .show();
                 setListAdapter(new FileAdapter(getActivity(), R.layout.file_view,
                         new ArrayList<File>()));
-                setEmptyText("No files available/Not authorized");
             }
         }
 
         @Override
         public void onRequestSuccess(final File.List result) {
             setListAdapter(new FileAdapter(getActivity(), R.layout.file_view, result));
-            setEmptyText("No files available/Not authorized");
         }
     }
 

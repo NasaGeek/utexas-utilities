@@ -4,7 +4,6 @@ package com.nasageek.utexasutilities.fragments.canvas;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.Spanned;
 import android.view.View;
 import android.view.Window;
 import android.widget.ListView;
@@ -49,6 +48,8 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setEmptyText("No assignments available");
+        ((TextView) getListView().getEmptyView()).setTextSize(20);
         getListView().setBackgroundResource(R.drawable.background_holo_light);
         setupActionBar();
     }
@@ -74,8 +75,7 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
                         canvasAssignmentsRequest,
                         courseId + "assignments",
                         DurationInMillis.ONE_MINUTE * 5,
-                        new CanvasRequestListener<Assignment.List>(this, mAdapter, mItems,
-                                "No assignments"));
+                        new CanvasRequestListener<Assignment.List>(this, mAdapter, mItems));
     }
 
     @Override
