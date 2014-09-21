@@ -50,8 +50,6 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getListView().setBackgroundResource(R.drawable.background_holo_light);
-        // this should be free... but it ain't
-        setListShown(false);
         setupActionBar();
     }
 
