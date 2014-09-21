@@ -51,7 +51,7 @@ public class CanvasCourseMapFragment extends BaseSpiceListFragment implements
         courseCode = args.getString("courseCode");
         setListAdapter(new ArrayAdapter<String>(getActivity(), R.layout.coursemap_item_view,
                 R.id.coursemap_item_name, new String[] {
-                        "Announcements", "Assignments", "Files", "Modules"
+                        "Announcements", "Assignments", "Files"//, "Modules"
                 }));
 
         // canvasAssignmentsRequest = new CanvasAssignmentsRequest(course_id);
