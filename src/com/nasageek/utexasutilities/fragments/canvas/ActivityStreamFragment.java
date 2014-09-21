@@ -49,6 +49,7 @@ public class ActivityStreamFragment extends BaseSpiceListFragment implements
         super.onViewCreated(view, savedInstanceState);
         setEmptyText("No announcements available");
         ((TextView) getListView().getEmptyView()).setTextSize(20);
+        setupActionBar();
     }
 
     @Override
@@ -59,7 +60,6 @@ public class ActivityStreamFragment extends BaseSpiceListFragment implements
         courseId = getArguments().getString("courseID");
         courseName = getArguments().getString("courseName");
         courseCode = getArguments().getString("courseCode");
-        setupActionBar();
 
         String canvasAuthToken = ((UTilitiesApplication) getActivity().getApplication())
                 .getCanvasAuthCookieVal();

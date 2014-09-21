@@ -42,6 +42,7 @@ public class ModulesFragment extends BaseSpiceListFragment implements OnPanesScr
         if (getListAdapter() == null) {
             setListShown(false);
         }
+        setupActionBar();
     }
 
     @Override
@@ -52,7 +53,6 @@ public class ModulesFragment extends BaseSpiceListFragment implements OnPanesScr
         courseId = getArguments().getString("courseID");
         courseName = getArguments().getString("courseName");
         courseCode = getArguments().getString("courseCode");
-        setupActionBar();
 
         Module.List mItems = new Module.List();
 

@@ -52,6 +52,7 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
         getListView().setBackgroundResource(R.drawable.background_holo_light);
         // this should be free... but it ain't
         setListShown(false);
+        setupActionBar();
     }
 
     @Override
@@ -62,7 +63,6 @@ public class AssignmentsFragment extends BaseSpiceListFragment implements OnPane
         courseId = getArguments().getString("courseID");
         courseName = getArguments().getString("courseName");
         courseCode = getArguments().getString("courseCode");
-        setupActionBar();
 
         Assignment.List mItems = new Assignment.List();
         AssignmentAdapter mAdapter = new AssignmentAdapter(getActivity(), R.layout.grade_item_view,

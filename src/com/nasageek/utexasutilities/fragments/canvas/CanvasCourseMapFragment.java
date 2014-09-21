@@ -38,6 +38,7 @@ public class CanvasCourseMapFragment extends BaseSpiceListFragment implements
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getListView().setBackgroundResource(R.drawable.background_holo_light);
+        setupActionBar();
     }
 
     @Override
@@ -48,7 +49,6 @@ public class CanvasCourseMapFragment extends BaseSpiceListFragment implements
         courseId = args.getString("courseID");
         courseName = args.getString("courseName");
         courseCode = args.getString("courseCode");
-        setupActionBar();
         setListAdapter(new ArrayAdapter<String>(getActivity(), R.layout.coursemap_item_view,
                 R.id.coursemap_item_name, new String[] {
                         "Announcements", "Assignments", "Files", "Modules"

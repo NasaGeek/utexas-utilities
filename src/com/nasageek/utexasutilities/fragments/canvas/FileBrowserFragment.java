@@ -62,6 +62,7 @@ public class FileBrowserFragment extends BaseSpiceListFragment implements OnPane
         if (getListAdapter() == null) {
             setListShown(false);
         }
+        setupActionBar();
     }
 
     @Override
@@ -71,7 +72,6 @@ public class FileBrowserFragment extends BaseSpiceListFragment implements OnPane
         courseId = getArguments().getString("courseID");
         courseName = getArguments().getString("courseName");
         courseCode = getArguments().getString("courseCode");
-        setupActionBar();
 
         String canvasAuthToken = ((UTilitiesApplication) getActivity().getApplication())
                 .getCanvasAuthCookieVal();
