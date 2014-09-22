@@ -46,17 +46,6 @@ public class BBCourse extends Course implements Parcelable, Serializable {
 
     // TODO: move auto-formatting into a separate method?
     public BBCourse(String name, String id, String fullcourseid) {
-        // name is now blank, and the Course ID is mysteriously absent :( - all
-        // as of 8/29/2012
-        // oh ho ho! It was fixed, how wonderful. Ignore commented stuff below
-        // checks to see if it is what is now a legitimate courseid
-        // year (2 digits) followed by semester (in caps) followed by name
-        // followed by unique (digits in parentheses)
-        // if(courseid.matches("^\\d\\d[A-Z]{1,2} .*?(\\d+?)$"))
-        // Log.d("BBClass check", "Class format is good");
-
-        // TODO: check for longform in here somewhere and don't format if it is
-        // set
 
         if (!fullcourseid.matches("^\\d{4}_[a-z]+?_\\d{5}_[A-Za-z]+?_\\w+$")) {
             Log.d("BBClass check", "Course ID malformed: " + fullcourseid);
@@ -65,17 +54,8 @@ public class BBCourse extends Course implements Parcelable, Serializable {
             Log.d("BBClass check", "Course Name malformed: " + name);
         }
 
-        // filter out the year and semester at the beginning and the unique at
-        // the end
-        // year/semester should never fail. If no space, indexOf returns -1 and
-        // you get the whole string
-        // this.name = (name.contains("(") && name.charAt(0) != '(' &&
-        // name.indexOf(" ")+1 <= name.indexOf("(")-1)
-        // ? name.substring(name.indexOf(" ")+1,name.indexOf("(")-1)
-        // : name.substring(name.indexOf(" ")+1);
-
-        // Check if the name has spaces, apparently they don't always have them
-        if (name.indexOf(" ") >= 0) {
+        // names don't always have spaces, be careful!
+        if (name.contains(" ")) {
             // TODO: might try this with a split[0] rather than the substring
             // TODO: this might not trim off Summer semester identifier, check
             // Alex's tablet
@@ -89,17 +69,11 @@ public class BBCourse extends Course implements Parcelable, Serializable {
             this.name = name;
         }
 
-        // Remove anything in parentheses, it's usually all superfluous
+        // remove anything in parentheses, it's usually all superfluous
         this.name = this.name.replaceAll("\\(.*?\\)", "");
-
-        /*
-         * sometimes the name will still contain parentheses, this seems to
-         * largely be caused by a parenthesized semester at the beginning being
-         * filtered out instead of the unique at the end. Filter out remaining
-         * parenthesized stuff. TODO: couldn't I just do a replaceAll with some
-         * regex? Why am I not doing that?
-         */
-        // if(this.name.contains("("))
+        // because the stuff in parentheses is generally at the beginning
+        // or end, it leaves leading/trailing whitespace when removed
+        this.name = this.name.trim();
 
         // the course ID seems to relatively consistently be the last 2 tokens
         // in the full ID, maybe just pull those out

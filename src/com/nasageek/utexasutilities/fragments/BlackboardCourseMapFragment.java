@@ -170,11 +170,11 @@ public class BlackboardCourseMapFragment extends BlackboardFragment {
                     startActivity(exItemLaunch);
                 } else if (linkType.equals("student_gradebook")) {
                     ((FragmentLauncher) act).addFragment(BlackboardCourseMapFragment.this,
-                            BlackboardGradesFragment.newInstance(bbID, courseName, url, false));
+                            BlackboardGradesFragment.newInstance(bbID, courseName, url, false, ""));
                 } else if (linkType.equals("announcements")) {
                     ((FragmentLauncher) act).addFragment(BlackboardCourseMapFragment.this,
                             BlackboardAnnouncementsFragment.newInstance(bbID, courseName, url,
-                                    false));
+                                    false, ""));
                 } else // default to webview
                 {
                     String itemName = "";

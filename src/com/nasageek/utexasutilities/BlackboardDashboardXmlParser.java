@@ -1,7 +1,6 @@
 
 package com.nasageek.utexasutilities;
 
-import android.util.TimingLogger;
 import android.util.Xml;
 
 import com.nasageek.utexasutilities.model.BBCourse;
@@ -11,7 +10,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -24,23 +22,10 @@ import java.util.Locale;
 public class BlackboardDashboardXmlParser {
 
     private HashMap<String, BBCourse> courses;
-    private TimingLogger tl;
     private boolean feedParsed = false;
     // need this so we don't instantiate it every time we make a new FeedItem
     private SimpleDateFormat feedItemDateFormat;
 
-    public List<MyPair<String, List<FeedItem>>> parse(InputStream in)
-            throws XmlPullParserException, IOException {
-        try {
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(in, null);
-            parser.nextTag();
-            return actuallyParse(parser);
-        } finally {
-            in.close();
-        }
-    }
 
     public List<MyPair<String, List<FeedItem>>> parse(Reader in) throws XmlPullParserException,
             IOException {
@@ -62,55 +47,44 @@ public class BlackboardDashboardXmlParser {
      */
     private List<MyPair<String, List<FeedItem>>> actuallyParse(XmlPullParser parser)
             throws XmlPullParserException, IOException {
-        tl = new TimingLogger("Dashboard", "Parser");
-
         List<FeedItem> feeditems = readDashboard(parser);
-
-        tl.addSplit("readDashboard()");
 
         // want to show most recent date at top and ListView's stackFromBottom
         // is broken by AmazingListView
         Collections.reverse(feeditems);
-        tl.addSplit("Collections.reverse()");
-        List<MyPair<String, List<FeedItem>>> categorizedList = new ArrayList<MyPair<String, List<FeedItem>>>();
-        String currentCategory = "";
-        ArrayList<FeedItem> sectionList = null;
+        List<MyPair<String, List<FeedItem>>> categorizedList = new ArrayList<>();
+        String currentDate = "";
+        ArrayList<FeedItem> currentDateList = null;
         DateFormat df = DateFormat.getDateInstance();
         for (int i = 0; i < feeditems.size(); i++) {
+            String formattedDate = df.format(feeditems.get(i).getDate());
+
             // first FeedItem is always in a new category (the first category)
             if (i == 0) {
-                currentCategory = df.format(feeditems.get(i).getDate());
-                sectionList = new ArrayList<FeedItem>();
-                sectionList.add(feeditems.get(i));
+                currentDate = formattedDate;
+                currentDateList = new ArrayList<>();
+                currentDateList.add(feeditems.get(i));
             }
-            // if the current course is not part of the current category or
-            // we're on the last course
-            // weird stuff going on here depending on if we're at the end of the
-            // list
-            else if (!df.format(feeditems.get(i).getDate()).equals(currentCategory)
-                    || i == feeditems.size() - 1) {
-                if (i == feeditems.size() - 1) {
-                    sectionList.add(feeditems.get(i));
-                }
-
-                categorizedList
-                        .add(new MyPair<String, List<FeedItem>>(currentCategory, sectionList));
-
-                currentCategory = df.format(feeditems.get(i).getDate());
-                sectionList = new ArrayList<FeedItem>();
-
-                if (i != feeditems.size() - 1) {
-                    sectionList.add(feeditems.get(i));
-                }
+            // if the current FeedItem is not on the current date or
+            // we're on the last FeedItem
+            else if (!formattedDate.equals(currentDate)) {
+                categorizedList.add(
+                        new MyPair<String, List<FeedItem>>(currentDate, currentDateList));
+                currentDate = formattedDate;
+                currentDateList = new ArrayList<>();
+                currentDateList.add(feeditems.get(i));
             }
-            // otherwise just add to the current category
+            // otherwise just add to the current date
             else {
-                sectionList.add(feeditems.get(i));
+                currentDateList.add(feeditems.get(i));
+            }
+            // add final date at the end
+            if (i == feeditems.size() - 1) {
+                categorizedList.add(
+                        new MyPair<String, List<FeedItem>>(currentDate, currentDateList));
             }
 
         }
-        tl.addSplit("CategorizedList created");
-        // tl.dumpToLog();
         feedParsed = true;
         return categorizedList;
     }
@@ -119,8 +93,8 @@ public class BlackboardDashboardXmlParser {
             IOException {
         feedItemDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
 
-        courses = new HashMap<String, BBCourse>();
-        List<FeedItem> feed = new ArrayList<FeedItem>();
+        courses = new HashMap<>();
+        List<FeedItem> feed = new ArrayList<>();
         parser.require(XmlPullParser.START_TAG, null, "mobileresponse");
         parser.nextTag();
 
@@ -157,8 +131,8 @@ public class BlackboardDashboardXmlParser {
             return null;
         }
         while (parser.next() != XmlPullParser.END_TAG) {
+            // do nothing
         }
-        ;
         return new BBCourse(name, bbid, fullcourseid);
     }
 
@@ -183,8 +157,8 @@ public class BlackboardDashboardXmlParser {
         // String id = parser.getAttributeValue(null, "contentid");
         // TODO sourceid?
         while (parser.next() != XmlPullParser.END_TAG) {
+            // do nothing
         }
-        ;
         return new FeedItem(type, message, contentid, courseid, sourcetype, date,
                 feedItemDateFormat);
     }

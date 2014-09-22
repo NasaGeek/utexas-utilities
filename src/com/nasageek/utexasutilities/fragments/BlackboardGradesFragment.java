@@ -48,6 +48,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
     private TextView getv;
 
     private String courseID, courseName, viewUri;
+    private String selection;
     private OkHttpClient httpclient;
     private fetchGradesTask fetch;
 
@@ -58,7 +59,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
     }
 
     public static BlackboardGradesFragment newInstance(String courseID, String courseName,
-            String viewUri, boolean fromDashboard) {
+            String viewUri, boolean fromDashboard, String selection) {
         BlackboardGradesFragment bgf = new BlackboardGradesFragment();
 
         Bundle args = new Bundle();
@@ -66,6 +67,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
         args.putString("courseName", courseName);
         args.putString("viewUri", viewUri);
         args.putBoolean("fromDashboard", fromDashboard);
+        args.putString("selection", selection);
         bgf.setArguments(args);
 
         return bgf;
@@ -78,6 +80,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
         courseID = getArguments().getString("courseID");
         courseName = getArguments().getString("courseName");
         viewUri = getArguments().getString("viewUri");
+        selection = getArguments().getString("selection");
         setHasOptionsMenu(true);
 
         grades = new ArrayList<BBGrade>();
@@ -240,6 +243,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
     private class fetchGradesTask extends AsyncTask<Object, Void, ArrayList<BBGrade>> {
         private OkHttpClient client;
         private String errorMsg;
+        private int selectIndex = 0;
 
         public fetchGradesTask(OkHttpClient client) {
             this.client = client;
@@ -295,6 +299,13 @@ public class BlackboardGradesFragment extends BlackboardFragment {
                             : "No comments"));
                 }
             }
+            if (!selection.equals("")) {
+                for (int i = 0; i < data.size(); i++) {
+                    if (data.get(i).getName().equals(selection)) {
+                        selectIndex = i;
+                    }
+                }
+            }
             return data;
         }
 
@@ -303,6 +314,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
             if (!this.isCancelled()) {
                 grades.addAll(result);
                 gradeAdapter.notifyDataSetChanged();
+                glv.setSelection(selectIndex);
 
                 g_pb_ll.setVisibility(View.GONE);
                 gell.setVisibility(View.GONE);
@@ -330,4 +342,3 @@ public class BlackboardGradesFragment extends BlackboardFragment {
         return R.integer.blackboard_content_width_percentage;
     }
 }
-    
