@@ -11,8 +11,6 @@ public class Term implements Parcelable, Serializable {
     private static final long serialVersionUID = 1L;
     private String id;
     private String name;
-    private String start_at;
-    private String end_at;
 
     public static Parcelable.Creator<Term> CREATOR = new Parcelable.Creator<Term>() {
 
@@ -30,8 +28,6 @@ public class Term implements Parcelable, Serializable {
     public Term(Parcel in) {
         id = in.readString();
         name = in.readString();
-        start_at = in.readString();
-        end_at = in.readString();
     }
 
     public String getName() {
@@ -47,7 +43,5 @@ public class Term implements Parcelable, Serializable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(id);
         dest.writeString(name);
-        dest.writeString(start_at);
-        dest.writeString(end_at);
     }
 }
