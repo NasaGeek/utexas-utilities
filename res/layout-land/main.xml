@@ -44,7 +44,7 @@
 			android:layout_height="wrap_content"
 		    android:layout_width="wrap_content"
 			android:layout_centerInParent="true"
-			android:src="@drawable/blackboard_image_button"
+			android:src="@drawable/courses_image_button"
 			android:background="#00000000"
 			/>
 		<ImageView 
