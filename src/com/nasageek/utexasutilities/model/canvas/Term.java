@@ -35,8 +35,7 @@ public class Term implements Parcelable, Serializable {
     }
 
     public String getName() {
-        String[] splitname = name.split(" ");
-        return splitname[1] + " " + splitname[0];
+        return name;
     }
 
     @Override

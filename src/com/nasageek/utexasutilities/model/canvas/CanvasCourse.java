@@ -2,6 +2,9 @@
 package com.nasageek.utexasutilities.model.canvas;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -34,7 +37,7 @@ public class CanvasCourse extends Course implements Parcelable {
         super.name = in.readString();
         super.id = in.readString();
         super.course_code = in.readString();
-        super.start_at = in.readString();
+        super.start_at = new Date(in.readLong());
         super.type = in.readString();
         super.term_name = in.readString();
     }
@@ -45,7 +48,31 @@ public class CanvasCourse extends Course implements Parcelable {
 
     @Override
     public String getTermName() {
-        return term.getName();
+        if (term_name != null) {
+            return term_name;
+        }
+        if (term.getName().matches(TERM_NAME_REGEX)) {
+            String[] splitname = term.getName().split(" ");
+            term_name = splitname[1] + " " + splitname[0];
+        } else if (start_at != null) {
+            // course doesn't have a well-formed term name, let's take our best guess
+            Calendar start = new GregorianCalendar();
+            start.setTime(start_at);
+            String termNameGuess = start.get(Calendar.YEAR) + " ";
+            int month = start.get(Calendar.MONTH);
+            if (month >= Calendar.AUGUST && month <= Calendar.NOVEMBER) {
+                termNameGuess += "Fall";
+            } else if (month >= Calendar.DECEMBER ||
+                    (month >= Calendar.JANUARY && month <= Calendar.APRIL)) {
+                termNameGuess += "Spring";
+            } else {
+                termNameGuess += "Summer";
+            }
+            term_name = termNameGuess;
+        } else {
+            term_name = term.getName();
+        }
+        return term_name;
     }
 
     public static class List extends ArrayList<CanvasCourse> {
@@ -68,7 +95,7 @@ public class CanvasCourse extends Course implements Parcelable {
         dest.writeString(super.name);
         dest.writeString(super.id);
         dest.writeString(super.course_code);
-        dest.writeString(super.start_at);
+        dest.writeLong(super.start_at.getTime());
         dest.writeString(super.type);
         dest.writeString(super.term_name);
         dest.writeParcelable(term, 0);

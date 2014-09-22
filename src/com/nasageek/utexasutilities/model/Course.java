@@ -3,7 +3,10 @@ package com.nasageek.utexasutilities.model;
 
 import android.os.Parcelable;
 
+import com.nasageek.utexasutilities.model.canvas.Term;
+
 import java.io.Serializable;
+import java.util.Date;
 
 public abstract class Course implements Parcelable, Serializable, Comparable<Course> {
 
@@ -11,10 +14,11 @@ public abstract class Course implements Parcelable, Serializable, Comparable<Cou
     protected String id;
     protected String name;
     protected String course_code;
-    protected String start_at;
+    protected Date start_at;
     protected String type;
     protected String term_name;
     private static final String COURSE_CODE_REGEX = "([A-Z] ?){0,3} \\d+[A-Z]?";
+    protected static final String TERM_NAME_REGEX = "(Spring|Fall|Summer) \\d{4}";
 
     public String getCourseCode() {
         return course_code;
@@ -36,6 +40,10 @@ public abstract class Course implements Parcelable, Serializable, Comparable<Cou
         return term_name;
     }
 
+    public boolean isTermNameValid() {
+        return getTermName().matches(TERM_NAME_REGEX);
+    }
+
     /**
      * Sorts courses chronologically first, then by course code (UGS 302, EE 316, etc)
      * @param other Course to compare to
@@ -45,6 +53,13 @@ public abstract class Course implements Parcelable, Serializable, Comparable<Cou
      */
     @Override
     public int compareTo(Course other) {
+        // shove courses with bad term names to the bottom
+        if (!this.isTermNameValid()) {
+            return 1;
+        }
+        if (!other.isTermNameValid()) {
+            return -1;
+        }
         String rTermName = this.getTermName();
         String lTermName = other.getTermName();
         Integer lyear = Integer.parseInt(lTermName.split(" ")[0]);
