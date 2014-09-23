@@ -43,6 +43,7 @@ public class ActivityStreamAdapter extends ArrayAdapter<ActivityStreamItem> {
 
         if (convertView == null) {
             view = mInflater.inflate(mResource, parent, false);
+            view.setOnClickListener(null);
         } else {
             view = convertView;
         }
