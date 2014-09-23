@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="2.0-beta2" versioncode="40">
+        <change>New icons, courtesy of Kevin Lin</change>
+        <change>Fix crash when loading course list</change>
+    </release>
     <release version="2.0-beta1" versioncode="39">
         <change>Initial Canvas support</change>
     </release>
