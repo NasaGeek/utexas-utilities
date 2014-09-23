@@ -1,16 +1,17 @@
 
 package com.nasageek.utexasutilities.model.canvas;
 
-import java.io.Serializable;
-
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.io.Serializable;
 
 public class Term implements Parcelable, Serializable {
 
     private static final long serialVersionUID = 1L;
     private String id;
     private String name;
+    private static final String INTERNAL_TERM_NAME_REGEX = "(Spring|Fall|Summer) \\d{4}";
 
     public static Parcelable.Creator<Term> CREATOR = new Parcelable.Creator<Term>() {
 
@@ -31,6 +32,10 @@ public class Term implements Parcelable, Serializable {
     }
 
     public String getName() {
+        if (name.matches(INTERNAL_TERM_NAME_REGEX)) {
+            String[] splitname = name.split(" ");
+            return splitname[1] + " " + splitname[0];
+        }
         return name;
     }
 

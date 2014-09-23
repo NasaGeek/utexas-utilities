@@ -1,15 +1,15 @@
 
 package com.nasageek.utexasutilities.model.canvas;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.nasageek.utexasutilities.model.Course;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class CanvasCourse extends Course implements Parcelable {
 
@@ -52,8 +52,7 @@ public class CanvasCourse extends Course implements Parcelable {
             return term_name;
         }
         if (term.getName().matches(TERM_NAME_REGEX)) {
-            String[] splitname = term.getName().split(" ");
-            term_name = splitname[1] + " " + splitname[0];
+            term_name = term.getName();
         } else if (start_at != null) {
             // course doesn't have a well-formed term name, let's take our best guess
             Calendar start = new GregorianCalendar();

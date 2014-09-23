@@ -3,8 +3,6 @@ package com.nasageek.utexasutilities.model;
 
 import android.os.Parcelable;
 
-import com.nasageek.utexasutilities.model.canvas.Term;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -18,7 +16,7 @@ public abstract class Course implements Parcelable, Serializable, Comparable<Cou
     protected String type;
     protected String term_name;
     private static final String COURSE_CODE_REGEX = "([A-Z] ?){0,3} \\d+[A-Z]?";
-    protected static final String TERM_NAME_REGEX = "(Spring|Fall|Summer) \\d{4}";
+    protected static final String TERM_NAME_REGEX = "\\d{4} (Spring|Fall|Summer)";
 
     public String getCourseCode() {
         return course_code;
