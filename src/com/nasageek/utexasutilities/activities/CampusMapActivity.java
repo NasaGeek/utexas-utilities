@@ -343,7 +343,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                 }
             }
         }
-        if (buildingIdList.size() > 1) {
+        if (foundCount > 1) {
             mSetCameraToBounds = true;
         }
         if (foundCount != buildingIdList.size()) {
