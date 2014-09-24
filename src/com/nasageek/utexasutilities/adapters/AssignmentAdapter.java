@@ -37,16 +37,10 @@ public class AssignmentAdapter extends ArrayAdapter<Assignment> {
         view.findViewById(R.id.comment_available_img).setVisibility(View.INVISIBLE);
 
         String score = "-";
-        String comment = "";
         // might check grading_type here, too. Need some sample data for
         // letter_grade grade_type
         if (assignment.submission != null && assignment.submission.score != null) {
             score = assignment.submission.score;
-            if (assignment.submission.submission_comments != null
-                    && assignment.submission.submission_comments.comment != null) {
-                comment = assignment.submission.submission_comments.comment;
-                view.findViewById(R.id.comment_available_img).setVisibility(View.VISIBLE);
-            }
         }
 
         ((TextView) view.findViewById(R.id.grade_name)).setText(assignment.name);
