@@ -1,8 +1,6 @@
 
 package com.nasageek.utexasutilities.adapters;
 
-import java.util.List;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +10,8 @@ import android.widget.TextView;
 
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.model.canvas.Assignment;
+
+import java.util.List;
 
 public class AssignmentAdapter extends ArrayAdapter<Assignment> {
 
@@ -40,8 +40,7 @@ public class AssignmentAdapter extends ArrayAdapter<Assignment> {
         String comment = "";
         // might check grading_type here, too. Need some sample data for
         // letter_grade grade_type
-        if (assignment.submission != null && assignment.submission.score != null
-                || assignment.muted) {
+        if (assignment.submission != null && assignment.submission.score != null) {
             score = assignment.submission.score;
             if (assignment.submission.submission_comments != null
                     && assignment.submission.submission_comments.comment != null) {
