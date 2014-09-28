@@ -198,3 +198,9 @@ Update bus routes and stops
 Fix bug causing Blackboard classes to sometimes show in the wrong semester
 Rewrite all login/networking code to use OkHttp
 
+Versioncode 34 - 1.99.7
+
+Update dashboard icons
+Tapping certain items in the Blackboard Dashboard will now seek to those items in their respective lists
+Bug fixes
+
