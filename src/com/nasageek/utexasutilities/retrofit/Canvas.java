@@ -20,20 +20,23 @@ import retrofit.http.Path;
 
 public interface Canvas {
 
+    //TODO : RequestInterceptor for this
+    static final int PER_PAGE = 30;
+
     //@formatter:off
 
     // hardcoded access token for chris
     // 12~9LxMuYQfyNAM4qI3e9mdzxq7AkRTfwpgnX9D1ge5DUx3oaNcapoMwmDvibDXNkH9
-    @GET("/api/v1/courses?include[]=term&state[]=available&state[]=completed")
+    @GET("/api/v1/courses?include[]=term&state[]=available&state[]=completed&per_page=" + PER_PAGE)
     CanvasCourse.List courseList(
         @Header("Authorization") String canvas_auth_token);
 
-    @GET("/api/v1/courses/{course_id}/assignments?include[]=submission")
+    @GET("/api/v1/courses/{course_id}/assignments?include[]=submission&per_page=" + PER_PAGE)
     Assignment.List assignmentsForCourse(
         @Header("Authorization") String canvas_auth_token, 
         @Path("course_id") String course_id);
 
-    @GET("/api/v1/courses/{course_id}/files")
+    @GET("/api/v1/courses/{course_id}/files?per_page=" + PER_PAGE)
     File.List filesForCourse(
         @Header("Authorization") String canvas_auth_token, 
         @Path("course_id") String course_id);
@@ -48,12 +51,12 @@ public interface Canvas {
         @Header("Authorization") String canvas_auth_token, 
         @Path("folder_id") String folder_id);
     
-    @GET("/api/v1/courses/{course_id}/modules?include[]=items")
+    @GET("/api/v1/courses/{course_id}/modules?include[]=items&per_page=" + PER_PAGE)
     Module.List modulesForCourse(
         @Header("Authorization") String canvas_auth_token,
         @Path("course_id") String course_id);
     
-    @GET("/api/v1/courses/{course_id}/activity_stream")
+    @GET("/api/v1/courses/{course_id}/activity_stream?per_page=" + PER_PAGE)
     ActivityStreamItem.List activityStreamForCourse(
         @Header("Authorization") String canvas_auth_token, 
         @Path("course_id") String course_id);
