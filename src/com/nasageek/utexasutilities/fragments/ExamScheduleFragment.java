@@ -310,9 +310,13 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
                 name = examdata[2];
                 date = "";
                 location = "";
-                if (examRequested && !summerSession && examdata.length >= 5) {
-                    date = examdata[3];
-                    location = examdata[4];
+                if (examRequested && !summerSession) {
+                    if (examdata.length >= 4) {
+                        date = examdata[3];
+                    }
+                    if (examdata.length >= 5) {
+                        location = examdata[4];
+                    }
                 }
             } catch (ArrayIndexOutOfBoundsException ex) {
                 ex.printStackTrace();
@@ -359,7 +363,8 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
                 if (elements.length >= 3) { // TODO: check this?
                     if (elements[2].contains("The department")
                             || elements[2]
-                                    .contains("Information on final exams is available for Nine-Week Summer Session(s) only.")) {
+                                    .contains("Information on final exams is available for Nine-Week Summer Session(s) only.")
+                            || elements.length <= 4) {
                         return true;
                     }
                 } else {
