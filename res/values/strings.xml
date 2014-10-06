@@ -184,7 +184,7 @@ Also a big thanks to yukuku for his AmazingListView library (http://code.google.
         <item>Dine In</item>
         <item>Bevo Bucks</item>
     </string-array>
-    <string name="balance_tabs_no_balance">Nothing here.</string>
+    <string name="balance_tabs_no_balance">No recent transactions.</string>
     <string-array name="balance_tabs_value_array">
         <item>0</item>
         <item>1</item>
