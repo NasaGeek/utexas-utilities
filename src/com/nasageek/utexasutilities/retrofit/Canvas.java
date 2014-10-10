@@ -24,7 +24,7 @@ public interface Canvas {
 
     // hardcoded access token for chris
     // 12~9LxMuYQfyNAM4qI3e9mdzxq7AkRTfwpgnX9D1ge5DUx3oaNcapoMwmDvibDXNkH9
-    @GET("/api/v1/courses?include[]=term&state[]=available&state[]=completed")
+    @GET("/api/v1/courses?include[]=term&include[]=sections&state[]=available&state[]=completed")
     CanvasCourse.List courseList(
         @Header("Authorization") String canvas_auth_token);
 
