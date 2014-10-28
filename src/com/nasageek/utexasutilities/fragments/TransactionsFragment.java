@@ -49,6 +49,7 @@ public class TransactionsFragment extends SherlockFragment {
     private ArrayList<Transaction> transactionlist;
     private TransactionAdapter ta;
     private TextView balanceLabelView, balanceView;
+    private View balanceLabelSeparatorView;
     private TextView etv;
     private LinearLayout ell;
 
@@ -88,6 +89,7 @@ public class TransactionsFragment extends SherlockFragment {
         etv = (TextView) vg.findViewById(R.id.tv_failure);
         ell = (LinearLayout) vg.findViewById(R.id.trans_error);
         balanceLabelView = (TextView) vg.findViewById(R.id.balance_label_tv);
+        balanceLabelSeparatorView = vg.findViewById(R.id.balance_label_separator);
         balanceView = (TextView) vg.findViewById(R.id.balance_tv);
 
         /*
@@ -213,6 +215,7 @@ public class TransactionsFragment extends SherlockFragment {
                 tlv.setVisibility(View.GONE);
                 ell.setVisibility(View.GONE);
                 balanceLabelView.setVisibility(View.GONE);
+                balanceLabelSeparatorView.setVisibility(View.GONE);
                 balanceView.setVisibility(View.GONE);
             }
         }
@@ -348,12 +351,17 @@ public class TransactionsFragment extends SherlockFragment {
                     tlv.setSelection(0);
                 }
 
-                balanceView.setText(balance);
+                if (transactionlist.isEmpty()) {
+                    balanceLabelView.setText(getResources().getText(R.string.balance_tabs_no_balance));
+                } else {
+                    balanceView.setText(balance);
+                }
 
                 t_pb_ll.setVisibility(View.GONE);
                 ell.setVisibility(View.GONE);
                 tlv.setVisibility(View.VISIBLE);
                 balanceLabelView.setVisibility(View.VISIBLE);
+                balanceLabelSeparatorView.setVisibility(transactionlist.isEmpty() ? View.GONE : View.VISIBLE);
                 balanceView.setVisibility(View.VISIBLE);
             }
         }
@@ -369,6 +377,7 @@ public class TransactionsFragment extends SherlockFragment {
                     t_pb_ll.setVisibility(View.GONE);
                     tlv.setVisibility(View.GONE);
                     balanceLabelView.setVisibility(View.GONE);
+                    balanceLabelSeparatorView.setVisibility(View.GONE);
                     balanceView.setVisibility(View.GONE);
                     ell.setVisibility(View.VISIBLE);
                 } else { // on later pages we should let them see what's already

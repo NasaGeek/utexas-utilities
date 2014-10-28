@@ -34,7 +34,8 @@
             android:layout_width="90dp"
             android:layout_height="1dp"
             android:layout_gravity="center_horizontal"
-            android:background="#99AAAAAA" />
+            android:background="#99AAAAAA"
+            android:id="@+id/balance_label_separator" />
 
         <TextView
             android:id="@+id/balance_tv"
