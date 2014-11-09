@@ -48,16 +48,15 @@ public class CanvasCourse extends Course implements Parcelable {
 
     @Override
     public String getCourseCode() {
+        return super.getCourseCode();
+    }
+
+    public String getUnique() {
         if (sections == null || sections.length < 1) {
-            return super.getCourseCode();
+            return null;
         }
 
-        String uid = sections[0].getName();
-        if (uid == null) {
-            return super.getCourseCode();
-        }
-
-        return super.getCourseCode() + " - " + uid;
+        return sections[0].getName();
     }
 
     @Override
