@@ -38,6 +38,8 @@ public class CanvasCourse extends Course implements Parcelable {
         super.start_at = in.readString();
         super.type = in.readString();
         super.term_name = in.readString();
+        term = in.readParcelable(Term.class.getClassLoader());
+        sections = in.createTypedArray(Section.CREATOR);
     }
 
     public CanvasCourse() {
@@ -87,6 +89,6 @@ public class CanvasCourse extends Course implements Parcelable {
         dest.writeString(super.type);
         dest.writeString(super.term_name);
         dest.writeParcelable(term, 0);
-        dest.writeParcelableArray(sections, 0);
+        dest.writeTypedArray(sections, 0);
     }
 }
