@@ -50,8 +50,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.BuildingSaxHandler;
-import com.nasageek.utexasutilities.NavigationDataSet;
-import com.nasageek.utexasutilities.NavigationSaxHandler;
+import com.nasageek.utexasutilities.RouteSaxHandler;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.model.BuildingPlacemark;
 import com.nasageek.utexasutilities.model.RoutePlacemark;
@@ -67,6 +66,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -84,12 +84,12 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     private String locProvider;
     private Location lastKnownLocation;
     private XMLReader xmlreader;
-    private NavigationSaxHandler navSaxHandler;
+    private RouteSaxHandler navSaxHandler;
     private AssetManager assets;
     private List<String> stops_al;
     private List<String> kml_al;
     private String routeid;
-    private NavigationDataSet<BuildingPlacemark> buildingDataSet;
+    private Deque<BuildingPlacemark> buildingDataSet;
     private SharedPreferences settings;
 
     private View mapView;
@@ -182,7 +182,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         }
         setupLocation();
         setupXmlReader();
-        navSaxHandler = new NavigationSaxHandler();
+        navSaxHandler = new RouteSaxHandler();
 
         loadRoute(routeid);
         buildingDataSet = parseBuildings();
@@ -202,11 +202,11 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     }
 
     /**
-     * Parses building kml data into a NavigationDataSet
+     * Parses building kml data into a Deque
      *
      * @return null if parse fails
      */
-    private NavigationDataSet<BuildingPlacemark> parseBuildings() {
+    private Deque<BuildingPlacemark> parseBuildings() {
         if (xmlreader == null) {
             setupXmlReader();
         }
@@ -503,7 +503,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
             xmlreader.setContentHandler(navSaxHandler);
             xmlreader.parse(is);
             // get the results of the parse, null on error
-            NavigationDataSet<RoutePlacemark> navData = navSaxHandler.getParsedData();
+            Deque<RoutePlacemark> navData = navSaxHandler.getParsedData();
             drawPath(navData, BURNT_ORANGE);
             BufferedInputStream bis = new BufferedInputStream(assets.open("stops/"
                     + stops_al.get(stops_al.indexOf(routeid + "_stops.txt"))));
@@ -603,7 +603,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
      * @param navSet Navigation set bean that holds the route information, incl. geo pos
      * @param color  Color in which to draw the lines
      */
-    private void drawPath(NavigationDataSet<RoutePlacemark> navSet, int color) {
+    private void drawPath(Deque<RoutePlacemark> navSet, int color) {
         // clear the old route
         clearAllMapRoutes();
 
@@ -667,7 +667,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     }
 
     private void showAllBuildingMarkers() {
-        for (BuildingPlacemark pm : buildingDataSet.getPlacemarks()) {
+        for (BuildingPlacemark pm : buildingDataSet) {
             Marker buildingMarker = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(pm.getLatitude(), pm.getLongitude()))
                     .draggable(false)
