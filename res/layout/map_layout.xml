@@ -1,25 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>	
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-  android:id="@+id/map"
-  class="com.google.android.gms.maps.SupportMapFragment"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"/>
-	
-<!--	<com.google.android.maps.MapView  
-		android:id="@+id/campusmapview"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:apiKey="0QimFugzhdFbLa_nwEY-9UWSsske-Op80RMjuSA"
-		android:clickable="true"/>   -->
-<!-- 	<Button
-	    android:id="@+id/mylocation_button"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignParentTop="true"
-	    android:layout_alignParentRight="true" 
-	    android:onClick="locate" 
-	    android:text="Locate"
-	   /> -->
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
+    <fragment
+        android:id="@+id/map"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
-<!-- debug "0QimFugzhdFYSbDa4DCFoCvT_PyH7VToIIDbBbw" -->
+    <CheckBox
+        android:id="@+id/chkbox_show_garages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        android:background="@drawable/btn_map_parking"
+        android:minHeight="40dp"
+        android:paddingBottom="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:text="Parking Garages"
+        android:textColor="#FF5A5A5A"
+        android:textSize="16sp"/>
+</RelativeLayout>
