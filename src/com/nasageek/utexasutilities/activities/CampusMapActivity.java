@@ -248,42 +248,10 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                     } else {
                         llbuilder = LatLngBounds.builder();
                         MyIconGenerator ig = new MyIconGenerator(CampusMapActivity.this);
-
                         ig.setTextAppearance(android.R.style.TextAppearance_Inverse);
 
                         for (Placemark pm : garageDataSet) {
-                            // default rotations
-                            ig.setRotation(0);
-                            ig.setContentRotation(0);
-
-                            // special rotations to prevent overlap
-                            if (pm.getTitle().equals("SWG")) {
-                                ig.setRotation(180);
-                                ig.setContentRotation(180);
-                            } else if (pm.getTitle().equals("TRG")) {
-                                ig.setRotation(90);
-                                ig.setContentRotation(270);
-                            }
-
-                            int count = (int) (Math.random() * 100);
-                            ig.setColor(styles[3 * count / 100]);
-
-                            // for bounding the camera later
-                            llbuilder.include(new LatLng(pm.getLatitude(), pm.getLongitude()));
-
-                            SpannableString title = new SpannableString(pm.getTitle());
-                            title.setSpan(new StyleSpan(Typeface.BOLD), 0, pm.getTitle()
-                                    .length(), 0);
-                            SpannableString number = new SpannableString(count + "");
-                            number.setSpan(new AbsoluteSizeSpan(50), 0, number.length(), 0);
-                            CharSequence text = TextUtils.concat(number, "\n", title);
-
-                            shownGarages.placeMarker(pm, new MarkerOptions()
-                                    .position(new LatLng(pm.getLatitude(), pm.getLongitude()))
-                                    .icon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)))
-                                    .title(GARAGE_TAG + pm.getTitle())
-                                    .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
-                                    .anchor(ig.getAnchorU(), ig.getAnchorV()), false);
+                            addGaragePlacemarkToMap(ig, pm);
                         }
                         mMap.animateCamera(
                                 CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 120));
@@ -449,39 +417,8 @@ public class CampusMapActivity extends SherlockFragmentActivity {
 
                 if (garageDataSet.contains(pm)) {
                     MyIconGenerator ig = new MyIconGenerator(this);
-
-
                     ig.setTextAppearance(android.R.style.TextAppearance_Inverse);
-
-                    // special rotations to prevent overlap
-                    // IF YOU CHANGE THESE CHANGE THE ONES BELOW TOO
-                    if (pm.getTitle().equals("SWG")) {
-                        ig.setRotation(180);
-                        ig.setContentRotation(180);
-                    } else if (pm.getTitle().equals("TRG")) {
-                        ig.setRotation(90);
-                        ig.setContentRotation(270);
-                    } else {
-                        ig.setRotation(0);
-                        ig.setContentRotation(0);
-                    }
-
-                    int count = (int) (Math.random() * 100);
-                    ig.setColor(styles[3 * count / 100]);
-
-                    SpannableString title = new SpannableString(pm.getTitle());
-                    title.setSpan(new StyleSpan(Typeface.BOLD), 0, pm.getTitle().length(), 0);
-                    SpannableString number = new SpannableString(count + "");
-                    number.setSpan(new AbsoluteSizeSpan(50), 0, number.length(), 0);
-                    CharSequence text = TextUtils.concat(number, "\n", title);
-
-                    buildingMarker = shownGarages.placeMarker(pm, new MarkerOptions()
-                            .position(buildingLatLng)
-                            .icon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)))
-                            .title(GARAGE_TAG + pm.getTitle())
-                                    // strip out the "(formerly PGX)" text for garage descriptions
-                            .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
-                            .anchor(ig.getAnchorU(), ig.getAnchorV()), false);
+                    buildingMarker = addGaragePlacemarkToMap(ig, pm);
                 } else {
                     buildingMarker = shownBuildings.placeMarker(pm, new MarkerOptions()
                             .position(buildingLatLng)
@@ -709,6 +646,40 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         String[] kml = assets.list("kml");
         stops_al = Arrays.asList(stops);
         kml_al = Arrays.asList(kml);
+    }
+
+    private Marker addGaragePlacemarkToMap(MyIconGenerator ig, Placemark pm) {
+        // special rotations to prevent overlap
+        if (pm.getTitle().equals("SWG")) {
+            ig.setRotation(180);
+            ig.setContentRotation(180);
+        } else if (pm.getTitle().equals("TRG")) {
+            ig.setRotation(90);
+            ig.setContentRotation(270);
+        } else {
+            ig.setRotation(0);
+            ig.setContentRotation(0);
+        }
+
+        int count = (int) (Math.random() * 100);
+        ig.setColor(styles[3 * count / 100]);
+
+        // for bounding the camera later
+        llbuilder.include(new LatLng(pm.getLatitude(), pm.getLongitude()));
+
+        SpannableString title = new SpannableString(pm.getTitle());
+        SpannableString number = new SpannableString(count + "");
+        title.setSpan(new StyleSpan(Typeface.BOLD), 0, pm.getTitle().length(), 0);
+        number.setSpan(new AbsoluteSizeSpan(50), 0, number.length(), 0);
+        CharSequence text = TextUtils.concat(number, "\n", title);
+
+         return shownGarages.placeMarker(pm, new MarkerOptions()
+                .position(new LatLng(pm.getLatitude(), pm.getLongitude()))
+                .icon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)))
+                .title(GARAGE_TAG + pm.getTitle())
+                // strip out the "(formerly PGX)" text for garage descriptions
+                .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
+                .anchor(ig.getAnchorU(), ig.getAnchorV()), false);
     }
 
     @Override
