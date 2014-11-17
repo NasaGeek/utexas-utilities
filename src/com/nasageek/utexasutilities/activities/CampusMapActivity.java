@@ -24,7 +24,6 @@ import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ArrayAdapter;
@@ -54,6 +53,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.ui.MyIconGenerator;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.BuildingSaxHandler;
+import com.nasageek.utexasutilities.MarkerManager;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.RouteSaxHandler;
 import com.nasageek.utexasutilities.model.Placemark;
@@ -98,16 +98,17 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     private List<Placemark> fullDataSet;
     private Deque<Placemark> buildingDataSet;
     private List<Placemark> garageDataSet;
-    //private List<Placemark> stopDataSet;
+
     private SharedPreferences settings;
 
     private View mapView;
     protected Boolean mSetCameraToBounds = false;
     private LatLngBounds.Builder llbuilder;
     private List<String> buildingIdList;
-    private Map<String, Pair<Marker, Placemark>> buildingMarkerMap;
-    private Map<String, Pair<Marker, Placemark>> garageMarkerMap;
-    private Map<String, Pair<Marker, Placemark>> stopMarkerMap;
+
+    private MarkerManager<Placemark> shownBuildings;
+    private MarkerManager<Placemark> shownGarages;
+    private MarkerManager<Placemark> shownStops;
     private Map<String, Polyline> polylineMap;
     private GoogleMap mMap;
     private final OkHttpClient client = new OkHttpClient();
@@ -184,9 +185,9 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         assets = getAssets();
         settings = PreferenceManager.getDefaultSharedPreferences(this);
         buildingIdList = new ArrayList<>();
-        stopMarkerMap = new HashMap<>();
-        buildingMarkerMap = new HashMap<>();
-        garageMarkerMap = new HashMap<>();
+        shownBuildings = new MarkerManager<>(mMap);
+        shownGarages = new MarkerManager<>(mMap);
+        shownStops = new MarkerManager<>(mMap);
         polylineMap = new HashMap<>();
 
         if (savedInstanceState != null) {
@@ -373,9 +374,6 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         llbuilder = LatLngBounds.builder();
 
         for (Placemark pm : fullDataSet) {
-            if (buildingMarkerMap.containsValue(pm) || garageMarkerMap.containsValue(pm)) {
-                continue;
-            }
             if (buildingIdList.contains(pm.getTitle()))// buildingId.equalsIgnoreCase(pm.getTitle()))
             {
                 LatLng buildingLatLng = new LatLng(pm.getLatitude(), pm.getLongitude());
@@ -418,35 +416,20 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                     number.setSpan(new AbsoluteSizeSpan(50), 0, number.length(), 0);
                     CharSequence text = TextUtils.concat(number, "\n", title);
 
-                    buildingMarker = mMap.addMarker(new MarkerOptions()
+                    buildingMarker = shownGarages.placeMarker(pm, new MarkerOptions()
                             .position(buildingLatLng)
-                            .draggable(false)
                             .icon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)))
                             .title(GARAGE_TAG + pm.getTitle())
-                            // strip out the "(formerly PGX)" text for garage descriptions
+                                    // strip out the "(formerly PGX)" text for garage descriptions
                             .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
-                            .visible(true));
-
-                    // TODO: consider automatically setting anchors based on rotation
-                    // IF YOU CHANGE THESE CHANGE THE ONES ABOVE TOO
-                    if (pm.getTitle().equals("SWG")) {
-                        buildingMarker.setAnchor(0.5f, 0f);
-                    } else if (pm.getTitle().equals("TRG")) {
-                        buildingMarker.setAnchor(0f, 0.5f);
-                    }
-                    garageMarkerMap.put(buildingMarker.getId(), new Pair<>(buildingMarker, pm));
+                            .anchor(ig.getAnchorU(), ig.getAnchorV()));
                 } else {
-                    buildingMarker = mMap.addMarker(new MarkerOptions()
+                    buildingMarker = shownBuildings.placeMarker(pm, new MarkerOptions()
                             .position(buildingLatLng)
-                            .draggable(false)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_building2))
                             .title(BUILDING_TAG + pm.getTitle())
-                            .snippet(pm.getDescription())
-                            .visible(true));
-                    buildingMarkerMap.put(buildingMarker.getId(), new Pair<>(buildingMarker, pm));
+                            .snippet(pm.getDescription()));
                 }
-
-                foundCount++;
                 llbuilder.include(buildingLatLng);
 
                 if (buildingIdList.size() == 1) // don't be moving the camera
@@ -454,13 +437,10 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                 // for more than one building
                 {
                     if (autoZoom) {
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                buildingMarker.getPosition(), 16f));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(buildingLatLng, 16f));
                     } else {
-                        mMap.animateCamera(CameraUpdateFactory.newLatLng(buildingMarker
-                                .getPosition()));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLng(buildingLatLng));
                     }
-
                     buildingMarker.showInfoWindow();
                 }
             }
@@ -615,7 +595,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         if (NO_ROUTE_ID.equals(routeid)) {
             // remove any currently showing routes and return
             clearAllMapRoutes();
-            clearMapMarkers(stopMarkerMap);
+            shownStops.clearMarkers();
             return;
         }
         try {
@@ -638,7 +618,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
             String[] stops = stopData.toString().split("\n");
 
             // clear the stops from the old route
-            clearMapMarkers(stopMarkerMap);
+            shownStops.clearMarkers();
 
             for (int x = 0; x < stops.length - 1; x++) {
                 String data[] = stops[x].split("\t");
@@ -648,16 +628,11 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                 String description = data[2].trim();
 
                 Placemark stopPlacemark = new Placemark(title, description, lat, lng);
-
-                Marker stopMarker = mMap.addMarker(new MarkerOptions()
+                shownStops.placeMarker(stopPlacemark, new MarkerOptions()
                         .position(new LatLng(lat, lng))
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_bus))
-                        .draggable(false)
-                        .visible(true)
                         .title(STOP_TAG + title)
                         .snippet(description));
-                //stopDataSet.add(stopPlacemark);
-                stopMarkerMap.put(stopMarker.getId(), new Pair<>(stopMarker, stopPlacemark));
             }
 
         } catch (IOException e) {
@@ -762,7 +737,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
             case R.id.showAllBuildings:
                 if (checkReady()) {
                     if (item.isChecked()) {
-                        clearMapMarkers(buildingMarkerMap);
+                        shownBuildings.clearMarkers();
                         item.setChecked(false);
                     } else {
                         showAllBuildingMarkers();
@@ -773,7 +748,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
             case R.id.showParkingGarages:
                 if (checkReady()) {
                     if (item.isChecked()) {
-                        clearMapMarkers(garageMarkerMap);
+                        shownGarages.clearMarkers();
                         item.setChecked(false);
                     } else {
                         llbuilder = LatLngBounds.builder();
@@ -797,7 +772,6 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                             ig.setContentRotation(0);
 
                             // special rotations to prevent overlap
-                            // IF YOU CHANGE THESE CHANGE THE ONES BELOW TOO
                             if (pm.getTitle().equals("SWG")) {
                                 ig.setRotation(180);
                                 ig.setContentRotation(180);
@@ -819,25 +793,12 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                             number.setSpan(new AbsoluteSizeSpan(50), 0, number.length(), 0);
                             CharSequence text = TextUtils.concat(number, "\n", title);
 
-                            Marker garageMarker = mMap
-                                    .addMarker(new MarkerOptions()
-                                            .position(new LatLng(pm.getLatitude(),
-                                                    pm.getLongitude()))
-                                            .draggable(false)
-                                            .icon(BitmapDescriptorFactory
-                                                    .fromBitmap(ig.makeIcon(text)))
-                                            .title(GARAGE_TAG + pm.getTitle())
-                                            .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
-                                            .visible(true));
-
-                            // TODO: consider automatically setting anchors based on rotation
-                            // IF YOU CHANGE THESE CHANGE THE ONES ABOVE TOO
-                            if (pm.getTitle().equals("SWG")) {
-                                garageMarker.setAnchor(0.5f, 0f);
-                            } else if (pm.getTitle().equals("TRG")) {
-                                garageMarker.setAnchor(0f, 0.5f);
-                            }
-                            garageMarkerMap.put(garageMarker.getId(), new Pair<>(garageMarker, pm));
+                            shownGarages.placeMarker(pm, new MarkerOptions()
+                                    .position(new LatLng(pm.getLatitude(), pm.getLongitude()))
+                                    .icon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)))
+                                    .title(GARAGE_TAG + pm.getTitle())
+                                    .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
+                                    .anchor(ig.getAnchorU(), ig.getAnchorV()));
                         }
                         item.setChecked(true);
                     }
@@ -886,22 +847,12 @@ public class CampusMapActivity extends SherlockFragmentActivity {
 
     private void showAllBuildingMarkers() {
         for (Placemark pm : buildingDataSet) {
-            Marker buildingMarker = mMap.addMarker(new MarkerOptions()
+            shownBuildings.placeMarker(pm, new MarkerOptions()
                     .position(new LatLng(pm.getLatitude(), pm.getLongitude()))
-                    .draggable(false)
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_building2))
                     .title(BUILDING_TAG + pm.getTitle())
-                    .snippet(pm.getDescription())
-                    .visible(true));
-            buildingMarkerMap.put(buildingMarker.getId(), new Pair<>(buildingMarker, pm));
+                    .snippet(pm.getDescription()));
         }
-    }
-
-    private void clearMapMarkers(Map<String, ? extends Pair<Marker, ?>> markerMap) {
-        for (String markerID : markerMap.keySet()) {
-            markerMap.get(markerID).first.remove();
-        }
-        markerMap.clear();
     }
 
     private void clearAllMapRoutes() {
