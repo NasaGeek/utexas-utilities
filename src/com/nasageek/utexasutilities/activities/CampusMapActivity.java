@@ -376,6 +376,8 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         for (Placemark pm : fullDataSet) {
             if (buildingIdList.contains(pm.getTitle()))// buildingId.equalsIgnoreCase(pm.getTitle()))
             {
+                foundCount++;
+
                 LatLng buildingLatLng = new LatLng(pm.getLatitude(), pm.getLongitude());
                 Marker buildingMarker;
 
@@ -422,13 +424,13 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                             .title(GARAGE_TAG + pm.getTitle())
                                     // strip out the "(formerly PGX)" text for garage descriptions
                             .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
-                            .anchor(ig.getAnchorU(), ig.getAnchorV()));
+                            .anchor(ig.getAnchorU(), ig.getAnchorV()), false);
                 } else {
                     buildingMarker = shownBuildings.placeMarker(pm, new MarkerOptions()
                             .position(buildingLatLng)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_building2))
                             .title(BUILDING_TAG + pm.getTitle())
-                            .snippet(pm.getDescription()));
+                            .snippet(pm.getDescription()), false);
                 }
                 llbuilder.include(buildingLatLng);
 
@@ -632,7 +634,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                         .position(new LatLng(lat, lng))
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_bus))
                         .title(STOP_TAG + title)
-                        .snippet(description));
+                        .snippet(description), false);
             }
 
         } catch (IOException e) {
@@ -798,7 +800,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                                     .icon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)))
                                     .title(GARAGE_TAG + pm.getTitle())
                                     .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
-                                    .anchor(ig.getAnchorU(), ig.getAnchorV()));
+                                    .anchor(ig.getAnchorU(), ig.getAnchorV()), false);
                         }
                         item.setChecked(true);
                     }
@@ -851,7 +853,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                     .position(new LatLng(pm.getLatitude(), pm.getLongitude()))
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_building2))
                     .title(BUILDING_TAG + pm.getTitle())
-                    .snippet(pm.getDescription()));
+                    .snippet(pm.getDescription()), false);
         }
     }
 
