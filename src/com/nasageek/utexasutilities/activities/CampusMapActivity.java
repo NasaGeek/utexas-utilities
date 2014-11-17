@@ -802,10 +802,10 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                                     .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
                                     .anchor(ig.getAnchorU(), ig.getAnchorV()), false);
                         }
+                        mMap.animateCamera(
+                                CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 120));
                         item.setChecked(true);
                     }
-                    mMap.animateCamera(
-                            CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 120));
                 }
                 break;
         }
