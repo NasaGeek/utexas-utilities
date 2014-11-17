@@ -5,8 +5,21 @@ public class Placemark {
 
     String title;
     String description;
-    String coordinates;
-    String address;
+    Double latitude;
+    Double longitude;
+
+    public Placemark() {}
+
+    public Placemark(String title, String description, Double latitude, Double longitude) {
+        this.title = title;
+        this.description = description;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public Placemark(String title, String description) {
+        this(title, description, 0.0, 0.0);
+    }
 
     public String getTitle() {
         return title;
@@ -24,20 +37,20 @@ public class Placemark {
         this.description = description;
     }
 
-    public void setCoordinates(String coordinates) {
-        this.coordinates = coordinates;
+    public void setLatitude(Double latitude) { this.latitude  = latitude; }
+
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+
+    public double getLatitude() {
+        return latitude;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
+    public double getLongitude() {
+        return longitude;
     }
 
     @Override
     public String toString() {
-        return title + " : " + description + "(" + coordinates + ")";
+        return title + " : " + description + " (" + longitude + ", " + latitude + ")";
     }
 }

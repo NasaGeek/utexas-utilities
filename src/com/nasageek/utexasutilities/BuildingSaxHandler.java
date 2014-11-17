@@ -1,12 +1,12 @@
 
 package com.nasageek.utexasutilities;
 
-import com.nasageek.utexasutilities.model.BuildingPlacemark;
+import com.nasageek.utexasutilities.model.Placemark;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-public class BuildingSaxHandler extends PlacemarkSaxHandler<BuildingPlacemark> {
+public class BuildingSaxHandler extends PlacemarkSaxHandler<Placemark> {
 
     /**
      * Called on opening tags like: <tag> Can provide attribute(s), when xml was
@@ -17,7 +17,7 @@ public class BuildingSaxHandler extends PlacemarkSaxHandler<BuildingPlacemark> {
             throws SAXException {
         switch (localName) {
             case "Placemark":
-                currentPlacemark = new BuildingPlacemark();
+                currentPlacemark = new Placemark();
                 if (atts.getLength() > 0) {
                     currentPlacemark.setTitle(atts.getValue(0));
                 }
@@ -45,7 +45,9 @@ public class BuildingSaxHandler extends PlacemarkSaxHandler<BuildingPlacemark> {
                 this.in_nametag = false;
                 break;
             case "coordinates":
-                currentPlacemark.setCoordinates(buffer.toString().trim());
+                String[] lngLat = buffer.toString().trim().split(",");
+                currentPlacemark.setLatitude(Double.parseDouble(lngLat[1]));
+                currentPlacemark.setLongitude(Double.parseDouble(lngLat[0]));
                 this.in_coordinatestag = false;
                 break;
         }
@@ -58,14 +60,14 @@ public class BuildingSaxHandler extends PlacemarkSaxHandler<BuildingPlacemark> {
     public void characters(char ch[], int start, int length) {
         if (this.in_nametag) {
             if (currentPlacemark == null) {
-                currentPlacemark = new BuildingPlacemark();
+                currentPlacemark = new Placemark();
             }
             String description = (currentPlacemark.getDescription() == null) ? ""
                     : currentPlacemark.getDescription();
             currentPlacemark.setDescription(description.concat(new String(ch, start, length)));
         } else if (this.in_coordinatestag) {
             if (currentPlacemark == null) {
-                currentPlacemark = new BuildingPlacemark();
+                currentPlacemark = new Placemark();
             }
             buffer.append(ch, start, length);
         }

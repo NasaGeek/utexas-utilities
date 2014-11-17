@@ -24,6 +24,7 @@ import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ArrayAdapter;
@@ -50,14 +51,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.ui.IconGenerator;
 import com.google.maps.android.ui.MyIconGenerator;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.BuildingSaxHandler;
-import com.nasageek.utexasutilities.RouteSaxHandler;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.model.BuildingPlacemark;
-import com.nasageek.utexasutilities.model.RoutePlacemark;
+import com.nasageek.utexasutilities.RouteSaxHandler;
+import com.nasageek.utexasutilities.model.Placemark;
+import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -72,8 +72,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,17 +95,22 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     private List<String> stops_al;
     private List<String> kml_al;
     private String routeid;
-    private Deque<BuildingPlacemark> buildingDataSet;
+    private List<Placemark> fullDataSet;
+    private Deque<Placemark> buildingDataSet;
+    private List<Placemark> garageDataSet;
+    //private List<Placemark> stopDataSet;
     private SharedPreferences settings;
 
     private View mapView;
     protected Boolean mSetCameraToBounds = false;
     private LatLngBounds.Builder llbuilder;
-    private ArrayList<String> buildingIdList;
-    private HashMap<String, Marker> buildingMarkerMap;
-    private HashMap<String, Marker> stopMarkerMap;
-    private HashMap<String, Polyline> polylineMap;
+    private List<String> buildingIdList;
+    private Map<String, Pair<Marker, Placemark>> buildingMarkerMap;
+    private Map<String, Pair<Marker, Placemark>> garageMarkerMap;
+    private Map<String, Pair<Marker, Placemark>> stopMarkerMap;
+    private Map<String, Polyline> polylineMap;
     private GoogleMap mMap;
+    private final OkHttpClient client = new OkHttpClient();
 
     private static final int CURRENT_ROUTES_VERSION = 1;
     private static final int BURNT_ORANGE = Color.parseColor("#DDCC5500");
@@ -149,6 +156,26 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         }
     }
 
+    private static final String GARAGE_TAG = "%";
+    private static final String BUILDING_TAG = "^";
+    private static final String STOP_TAG = "*";
+
+    private static final String GARAGE_BASE_URL =
+            "http://www.utexas.edu/parking/garage-availability/gar-PROD-%s-central.dat";
+    private static final Map<String, String> garageFileMap;
+    static {
+        garageFileMap = new HashMap<>();
+        garageFileMap.put("BRG", "BRAZOS");
+        garageFileMap.put("CCG", "CONFCNTR");
+        garageFileMap.put("GUG", "GUADALUPE");
+        garageFileMap.put("MAG", "MANOR");
+        garageFileMap.put("SAG", "SAG");
+        garageFileMap.put("SJG", "SJG");
+        garageFileMap.put("SWG", "SPEEDWAY");
+        garageFileMap.put("TRG", "TRINITY");
+        garageFileMap.put("TSG", "27TH");
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,10 +183,11 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         setupMapIfNeeded();
         assets = getAssets();
         settings = PreferenceManager.getDefaultSharedPreferences(this);
-        buildingIdList = new ArrayList<String>();
-        stopMarkerMap = new HashMap<String, Marker>();
-        buildingMarkerMap = new HashMap<String, Marker>();
-        polylineMap = new HashMap<String, Polyline>();
+        buildingIdList = new ArrayList<>();
+        stopMarkerMap = new HashMap<>();
+        buildingMarkerMap = new HashMap<>();
+        garageMarkerMap = new HashMap<>();
+        polylineMap = new HashMap<>();
 
         if (savedInstanceState != null) {
             buildingIdList.add(savedInstanceState.getString("buildingId"));
@@ -190,6 +218,12 @@ public class CampusMapActivity extends SherlockFragmentActivity {
 
         loadRoute(routeid);
         buildingDataSet = parseBuildings();
+        if (buildingDataSet != null) {
+            fullDataSet = new ArrayList<>(buildingDataSet);
+        } else {
+            fullDataSet = new ArrayList<>();
+        }
+        garageDataSet = filterGarages(buildingDataSet);
         handleIntent(getIntent());
     }
 
@@ -206,11 +240,32 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     }
 
     /**
+     * Removes and returns garages from the collection of buildings because garages get special
+     * treatment
+     *
+     * @param buildings Iterable containing garages that you wish to extract
+     * @return List containing all garage Placemarks removed from {@code buildings}
+     */
+    private List<Placemark> filterGarages(Iterable<Placemark> buildings) {
+        List<Placemark> garages = new ArrayList<>();
+        Placemark bp;
+        Iterator<Placemark> iter = buildings.iterator();
+        while (iter.hasNext()) {
+            bp = iter.next();
+            if (garageFileMap.containsKey(bp.getTitle())) {
+                garages.add(bp);
+                iter.remove();
+            }
+        }
+        return garages;
+    }
+
+    /**
      * Parses building kml data into a Deque
      *
      * @return null if parse fails
      */
-    private Deque<BuildingPlacemark> parseBuildings() {
+    private Deque<Placemark> parseBuildings() {
         if (xmlreader == null) {
             setupXmlReader();
         }
@@ -317,18 +372,81 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         int foundCount = 0;
         llbuilder = LatLngBounds.builder();
 
-        for (BuildingPlacemark pm : buildingDataSet) {
+        for (Placemark pm : fullDataSet) {
+            if (buildingMarkerMap.containsValue(pm) || garageMarkerMap.containsValue(pm)) {
+                continue;
+            }
             if (buildingIdList.contains(pm.getTitle()))// buildingId.equalsIgnoreCase(pm.getTitle()))
             {
                 LatLng buildingLatLng = new LatLng(pm.getLatitude(), pm.getLongitude());
+                Marker buildingMarker;
 
-                Marker buildingMarker = mMap.addMarker(new MarkerOptions().position(buildingLatLng)
-                        .draggable(false)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_building2))
-                        .title("^" + pm.getTitle()).snippet(pm.getDescription()).visible(true));
+                if (garageDataSet.contains(pm)) {
+                    MyIconGenerator ig = new MyIconGenerator(this);
+                    int STYLE_RED = 0xfff44336;
+                    int STYLE_GREEN = 0xff4caf50;
+                    int STYLE_YELLOW = 0xff9E9E9E;//FFC107;
+
+
+                    int STYLE_GREEN_FADED = 0xff81C784;//A5D6A7;
+                    int STYLE_RED_FADED = 0xffEF9A9A;
+
+                    int styles[] = {STYLE_YELLOW, STYLE_GREEN_FADED, STYLE_GREEN};
+                    int styles2[] = {STYLE_GREEN, STYLE_GREEN_FADED, STYLE_RED_FADED, STYLE_RED};
+
+                    ig.setTextAppearance(android.R.style.TextAppearance_Inverse);
+
+                    // special rotations to prevent overlap
+                    // IF YOU CHANGE THESE CHANGE THE ONES BELOW TOO
+                    if (pm.getTitle().equals("SWG")) {
+                        ig.setRotation(180);
+                        ig.setContentRotation(180);
+                    } else if (pm.getTitle().equals("TRG")) {
+                        ig.setRotation(90);
+                        ig.setContentRotation(270);
+                    } else {
+                        ig.setRotation(0);
+                        ig.setContentRotation(0);
+                    }
+
+                    int count = (int) (Math.random() * 100);
+                    ig.setColor(styles2[4 * count / 100]);
+
+                    SpannableString title = new SpannableString(pm.getTitle());
+                    title.setSpan(new StyleSpan(Typeface.BOLD), 0, pm.getTitle().length(), 0);
+                    SpannableString number = new SpannableString(count + "");
+                    number.setSpan(new AbsoluteSizeSpan(50), 0, number.length(), 0);
+                    CharSequence text = TextUtils.concat(number, "\n", title);
+
+                    buildingMarker = mMap.addMarker(new MarkerOptions()
+                            .position(buildingLatLng)
+                            .draggable(false)
+                            .icon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)))
+                            .title(GARAGE_TAG + pm.getTitle())
+                            // strip out the "(formerly PGX)" text for garage descriptions
+                            .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
+                            .visible(true));
+
+                    // TODO: consider automatically setting anchors based on rotation
+                    // IF YOU CHANGE THESE CHANGE THE ONES ABOVE TOO
+                    if (pm.getTitle().equals("SWG")) {
+                        buildingMarker.setAnchor(0.5f, 0f);
+                    } else if (pm.getTitle().equals("TRG")) {
+                        buildingMarker.setAnchor(0f, 0.5f);
+                    }
+                    garageMarkerMap.put(buildingMarker.getId(), new Pair<>(buildingMarker, pm));
+                } else {
+                    buildingMarker = mMap.addMarker(new MarkerOptions()
+                            .position(buildingLatLng)
+                            .draggable(false)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_building2))
+                            .title(BUILDING_TAG + pm.getTitle())
+                            .snippet(pm.getDescription())
+                            .visible(true));
+                    buildingMarkerMap.put(buildingMarker.getId(), new Pair<>(buildingMarker, pm));
+                }
 
                 foundCount++;
-                buildingMarkerMap.put(buildingMarker.getId(), buildingMarker);
                 llbuilder.include(buildingLatLng);
 
                 if (buildingIdList.size() == 1) // don't be moving the camera
@@ -507,35 +625,39 @@ public class CampusMapActivity extends SherlockFragmentActivity {
             xmlreader.setContentHandler(navSaxHandler);
             xmlreader.parse(is);
             // get the results of the parse, null on error
-            Deque<RoutePlacemark> navData = navSaxHandler.getParsedData();
+            Deque<Placemark> navData = navSaxHandler.getParsedData();
             drawPath(navData, BURNT_ORANGE);
             BufferedInputStream bis = new BufferedInputStream(assets.open("stops/"
                     + stops_al.get(stops_al.indexOf(routeid + "_stops.txt"))));
             int b;
-            StringBuilder data = new StringBuilder();
+            StringBuilder stopData = new StringBuilder();
             do {
                 b = bis.read();
-                data.append((char) b);
+                stopData.append((char) b);
             } while (b != -1);
-            String[] stops = data.toString().split("\n");
+            String[] stops = stopData.toString().split("\n");
 
             // clear the stops from the old route
             clearMapMarkers(stopMarkerMap);
 
             for (int x = 0; x < stops.length - 1; x++) {
-                String coor = stops[x].split("\t")[0];
+                String data[] = stops[x].split("\t");
+                Double lat = Double.parseDouble(data[0].split(",")[0].trim());
+                Double lng = Double.parseDouble(data[0].split(",")[1].trim());
+                String title = data[1];
+                String description = data[2].trim();
+
+                Placemark stopPlacemark = new Placemark(title, description, lat, lng);
 
                 Marker stopMarker = mMap.addMarker(new MarkerOptions()
-                        .position(
-                                new LatLng(Double.parseDouble(coor.split(",")[0].trim()),
-                                        Double.parseDouble(coor.split(",")[1].trim()))
-                        )
+                        .position(new LatLng(lat, lng))
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_bus))
                         .draggable(false)
                         .visible(true)
-                        .title("*" + stops[x].split("\t")[1])
-                        .snippet(stops[x].split("\t")[2].trim()));
-                stopMarkerMap.put(stopMarker.getId(), stopMarker);
+                        .title(STOP_TAG + title)
+                        .snippet(description));
+                //stopDataSet.add(stopPlacemark);
+                stopMarkerMap.put(stopMarker.getId(), new Pair<>(stopMarker, stopPlacemark));
             }
 
         } catch (IOException e) {
@@ -607,34 +729,16 @@ public class CampusMapActivity extends SherlockFragmentActivity {
      * @param navSet Navigation set bean that holds the route information, incl. geo pos
      * @param color  Color in which to draw the lines
      */
-    private void drawPath(Deque<RoutePlacemark> navSet, int color) {
-        // clear the old route
+    private void drawPath(Deque<Placemark> navSet, int color) {
         clearAllMapRoutes();
-
-        for (RoutePlacemark pm : navSet) {
-            String[] lngLats = pm.getCoordinates().replaceAll(" ", "").split("\n");
-
-            String[] lngLat; // lngLat[0]=longitude
-            // lngLat[1]=latitude
-            // lngLat[2]=height
-            PolylineOptions routeOptions = new PolylineOptions();
-            try {
-                for (String lntLatStr : lngLats) {
-                    if ("".equals(lntLatStr)) {
-                        continue;
-                    }
-                    lngLat = lntLatStr.split(",");
-                    routeOptions.add(new LatLng(Double.parseDouble(lngLat[1]),
-                            Double.parseDouble(lngLat[0])));
-                }
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-                Log.d("MAP", "Cannot draw route.");
-            }
-            routeOptions.color(color).width(5f);
-            Polyline routePolyline = mMap.addPolyline(routeOptions);
-            polylineMap.put(routePolyline.getId(), routePolyline);
+        PolylineOptions polyOpt = new PolylineOptions()
+                .color(color)
+                .width(5f);
+        for (Placemark pm : navSet) {
+            polyOpt.add(new LatLng(pm.getLatitude(), pm.getLongitude()));
         }
+        Polyline routePolyline = mMap.addPolyline(polyOpt);
+        polylineMap.put(routePolyline.getId(), routePolyline);
     }
 
     @Override
@@ -669,120 +773,133 @@ public class CampusMapActivity extends SherlockFragmentActivity {
             case R.id.showParkingGarages:
                 if (checkReady()) {
                     if (item.isChecked()) {
-                        for (String mID : buildingMarkerMap.keySet()) {
-                            buildingMarkerMap.get(mID).remove();
-                        }
-                        buildingMarkerMap.clear();
+                        clearMapMarkers(garageMarkerMap);
                         item.setChecked(false);
                     } else {
                         llbuilder = LatLngBounds.builder();
                         MyIconGenerator ig = new MyIconGenerator(this);
-                        ig.setStyle(IconGenerator.STYLE_DEFAULT);
+                        int STYLE_RED = 0xfff44336;
+                        int STYLE_GREEN = 0xff4caf50;
+                        int STYLE_YELLOW = 0xffBDBDBD;
 
-                        for (BuildingPlacemark pm : buildingDataSet) {
-                            if (pm.getDescription().contains("Garage")) {
-                                if (pm.getTitle().equals("SWG") || pm.getTitle().equals("BRG")) {
-                                    ig.setRotation(180);
-                                    ig.setContentRotation(180);
-                                } else if (pm.getTitle().equals("TRG")
-                                        || pm.getTitle().equals("SJG")) {
-                                    ig.setRotation(90);
-                                    ig.setContentRotation(270);
-                                } else if (pm.getTitle().equals("SAG")) {
-                                    ig.setRotation(270);
-                                    ig.setContentRotation(90);
-                                }
-                                int count = 0;
-                                if (pm.getTitle().equals("BRG")) {
-                                    count = 0;
-                                    ig.setStyle(IconGenerator.STYLE_RED);
-                                } else if (pm.getTitle().equals("TRG")) {
-                                    count = 0;
-                                    ig.setStyle(IconGenerator.STYLE_RED);
-                                } else if (pm.getTitle().equals("SJG")) {
-                                    count = 0;
-                                    ig.setStyle(IconGenerator.STYLE_RED);
-                                } else if (pm.getTitle().equals("MAG")) {
-                                    ig.setStyle(IconGenerator.STYLE_GREEN);
-                                    count = 81;
-                                } else if (pm.getTitle().equals("TSG")) {
-                                    ig.setStyle(IconGenerator.STYLE_ORANGE);
-                                    count = 28;
-                                } else if (pm.getTitle().equals("GUG")) {
-                                    ig.setStyle(IconGenerator.STYLE_ORANGE);
-                                    count = 37;
-                                } else if (pm.getTitle().equals("SAG")) {
-                                    count = 73;
-                                    ig.setStyle(IconGenerator.STYLE_GREEN);
-                                } else if (pm.getTitle().equals("SWG")) {
-                                    count = 100;
-                                    ig.setStyle(IconGenerator.STYLE_GREEN);
-                                } else if (pm.getTitle().equals("CCG")) {
-                                    count = 16;
-                                    ig.setStyle(IconGenerator.STYLE_RED);
-                                }
 
-                                llbuilder.include(new LatLng(pm.getLatitude(), pm.getLongitude()));
-                                // Span for bolding the title
-                                SpannableString title = new SpannableString(pm.getTitle());
-                                title.setSpan(new StyleSpan(Typeface.BOLD), 0, pm.getTitle()
-                                        .length(), 0);
-                                SpannableString number = new SpannableString(count + "");
-                                number.setSpan(new AbsoluteSizeSpan(50), 0, number.length(), 0);
-                                CharSequence text = TextUtils.concat(number, "\n", title);
+                        int STYLE_GREEN_FADED = 0xff81C784;
+                        int STYLE_RED_FADED = 0xffEF9A9A;
 
-                                Marker buildingMarker = mMap
-                                        .addMarker(new MarkerOptions()
-                                                .position(
-                                                        new LatLng(pm.getLatitude(), pm
-                                                                .getLongitude()))
-                                                .draggable(false)
-                                                .icon(BitmapDescriptorFactory.fromBitmap(ig
-                                                        .makeIcon(text)))
-                                                .title("^" + pm.getTitle())
-                                                .snippet(
-                                                        pm.getDescription().replaceAll("\\(.*\\)",
-                                                                "")).visible(true));
-                                if (pm.getTitle().equals("SWG") || pm.getTitle().equals("BRG")) {
-                                    buildingMarker.setAnchor(0.5f, 0f);
-                                } else if (pm.getTitle().equals("TRG")
-                                        || pm.getTitle().equals("SJG")) {
-                                    buildingMarker.setAnchor(0f, 0.5f);
-                                } else if (pm.getTitle().equals("SAG")) {
-                                    buildingMarker.setAnchor(1f, 0.5f);
-                                }
+                        int styles[] = {STYLE_YELLOW, STYLE_GREEN_FADED, STYLE_GREEN};
+                        int styles2[] = {STYLE_RED, STYLE_RED_FADED, STYLE_GREEN_FADED, STYLE_GREEN};
 
-                                buildingMarkerMap.put(buildingMarker.getId(), buildingMarker);
-                                ig.setContentRotation(0);
-                                ig.setRotation(0);
-                                ig.setStyle(IconGenerator.STYLE_DEFAULT);
+                        ig.setTextAppearance(android.R.style.TextAppearance_Inverse);
+
+                        for (Placemark pm : garageDataSet) {
+                            // default rotations
+                            ig.setRotation(0);
+                            ig.setContentRotation(0);
+
+                            // special rotations to prevent overlap
+                            // IF YOU CHANGE THESE CHANGE THE ONES BELOW TOO
+                            if (pm.getTitle().equals("SWG")) {
+                                ig.setRotation(180);
+                                ig.setContentRotation(180);
+                            } else if (pm.getTitle().equals("TRG")) {
+                                ig.setRotation(90);
+                                ig.setContentRotation(270);
                             }
-                            item.setChecked(true);
+
+                            int count = (int) (Math.random() * 100);
+                            ig.setColor(styles2[4 * count / 100]);
+
+                            // for bounding the camera later
+                            llbuilder.include(new LatLng(pm.getLatitude(), pm.getLongitude()));
+
+                            SpannableString title = new SpannableString(pm.getTitle());
+                            title.setSpan(new StyleSpan(Typeface.BOLD), 0, pm.getTitle()
+                                    .length(), 0);
+                            SpannableString number = new SpannableString(count + "");
+                            number.setSpan(new AbsoluteSizeSpan(50), 0, number.length(), 0);
+                            CharSequence text = TextUtils.concat(number, "\n", title);
+
+                            Marker garageMarker = mMap
+                                    .addMarker(new MarkerOptions()
+                                            .position(new LatLng(pm.getLatitude(),
+                                                    pm.getLongitude()))
+                                            .draggable(false)
+                                            .icon(BitmapDescriptorFactory
+                                                    .fromBitmap(ig.makeIcon(text)))
+                                            .title(GARAGE_TAG + pm.getTitle())
+                                            .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
+                                            .visible(true));
+
+                            // TODO: consider automatically setting anchors based on rotation
+                            // IF YOU CHANGE THESE CHANGE THE ONES ABOVE TOO
+                            if (pm.getTitle().equals("SWG")) {
+                                garageMarker.setAnchor(0.5f, 0f);
+                            } else if (pm.getTitle().equals("TRG")) {
+                                garageMarker.setAnchor(0f, 0.5f);
+                            }
+                            garageMarkerMap.put(garageMarker.getId(), new Pair<>(garageMarker, pm));
                         }
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(llbuilder.build(),
-                                120));
+                        item.setChecked(true);
                     }
+                    mMap.animateCamera(
+                            CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 120));
                 }
+                break;
         }
         return true;
     }
 
-    private void showAllBuildingMarkers() {
-        for (BuildingPlacemark pm : buildingDataSet) {
-            Marker buildingMarker = mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(pm.getLatitude(), pm.getLongitude()))
-                    .draggable(false)
-                    .icon(BitmapDescriptorFactory
-                            .fromResource(R.drawable.ic_building2))
-                    .title("^" + pm.getTitle()).snippet(pm.getDescription())
-                    .visible(true));
-            buildingMarkerMap.put(buildingMarker.getId(), buildingMarker);
+    private void fetchGarageData(String garage) throws Exception {
+        Request request = new Request.Builder()
+                .url(String.format(GARAGE_BASE_URL, garageFileMap.get(garage)))
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                parseGarageData(response.body().string());
+            }
+        });
+    }
+
+    private double parseGarageData(String rawData) {
+        String lines[] = rawData.split("\n");
+        if (lines.length < 6) {
+            // error
+            throw new RuntimeException();
+        }
+        if ("Facility".equals(lines[2])) {
+            int total = Integer.parseInt(lines[3]);
+            int occupied = Integer.parseInt(lines[4]);
+            return occupied / total;
+        } else {
+            // error
+            throw new RuntimeException();
         }
     }
 
-    private void clearMapMarkers(HashMap<String, Marker> markerMap) {
+    private void showAllBuildingMarkers() {
+        for (Placemark pm : buildingDataSet) {
+            Marker buildingMarker = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(pm.getLatitude(), pm.getLongitude()))
+                    .draggable(false)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_building2))
+                    .title(BUILDING_TAG + pm.getTitle())
+                    .snippet(pm.getDescription())
+                    .visible(true));
+            buildingMarkerMap.put(buildingMarker.getId(), new Pair<>(buildingMarker, pm));
+        }
+    }
+
+    private void clearMapMarkers(Map<String, ? extends Pair<Marker, ?>> markerMap) {
         for (String markerID : markerMap.keySet()) {
-            markerMap.get(markerID).remove();
+            markerMap.get(markerID).first.remove();
         }
         markerMap.clear();
     }
@@ -812,14 +929,15 @@ public class CampusMapActivity extends SherlockFragmentActivity {
          */
         @Override
         public View getInfoContents(Marker marker) {
-            switch (marker.getTitle().charAt(0)) {
-                case '*': // '*' for stop
+            String tag = marker.getTitle().substring(0, 1);
+            String realTitle = marker.getTitle().substring(1);
+            switch (tag) {
+                case STOP_TAG:
                     if (infoTitle.getText().equals("")
-                            || !(infoTitle.getText() + "").contains(marker.getTitle().substring(1))) {
+                            || !(infoTitle.getText() + "").contains(realTitle)) {
                         // Span for bolding the title
-                        SpannableString title = new SpannableString(marker.getTitle().substring(1));
-                        title.setSpan(new StyleSpan(Typeface.BOLD), 0,
-                                marker.getTitle().substring(1).length(), 0);
+                        SpannableString title = new SpannableString(realTitle);
+                        title.setSpan(new StyleSpan(Typeface.BOLD), 0, realTitle.length(), 0);
 
                         String snippet = "Loading...";
                         infoTitle.setText(title);
@@ -828,14 +946,14 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                         new checkStopTask().execute(Integer.parseInt(marker.getSnippet()), marker);
                     }
                     break;
-                case '^': // '^' for building
-                default: // Will need to change this if default behavior ever
+                case BUILDING_TAG:
+                default:
+                    // Will need to change this if default behavior ever
                     // differs from building behavior
 
                     // Span for bolding the title
-                    SpannableString title = new SpannableString(marker.getTitle().substring(1));
-                    title.setSpan(new StyleSpan(Typeface.BOLD), 0, marker.getTitle().substring(1)
-                            .length(), 0);
+                    SpannableString title = new SpannableString(realTitle);
+                    title.setSpan(new StyleSpan(Typeface.BOLD), 0, realTitle.length(), 0);
 
                     String snippet = marker.getSnippet();
                     infoTitle.setText(title);
@@ -943,11 +1061,12 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     class InfoClickListener implements OnInfoWindowClickListener {
         @Override
         public void onInfoWindowClick(final Marker marker) {
-            String markerType = "location";
-            if (marker.getTitle().charAt(0) == '^') {
-                markerType = "building";
-            } else if (marker.getTitle().charAt(0) == '*') {
-                markerType = "stop";
+            final String markerType;
+            switch (Character.toString(marker.getTitle().charAt(0))) {
+                case BUILDING_TAG: markerType = "building"; break;
+                case STOP_TAG: markerType = "stop"; break;
+                case GARAGE_TAG: markerType = "garage"; break;
+                default: markerType = "location"; break;
             }
 
             AlertDialog.Builder opendirections_builder = new AlertDialog.Builder(
@@ -973,12 +1092,16 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                             }
 
                             if (myLocation != null) {
-                                // TODO: don't append dirflg=w for garages, will likely drive there
-                                Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri
-                                        .parse("http://maps.google.com/maps?saddr="
+                                // people tend to drive to garages
+                                boolean walkingDirections = !markerType.equals("garage");
+                                double dstLat = marker.getPosition().latitude;
+                                double dstLng = marker.getPosition().longitude;
+
+                                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                                        Uri.parse("http://maps.google.com/maps?saddr="
                                                 + myLocation.latitude + "," + myLocation.longitude
-                                                + "&daddr=" + marker.getPosition().latitude + ","
-                                                + marker.getPosition().longitude + "&dirflg=w"));
+                                                + "&daddr=" + dstLat + "," + dstLng
+                                                + "&dirflg=" + (walkingDirections ? "w" : "d")));
                                 startActivity(intent);
                             } else {
                                 Toast.makeText(CampusMapActivity.this,
