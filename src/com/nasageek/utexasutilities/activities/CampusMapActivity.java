@@ -385,13 +385,13 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                     MyIconGenerator ig = new MyIconGenerator(this);
                     int STYLE_RED = 0xfff44336;
                     int STYLE_GREEN = 0xff4caf50;
-                    int STYLE_YELLOW = 0xff9E9E9E;//FFC107;
+                    int STYLE_GRAY = 0xffBDBDBD;
 
 
                     int STYLE_GREEN_FADED = 0xff81C784;//A5D6A7;
                     int STYLE_RED_FADED = 0xffEF9A9A;
 
-                    int styles[] = {STYLE_YELLOW, STYLE_GREEN_FADED, STYLE_GREEN};
+                    int styles[] = {STYLE_GRAY, STYLE_GREEN_FADED, STYLE_GREEN};
                     int styles2[] = {STYLE_GREEN, STYLE_GREEN_FADED, STYLE_RED_FADED, STYLE_RED};
 
                     ig.setTextAppearance(android.R.style.TextAppearance_Inverse);
@@ -410,7 +410,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                     }
 
                     int count = (int) (Math.random() * 100);
-                    ig.setColor(styles2[4 * count / 100]);
+                    ig.setColor(styles[3 * count / 100]);
 
                     SpannableString title = new SpannableString(pm.getTitle());
                     title.setSpan(new StyleSpan(Typeface.BOLD), 0, pm.getTitle().length(), 0);
@@ -757,13 +757,13 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                         MyIconGenerator ig = new MyIconGenerator(this);
                         int STYLE_RED = 0xfff44336;
                         int STYLE_GREEN = 0xff4caf50;
-                        int STYLE_YELLOW = 0xffBDBDBD;
+                        int STYLE_GRAY = 0xffBDBDBD;
 
 
                         int STYLE_GREEN_FADED = 0xff81C784;
                         int STYLE_RED_FADED = 0xffEF9A9A;
 
-                        int styles[] = {STYLE_YELLOW, STYLE_GREEN_FADED, STYLE_GREEN};
+                        int styles[] = {STYLE_GRAY, STYLE_GREEN_FADED, STYLE_GREEN};
                         int styles2[] = {STYLE_RED, STYLE_RED_FADED, STYLE_GREEN_FADED, STYLE_GREEN};
 
                         ig.setTextAppearance(android.R.style.TextAppearance_Inverse);
@@ -783,7 +783,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                             }
 
                             int count = (int) (Math.random() * 100);
-                            ig.setColor(styles2[4 * count / 100]);
+                            ig.setColor(styles[3 * count / 100]);
 
                             // for bounding the camera later
                             llbuilder.include(new LatLng(pm.getLatitude(), pm.getLongitude()));
