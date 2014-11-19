@@ -202,9 +202,6 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         shownStops = new MarkerManager<>(mMap);
         polylineMap = new HashMap<>();
 
-        if (savedInstanceState != null) {
-            buildingIdList.add(savedInstanceState.getString("buildingId"));
-        }
         setupActionBar();
         mapView = getSupportFragmentManager().findFragmentById(R.id.map).getView();
         if (mapView.getViewTreeObserver() != null && mapView.getViewTreeObserver().isAlive()) {
@@ -537,10 +534,9 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         }
     }
 
-    //TODO: actually save the buildingId(s) and restore them
+    //TODO: save and restore all map items (markers & polylines & garages in some cases)
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // savedInstanceState.putString("buildingId", buildingId);
         super.onSaveInstanceState(savedInstanceState);
     }
 
