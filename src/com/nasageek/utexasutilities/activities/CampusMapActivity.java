@@ -839,7 +839,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
 
                         CharSequence text = setupGarageMarkerText(pm.getTitle(), openSpots + "");
                         ig.setColor(openSpots < 20 ? STYLE_GRAY : openSpots < 40 ? STYLE_GREEN_FADED : STYLE_GREEN);
-                        if (shownGarages.isShowing(pm)) {
+                        if (shownGarages.isShowing(pm, marker.getId())) {
                             marker.setIcon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)));
                         }
                     }
@@ -864,7 +864,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
 
                         CharSequence text = setupGarageMarkerText(pm.getTitle(), "X");
                         ig.setColor(STYLE_GRAY);
-                        if (shownGarages.isShowing(pm)) {
+                        if (shownGarages.isShowing(pm, marker.getId())) {
                             marker.setIcon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)));
                         }
                     }

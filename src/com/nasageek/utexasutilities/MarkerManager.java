@@ -38,7 +38,15 @@ public class MarkerManager<E> {
         markerBackingMap.clear();
     }
 
-    public boolean isShowing(E markerBacking) {
-        return markerBackingMap.containsKey(markerBacking);
+    /**
+     * Checks to see if markerBacking is currently being managed (and thus is being shown).
+     * The markerId is also necessary because we want to make sure the markers match, too.
+     * @param markerBacking
+     * @param markerId
+     * @return
+     */
+    public boolean isShowing(E markerBacking, String markerId) {
+        return markerBackingMap.containsKey(markerBacking)
+                && markerBackingMap.get(markerBacking).getId().equals(markerId);
     }
 }
