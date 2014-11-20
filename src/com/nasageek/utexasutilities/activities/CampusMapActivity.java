@@ -256,8 +256,11 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                         for (Placemark pm : garageDataSet) {
                             addGaragePlacemarkToMap(ig, pm);
                         }
-                        mMap.animateCamera(
-                                CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 120));
+                        // we let the map do its own thing if the Activity is being restored
+                        if (!restoring) {
+                            mMap.animateCamera(
+                                    CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 120));
+                        }
                     }
                 }
             }
