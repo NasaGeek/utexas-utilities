@@ -130,6 +130,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
 
     private static final int styles[] = {STYLE_GRAY, STYLE_GREEN_FADED, STYLE_GREEN};
     private static final int styles2[] = {STYLE_GREEN, STYLE_GREEN_FADED, STYLE_RED_FADED, STYLE_RED};
+    private boolean restoring;
 
     //@formatter:off
     public enum Route {
@@ -193,6 +194,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_layout);
+        restoring = savedInstanceState != null;
         setupMapIfNeeded();
         assets = getAssets();
         settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -222,7 +224,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                 }
             });
         }
-        setupLocation();
+        setupLocation(!restoring);
         setupXmlReader();
         navSaxHandler = new RouteSaxHandler();
 
@@ -387,7 +389,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == GPS_SETTINGS_REQ_CODE && resultCode == RESULT_CANCELED) {
-            setupLocation();
+            setupLocation(true);
         }
     }
 
@@ -448,7 +450,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         buildingIdList.clear();
     }
 
-    private void setupLocation() {
+    private void setupLocation(boolean initialLaunch) {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         Criteria crit = new Criteria();
         locProvider = locationManager.getBestProvider(crit, true);
@@ -513,11 +515,11 @@ public class CampusMapActivity extends SherlockFragmentActivity {
 
             lastKnownLocation = locationManager.getLastKnownLocation(locProvider);
         }
-        moveToInitialLoc();
+        moveToInitialLoc(initialLaunch);
     }
 
-    private void moveToInitialLoc() {
-        if (checkReady()) {
+    private void moveToInitialLoc(boolean initialLaunch) {
+        if (checkReady() && initialLaunch) {
             if (mMap.getMyLocation() != null && settings.getBoolean("starting_location", false)) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                         new LatLng(mMap.getMyLocation().getLatitude(),
