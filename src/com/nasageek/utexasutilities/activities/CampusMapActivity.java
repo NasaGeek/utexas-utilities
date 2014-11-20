@@ -130,7 +130,9 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     private static final int STYLE_RED_FADED = 0xFFEF9A9A;
 
     private static final int styles[] = {STYLE_GRAY, STYLE_GREEN_FADED, STYLE_GREEN};
-    private static final int styles2[] = {STYLE_GREEN, STYLE_GREEN_FADED, STYLE_RED_FADED, STYLE_RED};
+    private static final int styles2[] =
+            {STYLE_GREEN, STYLE_GREEN_FADED, STYLE_RED_FADED, STYLE_RED};
+
     private boolean mockGarageData = false;
     private boolean restoring;
 
@@ -429,10 +431,8 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                 }
                 llbuilder.include(buildingLatLng);
 
-                if (buildingIdList.size() == 1) // don't be moving the camera
-                // around or showing InfoWindows
-                // for more than one building
-                {
+                // don't move the camera around or showing InfoWindows for more than one building
+                if (buildingIdList.size() == 1) {
                     if (autoZoom) {
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(buildingLatLng, 16f));
                     } else {
@@ -527,7 +527,8 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                         new LatLng(mMap.getMyLocation().getLatitude(),
                                 mMap.getMyLocation().getLongitude()), 16f
                 ));
-            } else if (lastKnownLocation != null && settings.getBoolean("starting_location", false)) {
+            } else if (lastKnownLocation != null
+                    && settings.getBoolean("starting_location", false)) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                         new LatLng(lastKnownLocation.getLatitude(),
                                 lastKnownLocation.getLongitude()), 16f
@@ -838,7 +839,9 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                         }
 
                         CharSequence text = setupGarageMarkerText(pm.getTitle(), openSpots + "");
-                        ig.setColor(openSpots < 20 ? STYLE_GRAY : openSpots < 40 ? STYLE_GREEN_FADED : STYLE_GREEN);
+                        ig.setColor(openSpots < 20 ? STYLE_GRAY
+                                                   : openSpots < 40 ? STYLE_GREEN_FADED
+                                                                    : STYLE_GREEN);
                         if (shownGarages.isShowing(pm, marker.getId())) {
                             marker.setIcon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)));
                         }
@@ -983,11 +986,11 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                 String times;
                 OkHttpClient httpclient = new OkHttpClient();
                 String data;
-                String requestUrl = "http://www.capmetro.org/planner/s_service.asp?tool=NB&stopid=" + i;
+                String reqUrl = "http://www.capmetro.org/planner/s_service.asp?tool=NB&stopid="+ i;
 
                 try {
                     Request get = new Request.Builder()
-                            .url(requestUrl)
+                            .url(reqUrl)
                             .build();
                     Response response = httpclient.newCall(get).execute();
                     if(!response.isSuccessful()) {
