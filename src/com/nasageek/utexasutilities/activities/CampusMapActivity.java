@@ -17,6 +17,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.SpannableString;
@@ -803,27 +804,85 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
-
+                e.printStackTrace();
+                showErrorGarageMarker();
             }
 
             @Override
-            public void onResponse(Response response) throws IOException {
-                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-                parseGarageData(response.body().string());
+            public void onResponse(final Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    showErrorGarageMarker();
+                    return;
+                }
+                new Handler(CampusMapActivity.this.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        int openSpots;
+                        try {
+                            openSpots = parseGarageData(response.body().string());
+                        } catch (IOException e) {
+                            openSpots = 0;
+                            e.printStackTrace();
+                        }
+
+                        // special rotations to prevent overlap
+                        if (pm.getTitle().equals("SWG")) {
+                            ig.setRotation(180);
+                            ig.setContentRotation(180);
+                        } else if (pm.getTitle().equals("TRG")) {
+                            ig.setRotation(90);
+                            ig.setContentRotation(270);
+                        } else {
+                            ig.setRotation(0);
+                            ig.setContentRotation(0);
+                        }
+
+                        CharSequence text = setupGarageMarkerText(pm.getTitle(), openSpots + "");
+                        ig.setColor(openSpots < 20 ? STYLE_GRAY : openSpots < 40 ? STYLE_GREEN_FADED : STYLE_GREEN);
+                        if (shownGarages.isShowing(pm)) {
+                            marker.setIcon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)));
+                        }
+                    }
+                });
+            }
+
+            private void showErrorGarageMarker() {
+                new Handler(CampusMapActivity.this.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // special rotations to prevent overlap
+                        if (pm.getTitle().equals("SWG")) {
+                            ig.setRotation(180);
+                            ig.setContentRotation(180);
+                        } else if (pm.getTitle().equals("TRG")) {
+                            ig.setRotation(90);
+                            ig.setContentRotation(270);
+                        } else {
+                            ig.setRotation(0);
+                            ig.setContentRotation(0);
+                        }
+
+                        CharSequence text = setupGarageMarkerText(pm.getTitle(), "X");
+                        ig.setColor(STYLE_GRAY);
+                        if (shownGarages.isShowing(pm)) {
+                            marker.setIcon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)));
+                        }
+                    }
+                });
             }
         });
     }
 
-    private double parseGarageData(String rawData) {
+    private int parseGarageData(String rawData) {
         String lines[] = rawData.split("\n");
         if (lines.length < 6) {
             // error
             throw new RuntimeException();
         }
-        if ("Facility".equals(lines[2])) {
-            int total = Integer.parseInt(lines[3]);
-            int occupied = Integer.parseInt(lines[4]);
-            return occupied / total;
+        if ("Facility".equals(lines[2].trim())) {
+            int total = Integer.parseInt(lines[3].trim());
+            int occupied = Integer.parseInt(lines[4].trim());
+            return total - occupied;
         } else {
             // error
             throw new RuntimeException();
