@@ -9,4 +9,9 @@
             android:title="Show all buildings"
             android:checkable="true"
             android:checked="false"/>
+    <item android:id="@+id/mockGarageData"
+          android:showAsAction="never"
+          android:title="Random garage data"
+          android:checkable="true"
+          android:checked="false"/>
 </menu>

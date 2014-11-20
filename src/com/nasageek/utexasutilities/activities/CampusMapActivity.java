@@ -130,6 +130,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
 
     private static final int styles[] = {STYLE_GRAY, STYLE_GREEN_FADED, STYLE_GREEN};
     private static final int styles2[] = {STYLE_GREEN, STYLE_GREEN_FADED, STYLE_RED_FADED, STYLE_RED};
+    private boolean mockGarageData = false;
     private boolean restoring;
 
     //@formatter:off
@@ -660,24 +661,28 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         }
 
         int count = (int) (Math.random() * 100);
-        ig.setColor(styles[3 * count / 100]);
+        ig.setColor(mockGarageData ? styles[3 * count / 100] : STYLE_GRAY);
 
         // for bounding the camera later
         llbuilder.include(new LatLng(pm.getLatitude(), pm.getLongitude()));
 
-        SpannableString title = new SpannableString(pm.getTitle());
-        SpannableString number = new SpannableString(count + "");
-        title.setSpan(new StyleSpan(Typeface.BOLD), 0, pm.getTitle().length(), 0);
-        number.setSpan(new AbsoluteSizeSpan(50), 0, number.length(), 0);
-        CharSequence text = TextUtils.concat(number, "\n", title);
-
-         return shownGarages.placeMarker(pm, new MarkerOptions()
+        CharSequence text =
+                setupGarageMarkerText(pm.getTitle(), mockGarageData ? count + "" : "...");
+        Marker garageMarker = shownGarages.placeMarker(pm, new MarkerOptions()
                 .position(new LatLng(pm.getLatitude(), pm.getLongitude()))
                 .icon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)))
                 .title(GARAGE_TAG + pm.getTitle())
                 // strip out the "(formerly PGX)" text for garage descriptions
                 .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
                 .anchor(ig.getAnchorU(), ig.getAnchorV()), false);
+        if (!mockGarageData) {
+            try {
+                fetchGarageData(pm.getTitle(), garageMarker, pm, ig);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return garageMarker;
     }
 
     @Override
@@ -773,11 +778,24 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                     }
                 }
                 break;
+            case R.id.mockGarageData:
+                mockGarageData = !item.isChecked();
+                item.setChecked(!item.isChecked());
+                break;
         }
         return true;
     }
 
-    private void fetchGarageData(String garage) throws Exception {
+    private CharSequence setupGarageMarkerText(String title, String number) {
+        SpannableString titleSpan = new SpannableString(title);
+        titleSpan.setSpan(new StyleSpan(Typeface.BOLD), 0, titleSpan.length(), 0);
+        SpannableString numberSpan = new SpannableString(number);
+        numberSpan.setSpan(new AbsoluteSizeSpan(50), 0, number.length(), 0);
+        return TextUtils.concat(numberSpan, "\n", titleSpan);
+    }
+
+    private void fetchGarageData(String garage, final Marker marker, final Placemark pm,
+                                 final MyIconGenerator ig) throws IOException {
         Request request = new Request.Builder()
                 .url(String.format(GARAGE_BASE_URL, garageFileMap.get(garage)))
                 .build();
