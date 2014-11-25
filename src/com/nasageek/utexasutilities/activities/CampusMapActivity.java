@@ -175,10 +175,6 @@ public class CampusMapActivity extends SherlockFragmentActivity {
             return code + "";
         }
 
-        public String fullName() {
-            return fullName;
-        }
-
         @Override
         public String toString() {
             return fullName;
@@ -221,7 +217,8 @@ public class CampusMapActivity extends SherlockFragmentActivity {
 
         setupActionBar();
         mapView = getSupportFragmentManager().findFragmentById(R.id.map).getView();
-        if (mapView.getViewTreeObserver() != null && mapView.getViewTreeObserver().isAlive()) {
+        if (mapView != null && mapView.getViewTreeObserver() != null
+                && mapView.getViewTreeObserver().isAlive()) {
             mapView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
                 @SuppressLint("NewApi")
                 @SuppressWarnings("deprecation")
@@ -284,9 +281,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             xmlreader = parser.getXMLReader();
-        } catch (ParserConfigurationException e1) {
-            e1.printStackTrace();
-        } catch (SAXException e1) {
+        } catch (ParserConfigurationException | SAXException e1) {
             e1.printStackTrace();
         }
     }
@@ -327,9 +322,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
             InputSource is = new InputSource(assets.open("buildings.kml"));
             xmlreader.parse(is);
             return builSaxHandler.getParsedData();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (SAXException | IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -425,8 +418,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         llbuilder = LatLngBounds.builder();
 
         for (Placemark pm : fullDataSet) {
-            if (buildingIdList.contains(pm.getTitle()))// buildingId.equalsIgnoreCase(pm.getTitle()))
-            {
+            if (buildingIdList.contains(pm.getTitle())) {
                 foundCount++;
 
                 LatLng buildingLatLng = new LatLng(pm.getLatitude(), pm.getLongitude());
