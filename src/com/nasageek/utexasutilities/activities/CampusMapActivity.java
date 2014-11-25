@@ -888,19 +888,30 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         });
     }
 
-    private int parseGarageData(String rawData) {
+    /**
+     * Parses the garage data file and returns the number of free spots on the garage.
+     * @param rawData Plaintext data from the garage dat file
+     * @return the total number of free spots
+     * @throws java.io.IOException if the parsing failed
+     */
+    private int parseGarageData(String rawData) throws IOException {
         String lines[] = rawData.split("\n");
         if (lines.length < 6) {
             // error
-            throw new RuntimeException();
+            throw new IOException("Not enough lines in the garage file.");
         }
         if ("Facility".equals(lines[2].trim())) {
-            int total = Integer.parseInt(lines[3].trim());
-            int occupied = Integer.parseInt(lines[4].trim());
-            return total - occupied;
+            int total, occupied;
+            try {
+                total = Integer.parseInt(lines[3].trim());
+                occupied = Integer.parseInt(lines[4].trim());
+                return total - occupied;
+            } catch (NumberFormatException nfe) {
+                throw new IOException("Parking counts could not be parsed from the garage file.");
+            }
         } else {
             // error
-            throw new RuntimeException();
+            throw new IOException("Facility data could not be found in the garage file.");
         }
     }
 
