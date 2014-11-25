@@ -79,6 +79,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -131,7 +133,16 @@ public class CampusMapActivity extends SherlockFragmentActivity {
 
     private static final int styles[] = {STYLE_GRAY, STYLE_GREEN_FADED, STYLE_GREEN};
     private static final int styles2[] =
-            {STYLE_GREEN, STYLE_GREEN_FADED, STYLE_RED_FADED, STYLE_RED};
+            {STYLE_RED, STYLE_RED_FADED, STYLE_GREEN_FADED, STYLE_GREEN};
+
+    private static NavigableMap<Integer, Integer> stylesMap;
+    static {
+        stylesMap = new TreeMap<>();
+        stylesMap.put(0, STYLE_RED);
+        stylesMap.put(20, STYLE_RED_FADED);
+        stylesMap.put(30, STYLE_GREEN_FADED);
+        stylesMap.put(50, STYLE_GREEN);
+    }
 
     private boolean mockGarageData = false;
     private boolean restoring;
@@ -666,7 +677,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         }
 
         int count = (int) (Math.random() * 100);
-        ig.setColor(mockGarageData ? styles[3 * count / 100] : STYLE_GRAY);
+        ig.setColor(mockGarageData ? styles2[4 * count / 100] : STYLE_GRAY);
 
         // for bounding the camera later
         llbuilder.include(new LatLng(pm.getLatitude(), pm.getLongitude()));
@@ -842,9 +853,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                         }
 
                         CharSequence text = setupGarageMarkerText(pm.getTitle(), openSpots + "");
-                        ig.setColor(openSpots < 20 ? STYLE_GRAY
-                                                   : openSpots < 40 ? STYLE_GREEN_FADED
-                                                                    : STYLE_GREEN);
+                        ig.setColor(stylesMap.floorEntry(openSpots).getValue());
                         if (shownGarages.isShowing(pm, marker.getId())) {
                             marker.setIcon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)));
                         }
