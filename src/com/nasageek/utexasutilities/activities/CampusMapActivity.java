@@ -821,12 +821,14 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                     showErrorGarageMarker();
                     return;
                 }
+                final String responseString = response.body().string();
+
                 new Handler(CampusMapActivity.this.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
                         int openSpots;
                         try {
-                            openSpots = parseGarageData(response.body().string());
+                            openSpots = parseGarageData(responseString);
                         } catch (IOException e) {
                             openSpots = 0;
                             e.printStackTrace();
