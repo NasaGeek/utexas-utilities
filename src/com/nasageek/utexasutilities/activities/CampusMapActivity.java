@@ -71,6 +71,8 @@ import org.xml.sax.XMLReader;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
@@ -105,6 +107,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     private List<Placemark> garageDataSet;
 
     private SharedPreferences settings;
+    private SharedPreferences garageCache;
 
     private View mapView;
     protected Boolean mSetCameraToBounds = false;
@@ -117,6 +120,8 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     private Map<String, Polyline> polylineMap;
     private GoogleMap mMap;
     private final OkHttpClient client = new OkHttpClient();
+    private final SimpleDateFormat lastModDateFormat =
+            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
     private static final int CURRENT_ROUTES_VERSION = 1;
     private static final int BURNT_ORANGE = Color.parseColor("#DDCC5500");
@@ -144,6 +149,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         stylesMap.put(50, STYLE_GREEN);
     }
 
+    private static String GARAGE_CACHE_NAME = "garage_cache";
     private boolean mockGarageData = false;
     private boolean restoring;
 
@@ -209,6 +215,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         setupMapIfNeeded();
         assets = getAssets();
         settings = PreferenceManager.getDefaultSharedPreferences(this);
+        garageCache = getSharedPreferences(GARAGE_CACHE_NAME, 0);
         buildingIdList = new ArrayList<>();
         shownBuildings = new MarkerManager<>(mMap);
         shownGarages = new MarkerManager<>(mMap);
@@ -684,10 +691,17 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                 .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
                 .anchor(ig.getAnchorU(), ig.getAnchorV()), false);
         if (!mockGarageData) {
-            try {
-                fetchGarageData(pm.getTitle(), garageMarker, pm, ig);
-            } catch (Exception e) {
-                e.printStackTrace();
+            long expireTime = garageCache.getLong(pm.getTitle() + "expire", 0);
+            if (System.currentTimeMillis() > expireTime) {
+                try {
+                    fetchGarageData(pm.getTitle(), garageMarker, pm, ig);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                int openSpots = garageCache.getInt(pm.getTitle() + "spots", 0);
+                int backgroundColor = stylesMap.floorEntry(openSpots).getValue();
+                setGarageIcon(ig, pm, garageMarker, openSpots + "", backgroundColor);
             }
         }
         return garageMarker;
@@ -802,6 +816,27 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         return TextUtils.concat(numberSpan, "\n", titleSpan);
     }
 
+    private void setGarageIcon(MyIconGenerator ig, Placemark pm, Marker marker, String iconText,
+                               int bgColor) {
+        // special rotations to prevent overlap
+        if (pm.getTitle().equals("SWG")) {
+            ig.setRotation(180);
+            ig.setContentRotation(180);
+        } else if (pm.getTitle().equals("TRG")) {
+            ig.setRotation(90);
+            ig.setContentRotation(270);
+        } else {
+            ig.setRotation(0);
+            ig.setContentRotation(0);
+        }
+
+        CharSequence text = setupGarageMarkerText(pm.getTitle(), iconText);
+        ig.setColor(bgColor);
+        if (shownGarages.isShowing(pm, marker.getId())) {
+            marker.setIcon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)));
+        }
+    }
+
     private void fetchGarageData(String garage, final Marker marker, final Placemark pm,
                                  final MyIconGenerator ig) throws IOException {
         Request request = new Request.Builder()
@@ -822,35 +857,28 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                     return;
                 }
                 final String responseString = response.body().string();
+                final String lastModified = response.header("Last-Modified");
+                final long lastModMillis = lastModDateFormat.parse(lastModified,
+                        new ParsePosition(0)).getTime();
+                final SharedPreferences.Editor edit = garageCache.edit();
+                int tempOpenSpots;
+                try {
+                    tempOpenSpots = parseGarageData(responseString);
+                } catch (IOException e) {
+                    tempOpenSpots = 0;
+                    e.printStackTrace();
+                }
+                final int openSpots = tempOpenSpots;
+                // cache for 3 minutes
+                edit.putLong(pm.getTitle() + "expire", lastModMillis + 3 * 60 * 1000)
+                        .apply();
+                edit.putInt(pm.getTitle() + "spots", openSpots).apply();
 
                 new Handler(CampusMapActivity.this.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        int openSpots;
-                        try {
-                            openSpots = parseGarageData(responseString);
-                        } catch (IOException e) {
-                            openSpots = 0;
-                            e.printStackTrace();
-                        }
-
-                        // special rotations to prevent overlap
-                        if (pm.getTitle().equals("SWG")) {
-                            ig.setRotation(180);
-                            ig.setContentRotation(180);
-                        } else if (pm.getTitle().equals("TRG")) {
-                            ig.setRotation(90);
-                            ig.setContentRotation(270);
-                        } else {
-                            ig.setRotation(0);
-                            ig.setContentRotation(0);
-                        }
-
-                        CharSequence text = setupGarageMarkerText(pm.getTitle(), openSpots + "");
-                        ig.setColor(stylesMap.floorEntry(openSpots).getValue());
-                        if (shownGarages.isShowing(pm, marker.getId())) {
-                            marker.setIcon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)));
-                        }
+                        int backgroundColor = stylesMap.floorEntry(openSpots).getValue();
+                        setGarageIcon(ig, pm, marker, openSpots + "", backgroundColor);
                     }
                 });
             }
@@ -859,23 +887,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                 new Handler(CampusMapActivity.this.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        // special rotations to prevent overlap
-                        if (pm.getTitle().equals("SWG")) {
-                            ig.setRotation(180);
-                            ig.setContentRotation(180);
-                        } else if (pm.getTitle().equals("TRG")) {
-                            ig.setRotation(90);
-                            ig.setContentRotation(270);
-                        } else {
-                            ig.setRotation(0);
-                            ig.setContentRotation(0);
-                        }
-
-                        CharSequence text = setupGarageMarkerText(pm.getTitle(), "X");
-                        ig.setColor(STYLE_GRAY);
-                        if (shownGarages.isShowing(pm, marker.getId())) {
-                            marker.setIcon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)));
-                        }
+                        setGarageIcon(ig, pm, marker, "X", STYLE_GRAY);
                     }
                 });
             }
