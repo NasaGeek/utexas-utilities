@@ -15,6 +15,7 @@ import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.model.BBCourse;
 import com.nasageek.utexasutilities.model.Course;
+import com.nasageek.utexasutilities.model.canvas.CanvasCourse;
 
 import java.util.List;
 
@@ -126,7 +127,12 @@ public class BBClassAdapter extends AmazingAdapter {
             }
             holder.indicator.setImageDrawable(holder.blackboardIcon);
         } else if (course.getType().equals("canvas")) {
-            holder.idview.setText(course.getCourseCode());
+            CanvasCourse canvasCourse = (CanvasCourse) course;
+            if (canvasCourse.getUnique() == null) {
+                holder.idview.setText(course.getCourseCode());
+            } else {
+                holder.idview.setText(course.getCourseCode() + " - " + canvasCourse.getUnique());
+            }
             holder.indicator.setImageDrawable(holder.canvasIcon);
         }
 

@@ -32,6 +32,7 @@ public class CanvasCourse extends Course implements Parcelable {
     };
 
     private Term term;
+    private Section[] sections;
 
     public CanvasCourse(Parcel in) {
         super.name = in.readString();
@@ -40,10 +41,25 @@ public class CanvasCourse extends Course implements Parcelable {
         super.start_at = new Date(in.readLong());
         super.type = in.readString();
         super.term_name = in.readString();
+        term = in.readParcelable(Term.class.getClassLoader());
+        sections = in.createTypedArray(Section.CREATOR);
     }
 
     public CanvasCourse() {
         type = "canvas";
+    }
+
+    @Override
+    public String getCourseCode() {
+        return super.getCourseCode();
+    }
+
+    public String getUnique() {
+        if (sections == null || sections.length < 1) {
+            return null;
+        }
+
+        return sections[0].getName();
     }
 
     @Override
@@ -98,5 +114,6 @@ public class CanvasCourse extends Course implements Parcelable {
         dest.writeString(super.type);
         dest.writeString(super.term_name);
         dest.writeParcelable(term, 0);
+        dest.writeTypedArray(sections, 0);
     }
 }
