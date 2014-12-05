@@ -833,7 +833,9 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         CharSequence text = setupGarageMarkerText(pm.getTitle(), iconText);
         ig.setColor(bgColor);
         if (shownGarages.isShowing(pm, marker.getId())) {
+            boolean infoWindow = marker.isInfoWindowShown();
             marker.setIcon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)));
+            if (infoWindow) marker.showInfoWindow();
         }
     }
 
