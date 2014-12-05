@@ -81,6 +81,13 @@
 	        android:paddingTop="70dp"
 	        android:text="@string/thankskevin" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="16dp"
+            android:text="@string/other_contributors" />
+
 	    <TextView
 	        android:id="@+id/privacy_policy_link"
 	        android:layout_width="fill_parent"
