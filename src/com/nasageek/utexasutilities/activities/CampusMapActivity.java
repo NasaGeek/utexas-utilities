@@ -871,8 +871,8 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                     e.printStackTrace();
                 }
                 final int openSpots = tempOpenSpots;
-                // cache for 3 minutes
-                edit.putLong(pm.getTitle() + "expire", lastModMillis + 3 * 60 * 1000)
+                // cache for 7 minutes
+                edit.putLong(pm.getTitle() + "expire", lastModMillis + 7 * 60 * 1000)
                         .apply();
                 edit.putInt(pm.getTitle() + "spots", openSpots).apply();
 
