@@ -1,8 +1,6 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import com.google.android.gms.internal.is;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
