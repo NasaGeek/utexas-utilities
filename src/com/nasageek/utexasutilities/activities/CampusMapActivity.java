@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
@@ -23,10 +24,11 @@ import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
+import android.text.style.LineHeightSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -45,7 +47,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -90,7 +94,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class CampusMapActivity extends SherlockFragmentActivity {
+public class CampusMapActivity extends SherlockFragmentActivity implements OnMapReadyCallback {
 
     private LocationManager locationManager;
     private LocationListener locationListener;
@@ -122,6 +126,7 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     private final OkHttpClient client = new OkHttpClient();
     private final SimpleDateFormat lastModDateFormat =
             new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+    private boolean handleCheckInAsyncLoad = false;
 
     private static final int CURRENT_ROUTES_VERSION = 1;
     private static final int BURNT_ORANGE = Color.parseColor("#DDCC5500");
@@ -212,21 +217,76 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_layout);
         restoring = savedInstanceState != null;
-        setupMapIfNeeded();
+        ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+                .getMapAsync(this);
         assets = getAssets();
         settings = PreferenceManager.getDefaultSharedPreferences(this);
         garageCache = getSharedPreferences(GARAGE_CACHE_NAME, 0);
         buildingIdList = new ArrayList<>();
-        shownBuildings = new MarkerManager<>(mMap);
-        shownGarages = new MarkerManager<>(mMap);
-        shownStops = new MarkerManager<>(mMap);
         polylineMap = new HashMap<>();
 
         setupActionBar();
+        setupXmlReader();
+        navSaxHandler = new RouteSaxHandler();
+        buildingDataSet = parseBuildings();
+        if (buildingDataSet != null) {
+            fullDataSet = new ArrayList<>(buildingDataSet);
+        } else {
+            fullDataSet = new ArrayList<>();
+        }
+        garageDataSet = filterGarages(buildingDataSet);
+        CheckBox showGaragesCheck = (CheckBox) findViewById(R.id.chkbox_show_garages);
+        showGaragesCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                handleCheckInAsyncLoad = isChecked;
+            }
+        });
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.setMyLocationEnabled(true);
+
+        UiSettings ui = mMap.getUiSettings();
+        ui.setMyLocationButtonEnabled(true);
+        ui.setZoomControlsEnabled(true);
+        ui.setAllGesturesEnabled(true);
+        ui.setCompassEnabled(true);
+        ui.setMapToolbarEnabled(true);
+
+        mMap.setInfoWindowAdapter(new StopInfoAdapter());
+        mMap.setOnInfoWindowClickListener(new InfoClickListener());
+
+        shownBuildings = new MarkerManager<>(mMap);
+        shownGarages = new MarkerManager<>(mMap);
+        shownStops = new MarkerManager<>(mMap);
+
+        setupLocation(!restoring);
+        loadRoute(routeid);
+
+        CheckBox showGaragesCheck = (CheckBox) findViewById(R.id.chkbox_show_garages);
+        if (handleCheckInAsyncLoad) {
+            showAllGarageMarkers();
+        }
+        showGaragesCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (checkReady()) {
+                    if (!isChecked) {
+                        shownGarages.clearMarkers();
+                    } else {
+                        showAllGarageMarkers();
+                    }
+                }
+            }
+        });
+
         mapView = getSupportFragmentManager().findFragmentById(R.id.map).getView();
         if (mapView != null && mapView.getViewTreeObserver() != null
                 && mapView.getViewTreeObserver().isAlive()) {
-            mapView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+            mapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @SuppressLint("NewApi")
                 @SuppressWarnings("deprecation")
                 @Override
@@ -243,44 +303,8 @@ public class CampusMapActivity extends SherlockFragmentActivity {
                 }
             });
         }
-        setupLocation(!restoring);
-        setupXmlReader();
-        navSaxHandler = new RouteSaxHandler();
-
-        loadRoute(routeid);
-        buildingDataSet = parseBuildings();
-        if (buildingDataSet != null) {
-            fullDataSet = new ArrayList<>(buildingDataSet);
-        } else {
-            fullDataSet = new ArrayList<>();
-        }
-        garageDataSet = filterGarages(buildingDataSet);
-
-        CheckBox showGaragesCheck = (CheckBox) findViewById(R.id.chkbox_show_garages);
-        showGaragesCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (checkReady()) {
-                    if (!isChecked) {
-                        shownGarages.clearMarkers();
-                    } else {
-                        llbuilder = LatLngBounds.builder();
-                        MyIconGenerator ig = new MyIconGenerator(CampusMapActivity.this);
-                        ig.setTextAppearance(android.R.style.TextAppearance_Inverse);
-
-                        for (Placemark pm : garageDataSet) {
-                            addGaragePlacemarkToMap(ig, pm);
-                        }
-                        // we let the map do its own thing if the Activity is being restored
-                        if (!restoring) {
-                            mMap.animateCamera(
-                                    CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 120));
-                        }
-                    }
-                }
-            }
-        });
         handleIntent(getIntent());
+
     }
 
     private void setupXmlReader() {
@@ -383,25 +407,6 @@ public class CampusMapActivity extends SherlockFragmentActivity {
 
         routeid = ((Route) spinner.getAdapter().getItem(default_route)).getCode();
         actionbar.setSelectedNavigationItem(default_route);
-    }
-
-    private void setupMapIfNeeded() {
-        // Confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                setupMap();
-            }
-        }
-    }
-
-    private void setupMap() {
-        mMap.setMyLocationEnabled(true);
-        mMap.setInfoWindowAdapter(new StopInfoAdapter());
-        mMap.setOnInfoWindowClickListener(new InfoClickListener());
     }
 
     @Override
@@ -718,7 +723,6 @@ public class CampusMapActivity extends SherlockFragmentActivity {
     @Override
     public void onResume() {
         super.onResume();
-        setupMapIfNeeded();
         if (mMap != null) {
             mMap.getUiSettings().setCompassEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
@@ -920,6 +924,20 @@ public class CampusMapActivity extends SherlockFragmentActivity {
         } else {
             // error
             throw new IOException("Facility data could not be found in the garage file.");
+        }
+    }
+
+    private void showAllGarageMarkers() {
+        llbuilder = LatLngBounds.builder();
+        MyIconGenerator ig = new MyIconGenerator(CampusMapActivity.this);
+        ig.setTextAppearance(android.R.style.TextAppearance_Inverse);
+
+        for (Placemark pm : garageDataSet) {
+            addGaragePlacemarkToMap(ig, pm);
+        }
+        // we let the map do its own thing if the Activity is being restored
+        if (!restoring) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 120));
         }
     }
 
