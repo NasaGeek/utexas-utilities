@@ -686,8 +686,7 @@ public class CampusMapActivity extends SherlockFragmentActivity implements OnMap
         // for bounding the camera later
         llbuilder.include(new LatLng(pm.getLatitude(), pm.getLongitude()));
 
-        CharSequence text =
-                setupGarageMarkerText(pm.getTitle(), mockGarageData ? count + "" : "...");
+        CharSequence text = setupGarageMarkerText(mockGarageData ? count + "" : "...");
         Marker garageMarker = shownGarages.placeMarker(pm, new MarkerOptions()
                 .position(new LatLng(pm.getLatitude(), pm.getLongitude()))
                 .icon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)))
@@ -812,12 +811,20 @@ public class CampusMapActivity extends SherlockFragmentActivity implements OnMap
         return true;
     }
 
-    private CharSequence setupGarageMarkerText(String title, String number) {
-        SpannableString titleSpan = new SpannableString(title);
-        titleSpan.setSpan(new StyleSpan(Typeface.BOLD), 0, titleSpan.length(), 0);
+    private CharSequence setupGarageMarkerText(String number) {
         SpannableString numberSpan = new SpannableString(number);
-        numberSpan.setSpan(new AbsoluteSizeSpan(50), 0, number.length(), 0);
-        return TextUtils.concat(numberSpan, "\n", titleSpan);
+        numberSpan.setSpan(new AbsoluteSizeSpan(25, true), 0, number.length(), 0);
+        SpannableString spotsSpan = new SpannableString("open\nspots");
+        spotsSpan.setSpan(new AbsoluteSizeSpan(12, true), 0, spotsSpan.length(), 0);
+        numberSpan.setSpan(new LineHeightSpan() {
+            @Override
+            public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v,
+                                     Paint.FontMetricsInt fm) {
+                fm.bottom -= 6;
+                fm.descent -= 6;
+            }
+        }, 0, numberSpan.length(), 0);
+        return TextUtils.concat(numberSpan, "\n", spotsSpan);
     }
 
     private void setGarageIcon(MyIconGenerator ig, Placemark pm, Marker marker, String iconText,
@@ -834,7 +841,7 @@ public class CampusMapActivity extends SherlockFragmentActivity implements OnMap
             ig.setContentRotation(0);
         }
 
-        CharSequence text = setupGarageMarkerText(pm.getTitle(), iconText);
+        CharSequence text = setupGarageMarkerText(iconText);
         ig.setColor(bgColor);
         if (shownGarages.isShowing(pm, marker.getId())) {
             boolean infoWindow = marker.isInfoWindowShown();
