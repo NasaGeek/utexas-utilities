@@ -17,9 +17,8 @@ It should be possible to build UT Utilities using Gradle and Android Studio with
 Sorry, you're kind of on your own. Check out build.gradle to see what libraries you'll need to download.
 
 ## Contributors
-Henri Sweers - https://github.com/hzsweers
-
-Andrew Lin - https://github.com/andrewlin16
+- Henri Sweers - https://github.com/hzsweers
+- Andrew Lin - https://github.com/andrewlin16
 
 ## Other
 
