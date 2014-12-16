@@ -803,6 +803,7 @@ public class CampusMapActivity extends SherlockFragmentActivity implements OnMap
                     }
                 }
                 break;
+            // debug option
             case R.id.mockGarageData:
                 mockGarageData = !item.isChecked();
                 item.setChecked(!item.isChecked());

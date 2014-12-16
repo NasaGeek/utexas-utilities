@@ -45,6 +45,9 @@ android {
             assets.srcDirs = ['assets']
             manifest.srcFile 'AndroidManifest.xml'
         }
+        debug {
+            res.srcDirs = ['res-debug']
+        }
     }
     // TODO: You can put sensitive keystore data in an untracked .properties file or ENV variables
     // Example: http://stackoverflow.com/a/20872275/3034339
