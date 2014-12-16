@@ -859,7 +859,7 @@ public class CampusMapActivity extends SherlockFragmentActivity implements OnMap
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 showErrorGarageMarker();
             }
 
@@ -874,18 +874,22 @@ public class CampusMapActivity extends SherlockFragmentActivity implements OnMap
                 final long lastModMillis = lastModDateFormat.parse(lastModified,
                         new ParsePosition(0)).getTime();
                 final SharedPreferences.Editor edit = garageCache.edit();
+                boolean parseError = false;
                 int tempOpenSpots;
                 try {
                     tempOpenSpots = parseGarageData(responseString);
                 } catch (IOException e) {
                     tempOpenSpots = 0;
-                    e.printStackTrace();
+                    parseError = true;
+                    //e.printStackTrace();
                 }
                 final int openSpots = tempOpenSpots;
-                // cache for 7 minutes
-                edit.putLong(pm.getTitle() + "expire", lastModMillis + 7 * 60 * 1000)
-                        .apply();
-                edit.putInt(pm.getTitle() + "spots", openSpots).apply();
+                if (!parseError) {
+                    // cache for 7 minutes
+                    edit.putLong(pm.getTitle() + "expire", lastModMillis + 7 * 60 * 1000)
+                            .apply();
+                    edit.putInt(pm.getTitle() + "spots", openSpots).apply();
+                }
 
                 new Handler(CampusMapActivity.this.getMainLooper()).post(new Runnable() {
                     @Override
