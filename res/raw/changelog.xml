@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="1.99.8" versioncode="35">
+        <change>Live garage capacity data has been added to the Campus Map!</change>
+        <change>Bug fixes</change>
+    </release>
     <release version="1.99.7" versioncode="34">
         <change>Update main screen icons slightly</change>
         <change>Bug fixes</change>
