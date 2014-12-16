@@ -18,6 +18,7 @@ Sorry, you're kind of on your own. Check out build.gradle to see what libraries 
 
 ## Contributors
 Henri Sweers - https://github.com/hzsweers
+
 Andrew Lin - https://github.com/andrewlin16
 
 ## Other
