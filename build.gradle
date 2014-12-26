@@ -67,7 +67,8 @@ android {
         // Release build task. Uses the release signing config above for signing it
         // To run from command line, use './gradlew.bat assembleRelease' from project root
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.cfg'
             signingConfig signingConfigs.release
