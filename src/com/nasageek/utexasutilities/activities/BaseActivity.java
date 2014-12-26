@@ -1,9 +1,10 @@
 package com.nasageek.utexasutilities.activities;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import android.support.v7.app.AppCompatActivity;
+
 import com.google.android.gms.analytics.GoogleAnalytics;
 
-public abstract class BaseActivity extends SherlockFragmentActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     public void onStart() {

@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.R;
@@ -40,7 +40,7 @@ import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_
 
 //TODO: last transaction doesn't show when loading dialog is present at the bottom, low priority fix
 
-public class TransactionsFragment extends SherlockFragment {
+public class TransactionsFragment extends Fragment {
     private OkHttpClient httpclient;
     private LinearLayout t_pb_ll;
     private AmazingListView tlv;
@@ -52,7 +52,6 @@ public class TransactionsFragment extends SherlockFragment {
     private LinearLayout ell, transactionsLayout;
 
     private FormEncodingBuilder postdata;
-    // private SherlockFragmentActivity parentAct;
 
     private View vg;
     private String balance;
@@ -166,6 +165,7 @@ public class TransactionsFragment extends SherlockFragment {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void refresh() {
         if (fetch != null) {
             fetch.cancel(true);
@@ -318,6 +318,7 @@ public class TransactionsFragment extends SherlockFragment {
             }
         }
 
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         @Override
         protected void onPostExecute(Character result) {
             if (!this.isCancelled()) {

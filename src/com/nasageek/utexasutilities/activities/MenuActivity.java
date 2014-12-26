@@ -4,15 +4,13 @@ package com.nasageek.utexasutilities.activities;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
@@ -250,7 +248,7 @@ public class MenuActivity extends BaseActivity {
         }
         initialisePaging(adapter.getItem(previousItem).code + "");
 
-        actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() {
+        actionbar.setListNavigationCallbacks(adapter, new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 
@@ -294,7 +292,7 @@ public class MenuActivity extends BaseActivity {
 
     private void initialisePaging(String restId) {
 
-        List<SherlockFragment> fragments = new Vector<>();
+        List<Fragment> fragments = new Vector<>();
         pager = (ViewPager) findViewById(R.id.viewpager);
 
         /**
@@ -306,11 +304,11 @@ public class MenuActivity extends BaseActivity {
         if (getSupportFragmentManager().findFragmentByTag(
                 Utility.makeFragmentName(pager.getId(), 0)) != null) {
 
-            fragments.add((SherlockFragment) getSupportFragmentManager().findFragmentByTag(
+            fragments.add(getSupportFragmentManager().findFragmentByTag(
                     Utility.makeFragmentName(pager.getId(), 0)));
-            fragments.add((SherlockFragment) getSupportFragmentManager().findFragmentByTag(
+            fragments.add(getSupportFragmentManager().findFragmentByTag(
                     Utility.makeFragmentName(pager.getId(), 1)));
-            fragments.add((SherlockFragment) getSupportFragmentManager().findFragmentByTag(
+            fragments.add(getSupportFragmentManager().findFragmentByTag(
                     Utility.makeFragmentName(pager.getId(), 2)));
         } else {
             fragments.add(MenuFragment.newInstance("Breakfast", restId));

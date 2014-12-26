@@ -10,12 +10,11 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.PreferenceActivity;
+import android.view.MenuItem;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
@@ -24,15 +23,16 @@ import com.nasageek.utexasutilities.Utility;
 
 import java.io.IOException;
 
-import static com.nasageek.utexasutilities.UTilitiesApplication.*;
+import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
+import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
-public class Preferences extends SherlockPreferenceActivity {
+public class Preferences extends PreferenceActivity {
 
     private Preference loginfield;
     private Preference passwordfield;
     private CheckBoxPreference autologin;
     private BaseAdapter ba;
-    private ActionBar actionbar;
+    //private ActionBar actionbar;
     private SecurePreferences sp;
 
     @SuppressWarnings("deprecation")
@@ -42,10 +42,10 @@ public class Preferences extends SherlockPreferenceActivity {
 
         sp = new SecurePreferences(this, "com.nasageek.utexasutilities.password", false);
 
-        actionbar = getSupportActionBar();
+        /*actionbar = getSupportActionBar();
         actionbar.setTitle("Preferences");
         actionbar.setHomeButtonEnabled(true);
-        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setDisplayHomeAsUpEnabled(true);*/
 
         addPreferencesFromResource(R.xml.preferences);
         getListView().setCacheColorHint(Color.TRANSPARENT);

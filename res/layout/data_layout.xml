@@ -13,9 +13,9 @@
         android:paddingBottom="3dp"
         android:textSize="15sp" />
 
+<!--    style="@style/Widget.Sherlock.ProgressBar.Horizontal" -->
     <ProgressBar
         android:id="@+id/percentDataUsed"
-        style="@style/Widget.Sherlock.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"

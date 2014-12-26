@@ -5,17 +5,17 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.nasageek.utexasutilities.R;
 
@@ -87,7 +87,7 @@ public class AboutMeActivity extends BaseActivity {
         return false;
     }
 
-    public static class PrivacyPolicyDialog extends SherlockDialogFragment {
+    public static class PrivacyPolicyDialog extends DialogFragment {
 
         public PrivacyPolicyDialog() {
         }
@@ -101,7 +101,7 @@ public class AboutMeActivity extends BaseActivity {
         }
     }
 
-    public static class LibraryLicenseDialog extends SherlockDialogFragment {
+    public static class LibraryLicenseDialog extends DialogFragment {
 
         public LibraryLicenseDialog() {
         }

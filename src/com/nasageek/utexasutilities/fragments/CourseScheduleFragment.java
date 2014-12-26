@@ -6,8 +6,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -18,12 +24,6 @@ import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.R;
@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 @SuppressWarnings("deprecation")
-public class CourseScheduleFragment extends SherlockFragment implements ActionModeFragment,
+public class CourseScheduleFragment extends Fragment implements ActionModeFragment,
         SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener,
         AdapterView.OnItemClickListener {
 
@@ -78,7 +78,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
     private ActionMode mode;
 
-    private SherlockFragmentActivity parentAct;
+    private AppCompatActivity parentAct;
     private String semId;
     private Boolean initialFragment;
 
@@ -130,7 +130,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        parentAct = this.getSherlockActivity();
+        parentAct = (AppCompatActivity) this.getActivity();
         semId = getArguments().getString("semId");
         initialFragment = getArguments().getBoolean("initialFragment");
     }
@@ -253,7 +253,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         currentClasstime = (Classtime) parent.getItemAtPosition(position);
 
         if (currentClasstime != null) {
-            mode = parentAct.startActionMode(new ScheduleActionMode());
+            mode = parentAct.startSupportActionMode(new ScheduleActionMode());
             slidingDrawer.setVisibility(View.VISIBLE);
 
             String text = " ";
@@ -581,7 +581,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.setTitle("Class Info");
-            MenuInflater inflater = parentAct.getSupportMenuInflater();
+            MenuInflater inflater = parentAct.getMenuInflater();
             inflater.inflate(R.menu.schedule_action_mode, menu);
             return true;
         }

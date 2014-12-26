@@ -2,12 +2,12 @@
 package com.nasageek.utexasutilities.activities;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.view.MenuItem;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.LoginWebViewClient;
 
 public class LoginActivity extends BaseActivity {

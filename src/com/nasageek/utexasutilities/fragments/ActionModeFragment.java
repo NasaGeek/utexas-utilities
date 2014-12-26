@@ -1,7 +1,7 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import com.actionbarsherlock.view.ActionMode;
+import android.support.v7.view.ActionMode;
 
 public interface ActionModeFragment {
 

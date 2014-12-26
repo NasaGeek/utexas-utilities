@@ -4,12 +4,12 @@ package com.nasageek.utexasutilities.activities;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
@@ -46,7 +46,7 @@ public class BalanceActivity extends BaseActivity {
 
     private void initialisePaging() {
 
-        List<SherlockFragment> fragments = new Vector<>();
+        List<Fragment> fragments = new Vector<>();
         /**
          * this is a bit of a hacky solution for something that should be
          * handled by default. on a rotate, pager caches the old fragments (with
@@ -55,9 +55,9 @@ public class BalanceActivity extends BaseActivity {
          */
         if (getSupportFragmentManager().findFragmentByTag(
                 Utility.makeFragmentName(pager.getId(), 0)) != null) {
-            fragments.add((SherlockFragment) getSupportFragmentManager().findFragmentByTag(
+            fragments.add(getSupportFragmentManager().findFragmentByTag(
                     Utility.makeFragmentName(pager.getId(), 0)));
-            fragments.add((SherlockFragment) getSupportFragmentManager().findFragmentByTag(
+            fragments.add(getSupportFragmentManager().findFragmentByTag(
                     Utility.makeFragmentName(pager.getId(), 1)));
         } else {
             fragments.add(TransactionsFragment.newInstance("Dine In", TransactionType.Dinein));
@@ -115,7 +115,7 @@ public class BalanceActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getSupportMenuInflater().inflate(R.menu.balance_menu, menu);
+        getMenuInflater().inflate(R.menu.balance_menu, menu);
         return true;
     }
 }

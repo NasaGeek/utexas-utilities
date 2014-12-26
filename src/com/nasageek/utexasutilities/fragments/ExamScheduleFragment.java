@@ -4,10 +4,16 @@ package com.nasageek.utexasutilities.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,11 +23,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.R;
@@ -40,7 +41,7 @@ import java.util.regex.Pattern;
 
 import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
-public class ExamScheduleFragment extends SherlockFragment implements ActionModeFragment {
+public class ExamScheduleFragment extends Fragment implements ActionModeFragment {
 
     private TextView login_first;
     private OkHttpClient httpclient;
@@ -347,7 +348,8 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            mode = getSherlockActivity().startActionMode(new ScheduleActionMode(position));
+            mode = ((AppCompatActivity)getActivity())
+                    .startSupportActionMode(new ScheduleActionMode(position));
         }
 
         final class ScheduleActionMode implements ActionMode.Callback {
@@ -361,7 +363,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 mode.setTitle("Exam Info");
-                MenuInflater inflater = getSherlockActivity().getSupportMenuInflater();
+                MenuInflater inflater = getActivity().getMenuInflater();
                 String[] elements = exams.get(position).split("\\^");
                 if (elements.length >= 3) { // TODO: check this?
                     if (elements[2].contains("The department")

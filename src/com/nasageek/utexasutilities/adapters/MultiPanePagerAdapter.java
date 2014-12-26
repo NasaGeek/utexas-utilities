@@ -1,9 +1,8 @@
 
 package com.nasageek.utexasutilities.adapters;
 
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-
-import com.actionbarsherlock.app.SherlockFragment;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ public class MultiPanePagerAdapter extends MyFragmentPagerAdapter {
      */
     private int mPanesDisplayed;
 
-    public MultiPanePagerAdapter(FragmentManager fm, List<SherlockFragment> fragments) {
+    public MultiPanePagerAdapter(FragmentManager fm, List<Fragment> fragments) {
         super(fm, fragments);
         mPanesDisplayed = 1;
     }
