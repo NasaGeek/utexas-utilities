@@ -38,7 +38,7 @@ public class CourseMapSaxHandler extends DefaultHandler {
     public void startDocument() throws SAXException {
         this.top = new ArrayList();
         this.content = top;
-        this.recLists = new Stack<ArrayList>();
+        this.recLists = new Stack<>();
         this.folderDepth = 0;
     }
 

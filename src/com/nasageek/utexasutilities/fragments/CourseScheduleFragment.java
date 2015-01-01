@@ -193,7 +193,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                 // ScheduleClassAdapter is initialized in onPostExecute)
                 if (adapter != null) {
                     // populate an array with the buildings IDs of all of the user's classtimes
-                    ArrayList<String> buildings = new ArrayList<String>();
+                    ArrayList<String> buildings = new ArrayList<>();
 
                     for (UTClass clz : classList) {
                         for (Classtime clt : clz.getClassTimes()) {
@@ -328,7 +328,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
 
             // "stateful" stuff, I'll get it figured out in the next release
             // if(classList == null)
-            classList = new ArrayList<UTClass>();
+            classList = new ArrayList<>();
             // else
             // return classList.size();
 
@@ -595,7 +595,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.locate_class:
-                    ArrayList<String> building = new ArrayList<String>();
+                    ArrayList<String> building = new ArrayList<>();
                     Intent map = new Intent(getString(R.string.building_intent), null, parentAct,
                             CampusMapActivity.class);
                     building.add(currentClasstime.getBuilding().getId());

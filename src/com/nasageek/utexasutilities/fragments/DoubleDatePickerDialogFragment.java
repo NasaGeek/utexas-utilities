@@ -125,7 +125,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
                         endDate.roll(Calendar.DATE, true);
 
                         String endDateString = endDateFormatter.format(endDate.getTime());
-                        ArrayList<ContentValues> valuesList = new ArrayList<ContentValues>();
+                        ArrayList<ContentValues> valuesList = new ArrayList<>();
 
                         // copying our original selected start date for
                         // comparison to each class
@@ -205,8 +205,8 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
                                 + Calendars.CALENDAR_ACCESS_LEVEL + " = ?)))", new String[] {
                                 "com.google", "800", "700", "600", "500"
                         }, null);
-                        ArrayList<String> calendars = new ArrayList<String>();
-                        ArrayList<Integer> indices = new ArrayList<Integer>();
+                        ArrayList<String> calendars = new ArrayList<>();
+                        ArrayList<Integer> indices = new ArrayList<>();
 
                         // If no calendars are available, let them know
                         if (cur == null) {
@@ -266,7 +266,7 @@ public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void initialisePaging(View view) {
-        datePickers = new Vector<View>();
+        datePickers = new Vector<>();
         FrameLayout fl1 = new FrameLayout(getActivity());
         FrameLayout fl2 = new FrameLayout(getActivity());
         startDatePicker = new DatePicker(getActivity());

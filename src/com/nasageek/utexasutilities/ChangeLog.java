@@ -386,7 +386,7 @@ public class ChangeLog {
         String versionFormat = resources.getString(R.string.changelog_version_format);
 
         // Get all version codes from the master change log...
-        List<Integer> versions = new ArrayList<Integer>(defaultChangelog.size());
+        List<Integer> versions = new ArrayList<>(defaultChangelog.size());
         for (int i = 0, len = defaultChangelog.size(); i < len; i++) {
             int key = defaultChangelog.keyAt(i);
             versions.add(key);
@@ -430,7 +430,7 @@ public class ChangeLog {
      *         information.
      */
     protected SparseArray<ReleaseItem> readChangeLog(XmlPullParser xml, boolean full) {
-        SparseArray<ReleaseItem> result = new SparseArray<ReleaseItem>();
+        SparseArray<ReleaseItem> result = new SparseArray<>();
 
         try {
             int eventType = xml.getEventType();
@@ -491,7 +491,7 @@ public class ChangeLog {
         }
 
         int eventType = xml.getEventType();
-        List<String> changes = new ArrayList<String>();
+        List<String> changes = new ArrayList<>();
         while (eventType != XmlPullParser.END_TAG || xml.getName().equals(ChangeTag.NAME)) {
             if (eventType == XmlPullParser.START_TAG && xml.getName().equals(ChangeTag.NAME)) {
                 eventType = xml.next();

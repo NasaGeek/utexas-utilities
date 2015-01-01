@@ -84,7 +84,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
         selection = getArguments().getString("selection");
         setHasOptionsMenu(true);
 
-        grades = new ArrayList<bbGrade>();
+        grades = new ArrayList<>();
         gradeAdapter = new GradesAdapter(getActivity(), grades);
         httpclient = new OkHttpClient();
     }
@@ -277,7 +277,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
                 return null;
             }
 
-            ArrayList<bbGrade> data = new ArrayList<bbGrade>();
+            ArrayList<bbGrade> data = new ArrayList<>();
 
             Pattern gradeItemPattern = Pattern.compile("<grade-item.*?/>", Pattern.DOTALL);
             Matcher gradeItemMatcher = gradeItemPattern.matcher(pagedata);

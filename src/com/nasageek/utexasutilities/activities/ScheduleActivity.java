@@ -43,7 +43,7 @@ public class ScheduleActivity extends SherlockFragmentActivity implements
     }
 
     private void initialisePaging() {
-        fragments = new Vector<SherlockFragment>();
+        fragments = new Vector<>();
         fragments.add(ExamScheduleFragment.newInstance("Exam Schedule", ""));
         fragments.add(CourseScheduleFragment.newInstance(true, "Current Schedule", ""));
 

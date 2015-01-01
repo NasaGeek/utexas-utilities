@@ -39,7 +39,7 @@ public class UTilitiesApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        authCookies = new HashMap<String, AuthCookie>();
+        authCookies = new HashMap<>();
         authCookies.put(UTD_AUTH_COOKIE_KEY, new UtdAuthCookie(this));
 
         authCookies.put(PNA_AUTH_COOKIE_KEY, new PnaAuthCookie(this));

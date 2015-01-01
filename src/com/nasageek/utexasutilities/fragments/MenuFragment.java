@@ -79,7 +79,7 @@ public class MenuFragment extends SherlockFragment {
         setRetainInstance(true);
         restId = getArguments().getString("restId");
         httpclient = new OkHttpClient();
-        listOfLists = new ArrayList<MyPair<String, ArrayList<food>>>();
+        listOfLists = new ArrayList<>();
         mAdapter = new MenuAdapter(listOfLists);
     }
 
@@ -150,9 +150,9 @@ public class MenuFragment extends SherlockFragment {
 
         @Override
         protected String doInBackground(Object... params) {
-            ArrayList<String> categories = new ArrayList<String>();
-            ArrayList<food> foodList = new ArrayList<food>();
-            tempListOfLists = new ArrayList<MyPair<String, ArrayList<food>>>();
+            ArrayList<String> categories = new ArrayList<>();
+            ArrayList<food> foodList = new ArrayList<>();
+            tempListOfLists = new ArrayList<>();
             meal = (String) params[1];
             String location;
 
@@ -183,8 +183,7 @@ public class MenuFragment extends SherlockFragment {
 
             if (pagedata.contains("No Data Available")) {
                 foodList.add(new food("", ""));
-                listOfLists.add(new MyPair<String, ArrayList<food>>("No Food Offered at this Time",
-                        foodList));
+                listOfLists.add(new MyPair<>("No Food Offered at this Time", foodList));
                 return meal;
             } else {
                 // have to leave in the lookahead so the regex matches don't
@@ -196,7 +195,7 @@ public class MenuFragment extends SherlockFragment {
                 Matcher catMatcher = catPattern.matcher(pagedata);
                 while (catMatcher.find()) {
                     String categoryData = catMatcher.group();
-                    foodList = new ArrayList<food>();
+                    foodList = new ArrayList<>();
 
                     Pattern catNamePattern = Pattern.compile(">-- (.*?) --<");
                     Matcher catNameMatcher = catNamePattern.matcher(categoryData);
@@ -219,8 +218,7 @@ public class MenuFragment extends SherlockFragment {
                     while (foodMatcher.find() && nutritionLinkMatcher.find()) {
                         foodList.add(new food(foodMatcher.group(1), nutritionLinkMatcher.group(1)));
                     }
-                    tempListOfLists.add(new MyPair<String, ArrayList<food>>(
-                            catNameMatcher.group(1), foodList));
+                    tempListOfLists.add(new MyPair<>(catNameMatcher.group(1), foodList));
                     if (isCancelled()) {
                         return "";
                     }

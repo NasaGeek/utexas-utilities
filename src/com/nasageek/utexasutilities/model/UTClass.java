@@ -35,7 +35,7 @@ public class UTClass implements Parcelable, Serializable {
         courseId = in.readString();
         name = in.readString();
 
-        classtimes = new ArrayList<Classtime>();
+        classtimes = new ArrayList<>();
         in.readTypedList(classtimes, Classtime.CREATOR);
         semId = in.readString();
         color = in.readString();
@@ -52,7 +52,7 @@ public class UTClass implements Parcelable, Serializable {
                     + " r" + buildingRooms.length);
         }
 
-        ArrayList<Building> buildings = new ArrayList<Building>();
+        ArrayList<Building> buildings = new ArrayList<>();
         for (int i = 0; i < buildingIds.length; i++) {
             buildings.add(new Building(buildingIds[i], buildingRooms[i]));
         }
@@ -65,7 +65,7 @@ public class UTClass implements Parcelable, Serializable {
             buildings.add(new Building(buildings.get(0)));
         }
 
-        classtimes = new ArrayList<Classtime>();
+        classtimes = new ArrayList<>();
         if (!(days.length == times.length && days.length == buildings.size() && buildings.size() == times.length)) {
             Log.e("UTClass creation", "building/day/time size inconsistency: b" + buildings.size()
                     + " d" + days.length + " t" + times.length);

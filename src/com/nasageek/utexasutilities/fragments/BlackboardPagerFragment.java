@@ -48,7 +48,7 @@ public class BlackboardPagerFragment extends SherlockFragment implements OnPanes
 
     private void initialisePaging() {
 
-        List<SherlockFragment> fragments = new Vector<SherlockFragment>();
+        List<SherlockFragment> fragments = new Vector<>();
 
         if (getChildFragmentManager().findFragmentByTag(Utility.makeFragmentName(pager.getId(), 0)) != null) {
             fragments.add((SherlockFragment) getChildFragmentManager().findFragmentByTag(

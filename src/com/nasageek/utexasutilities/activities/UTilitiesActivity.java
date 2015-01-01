@@ -509,7 +509,7 @@ public class UTilitiesActivity extends SherlockActivity {
                 message.show();
             } else {
                 setSupportProgressBarIndeterminateVisibility(true);
-                loginTasks = new ArrayList<AsyncTask>();
+                loginTasks = new ArrayList<>();
                 CountDownLatch loginLatch = new CountDownLatch(authCookies.length);
                 updateUiTask = new UpdateUiTask(this);
                 Utility.parallelExecute(updateUiTask, loginLatch);

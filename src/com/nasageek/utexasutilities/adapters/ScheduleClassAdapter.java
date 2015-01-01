@@ -40,7 +40,7 @@ public class ScheduleClassAdapter extends BaseAdapter {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
         emptyCellBackgroundPref = sp.getString("schedule_background_style", "checkhour");
         mContext = c;
-        ArrayList<Classtime> allClasstimes = new ArrayList<Classtime>(50);
+        ArrayList<Classtime> allClasstimes = new ArrayList<>(50);
         updateTime();
 
         // grab all ClassTimes out of classList
@@ -51,11 +51,11 @@ public class ScheduleClassAdapter extends BaseAdapter {
         }
 
         // element is true if it's the first cell of a class in the schedule (cells are a half hour)
-        firstlist = new ArrayList<Boolean>();
+        firstlist = new ArrayList<>();
         firstlist.ensureCapacity(180);
 
         // contains the Classtimes that have been ordered/grouped into a fake "grid"
-        orderedClasstimes = new ArrayList<Classtime>();
+        orderedClasstimes = new ArrayList<>();
         orderedClasstimes.ensureCapacity(180);
 
         for (int x = 0; x < 180; x++) {
@@ -63,7 +63,7 @@ public class ScheduleClassAdapter extends BaseAdapter {
             firstlist.add(false);
         }
 
-        HashMap<Character, Integer> dayCharMap = new HashMap<Character, Integer>();
+        HashMap<Character, Integer> dayCharMap = new HashMap<>();
         // set up day map for manipulating orderedClasstimes as if it were a grid
         dayCharMap.put('M', 0);
         dayCharMap.put('T', 1);

@@ -118,7 +118,7 @@ public class TransactionsFragment extends SherlockFragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        postdata = new ArrayList<BasicNameValuePair>();
+        postdata = new ArrayList<>();
         mType = (TransactionType) getArguments().getSerializable("type");
         if (TransactionType.Bevo.equals(mType)) {
             postdata.add(new BasicNameValuePair("sRequestSw", "B"));
@@ -127,7 +127,7 @@ public class TransactionsFragment extends SherlockFragment {
         }
 
         if (savedInstanceState == null) {
-            transactionlist = new ArrayList<Transaction>();
+            transactionlist = new ArrayList<>();
             balance = "";
         } else {
             transactionlist = savedInstanceState.getParcelableArrayList("transactions");
@@ -135,7 +135,7 @@ public class TransactionsFragment extends SherlockFragment {
             // happening
             // but this should fix it regardless
             if (transactionlist == null) {
-                transactionlist = new ArrayList<Transaction>();
+                transactionlist = new ArrayList<>();
             }
             balance = savedInstanceState.getString("balance");
         }
@@ -232,7 +232,7 @@ public class TransactionsFragment extends SherlockFragment {
 
             HttpPost hpost = new HttpPost("https://utdirect.utexas.edu/hfis/transactions.WBX");
             String pagedata = "";
-            tempTransactionList = new ArrayList<Transaction>();
+            tempTransactionList = new ArrayList<>();
             try {
                 hpost.setEntity(new UrlEncodedFormEntity(postdata));
                 HttpResponse response = client.execute(hpost);

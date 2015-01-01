@@ -78,7 +78,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
         fromDashboard = getArguments().getBoolean("fromDashboard");
         selection = getArguments().getString("selection");
         setHasOptionsMenu(true);
-        announcements = new ArrayList<bbAnnouncement>();
+        announcements = new ArrayList<>();
         announceAdapter = new AnnouncementsAdapter(getActivity(), announcements);
         httpclient = new OkHttpClient();
     }
@@ -235,7 +235,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
                 return null;
             }
 
-            ArrayList<bbAnnouncement> data = new ArrayList<bbAnnouncement>();
+            ArrayList<bbAnnouncement> data = new ArrayList<>();
             // pagedata = pagedata.replaceAll("comments=\".*?\"", ""); //might
             // include later, need to strip for now for grade recognition
 

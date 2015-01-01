@@ -99,7 +99,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
 
         setHasOptionsMenu(true);
 
-        attachments = new ArrayList<bbFile>();
+        attachments = new ArrayList<>();
         attachmentAdapter = new dlableItemAdapter(getActivity(), attachments);
         content = "";
 
@@ -437,7 +437,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
             }
 
             Object[] result = new Object[2];
-            ArrayList<bbFile> data = new ArrayList<bbFile>();
+            ArrayList<bbFile> data = new ArrayList<>();
 
             Pattern contentPattern = Pattern.compile("<body>(.*?)</body>", Pattern.DOTALL);
             Matcher contentMatcher = contentPattern.matcher(pagedata);

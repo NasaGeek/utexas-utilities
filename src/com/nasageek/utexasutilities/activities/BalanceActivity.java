@@ -47,7 +47,7 @@ public class BalanceActivity extends SherlockFragmentActivity {
 
     private void initialisePaging() {
 
-        List<SherlockFragment> fragments = new Vector<SherlockFragment>();
+        List<SherlockFragment> fragments = new Vector<>();
         /**
          * this is a bit of a hacky solution for something that should be
          * handled by default. on a rotate, pager caches the old fragments (with

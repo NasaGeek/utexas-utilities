@@ -87,7 +87,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
 
     public void updateView(String semId, View vg) {
         this.semId = semId;
-        examlist = new ArrayList<String>();
+        examlist = new ArrayList<>();
         login_first = (TextView) vg.findViewById(R.id.login_first_tv);
         pb_ll = (LinearLayout) vg.findViewById(R.id.examschedule_progressbar_ll);
         examlistview = (ListView) vg.findViewById(R.id.examschedule_listview);
@@ -383,7 +383,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.locate_class:
-                        ArrayList<String> building = new ArrayList<String>();
+                        ArrayList<String> building = new ArrayList<>();
                         Intent map = new Intent(con.getString(R.string.building_intent), null, con,
                                 CampusMapActivity.class);
 

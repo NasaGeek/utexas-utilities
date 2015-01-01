@@ -300,7 +300,7 @@ public class MenuActivity extends SherlockFragmentActivity {
 
     private void initialisePaging(String restId) {
 
-        List<SherlockFragment> fragments = new Vector<SherlockFragment>();
+        List<SherlockFragment> fragments = new Vector<>();
         pager = (ViewPager) findViewById(R.id.viewpager);
 
         /**

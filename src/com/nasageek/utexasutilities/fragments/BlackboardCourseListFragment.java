@@ -66,9 +66,9 @@ public class BlackboardCourseListFragment extends SherlockFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        classList = new ArrayList<BBClass>();
+        classList = new ArrayList<>();
         if (savedInstanceState == null) {
-            classSectionList = new ArrayList<MyPair<String, List<BBClass>>>();
+            classSectionList = new ArrayList<>();
         } else {
             classSectionList = (ArrayList<MyPair<String, List<BBClass>>>) savedInstanceState
                     .getSerializable("classSectionList");
@@ -200,13 +200,12 @@ public class BlackboardCourseListFragment extends SherlockFragment {
             // section the class list by semester
             String currentSemester = "";
             ArrayList<BBClass> currentSemesterList = null;
-            ArrayList<MyPair<String, List<BBClass>>> sectionedClassList =
-                    new ArrayList<MyPair<String, List<BBClass>>>();
+            ArrayList<MyPair<String, List<BBClass>>> sectionedClassList = new ArrayList<>();
             for (int i = 0; i < classList.size(); i++) {
                 // first course always starts a new semester
                 if (i == 0) {
                     currentSemester = classList.get(i).getSemester();
-                    currentSemesterList = new ArrayList<BBClass>();
+                    currentSemesterList = new ArrayList<>();
                     currentSemesterList.add(classList.get(i));
                 }
                 // hit a new semester, finalize current semester and init the new one
@@ -215,7 +214,7 @@ public class BlackboardCourseListFragment extends SherlockFragment {
                             currentSemesterList));
 
                     currentSemester = classList.get(i).getSemester();
-                    currentSemesterList = new ArrayList<BBClass>();
+                    currentSemesterList = new ArrayList<>();
                     currentSemesterList.add(classList.get(i));
                 }
                 // otherwise just add to the current semester
