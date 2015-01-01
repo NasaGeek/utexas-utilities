@@ -1,9 +1,11 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven { url 'https://raw.github.com/xujiaao/mvn-repository/master/releases' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.github.xujiaao:aarLinkSources:1.0.0'
     }
 }
 
@@ -76,15 +78,20 @@ android {
     }
 }
 
+apply plugin: 'aar-link-sources'
+
 dependencies {
     compile 'com.google.maps.android:android-maps-utils:0.3.+'
 
     compile 'com.android.support:support-v4:21.0.+'
+    aarLinkSources 'com.android.support:support-v4:21.0.+:sources@jar'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+    aarLinkSources 'com.actionbarsherlock:actionbarsherlock:4.4.0:sources@jar'
 
     compile 'com.google.android.gms:play-services-maps:6.5.+'
 
     compile 'com.viewpagerindicator:library:2.4.1@aar'
+    aarLinkSources 'com.viewpagerindicator:library:2.4.1:sources@jar'
     compile('ch.acra:acra:4.5.0') {
         exclude group: 'org.json'
     }
