@@ -872,8 +872,11 @@ public class CampusMapActivity extends SherlockFragmentActivity implements OnMap
                 }
                 final String responseString = response.body().string();
                 final String lastModified = response.header("Last-Modified");
-                final long lastModMillis = lastModDateFormat.parse(lastModified,
-                        new ParsePosition(0)).getTime();
+                long lastModMillis = System.currentTimeMillis();
+                if (lastModified != null) {
+                    lastModMillis = lastModDateFormat.parse(lastModified,
+                            new ParsePosition(0)).getTime();
+                }
                 final SharedPreferences.Editor edit = garageCache.edit();
                 boolean parseError = false;
                 int tempOpenSpots;
