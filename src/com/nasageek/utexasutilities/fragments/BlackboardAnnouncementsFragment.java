@@ -344,7 +344,7 @@ public class BlackboardAnnouncementsFragment extends BlackboardFragment {
             ViewGroup lin = (ViewGroup) convertView;
 
             if (lin == null) {
-                lin = (LinearLayout) li.inflate(R.layout.announcement_item_view, null, false);
+                lin = (LinearLayout) li.inflate(R.layout.announcement_item_view, parent, false);
             }
 
             TextView announcementSubject = (TextView) lin

@@ -67,7 +67,7 @@ public class CourseMapAdapter extends ArrayAdapter<MyPair<CourseMapItem, ArrayLi
         ViewGroup lin = (ViewGroup) convertView;
 
         if (lin == null) {
-            lin = (ViewGroup) li.inflate(R.layout.coursemap_item_view, null, false);
+            lin = (ViewGroup) li.inflate(R.layout.coursemap_item_view, parent, false);
         }
 
         TextView itemName = (TextView) lin.findViewById(R.id.coursemap_item_name);

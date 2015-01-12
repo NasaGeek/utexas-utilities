@@ -551,7 +551,7 @@ public class BlackboardDownloadableItemFragment extends BlackboardFragment {
             ViewGroup lin = (ViewGroup) convertView;
 
             if (lin == null) {
-                lin = (ViewGroup) li.inflate(R.layout.attachment_view, null, false);
+                lin = (ViewGroup) li.inflate(R.layout.attachment_view, parent, false);
             }
             /*
              * if(position%2==0) lin.setBackgroundColor(Color.LTGRAY); Don't do

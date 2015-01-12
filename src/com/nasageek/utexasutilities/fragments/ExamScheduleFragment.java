@@ -323,7 +323,7 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
             }
             String course = "";
             ViewGroup vg = (ViewGroup) convertView;
-            vg = (ViewGroup) li.inflate(R.layout.exam_item_view, null, false);
+            vg = (ViewGroup) li.inflate(R.layout.exam_item_view, parent, false);
             TextView courseview = (TextView) vg.findViewById(R.id.exam_item_header_text);
 
             if (!examRequested || summerSession) {

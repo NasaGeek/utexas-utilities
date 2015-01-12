@@ -87,11 +87,11 @@ public class TransactionAdapter extends AmazingAdapter {
         ViewGroup lin = (ViewGroup) convertView;
 
         if (areHeaders.size() == transactions.size() && areHeaders.get(position)) {
-            lin = (ViewGroup) li.inflate(R.layout.trans_item_header_view, null, false);
+            lin = (ViewGroup) li.inflate(R.layout.trans_item_header_view, parent, false);
             TextView dateview = (TextView) lin.findViewById(R.id.list_item_section_text);
             dateview.setText(date);
         } else {
-            lin = (ViewGroup) li.inflate(R.layout.trans_item_view, null, false);
+            lin = (ViewGroup) li.inflate(R.layout.trans_item_view, parent, false);
         }
 
         TextView left = (TextView) lin.findViewById(R.id.itemview);

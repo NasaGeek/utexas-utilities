@@ -391,7 +391,7 @@ public class BlackboardGradesFragment extends BlackboardFragment {
             ViewGroup lin = (ViewGroup) convertView;
 
             if (lin == null) {
-                lin = (RelativeLayout) li.inflate(R.layout.grade_item_view, null, false);
+                lin = (RelativeLayout) li.inflate(R.layout.grade_item_view, parent, false);
             }
 
             TextView gradeName = (TextView) lin.findViewById(R.id.grade_name);

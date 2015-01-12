@@ -315,7 +315,8 @@ public class MenuFragment extends SherlockFragment {
         public View getAmazingView(int position, View convertView, ViewGroup parent) {
             View res = convertView;
             if (res == null) {
-                res = getActivity().getLayoutInflater().inflate(R.layout.menu_item_view, null);
+                res = getActivity().getLayoutInflater().inflate(R.layout.menu_item_view, parent,
+                        false);
             }
 
             TextView lName = (TextView) res.findViewById(R.id.lName);

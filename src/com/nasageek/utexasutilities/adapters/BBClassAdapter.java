@@ -84,7 +84,7 @@ public class BBClassAdapter extends AmazingAdapter {
         ViewGroup res = (ViewGroup) convertView;
 
         if (res == null) {
-            res = (ViewGroup) li.inflate(R.layout.bbclass_item_view, null, false);
+            res = (ViewGroup) li.inflate(R.layout.bbclass_item_view, parent, false);
             holder = new ViewHolder();
             holder.idview = (TextView) res.findViewById(R.id.bb_class_id);
             holder.nameview = (TextView) res.findViewById(R.id.bb_class_name);

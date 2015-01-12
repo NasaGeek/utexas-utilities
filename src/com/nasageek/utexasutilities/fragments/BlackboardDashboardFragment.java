@@ -336,7 +336,8 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         public View getAmazingView(int position, View convertView, ViewGroup parent) {
             View res = convertView;
             if (res == null) {
-                res = getActivity().getLayoutInflater().inflate(R.layout.dashboard_item_view, null);
+                res = getActivity().getLayoutInflater().inflate(R.layout.dashboard_item_view,
+                        parent, false);
             }
             FeedItem fi = getItem(position);
             BBClass course = courses.get(fi.getBbId());

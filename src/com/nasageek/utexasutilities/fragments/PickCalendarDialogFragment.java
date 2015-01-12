@@ -124,7 +124,7 @@ public class PickCalendarDialogFragment extends SherlockDialogFragment {
         public View getView(int position, View convertView, ViewGroup parent) {
 
             if (convertView == null) {
-                convertView = inflater.inflate(R.layout.calendar_item_view, null, false);
+                convertView = inflater.inflate(R.layout.calendar_item_view, parent, false);
             }
             String calName = elements.get(position).split(" \\^\\^ ")[0];
             String accName = elements.get(position).split(" \\^\\^ ")[1];
