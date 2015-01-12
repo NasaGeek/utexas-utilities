@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -237,35 +236,30 @@ public class MenuActivity extends SherlockFragmentActivity {
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         actionbar.setHomeButtonEnabled(true);
         actionbar.setDisplayHomeAsUpEnabled(true);
-
-        final Spinner spinner = new Spinner(this);
-        spinner.setPromptId(R.string.restaurantprompt);
         @SuppressWarnings({
                 "rawtypes", "unchecked"
         })
-        final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(actionbar.getThemedContext(),
+        final ArrayAdapter<Restaurant> adapter = new ArrayAdapter(actionbar.getThemedContext(),
                 android.R.layout.simple_spinner_item, Restaurant.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
 
         if (savedInstanceState != null) {
             previousItem = savedInstanceState.getInt("spinner_selection");
         } else {
             previousItem = 0;
         }
-        initialisePaging(((Restaurant) spinner.getAdapter().getItem(previousItem)).code + "");
+        initialisePaging(adapter.getItem(previousItem).code + "");
 
         actionbar.setListNavigationCallbacks(adapter, new OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 
-                Restaurant r = (Restaurant) spinner.getAdapter().getItem(itemPosition);
+                Restaurant r = adapter.getItem(itemPosition);
 
                 String restId = r.getCode();
 
                 if (!"0".equals(restId)) {
-                    String[] times = ((Restaurant) spinner.getAdapter().getItem(itemPosition))
-                            .getTimes();
+                    String[] times = r.getTimes();
                     if (!r.allDay) {
                         ((TextView) findViewById(R.id.breakfast_times)).setText(times[0]);
                         ((TextView) findViewById(R.id.lunch_times)).setText(times[1]);

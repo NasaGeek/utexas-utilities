@@ -6,7 +6,6 @@
     <string name="edit_credentials">Edit login credentials</string>
     <string name="sharedpref_file">UTilities_preferences</string>
     <string name="routeprompt">Select Route Overlay</string>
-    <string name="restaurantprompt">Select a Restaurant</string>
     <string name="semesterprompt">Select a Semester</string>
     <string name="map_search_hint">Search building name or code, e.g., PCL, UTC</string>
     <string name="building_intent">BUILDING</string>
