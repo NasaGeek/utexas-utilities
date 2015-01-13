@@ -6,6 +6,7 @@
     android:gravity="center"
     android:orientation="vertical"
     android:visibility="gone"
+    tools:visibility="visible"
     android:clickable="true" >
 
 	<RelativeLayout 
@@ -31,6 +32,7 @@
 	        android:layout_margin="40dp"
 	        android:layout_centerHorizontal="true"
 	        android:text="@string/button_send_data"
-	        android:visibility="gone" />
+	        android:visibility="gone"
+            tools:visibility="visible"/>
 	</RelativeLayout>
 </LinearLayout>

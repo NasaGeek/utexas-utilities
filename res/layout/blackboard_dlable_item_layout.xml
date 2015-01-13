@@ -26,7 +26,8 @@ up correctly in hierarchy-viewer -->
     <include
         android:id="@+id/blackboard_dl_error"
         android:layout_gravity="center"
-        layout="@layout/error_message_view" />
+        layout="@layout/error_message_view"
+        tools:visibility="gone" />
 
     <TextView
         android:id="@+id/content_description_title"
