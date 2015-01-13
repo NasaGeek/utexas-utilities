@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/exam_item_header_linlayout"
-			android:layout_width="fill_parent" 
-		    android:layout_height="fill_parent" 
+			android:layout_width="match_parent"
+		    android:layout_height="match_parent"
 		    android:orientation="vertical">
 	<include
         android:id="@+id/exam_item_header_text"
@@ -11,8 +11,8 @@
         
 	<LinearLayout 
 			android:id="@+id/exam_item_linlayout"
-			android:layout_width="fill_parent" 
-		    android:layout_height="fill_parent" 
+			android:layout_width="match_parent"
+		    android:layout_height="match_parent"
 		    android:orientation="horizontal"
 		   
 		    android:paddingTop="3dp"

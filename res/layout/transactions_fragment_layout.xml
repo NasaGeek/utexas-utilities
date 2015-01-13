@@ -2,13 +2,13 @@
 <!-- I don't know why layoutparams don't work on top level view, so framelayout is a workaround -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
     <LinearLayout
         android:id="@+id/translinlay"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_margin="1dp"
         android:orientation="vertical" >
 
@@ -24,7 +24,7 @@
 
         <TextView
             android:id="@+id/balance_label_tv"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center_horizontal"
@@ -41,7 +41,7 @@
 
         <TextView
             android:id="@+id/balance_tv"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:textColor="#FF444444"
@@ -50,8 +50,8 @@
 
         <com.foound.widget.AmazingListView
             android:id="@+id/transactions_listview"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@android:color/transparent"
             android:cacheColorHint="@android:color/transparent"
             android:paddingTop="10dp"

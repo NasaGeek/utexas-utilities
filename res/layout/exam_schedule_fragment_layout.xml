@@ -2,14 +2,14 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/examschedule_linlay"
- 	android:layout_width="fill_parent"
- 	android:layout_height="fill_parent"
+ 	android:layout_width="match_parent"
+ 	android:layout_height="match_parent"
  	android:orientation="vertical">
 	 
 	 <TextView 
 	     android:id="@+id/login_first_tv"
-	     android:layout_width="fill_parent"
-	     android:layout_height="fill_parent"
+	     android:layout_width="match_parent"
+	     android:layout_height="match_parent"
 	     android:gravity="center"
 	     android:text="@string/login_first"
 	     android:visibility="gone"
@@ -17,8 +17,8 @@
 	 
 	 <TextView 
 	     android:id="@+id/no_exams"
-	     android:layout_width="fill_parent"
-	     android:layout_height="fill_parent"
+	     android:layout_width="match_parent"
+	     android:layout_height="match_parent"
 	     android:gravity="center"
 	     android:textSize="19sp"
 	     android:visibility="gone"
@@ -35,8 +35,8 @@
 	 <ListView
 		 	android:paddingTop="5dp"
 			android:id="@+id/examschedule_listview"
-			android:layout_width="fill_parent" 
-		    android:layout_height="fill_parent" 
+			android:layout_width="match_parent"
+		    android:layout_height="match_parent"
 		    android:orientation="vertical" 
 		    android:scrollbars="none"
 		    android:cacheColorHint="@android:color/transparent"

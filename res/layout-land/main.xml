@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/button_table"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@drawable/background_holo_light">
 	
 	<TableRow
@@ -11,8 +11,8 @@
 
 		<RelativeLayout
 		    android:layout_weight="1"
-		    android:layout_height="fill_parent"
-		    android:layout_width="fill_parent"
+		    android:layout_height="match_parent"
+		    android:layout_width="match_parent"
 		    android:layout_gravity="center">
 		<ImageButton
 			
@@ -34,8 +34,8 @@
 		
 		<RelativeLayout
 		    android:layout_weight="1"
-		    android:layout_height="fill_parent"
-		    android:layout_width="fill_parent"
+		    android:layout_height="match_parent"
+		    android:layout_width="match_parent"
 		    android:layout_gravity="center">
 		<ImageButton
 			
@@ -57,8 +57,8 @@
 		
 		<RelativeLayout
 		    android:layout_weight="1"
-		    android:layout_height="fill_parent"
-		    android:layout_width="fill_parent"
+		    android:layout_height="match_parent"
+		    android:layout_width="match_parent"
 		    android:layout_gravity="center">
 		<ImageButton
 			
@@ -81,13 +81,13 @@
 	<TableRow
 	    android:layout_weight="1"
 		android:layout_gravity="center"
-		android:layout_width="fill_parent" 
+		android:layout_width="match_parent"
 		android:baselineAligned="true">
 	    
 	    <RelativeLayout
 		    android:layout_weight="1"
-		    android:layout_height="fill_parent"
-		    android:layout_width="fill_parent"
+		    android:layout_height="match_parent"
+		    android:layout_width="match_parent"
 		    android:layout_gravity="center">
 		<ImageButton
 			
@@ -109,8 +109,8 @@
 	    
 	   <RelativeLayout
 		    android:layout_weight="1"
-		    android:layout_height="fill_parent"
-		    android:layout_width="fill_parent"
+		    android:layout_height="match_parent"
+		    android:layout_width="match_parent"
 		    android:layout_gravity="center">
 		<ImageButton
 			
@@ -132,8 +132,8 @@
 		
 	   <RelativeLayout
 		    android:layout_weight="1"
-		    android:layout_height="fill_parent"
-		    android:layout_width="fill_parent"
+		    android:layout_height="match_parent"
+		    android:layout_width="match_parent"
 		    android:layout_gravity="center">
 		<ImageButton
 			android:id="@+id/menu_button"

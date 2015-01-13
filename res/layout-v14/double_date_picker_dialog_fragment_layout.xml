@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:divider="?android:attr/dividerVertical"
     android:orientation="vertical"
@@ -8,17 +8,17 @@
 
     <com.viewpagerindicator.TabPageIndicator
         android:id="@+id/titles"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <com.nasageek.utexasutilities.WrappedViewPager
         android:id="@+id/wrappedviewpager"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <LinearLayout
         style="?android:attr/buttonBarStyle"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
