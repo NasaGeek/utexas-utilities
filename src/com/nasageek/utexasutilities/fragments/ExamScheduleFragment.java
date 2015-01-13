@@ -323,18 +323,21 @@ public class ExamScheduleFragment extends SherlockFragment implements ActionMode
             }
             String course = "";
             ViewGroup vg = (ViewGroup) convertView;
-            vg = (ViewGroup) li.inflate(R.layout.exam_item_view, parent, false);
+            if (vg == null) {
+                vg = (ViewGroup) li.inflate(R.layout.exam_item_view, parent, false);
+            }
             TextView courseview = (TextView) vg.findViewById(R.id.exam_item_header_text);
+            TextView left = (TextView) vg.findViewById(R.id.examdateview);
+            TextView right = (TextView) vg.findViewById(R.id.examlocview);
 
             if (!examRequested || summerSession) {
                 course = id + " - " + unique;
-                TextView left = (TextView) vg.findViewById(R.id.examdateview);
                 left.setText(name);
+                right.setVisibility(View.INVISIBLE);
             } else {
                 course = id + " " + name;
-                TextView left = (TextView) vg.findViewById(R.id.examdateview);
                 left.setText(date);
-                TextView right = (TextView) vg.findViewById(R.id.examlocview);
+                right.setVisibility(View.VISIBLE);
                 right.setText(location);
             }
 
