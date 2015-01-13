@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-doesn't fill the whole parent in 2.1, not sure why as the layout attribute shows
-up correctly in hierarchy-viewer -->
-
 <!--  try using linearlayout's dividers instead of the imageviews -->
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"

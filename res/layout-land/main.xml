@@ -8,8 +8,7 @@
 	<TableRow
 		android:layout_weight="1"
 		android:layout_gravity="center">
-		<!-- 	android:paddingTop="64dp" -->
-		
+
 		<RelativeLayout
 		    android:layout_weight="1"
 		    android:layout_height="fill_parent"
@@ -83,7 +82,7 @@
 	    android:layout_weight="1"
 		android:layout_gravity="center"
 		android:layout_width="fill_parent" 
-		android:baselineAligned="true"> <!-- android:paddingTop="47dp"  android:layout_marginBottom="27px"   -->
+		android:baselineAligned="true">
 	    
 	    <RelativeLayout
 		    android:layout_weight="1"
