@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/examschedule_linlay"
  	android:layout_width="fill_parent"
  	android:layout_height="fill_parent"
@@ -19,7 +20,8 @@
 	     android:layout_height="fill_parent"
 	     android:gravity="center"
 	     android:textSize="19sp"
-	     android:visibility="gone"/>
+	     android:visibility="gone"
+         tools:text="'Tis not the season for final exams.\nTry back later!\n(about 3 weeks before they begin)"/>
 	 
 	 <include 
 	     android:id="@+id/examschedule_progressbar_ll" 

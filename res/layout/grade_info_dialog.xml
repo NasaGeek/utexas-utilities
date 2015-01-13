@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="10dp" >
@@ -10,7 +11,8 @@
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        tools:text="100/100"/>
     
      <TextView
         android:id="@+id/grade_info_name"
@@ -19,7 +21,8 @@
         android:textSize="20sp"
         android:layout_toLeftOf="@id/grade_info_value"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        tools:text="Really Super Long Assignment Name"/>
     
      <ImageView 
         android:id="@+id/grade_comment_separator"
@@ -45,7 +48,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:gravity="left|top" />
+            android:gravity="left|top"
+            tools:text="Comments about the grade/assignment."/>
     </ScrollView>
 
 </RelativeLayout>

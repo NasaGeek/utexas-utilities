@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="center_vertical"
@@ -26,7 +27,7 @@
             android:layout_marginBottom="1dp"
             android:layout_marginTop="3dp"
             android:gravity="center_vertical"
-            android:text="Message"
+            tools:text="Message"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -37,7 +38,7 @@
             android:layout_marginBottom="3dp"
             android:gravity="center_vertical"
             android:lines="1"
-            android:text="CourseID"
+            tools:text="CourseID"
             android:textSize="13sp" />
 
         <TextView
@@ -47,7 +48,7 @@
             android:layout_marginBottom="3dp"
             android:layout_marginTop="3dp"
             android:gravity="bottom"
-            android:text="content"
+            tools:text="content"
             android:textColor="?android:textColorTertiary"
             android:textSize="12sp"
             android:textStyle="bold" />

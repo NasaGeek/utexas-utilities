@@ -6,6 +6,7 @@ up correctly in hierarchy-viewer -->
 <!--  try using linearlayout's dividers instead of the imageviews -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_gravity="center_horizontal"
@@ -64,7 +65,8 @@ up correctly in hierarchy-viewer -->
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:textIsSelectable="true"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="This is the content description." />
     </com.nasageek.utexasutilities.MyScrollView>
 
     <ImageView

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:paddingBottom="7dp"
@@ -15,7 +16,7 @@
         android:ellipsize="end"
         android:lines="1"
         android:scrollHorizontally="true"
-        android:text="Calendar Name"
+        tools:text="Calendar Name"
         android:textSize="17sp" />
 
     <TextView
@@ -23,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
-        android:text="Calendar Account"
+        tools:text="Calendar Account"
         android:textColor="@android:color/secondary_text_light"
         android:textSize="12.5sp"
         android:textStyle="italic" />

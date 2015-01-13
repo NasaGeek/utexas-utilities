@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:clickable="false"
@@ -21,7 +22,8 @@
             android:gravity="right|top"
             android:paddingBottom="12dp"
             android:paddingRight="8dp"
-            android:paddingTop="12dp" />
+            android:paddingTop="12dp"
+            tools:text="Date" />
 
         <TextView
             android:id="@+id/announcement_header_subject"
@@ -34,7 +36,8 @@
             android:gravity="left|top"
             android:paddingBottom="12dp"
             android:paddingLeft="8dp"
-            android:paddingTop="12dp" />
+            android:paddingTop="12dp"
+            tools:text="Subject"/>
     </RelativeLayout>
 
     <TextView
@@ -43,6 +46,7 @@
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:textColor="@android:color/black"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        tools:text="Body"/>
 
 </LinearLayout>

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id = "@+id/header"
  	android:background = "#FFBFBFBF"
     style="?android:attr/listSeparatorTextViewStyle"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     android:paddingTop="3dp"
-    android:paddingBottom="3dp"/>
+    android:paddingBottom="3dp"
+    tools:text="Header Text" />
 	
 
 
