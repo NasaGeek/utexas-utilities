@@ -71,10 +71,8 @@ public class BalanceActivity extends SherlockFragmentActivity {
         mPagerAdapter.setPagesDisplayed(pagesDisplayed);
 
         pager.setAdapter(this.mPagerAdapter);
-        final double dpiScale = getResources().getDisplayMetrics().density;
-        if (pagesDisplayed == 1) {
-            pager.setPageMargin((int) (8 * dpiScale + .5));
-        } else {
+        pager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.pager_margin));
+        if (pagesDisplayed > 1) {
             tabIndicator.setSelectAll(true);
         }
 

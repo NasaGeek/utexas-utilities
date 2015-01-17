@@ -320,18 +320,19 @@ public class MenuActivity extends SherlockFragmentActivity {
 
         final MyTabPageIndicator tabIndicator = (MyTabPageIndicator) findViewById(R.id.titles);
 
+        int pagesDisplayed = getResources().getInteger(R.integer.menu_num_visible_pages);
         mPagerAdapter = new MultiPanePagerAdapter(getSupportFragmentManager(), fragments);
-        mPagerAdapter
-                .setPagesDisplayed(getResources().getInteger(R.integer.menu_num_visible_pages));
+        mPagerAdapter.setPagesDisplayed(pagesDisplayed);
 
         pager.setAdapter(mPagerAdapter);
-        if (mPagerAdapter.getPageWidth(0) < 1) {
+        if (pagesDisplayed > 1) {
             tabIndicator.setSelectAll(true);
         }
 
         tabIndicator.setViewPager(pager);
 
         pager.setOffscreenPageLimit(2);
+        pager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.pager_margin));
     }
 
     @Override
