@@ -4,21 +4,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <include
+        android:id="@+id/trans_progressbar_ll"
+        layout="@layout/loading_content_layout"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/trans_error"
+        layout="@layout/error_message_view"
+        tools:visibility="gone"/>
+
     <LinearLayout
-        android:id="@+id/translinlay"
+        android:id="@+id/transactions_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
-
-        <include
-            android:id="@+id/trans_progressbar_ll"
-            layout="@layout/loading_content_layout"
-            android:visibility="gone" />
-
-        <include
-            android:id="@+id/trans_error"
-            layout="@layout/error_message_view"
-            tools:visibility="gone"/>
 
         <TextView
             android:id="@+id/balance_label_tv"

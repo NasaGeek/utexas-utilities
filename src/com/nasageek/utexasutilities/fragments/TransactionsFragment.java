@@ -51,7 +51,7 @@ public class TransactionsFragment extends SherlockFragment {
     private TextView balanceLabelView, balanceView;
     private View balanceLabelSeparatorView;
     private TextView etv;
-    private LinearLayout ell;
+    private LinearLayout ell, transactionsLayout;
 
     private List<BasicNameValuePair> postdata;
     // private SherlockFragmentActivity parentAct;
@@ -86,6 +86,7 @@ public class TransactionsFragment extends SherlockFragment {
 
         tlv = (AmazingListView) vg.findViewById(R.id.transactions_listview);
         t_pb_ll = (LinearLayout) vg.findViewById(R.id.trans_progressbar_ll);
+        transactionsLayout = (LinearLayout) vg.findViewById(R.id.transactions_layout);
         etv = (TextView) vg.findViewById(R.id.tv_failure);
         ell = (LinearLayout) vg.findViewById(R.id.trans_error);
         balanceLabelView = (TextView) vg.findViewById(R.id.balance_label_tv);
@@ -173,9 +174,6 @@ public class TransactionsFragment extends SherlockFragment {
     }
 
     public void refresh() {
-        // tlv.setVisibility(View.GONE);
-        // etv.setVisibility(View.GONE);
-        // t_pb_ll.setVisibility(View.VISIBLE);
         if (fetch != null) {
             fetch.cancel(true);
             fetch = null;
@@ -212,11 +210,8 @@ public class TransactionsFragment extends SherlockFragment {
             // transactions or refreshing
             if (ta.page == 1 || refresh) {
                 t_pb_ll.setVisibility(View.VISIBLE);
-                tlv.setVisibility(View.GONE);
+                transactionsLayout.setVisibility(View.GONE);
                 ell.setVisibility(View.GONE);
-                balanceLabelView.setVisibility(View.GONE);
-                balanceLabelSeparatorView.setVisibility(View.GONE);
-                balanceView.setVisibility(View.GONE);
             }
         }
 
@@ -359,10 +354,9 @@ public class TransactionsFragment extends SherlockFragment {
 
                 t_pb_ll.setVisibility(View.GONE);
                 ell.setVisibility(View.GONE);
-                tlv.setVisibility(View.VISIBLE);
-                balanceLabelView.setVisibility(View.VISIBLE);
-                balanceLabelSeparatorView.setVisibility(transactionlist.isEmpty() ? View.GONE : View.VISIBLE);
-                balanceView.setVisibility(View.VISIBLE);
+                transactionsLayout.setVisibility(View.VISIBLE);
+                balanceLabelSeparatorView.setVisibility(transactionlist.isEmpty() ? View.GONE
+                                                                                  : View.VISIBLE);
             }
         }
 
@@ -375,10 +369,7 @@ public class TransactionsFragment extends SherlockFragment {
                     // stuff to get it centered
                     etv.setText(errorMsg);
                     t_pb_ll.setVisibility(View.GONE);
-                    tlv.setVisibility(View.GONE);
-                    balanceLabelView.setVisibility(View.GONE);
-                    balanceLabelSeparatorView.setVisibility(View.GONE);
-                    balanceView.setVisibility(View.GONE);
+                    transactionsLayout.setVisibility(View.GONE);
                     ell.setVisibility(View.VISIBLE);
                 } else { // on later pages we should let them see what's already
                          // loaded
