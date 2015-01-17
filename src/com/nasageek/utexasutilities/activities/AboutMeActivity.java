@@ -19,7 +19,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.nasageek.utexasutilities.R;
 
-public class AboutMeActivity extends SherlockFragmentActivity {
+public class AboutMeActivity extends BaseActivity {
     private ActionBar actionbar;
 
     @Override

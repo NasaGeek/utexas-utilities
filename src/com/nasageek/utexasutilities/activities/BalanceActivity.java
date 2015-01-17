@@ -8,7 +8,6 @@ import android.support.v4.view.ViewPager;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.R;
@@ -21,7 +20,7 @@ import com.viewpagerindicator.MyTabPageIndicator;
 import java.util.List;
 import java.util.Vector;
 
-public class BalanceActivity extends SherlockFragmentActivity {
+public class BalanceActivity extends BaseActivity {
 
     private ActionBar actionbar;
     private MultiPanePagerAdapter mPagerAdapter;

@@ -7,12 +7,11 @@ import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.LoginWebViewClient;
 import com.nasageek.utexasutilities.fragments.BlackboardFragment;
 
-public class LoginActivity extends SherlockActivity {
+public class LoginActivity extends BaseActivity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {

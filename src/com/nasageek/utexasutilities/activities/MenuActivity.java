@@ -23,7 +23,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
-public class MenuActivity extends SherlockFragmentActivity {
+public class MenuActivity extends BaseActivity {
 
     //@formatter:off
     public enum Restaurant {

@@ -56,7 +56,7 @@ import java.util.regex.Pattern;
 
 import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
 
-public class DataUsageActivity extends SherlockActivity implements OnTouchListener {
+public class DataUsageActivity extends BaseActivity implements OnTouchListener {
 
     private OkHttpClient httpclient;
     private Float[] downdata, totaldata;

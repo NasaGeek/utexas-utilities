@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.TransitionDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.MotionEvent;
@@ -18,7 +17,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -45,7 +43,7 @@ import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_
  * Main entry point for UTilities. Allows the user to log in and contains a dashboard
  * of buttons to launch UT web services.
  */
-public class UTilitiesActivity extends SherlockActivity {
+public class UTilitiesActivity extends BaseActivity {
 
     private final static int BUTTON_ANIMATION_DURATION = 90;
 
@@ -73,7 +71,7 @@ public class UTilitiesActivity extends SherlockActivity {
         bbAuthCookie = mApp.getAuthCookie(BB_AUTH_COOKIE_KEY);
         authCookies = new AuthCookie[]{utdAuthCookie, pnaAuthCookie, bbAuthCookie};
 
-        loginTasks = (List<AsyncTask>) getLastNonConfigurationInstance();
+        loginTasks = (List<AsyncTask>) getLastCustomNonConfigurationInstance();
         if (loginTasks != null) {
             updateUiTask = (UpdateUiTask) loginTasks.get(0);
             if (updateUiTask != null) {
@@ -331,7 +329,7 @@ public class UTilitiesActivity extends SherlockActivity {
     }
 
     @Override
-    public Object onRetainNonConfigurationInstance() {
+    public Object onRetainCustomNonConfigurationInstance() {
         return loginTasks;
     }
 

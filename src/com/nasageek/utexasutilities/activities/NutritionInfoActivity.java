@@ -11,7 +11,7 @@ import com.actionbarsherlock.view.MenuItem;
 
 //consider showing this as a dialog instead
 
-public class NutritionInfoActivity extends SherlockActivity {
+public class NutritionInfoActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

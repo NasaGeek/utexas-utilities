@@ -21,7 +21,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
-public class ScheduleActivity extends SherlockFragmentActivity implements
+public class ScheduleActivity extends BaseActivity implements
         ViewPager.OnPageChangeListener {
 
     protected MyFragmentPagerAdapter mPagerAdapter;

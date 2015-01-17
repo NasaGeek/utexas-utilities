@@ -94,7 +94,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class CampusMapActivity extends SherlockFragmentActivity implements OnMapReadyCallback {
+public class CampusMapActivity extends BaseActivity implements OnMapReadyCallback {
 
     private LocationManager locationManager;
     private LocationListener locationListener;
