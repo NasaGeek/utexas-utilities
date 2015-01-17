@@ -1,24 +1,6 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.foound.widget.AmazingAdapter;
-import com.foound.widget.AmazingListView;
-import com.mapsaurus.paneslayout.FragmentLauncher;
-import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.BlackboardDashboardXmlParser;
-import com.nasageek.utexasutilities.MyPair;
-import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.Utility;
-import com.nasageek.utexasutilities.model.BBClass;
-import com.nasageek.utexasutilities.model.FeedItem;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
-import org.acra.ACRA;
-import org.xmlpull.v1.XmlPullParserException;
-
 import android.annotation.TargetApi;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -38,6 +20,24 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockFragment;
+import com.foound.widget.AmazingListView;
+import com.mapsaurus.paneslayout.FragmentLauncher;
+import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.BlackboardDashboardXmlParser;
+import com.nasageek.utexasutilities.MyPair;
+import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.Utility;
+import com.nasageek.utexasutilities.adapters.StickyHeaderAdapter;
+import com.nasageek.utexasutilities.model.BBClass;
+import com.nasageek.utexasutilities.model.FeedItem;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import org.acra.ACRA;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -277,59 +277,16 @@ public class BlackboardDashboardFragment extends SherlockFragment {
         }
     }
 
-    class BlackboardDashboardAdapter extends AmazingAdapter {
-
-        private List<MyPair<String, List<FeedItem>>> items;
+    class BlackboardDashboardAdapter extends StickyHeaderAdapter<FeedItem> {
 
         public BlackboardDashboardAdapter(List<MyPair<String, List<FeedItem>>> items) {
-            this.items = items;
-        }
-
-        @Override
-        public int getCount() {
-            int res = 0;
-            for (MyPair<String, List<FeedItem>> pair : items) {
-                res += pair.second.size();
-            }
-            return res;
+            super(items);
         }
 
         @Override
         public boolean isEnabled(int position) {
             return !("Unknown".equals(getItem(position).getType()) ||
                     "Notification".equals(getItem(position).getType()));
-        }
-
-        @Override
-        public FeedItem getItem(int position) {
-            int c = 0;
-            for (MyPair<String, List<FeedItem>> pair : items) {
-                if (position >= c && position < c + pair.second.size()) {
-                    return pair.second.get(position - c);
-                }
-                c += pair.second.size();
-            }
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        protected void onNextPageRequested(int page) {
-        }
-
-        @Override
-        protected void bindSectionHeader(View view, int position, boolean displaySectionHeader) {
-            if (displaySectionHeader) {
-                view.findViewById(R.id.header).setVisibility(View.VISIBLE);
-                TextView lSectionTitle = (TextView) view.findViewById(R.id.header);
-                lSectionTitle.setText(getSections()[getSectionForPosition(position)]);
-            } else {
-                view.findViewById(R.id.header).setVisibility(View.GONE);
-            }
         }
 
         @Override
@@ -376,56 +333,6 @@ public class BlackboardDashboardFragment extends SherlockFragment {
                 courseName.setTextColor(Color.BLACK);
             }
             return res;
-        }
-
-        @Override
-        public void configurePinnedHeader(View header, int position, int alpha) {
-            TextView lSectionHeader = (TextView) header;
-            lSectionHeader.setText(getSections()[getSectionForPosition(position)]);
-        }
-
-        @Override
-        public int getPositionForSection(int section) {
-            if (section < 0) {
-                section = 0;
-            }
-            if (section >= items.size()) {
-                section = items.size() - 1;
-            }
-            int c = 0;
-            for (int i = 0; i < items.size(); i++) {
-                if (section == i) {
-                    return c;
-                }
-                c += items.get(i).second.size();
-            }
-            return 0;
-        }
-
-        @Override
-        public int getSectionForPosition(int position) {
-            int c = 0;
-            for (int i = 0; i < items.size(); i++) {
-                if (position >= c && position < c + items.get(i).second.size()) {
-                    return i;
-                }
-                c += items.get(i).second.size();
-            }
-            return 0;
-        }
-
-        @Override
-        public String[] getSections() {
-            String[] res = new String[items.size()];
-            for (int i = 0; i < items.size(); i++) {
-                res[i] = items.get(i).first;
-            }
-            return res;
-        }
-
-        @Override
-        protected View getLoadingView(ViewGroup parent) {
-            return null;
         }
     }
 }
