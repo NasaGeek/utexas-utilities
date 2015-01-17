@@ -21,6 +21,8 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.ChangeLog;
@@ -317,6 +319,11 @@ public class UTilitiesActivity extends BaseActivity {
                 invalidateOptionsMenu();
                 break;
             case R.id.logout_button:
+                analyticsTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory(this.getLocalClassName())
+                        .setAction("Logout")
+                        .build());
+                GoogleAnalytics.getInstance(this).dispatchLocalHits();
                 logout();
                 invalidateOptionsMenu();
                 break;
