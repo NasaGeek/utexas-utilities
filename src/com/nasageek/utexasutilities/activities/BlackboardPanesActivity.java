@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.mapsaurus.paneslayout.PanesActivity;
 import com.mapsaurus.paneslayout.PanesLayout;
 import com.mapsaurus.paneslayout.PanesLayout.OnIndexChangedListener;
@@ -49,6 +50,18 @@ public class BlackboardPanesActivity extends PanesActivity implements OnIndexCha
         // addFragment(null,
         // BlackboardCourseListFragment.newInstance("Course List"));
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
+    }
+
+    @Override
+    public void onStop() {
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
+        super.onStop();
     }
 
     /*
