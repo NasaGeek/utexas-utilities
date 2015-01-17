@@ -3,6 +3,9 @@ package com.nasageek.utexasutilities;
 
 import android.app.Application;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Logger;
+import com.google.android.gms.analytics.Tracker;
 import com.nasageek.utexasutilities.fragments.BlackboardFragment;
 
 import org.acra.ACRA;
@@ -56,6 +59,22 @@ public class UTilitiesApplication extends Application {
 
         // The following line triggers the initialization of ACRA
         ACRA.init(this);
+        // Init google analytics tracker
+        getTracker();
+    }
+
+    private Tracker analyticsTracker;
+
+    public Tracker getTracker() {
+        if (analyticsTracker == null) {
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            analytics.setDryRun(false);
+            analytics.setLocalDispatchPeriod(300);
+            analytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
+            analytics.enableAutoActivityReports(this);
+            analyticsTracker = analytics.newTracker(R.xml.analytics_tracker_config);
+        }
+        return analyticsTracker;
     }
 
     public AuthCookie getAuthCookie(String key) {
