@@ -97,12 +97,21 @@
             android:title="Use raw class names" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Privacy" >
+        <Preference
+            android:summary="@string/preference_privacy_category_summary"
+            android:selectable="false" />
+
         <CheckBoxPreference
             android:id="@+id/sendcrashes"
             android:defaultValue="true"
             android:key="acra.enable"
-            android:summary="@string/preference_sendcrashes_summary"
             android:title="Auto-send crash reports" />
+
+        <CheckBoxPreference
+            android:id="@+id/pref_analytics"
+            android:defaultValue="true"
+            android:key="@string/pref_analytics_key"
+            android:title="Google Analytics" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Miscellaneous" >
         <CheckBoxPreference

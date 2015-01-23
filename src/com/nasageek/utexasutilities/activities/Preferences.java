@@ -120,10 +120,12 @@ public class Preferences extends SherlockPreferenceActivity {
 
         setupLoginFields();
 
-        final CheckBoxPreference sendcrashes = (CheckBoxPreference) findPreference("acra.enable");
-        sendcrashes.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+        final CheckBoxPreference analytics =
+                (CheckBoxPreference) findPreference(getString(R.string.pref_analytics_key));
+        analytics.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
+                GoogleAnalytics.getInstance(Preferences.this).setAppOptOut(!((Boolean) newValue));
                 return true;
             }
         });

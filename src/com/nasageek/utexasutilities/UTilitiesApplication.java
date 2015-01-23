@@ -2,6 +2,7 @@
 package com.nasageek.utexasutilities;
 
 import android.app.Application;
+import android.preference.PreferenceManager;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Logger;
@@ -72,6 +73,9 @@ public class UTilitiesApplication extends Application {
             analytics.setLocalDispatchPeriod(300);
             analytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
             analytics.enableAutoActivityReports(this);
+            // note the negation
+            analytics.setAppOptOut(!PreferenceManager.getDefaultSharedPreferences(this)
+                    .getBoolean(getString(R.string.pref_analytics_key), false));
             analyticsTracker = analytics.newTracker(R.xml.analytics_tracker_config);
         }
         return analyticsTracker;
