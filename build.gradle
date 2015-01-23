@@ -4,7 +4,7 @@ buildscript {
         maven { url 'https://raw.github.com/xujiaao/mvn-repository/master/releases' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:1.0.1'
         classpath 'com.github.xujiaao:aarLinkSources:1.0.0'
     }
 }
@@ -21,7 +21,7 @@ repositories {
 def buildTime = new Date().format("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"))
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion 21
     buildToolsVersion "21.1.2"
 
     defaultConfig {
