@@ -39,7 +39,6 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -58,6 +57,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.ui.MyIconGenerator;
+import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.BuildingSaxHandler;
 import com.nasageek.utexasutilities.MarkerManager;
@@ -613,6 +613,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             shownStops.clearMarkers();
             return;
         }
+        AnalyticsHandler.trackBusRouteEvent();
         try {
             initRouteData();
             InputSource is = new InputSource(assets.open("kml/"
@@ -1159,6 +1160,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                                 double dstLat = marker.getPosition().latitude;
                                 double dstLng = marker.getPosition().longitude;
 
+                                AnalyticsHandler.trackGetDirectionsEvent();
                                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
                                         Uri.parse("http://maps.google.com/maps?saddr="
                                                 + myLocation.latitude + "," + myLocation.longitude

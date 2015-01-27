@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +24,7 @@ import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.TempLoginException;
@@ -202,7 +202,7 @@ public class CourseScheduleFragment extends SherlockFragment implements ActionMo
                             }
                         }
                     }
-
+                    AnalyticsHandler.trackMapAllClassesEvent();
                     Intent map = new Intent(getString(R.string.building_intent), null, parentAct, CampusMapActivity.class);
                     map.putStringArrayListExtra("buildings", buildings);
                     startActivity(map);

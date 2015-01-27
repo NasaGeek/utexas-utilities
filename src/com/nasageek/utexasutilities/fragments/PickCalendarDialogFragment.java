@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
+import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.R;
 
 import java.util.ArrayList;
@@ -91,6 +92,7 @@ public class PickCalendarDialogFragment extends SherlockDialogFragment {
                         parentAct,
                         "This schedule has been exported successfully. It may take a minute or two "
                                 + "for it to show up on your calendar.", Toast.LENGTH_LONG).show();
+                AnalyticsHandler.trackCalendarExportEvent();
             }
         }
     }
