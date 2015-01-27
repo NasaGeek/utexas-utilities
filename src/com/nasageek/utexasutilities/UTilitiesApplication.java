@@ -6,7 +6,6 @@ import android.preference.PreferenceManager;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Logger;
-import com.google.android.gms.analytics.Tracker;
 import com.nasageek.utexasutilities.fragments.BlackboardFragment;
 
 import org.acra.ACRA;
@@ -61,24 +60,19 @@ public class UTilitiesApplication extends Application {
         // The following line triggers the initialization of ACRA
         ACRA.init(this);
         // Init google analytics tracker
-        getTracker();
+        initGoogleAnalytics();
+        AnalyticsHandler.initTrackerIfNeeded(this);
     }
 
-    private Tracker analyticsTracker;
-
-    public Tracker getTracker() {
-        if (analyticsTracker == null) {
-            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-            analytics.setDryRun(false);
-            analytics.setLocalDispatchPeriod(300);
-            analytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
-            analytics.enableAutoActivityReports(this);
-            // note the negation
-            analytics.setAppOptOut(!PreferenceManager.getDefaultSharedPreferences(this)
-                    .getBoolean(getString(R.string.pref_analytics_key), false));
-            analyticsTracker = analytics.newTracker(R.xml.analytics_tracker_config);
-        }
-        return analyticsTracker;
+    public void initGoogleAnalytics() {
+        GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+        analytics.setDryRun(false);
+        analytics.setLocalDispatchPeriod(300);
+        analytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
+        analytics.enableAutoActivityReports(this);
+        // note the negation
+        analytics.setAppOptOut(!PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(getString(R.string.pref_analytics_key), false));
     }
 
     public AuthCookie getAuthCookie(String key) {
