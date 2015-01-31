@@ -102,8 +102,6 @@ public class Preferences extends SherlockPreferenceActivity {
                     AlertDialog nologin = nologin_builder.create();
                     nologin.show();
                 } else {
-                    loginfield.setEnabled(true);
-                    passwordfield.setEnabled(true);
                     /*
                      * if they switch to temp login we'll save their EID, but
                      * clear their password for security purposes
