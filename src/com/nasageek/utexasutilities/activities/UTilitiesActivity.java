@@ -164,7 +164,7 @@ public class UTilitiesActivity extends BaseActivity {
                     if (data.authCookie == null) {
                         startActivity(data.intent);
                     } else {
-                        if (settings.getBoolean("loginpref", false)) {
+                        if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
                             // persistent login
                             if (!data.authCookie.hasCookieBeenSet() || isLoggingIn()) {
                                 showLoginFirstToast();
@@ -273,7 +273,7 @@ public class UTilitiesActivity extends BaseActivity {
         }
 
         // update the displayed login state
-        if (settings.getBoolean("loginpref", false)) {
+        if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
             if (!isLoggingIn()) {
                 if (allLoggedIn) {
                     replaceLoginButton(menu, R.id.logout_button, "Log out");
@@ -500,7 +500,7 @@ public class UTilitiesActivity extends BaseActivity {
      */
     private void login() {
         SecurePreferences sp = new SecurePreferences(UTilitiesActivity.this, SECURE_PREF_PW_KEY, false);
-        if (settings.getBoolean("loginpref", false)) {
+        if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
             if (!settings.contains("eid") || !sp.containsKey("password")
                     || settings.getString("eid", "error").equals("")
                     || sp.getString("password").equals("")) {
@@ -576,7 +576,7 @@ public class UTilitiesActivity extends BaseActivity {
      * ensure they show the correct login status.
      */
     private void resetChecks() {
-        if (settings.getBoolean("loginpref", false)) {
+        if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
             scheduleCheck.setVisibility(View.GONE);
             balanceCheck.setVisibility(View.GONE);
             dataCheck.setVisibility(View.GONE);

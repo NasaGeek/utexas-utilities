@@ -34,6 +34,7 @@ public class AuthCookie {
     protected boolean cookieHasBeenSet;
     protected OkHttpClient client;
     protected SharedPreferences settings;
+    protected boolean persistentLogin;
     protected SecurePreferences secureSettings;
     protected URL url;
 
@@ -54,6 +55,8 @@ public class AuthCookie {
         this.secureSettings = new SecurePreferences(con, "com.nasageek.utexasutilities.password",
                 false);
         this.settings = PreferenceManager.getDefaultSharedPreferences(con);
+        this.persistentLogin =
+                settings.getBoolean(con.getString(R.string.pref_logintype_key), false);
     }
 
     public boolean hasCookieBeenSet() {
@@ -129,7 +132,7 @@ public class AuthCookie {
      * not activated
      */
     public boolean login() throws IOException {
-        if (!settings.getBoolean("loginpref", false)) {
+        if (!persistentLogin) {
             throw new TempLoginException("login() cannot be called when persistent login" +
                     " is turned off.");
         }

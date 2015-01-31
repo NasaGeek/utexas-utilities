@@ -7,7 +7,7 @@
         <CheckBoxPreference
             android:id="@+id/login_pref"
             android:defaultValue="false"
-            android:key="loginpref"
+            android:key="@string/pref_logintype_key"
             android:summary="Save credentials on device for faster login."
             android:title="Persistent login" />
     </PreferenceCategory>

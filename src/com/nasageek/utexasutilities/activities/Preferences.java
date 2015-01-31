@@ -66,7 +66,7 @@ public class Preferences extends SherlockPreferenceActivity {
             }
         });
 
-        final Preference logincheckbox = findPreference("loginpref");
+        final Preference logincheckbox = findPreference(getString(R.string.pref_logintype_key));
 
         // TODO: figure out why this is here, was it related to the old Login
         // Pref stuff?
