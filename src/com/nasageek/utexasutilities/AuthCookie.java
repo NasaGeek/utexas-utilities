@@ -1,6 +1,6 @@
 package com.nasageek.utexasutilities;
 
-import android.content.Context;
+import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -34,13 +34,13 @@ public class AuthCookie {
     protected boolean cookieHasBeenSet;
     protected OkHttpClient client;
     protected SharedPreferences settings;
-    protected boolean persistentLogin;
     protected SecurePreferences secureSettings;
     protected URL url;
+    protected Application mApp;
 
 
     public AuthCookie(String prefKey, String authCookieKey, String loginUrl, String userNameKey,
-                      String passwordKey, Context con) {
+                      String passwordKey, Application mApp) {
         this.prefKey = prefKey;
         this.authCookieKey = authCookieKey;
         this.userNameKey = userNameKey;
@@ -52,11 +52,10 @@ public class AuthCookie {
         }
         this.client = new OkHttpClient();
         this.client.setConnectTimeout(10, TimeUnit.SECONDS);
-        this.secureSettings = new SecurePreferences(con, "com.nasageek.utexasutilities.password",
+        this.secureSettings = new SecurePreferences(mApp, "com.nasageek.utexasutilities.password",
                 false);
-        this.settings = PreferenceManager.getDefaultSharedPreferences(con);
-        this.persistentLogin =
-                settings.getBoolean(con.getString(R.string.pref_logintype_key), false);
+        this.settings = PreferenceManager.getDefaultSharedPreferences(mApp);
+        this.mApp = mApp;
     }
 
     public boolean hasCookieBeenSet() {
@@ -132,7 +131,7 @@ public class AuthCookie {
      * not activated
      */
     public boolean login() throws IOException {
-        if (!persistentLogin) {
+        if (!settings.getBoolean(mApp.getString(R.string.pref_logintype_key), false)) {
             throw new TempLoginException("login() cannot be called when persistent login" +
                     " is turned off.");
         }

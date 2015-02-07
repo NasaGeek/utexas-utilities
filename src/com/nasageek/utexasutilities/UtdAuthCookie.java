@@ -1,6 +1,6 @@
 package com.nasageek.utexasutilities;
 
-import android.content.Context;
+import android.app.Application;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -15,13 +15,13 @@ import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_
  */
 public class UtdAuthCookie extends AuthCookie {
 
-    public UtdAuthCookie(Context con) {
+    public UtdAuthCookie(Application mApp) {
         super(UTD_AUTH_COOKIE_KEY,
                 "utlogin-prod",
                 "https://login.utexas.edu/openam/UI/Login",
                 "IDToken1",
                 "IDToken2",
-                con);
+                mApp);
     }
 
     public void setAuthCookieVal(String authCookie) {

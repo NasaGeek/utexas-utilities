@@ -1,6 +1,6 @@
 package com.nasageek.utexasutilities;
 
-import android.content.Context;
+import android.app.Application;
 
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MultipartBuilder;
@@ -15,13 +15,13 @@ import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_
 public class PnaAuthCookie extends AuthCookie {
 
 
-    public PnaAuthCookie(Context con) {
+    public PnaAuthCookie(Application mApp) {
         super(PNA_AUTH_COOKIE_KEY,
               "AUTHCOOKIE",
               "https://management.pna.utexas.edu/server/graph.cgi",
               "PNACLOGINusername",
               "PNACLOGINpassword",
-              con);
+              mApp);
     }
 
     @Override
