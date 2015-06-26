@@ -30,6 +30,13 @@
 		    android:src="@drawable/ic_done"
 		    android:layout_alignBottom="@+id/schedule_button"
 		    android:layout_alignRight="@+id/schedule_button"/>
+        <ProgressBar
+            android:id="@+id/scheduleProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+			android:indeterminate="true"
+            android:visibility="gone"/>
 		</RelativeLayout>
 
 		<RelativeLayout
@@ -80,6 +87,13 @@
 		    android:src="@drawable/ic_done"
 		    android:layout_alignBottom="@+id/blackboard_button"
 		    android:layout_alignRight="@+id/blackboard_button"/>
+        <ProgressBar
+            android:id="@+id/blackboardProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            style="@android:style/Widget.ProgressBar"
+            android:visibility="gone"/>
 		</RelativeLayout>
 	    
 	   <RelativeLayout
@@ -102,10 +116,17 @@
 		    android:src="@drawable/ic_done"
 		    android:layout_alignBottom="@+id/data_button"
 		    android:layout_alignRight="@+id/data_button"/>
-		</RelativeLayout>	
-	</TableRow> 
-	
-	<TableRow	    
+        <ProgressBar
+            android:id="@+id/dataProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+			android:indeterminate="true"
+            android:visibility="gone"/>
+		</RelativeLayout>
+	</TableRow>
+
+	<TableRow
 	    android:layout_gravity="center"
 	    android:gravity="center"
 	    android:layout_weight="1"
