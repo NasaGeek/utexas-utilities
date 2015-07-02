@@ -654,52 +654,15 @@ public class UTilitiesActivity extends SherlockActivity {
     @Subscribe
     public void loginFinished(final LoginFinishedEvent lfe) {
         boolean successful = lfe.loginSuccessful();
-        switch (lfe.getService()) {
-            case UTD_AUTH_COOKIE_KEY:
-                if (successful) {
-                    enableFeature(featureButtons[0]);
-                    ((DashboardButtonData) featureButtons[0].getTag()).loggedIn = true;
-                    enableFeature(featureButtons[1]);
-                    ((DashboardButtonData) featureButtons[1].getTag()).loggedIn = true;
-                    serviceLoggedIn.put(UTD_AUTH_COOKIE_KEY, true);
-                } else {
-                    disableFeature(featureButtons[0]);
-                    ((DashboardButtonData) featureButtons[0].getTag()).loggedIn = false;
-                    disableFeature(featureButtons[1]);
-                    ((DashboardButtonData) featureButtons[1].getTag()).loggedIn = false;
-                    serviceLoggedIn.put(UTD_AUTH_COOKIE_KEY, false);
-                }
-                ((DashboardButtonData) featureButtons[0].getTag()).loginProgress
-                        .setVisibility(View.GONE);
-                ((DashboardButtonData) featureButtons[1].getTag()).loginProgress
-                        .setVisibility(View.GONE);
-                break;
-            case BB_AUTH_COOKIE_KEY:
-                if (successful) {
-                    enableFeature(featureButtons[2]);
-                    ((DashboardButtonData) featureButtons[2].getTag()).loggedIn = true;
-                    serviceLoggedIn.put(BB_AUTH_COOKIE_KEY, true);
-                } else {
-                    disableFeature(featureButtons[2]);
-                    ((DashboardButtonData) featureButtons[2].getTag()).loggedIn = false;
-                    serviceLoggedIn.put(BB_AUTH_COOKIE_KEY, false);
-                }
-                ((DashboardButtonData) featureButtons[2].getTag()).loginProgress
-                        .setVisibility(View.GONE);
-                break;
-            case PNA_AUTH_COOKIE_KEY:
-                if (successful) {
-                    enableFeature(featureButtons[3]);
-                    ((DashboardButtonData) featureButtons[3].getTag()).loggedIn = true;
-                    serviceLoggedIn.put(PNA_AUTH_COOKIE_KEY, true);
-                } else {
-                    disableFeature(featureButtons[3]);
-                    ((DashboardButtonData) featureButtons[3].getTag()).loggedIn = false;
-                    serviceLoggedIn.put(PNA_AUTH_COOKIE_KEY, false);
-                }
-                ((DashboardButtonData) featureButtons[3].getTag()).loginProgress
-                        .setVisibility(View.GONE);
-                break;
+        serviceLoggedIn.put(lfe.getService(), successful);
+        for (ImageButton ib : cookiesToFeatures.get(lfe.getService())) {
+            if (successful) {
+                enableFeature(ib);
+            } else {
+                disableFeature(ib);
+            }
+            ((DashboardButtonData) ib.getTag()).loggedIn = successful;
+            ((DashboardButtonData) ib.getTag()).loginProgress.setVisibility(View.GONE);
         }
     }
 
