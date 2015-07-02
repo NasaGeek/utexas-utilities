@@ -1,10 +1,9 @@
 
 package com.nasageek.utexasutilities;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.squareup.okhttp.OkHttpClient;
@@ -197,5 +196,13 @@ public class Utility {
     public static <P> void parallelExecute(AsyncTask<P, ?, ?> task, P... params) {
         // always call executeOnExecutor because I pulled in a current AsyncTask
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
+    }
+
+    public static void setImageAlpha(ImageView iv, int alpha) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            iv.setImageAlpha(alpha);
+        } else {
+            iv.setAlpha(alpha);
+        }
     }
 }

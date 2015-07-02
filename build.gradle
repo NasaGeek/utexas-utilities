@@ -27,8 +27,8 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 19
-        versionCode 35
-        versionName "1.99.8"
+        versionCode 41
+        versionName "1.99.9"
 
         // The git sha of the current head and build time
         //buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
@@ -90,6 +90,7 @@ dependencies {
 
     compile 'com.google.android.gms:play-services-maps:6.5.+'
 
+    compile 'com.squareup:otto:1.3.8'
     compile 'com.viewpagerindicator:library:2.4.1@aar'
     aarLinkSources 'com.viewpagerindicator:library:2.4.1:sources@jar'
     compile('ch.acra:acra:4.5.0') {

@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,6 +17,7 @@ import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
@@ -26,13 +29,16 @@ import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.ChangeLog;
 import com.nasageek.utexasutilities.ChangeableContextTask;
+import com.nasageek.utexasutilities.MyBus;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.Utility;
+import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -53,6 +59,7 @@ public class UTilitiesActivity extends BaseActivity {
     private SharedPreferences settings;
     private Toast message;
     private ImageView scheduleCheck, balanceCheck, dataCheck, blackboardCheck;
+    private ProgressBar scheduleProgress, balanceProgress, dataProgress, blackboardProgress;
     private AlertDialog nologin;
 
     private AuthCookie authCookies[];
@@ -61,6 +68,12 @@ public class UTilitiesActivity extends BaseActivity {
     private AuthCookie utdAuthCookie;
     private AuthCookie pnaAuthCookie;
     private AuthCookie bbAuthCookie;
+
+    private HashMap<String, ImageButton[]> cookiesToFeatures;
+    private HashMap<String, Boolean> serviceLoggedIn;
+    private ImageButton[] featureButtons;
+    private View.OnClickListener enabledFeatureButtonListener;
+    private View.OnClickListener disabledFeatureButtonListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,6 +92,14 @@ public class UTilitiesActivity extends BaseActivity {
                 updateUiTask.setContext(this);
             }
         }
+        if (savedInstanceState != null) {
+            serviceLoggedIn = (HashMap) savedInstanceState.getSerializable("serviceLoggedIn");
+        } else {
+            serviceLoggedIn = new HashMap<>();
+            serviceLoggedIn.put(UTD_AUTH_COOKIE_KEY, true);
+            serviceLoggedIn.put(BB_AUTH_COOKIE_KEY, true);
+            serviceLoggedIn.put(PNA_AUTH_COOKIE_KEY, true);
+        }
 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -90,10 +111,102 @@ public class UTilitiesActivity extends BaseActivity {
 
         handleUnencryptedPassword();
         handleFirstLaunch();
-        if (settings.getBoolean("autologin", false) && !isLoggingIn() && !mApp.allCookiesSet()) {
+        if (settings.getBoolean("autologin", false) && !isLoggingIn() && !mApp.anyCookiesSet()) {
             login();
         }
+        enabledFeatureButtonListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DashboardButtonData data = (DashboardButtonData) v.getTag();
+                // null cookie means the service doesn't need an EID
+                if (data.authCookie == null) {
+                    startActivity(data.intent);
+                } else {
+                    if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
+                        // persistent login
+                        if (!data.authCookie.hasCookieBeenSet() || isLoggingIn()) {
+                            showLoginFirstToast();
+                        } else {
+                            startActivity(data.intent);
+                        }
+                    } else {
+                        // temp login
+                        if (!data.authCookie.hasCookieBeenSet()) {
+                            Intent login = new Intent(UTilitiesActivity.this,
+                                    LoginActivity.class);
+                            login.putExtra("activity", data.intent.getComponent()
+                                    .getClassName());
+                            login.putExtra("service", data.serviceChar);
+                            startActivity(login);
+                        } else {
+                            startActivity(data.intent);
+                        }
+                    }
+                }
+            }
+        };
+        disabledFeatureButtonListener = new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                AlertDialog.Builder featureDisabledBuilder =
+                        new AlertDialog.Builder(UTilitiesActivity.this);
+                featureDisabledBuilder
+                        .setMessage("This feature has been disabled due to a failed login, would " +
+                                "you like to try logging in again?")
+                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                ((DashboardButtonData) v.getTag()).loginProgress
+                                        .setVisibility(View.VISIBLE);
+                                loginTasks = new ArrayList<>();
+                                CountDownLatch loginLatch = new CountDownLatch(1);
+                                updateUiTask = new UpdateUiTask(UTilitiesActivity.this);
+                                Utility.parallelExecute(updateUiTask, loginLatch);
+                                loginTasks.add(updateUiTask);
+
+                                AuthCookie cookie =
+                                        ((DashboardButtonData) v.getTag()).authCookie;
+                                LoginTask loginTask = new LoginTask(loginLatch);
+                                Utility.parallelExecute(loginTask, cookie);
+                                loginTasks.add(loginTask);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null);
+                AlertDialog featureDisabled = featureDisabledBuilder.create();
+                featureDisabled.show();
+            }
+        };
         setupDashBoardButtons();
+        MyBus.getInstance().register(this);
+    }
+
+    // simple struct-like class to help handle related data
+    class DashboardButtonData {
+        public Intent intent;
+        public int imageButtonId;
+        public AuthCookie authCookie;
+        public Character serviceChar;
+        public ImageView checkOverlay;
+        public ProgressBar loginProgress;
+        public boolean loggedIn;
+
+        // for authenticated services
+        public DashboardButtonData(Intent intent, int id, AuthCookie authCookie,
+                                   Character service, ImageView check, ProgressBar progress,
+                                   boolean loggedIn) {
+            this.intent = intent;
+            this.imageButtonId = id;
+            this.authCookie = authCookie;
+            this.serviceChar = service;
+            this.checkOverlay = check;
+            this.loginProgress = progress;
+            this.loggedIn = loggedIn;
+        }
+
+        // for unauthenticated services
+        public DashboardButtonData(Intent intent, int id) {
+            this(intent, id, null, null, null, null, true);
+        }
     }
 
     /**
@@ -107,6 +220,11 @@ public class UTilitiesActivity extends BaseActivity {
         dataCheck = (ImageView) findViewById(R.id.dataCheck);
         blackboardCheck = (ImageView) findViewById(R.id.blackboardCheck);
 
+        scheduleProgress = (ProgressBar) findViewById(R.id.scheduleProgress);
+        balanceProgress = (ProgressBar) findViewById(R.id.balanceProgress);
+        dataProgress = (ProgressBar) findViewById(R.id.dataProgress);
+        blackboardProgress = (ProgressBar) findViewById(R.id.blackboardProgress);
+
         final Intent schedule = new Intent(this, ScheduleActivity.class);
         final Intent balance = new Intent(this, BalanceActivity.class);
         final Intent map = new Intent(this, CampusMapActivity.class);
@@ -114,80 +232,39 @@ public class UTilitiesActivity extends BaseActivity {
         final Intent menu = new Intent(this, MenuActivity.class);
         final Intent blackboard = new Intent(this, BlackboardPanesActivity.class);
 
-        // simple struct-like class to help handle related data
-        class DashboardButtonData {
-            public Intent intent;
-            public int imageButtonId;
-            public AuthCookie authCookie;
-            public Character serviceChar;
-            public ImageView checkOverlay;
 
-            // for authenticated services
-            public DashboardButtonData(Intent intent, int id, AuthCookie authCookie,
-                                       Character service, ImageView check) {
-                this.intent = intent;
-                this.imageButtonId = id;
-                this.authCookie = authCookie;
-                this.serviceChar = service;
-                this.checkOverlay = check;
-            }
-
-            // for unauthenticated services
-            public DashboardButtonData(Intent intent, int id) {
-                this(intent, id, null, null, null);
-            }
-        }
 
         DashboardButtonData buttonData[] = new DashboardButtonData[6];
         buttonData[0] = new DashboardButtonData(schedule, R.id.schedule_button, utdAuthCookie, 'u',
-                scheduleCheck);
+                scheduleCheck, scheduleProgress, serviceLoggedIn.get(UTD_AUTH_COOKIE_KEY));
         buttonData[1] = new DashboardButtonData(balance, R.id.balance_button, utdAuthCookie, 'u',
-                balanceCheck);
+                balanceCheck, balanceProgress, serviceLoggedIn.get(UTD_AUTH_COOKIE_KEY));
         buttonData[2] = new DashboardButtonData(blackboard, R.id.blackboard_button, bbAuthCookie,
-                'b', blackboardCheck);
+                'b', blackboardCheck, blackboardProgress, serviceLoggedIn.get(BB_AUTH_COOKIE_KEY));
         buttonData[3] = new DashboardButtonData(data, R.id.data_button, pnaAuthCookie, 'p',
-                dataCheck);
+                dataCheck, dataProgress, serviceLoggedIn.get(PNA_AUTH_COOKIE_KEY));
         buttonData[4] = new DashboardButtonData(map, R.id.map_button);
         buttonData[5] = new DashboardButtonData(menu, R.id.menu_button);
 
+        featureButtons = new ImageButton[6];
         for (int i = 0; i < 6; i++) {
             ImageButton ib = (ImageButton) findViewById(buttonData[i].imageButtonId);
             ib.setOnTouchListener(new ImageButtonTouchListener(
                     (TransitionDrawable) ib.getDrawable()));
             ib.setOnFocusChangeListener(new ImageButtonFocusListener());
             ib.setTag(buttonData[i]);
-            ib.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    DashboardButtonData data = (DashboardButtonData) v.getTag();
-                    // null cookie means the service doesn't need an EID
-                    if (data.authCookie == null) {
-                        startActivity(data.intent);
-                    } else {
-                        if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
-                            // persistent login
-                            if (!data.authCookie.hasCookieBeenSet() || isLoggingIn()) {
-                                showLoginFirstToast();
-                            } else {
-                                startActivity(data.intent);
-                            }
-                        } else {
-                            // temp login
-                            if (!data.authCookie.hasCookieBeenSet()) {
-                                Intent login = new Intent(UTilitiesActivity.this,
-                                        LoginActivity.class);
-                                login.putExtra("activity", data.intent.getComponent()
-                                        .getClassName());
-                                login.putExtra("service", data.serviceChar);
-                                startActivity(login);
-                            } else {
-                                startActivity(data.intent);
-                            }
-                        }
-                    }
-                }
-            });
+            if (buttonData[i].loggedIn) {
+                enableFeature(ib);
+            } else {
+                disableFeature(ib);
+            }
+            featureButtons[i] = ib;
         }
+        cookiesToFeatures = new HashMap<>();
+        cookiesToFeatures.put(UTD_AUTH_COOKIE_KEY,
+                new ImageButton[] {featureButtons[0], featureButtons[1]});
+        cookiesToFeatures.put(BB_AUTH_COOKIE_KEY, new ImageButton[] {featureButtons[2]});
+        cookiesToFeatures.put(PNA_AUTH_COOKIE_KEY, new ImageButton[] {featureButtons[3]});
     }
 
     /**
@@ -262,20 +339,18 @@ public class UTilitiesActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = this.getSupportMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
-        boolean allLoggedIn = true;
         boolean anyLoggedIn = false;
         for (AuthCookie cookie : authCookies) {
-            if (!cookie.hasCookieBeenSet()) {
-                allLoggedIn = false;
-            } else {
+            if (cookie.hasCookieBeenSet()) {
                 anyLoggedIn = true;
+                break;
             }
         }
 
         // update the displayed login state
         if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
             if (!isLoggingIn()) {
-                if (allLoggedIn) {
+                if (anyLoggedIn) {
                     replaceLoginButton(menu, R.id.logout_button, "Log out");
                 } else {
                     replaceLoginButton(menu, R.id.login_button, "Log in");
@@ -418,22 +493,25 @@ public class UTilitiesActivity extends BaseActivity {
      * Call login on the given AuthCookie and decrement the given CountDownLatch afterwards.
      * This doesn't really need to be an AsyncTask, that's just what I'm most familiar with.
      */
-    static class LoginTask extends AsyncTask<AuthCookie, Void, Void> {
+    static class LoginTask extends AsyncTask<AuthCookie, Void, Boolean> {
 
         private CountDownLatch loginLatch;
+        private AuthCookie cookie;
 
         public LoginTask(CountDownLatch loginLatch) {
             this.loginLatch = loginLatch;
         }
 
         @Override
-        protected Void doInBackground(AuthCookie... params) {
+        protected Boolean doInBackground(AuthCookie... params) {
+            cookie = params[0];
+            Boolean result = false;
             try {
                 /*
                 We can ignore the return value of login() because UpdateUITask ensures all of the
                 cookies have been set before completing the login.
                   */
-                params[0].login();
+                result = cookie.login();
             } catch (IOException e) {
                 /*
                 TODO: Inform the user that the login request failed due to a network error.
@@ -443,7 +521,12 @@ public class UTilitiesActivity extends BaseActivity {
                 e.printStackTrace();
             }
             loginLatch.countDown();
-            return null;
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            MyBus.getInstance().post(new LoginFinishedEvent(cookie.getPrefKey(), result));
         }
     }
 
@@ -475,8 +558,7 @@ public class UTilitiesActivity extends BaseActivity {
         protected void onPostExecute(Void result) {
             for (AuthCookie cookie : mActivity.authCookies) {
                 if (!cookie.hasCookieBeenSet()) {
-                    ((UTilitiesApplication) mActivity.getApplication()).logoutAll();
-                    Toast.makeText(mActivity, "Login failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mActivity, "One or more services could not log in and have been disabled", Toast.LENGTH_SHORT).show();
                     break;
                 }
             }
@@ -499,7 +581,8 @@ public class UTilitiesActivity extends BaseActivity {
      * Perform a login with the user's saved credentials.
      */
     private void login() {
-        SecurePreferences sp = new SecurePreferences(UTilitiesActivity.this, SECURE_PREF_PW_KEY, false);
+        SecurePreferences sp =
+                new SecurePreferences(UTilitiesActivity.this, SECURE_PREF_PW_KEY, false);
         if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
             if (!settings.contains("eid") || !sp.containsKey("password")
                     || settings.getString("eid", "error").equals("")
@@ -545,7 +628,43 @@ public class UTilitiesActivity extends BaseActivity {
         for (AuthCookie cookie : authCookies) {
             cookie.logout();
         }
+        for (ImageButton ib : featureButtons) {
+            enableFeature(ib);
+            if (((DashboardButtonData) ib.getTag()).loginProgress != null) {
+                ((DashboardButtonData) ib.getTag()).loginProgress.setVisibility(View.GONE);
+            }
+        }
         resetChecks();
+    }
+
+    private void disableFeature(final ImageButton featureButton) {
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+        featureButton.setColorFilter(filter);
+        Utility.setImageAlpha(featureButton, 75);
+        featureButton.setOnClickListener(disabledFeatureButtonListener);
+    }
+
+    private void enableFeature(final ImageButton featureButton) {
+        featureButton.clearColorFilter();
+        Utility.setImageAlpha(featureButton, 255);
+        featureButton.setOnClickListener(enabledFeatureButtonListener);
+    }
+
+    @Subscribe
+    public void loginFinished(final LoginFinishedEvent lfe) {
+        boolean successful = lfe.loginSuccessful();
+        serviceLoggedIn.put(lfe.getService(), successful);
+        for (ImageButton ib : cookiesToFeatures.get(lfe.getService())) {
+            if (successful) {
+                enableFeature(ib);
+            } else {
+                disableFeature(ib);
+            }
+            ((DashboardButtonData) ib.getTag()).loggedIn = successful;
+            ((DashboardButtonData) ib.getTag()).loginProgress.setVisibility(View.GONE);
+        }
     }
 
     private void showLoginFirstToast() {
@@ -558,6 +677,11 @@ public class UTilitiesActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         invalidateOptionsMenu();
+        if (!settings.getBoolean("loginpref", false)) {
+            for (ImageButton ib : featureButtons) {
+                enableFeature(ib);
+            }
+        }
         resetChecks();
     }
 
@@ -569,6 +693,18 @@ public class UTilitiesActivity extends BaseActivity {
                 nologin.dismiss();
             }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("serviceLoggedIn", serviceLoggedIn);
+    }
+
+    @Override
+    protected void onDestroy() {
+        MyBus.getInstance().unregister(this);
+        super.onDestroy();
     }
 
     /**
@@ -603,6 +739,24 @@ public class UTilitiesActivity extends BaseActivity {
             balanceCheck.setVisibility(View.VISIBLE);
             dataCheck.setVisibility(View.VISIBLE);
             blackboardCheck.setVisibility(View.VISIBLE);
+        }
+    }
+
+    static class LoginFinishedEvent {
+        private String service;
+        private boolean successful;
+
+        public LoginFinishedEvent(String service, boolean successful) {
+            this.service = service;
+            this.successful = successful;
+        }
+
+        public String getService() {
+            return service;
+        }
+
+        public boolean loginSuccessful() {
+            return successful;
         }
     }
 }

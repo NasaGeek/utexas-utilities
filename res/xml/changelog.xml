@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="1.99.9" versioncode="41">
+        <change>Separate the login process for each UT service so that one failure won't cause every service to be inaccessible</change>
+    </release>
     <release version="1.99.8" versioncode="35">
         <change>Live garage capacity data has been added to the Campus Map!</change>
         <change>Bug fixes</change>
