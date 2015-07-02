@@ -70,7 +70,6 @@ import com.nasageek.utexasutilities.BuildConfig;
 import com.nasageek.utexasutilities.BuildingSaxHandler;
 import com.nasageek.utexasutilities.MarkerManager;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.RouteSaxHandler;
 import com.nasageek.utexasutilities.ThemedArrayAdapter;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.model.Placemark;
@@ -89,6 +88,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -124,10 +124,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private GoogleApiClient apiClient;
 
     private XMLReader xmlreader;
-    private RouteSaxHandler navSaxHandler;
     private AssetManager assets;
     private List<String> stops_al;
-    private List<String> kml_al;
+    private List<String> traces_al;
     private String routeid;
     private List<Placemark> fullDataSet;
     private Deque<Placemark> buildingDataSet;
@@ -262,7 +261,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
         setupActionBar();
         setupXmlReader();
-        navSaxHandler = new RouteSaxHandler();
         buildingDataSet = parseBuildings();
         if (buildingDataSet != null) {
             fullDataSet = new ArrayList<>(buildingDataSet);
@@ -753,12 +751,14 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         AnalyticsHandler.trackBusRouteEvent();
         try {
             initRouteData();
-            InputSource is = new InputSource(assets.open("kml/"
-                    + kml_al.get(kml_al.indexOf(routeid + ".kml"))));
-            xmlreader.setContentHandler(navSaxHandler);
-            xmlreader.parse(is);
-            // get the results of the parse, null on error
-            Deque<Placemark> navData = navSaxHandler.getParsedData();
+            String tracePath = "traces/" + traces_al.get(traces_al.indexOf(routeid + ".txt"));
+            String trace = loadAssetAsString(tracePath);
+            Deque<LatLng> navData = new ArrayDeque<>();
+            for (String latlng : trace.split(";")) {
+                navData.add(new LatLng(Double.parseDouble(latlng.split(",")[0]),
+                                       Double.parseDouble(latlng.split(",")[1])));
+            }
+
             drawPath(navData, BURNT_ORANGE);
 
             String stopPath = "stops/" + stops_al.get(stops_al.indexOf(routeid + "_stops.txt"));
@@ -787,17 +787,14 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             e.printStackTrace();
             Log.d("DirectionMap",
                     "Exception loading some file related to the kml or the stops files.");
-        } catch (SAXException e) {
-            e.printStackTrace();
-            Log.d("DirectionMap", "Exception parsing kml files");
         }
     }
 
     private void initRouteData() throws IOException {
         String[] stops = assets.list("stops");
-        String[] kml = assets.list("kml");
+        String[] traces = assets.list("traces");
         stops_al = Arrays.asList(stops);
-        kml_al = Arrays.asList(kml);
+        traces_al = Arrays.asList(traces);
     }
 
     private Marker addGaragePlacemarkToMap(MyIconGenerator ig, Placemark pm) {
@@ -893,14 +890,12 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
      * @param navSet Navigation set bean that holds the route information, incl. geo pos
      * @param color  Color in which to draw the lines
      */
-    private void drawPath(Deque<Placemark> navSet, int color) {
+    private void drawPath(Deque<LatLng> navSet, int color) {
         clearAllMapRoutes();
         PolylineOptions polyOpt = new PolylineOptions()
                 .color(color)
                 .width(5f);
-        for (Placemark pm : navSet) {
-            polyOpt.add(new LatLng(pm.getLatitude(), pm.getLongitude()));
-        }
+        polyOpt.addAll(navSet);
         Polyline routePolyline = mMap.addPolyline(polyOpt);
         polylineMap.put(routePolyline.getId(), routePolyline);
     }
