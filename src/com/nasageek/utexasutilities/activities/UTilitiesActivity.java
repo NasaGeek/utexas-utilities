@@ -70,6 +70,7 @@ public class UTilitiesActivity extends SherlockActivity {
     private AuthCookie bbAuthCookie;
 
     private HashMap<String, ImageButton[]> cookiesToFeatures;
+    private HashMap<String, Boolean> serviceLoggedIn;
     private ImageButton[] featureButtons;
     private View.OnClickListener enabledFeatureButtonListener;
     private View.OnClickListener disabledFeatureButtonListener;
@@ -90,6 +91,14 @@ public class UTilitiesActivity extends SherlockActivity {
             if (updateUiTask != null) {
                 updateUiTask.setContext(this);
             }
+        }
+        if (savedInstanceState != null) {
+            serviceLoggedIn = (HashMap) savedInstanceState.getSerializable("serviceLoggedIn");
+        } else {
+            serviceLoggedIn = new HashMap<>();
+            serviceLoggedIn.put(UTD_AUTH_COOKIE_KEY, true);
+            serviceLoggedIn.put(BB_AUTH_COOKIE_KEY, true);
+            serviceLoggedIn.put(PNA_AUTH_COOKIE_KEY, true);
         }
 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
@@ -179,21 +188,24 @@ public class UTilitiesActivity extends SherlockActivity {
         public Character serviceChar;
         public ImageView checkOverlay;
         public ProgressBar loginProgress;
+        public boolean loggedIn;
 
         // for authenticated services
         public DashboardButtonData(Intent intent, int id, AuthCookie authCookie,
-                                   Character service, ImageView check, ProgressBar progress) {
+                                   Character service, ImageView check, ProgressBar progress,
+                                   boolean loggedIn) {
             this.intent = intent;
             this.imageButtonId = id;
             this.authCookie = authCookie;
             this.serviceChar = service;
             this.checkOverlay = check;
             this.loginProgress = progress;
+            this.loggedIn = loggedIn;
         }
 
         // for unauthenticated services
         public DashboardButtonData(Intent intent, int id) {
-            this(intent, id, null, null, null, null);
+            this(intent, id, null, null, null, null, true);
         }
     }
 
@@ -224,13 +236,13 @@ public class UTilitiesActivity extends SherlockActivity {
 
         DashboardButtonData buttonData[] = new DashboardButtonData[6];
         buttonData[0] = new DashboardButtonData(schedule, R.id.schedule_button, utdAuthCookie, 'u',
-                scheduleCheck, scheduleProgress);
+                scheduleCheck, scheduleProgress, serviceLoggedIn.get(UTD_AUTH_COOKIE_KEY));
         buttonData[1] = new DashboardButtonData(balance, R.id.balance_button, utdAuthCookie, 'u',
-                balanceCheck, balanceProgress);
+                balanceCheck, balanceProgress, serviceLoggedIn.get(UTD_AUTH_COOKIE_KEY));
         buttonData[2] = new DashboardButtonData(blackboard, R.id.blackboard_button, bbAuthCookie,
-                'b', blackboardCheck, blackboardProgress);
+                'b', blackboardCheck, blackboardProgress, serviceLoggedIn.get(BB_AUTH_COOKIE_KEY));
         buttonData[3] = new DashboardButtonData(data, R.id.data_button, pnaAuthCookie, 'p',
-                dataCheck, dataProgress);
+                dataCheck, dataProgress, serviceLoggedIn.get(PNA_AUTH_COOKIE_KEY));
         buttonData[4] = new DashboardButtonData(map, R.id.map_button);
         buttonData[5] = new DashboardButtonData(menu, R.id.menu_button);
 
@@ -241,7 +253,11 @@ public class UTilitiesActivity extends SherlockActivity {
                     (TransitionDrawable) ib.getDrawable()));
             ib.setOnFocusChangeListener(new ImageButtonFocusListener());
             ib.setTag(buttonData[i]);
-            ib.setOnClickListener(enabledFeatureButtonListener);
+            if (buttonData[i].loggedIn) {
+                enableFeature(ib);
+            } else {
+                disableFeature(ib);
+            }
             featureButtons[i] = ib;
         }
         cookiesToFeatures = new HashMap<>();
@@ -642,10 +658,16 @@ public class UTilitiesActivity extends SherlockActivity {
             case UTD_AUTH_COOKIE_KEY:
                 if (successful) {
                     enableFeature(featureButtons[0]);
+                    ((DashboardButtonData) featureButtons[0].getTag()).loggedIn = true;
                     enableFeature(featureButtons[1]);
+                    ((DashboardButtonData) featureButtons[1].getTag()).loggedIn = true;
+                    serviceLoggedIn.put(UTD_AUTH_COOKIE_KEY, true);
                 } else {
                     disableFeature(featureButtons[0]);
+                    ((DashboardButtonData) featureButtons[0].getTag()).loggedIn = false;
                     disableFeature(featureButtons[1]);
+                    ((DashboardButtonData) featureButtons[1].getTag()).loggedIn = false;
+                    serviceLoggedIn.put(UTD_AUTH_COOKIE_KEY, false);
                 }
                 ((DashboardButtonData) featureButtons[0].getTag()).loginProgress
                         .setVisibility(View.GONE);
@@ -655,8 +677,12 @@ public class UTilitiesActivity extends SherlockActivity {
             case BB_AUTH_COOKIE_KEY:
                 if (successful) {
                     enableFeature(featureButtons[2]);
+                    ((DashboardButtonData) featureButtons[2].getTag()).loggedIn = true;
+                    serviceLoggedIn.put(BB_AUTH_COOKIE_KEY, true);
                 } else {
                     disableFeature(featureButtons[2]);
+                    ((DashboardButtonData) featureButtons[2].getTag()).loggedIn = false;
+                    serviceLoggedIn.put(BB_AUTH_COOKIE_KEY, false);
                 }
                 ((DashboardButtonData) featureButtons[2].getTag()).loginProgress
                         .setVisibility(View.GONE);
@@ -664,8 +690,12 @@ public class UTilitiesActivity extends SherlockActivity {
             case PNA_AUTH_COOKIE_KEY:
                 if (successful) {
                     enableFeature(featureButtons[3]);
+                    ((DashboardButtonData) featureButtons[3].getTag()).loggedIn = true;
+                    serviceLoggedIn.put(PNA_AUTH_COOKIE_KEY, true);
                 } else {
                     disableFeature(featureButtons[3]);
+                    ((DashboardButtonData) featureButtons[3].getTag()).loggedIn = false;
+                    serviceLoggedIn.put(PNA_AUTH_COOKIE_KEY, false);
                 }
                 ((DashboardButtonData) featureButtons[3].getTag()).loginProgress
                         .setVisibility(View.GONE);
@@ -694,6 +724,12 @@ public class UTilitiesActivity extends SherlockActivity {
                 nologin.dismiss();
             }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("serviceLoggedIn", serviceLoggedIn);
     }
 
     @Override
