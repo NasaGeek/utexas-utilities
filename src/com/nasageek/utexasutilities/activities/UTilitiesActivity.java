@@ -557,7 +557,7 @@ public class UTilitiesActivity extends SherlockActivity {
         protected void onPostExecute(Void result) {
             for (AuthCookie cookie : mActivity.authCookies) {
                 if (!cookie.hasCookieBeenSet()) {
-                    Toast.makeText(mActivity, "One or more services failed to log in and have been disabled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mActivity, "One or more services could not log in and have been disabled", Toast.LENGTH_SHORT).show();
                     break;
                 }
             }
