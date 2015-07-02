@@ -676,6 +676,11 @@ public class UTilitiesActivity extends SherlockActivity {
     public void onResume() {
         super.onResume();
         invalidateOptionsMenu();
+        if (!settings.getBoolean("loginpref", false)) {
+            for (ImageButton ib : featureButtons) {
+                enableFeature(ib);
+            }
+        }
         resetChecks();
     }
 
