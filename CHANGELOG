@@ -209,3 +209,10 @@ Versioncode 35 - 1.99.8
 Live garage capacity data has been added to the Campus Map
 Bug fixes
 
+Versioncode 41 - 1.99.9
+
+Split the login process for each UT service so that one login failure won't
+prevent use of other services (the need for this functionality arose because UT
+update its SSL cert for the PNA website, and now Android doesn't like it), also
+the high versioncode is so this update will go out to people using the Canvas
+beta as well.
