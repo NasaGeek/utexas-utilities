@@ -111,7 +111,7 @@ public class UTilitiesActivity extends SherlockActivity {
 
         handleUnencryptedPassword();
         handleFirstLaunch();
-        if (settings.getBoolean("autologin", false) && !isLoggingIn() && !mApp.allCookiesSet()) {
+        if (settings.getBoolean("autologin", false) && !isLoggingIn() && !mApp.anyCookiesSet()) {
             login();
         }
         enabledFeatureButtonListener = new View.OnClickListener() {

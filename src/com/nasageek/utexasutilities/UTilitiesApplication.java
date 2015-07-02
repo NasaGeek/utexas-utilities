@@ -75,6 +75,15 @@ public class UTilitiesApplication extends Application {
         return !authCookies.isEmpty();
     }
 
+    public boolean anyCookiesSet() {
+        for (AuthCookie cookie : authCookies.values()) {
+            if (cookie.hasCookieBeenSet()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public String getUtdAuthCookieVal() {
         return authCookies.get(UTD_AUTH_COOKIE_KEY).getAuthCookieVal();
     }
