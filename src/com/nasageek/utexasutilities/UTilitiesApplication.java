@@ -17,8 +17,7 @@ import java.net.CookieManager;
 import java.util.HashMap;
 import java.util.Map;
 
-@ReportsCrashes(formKey = "", // This is required for backward compatibility but
-// not used
+@ReportsCrashes(
 customReportContent = {
         ReportField.ANDROID_VERSION, ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME,
         ReportField.BRAND, ReportField.BUILD, ReportField.PACKAGE_NAME,

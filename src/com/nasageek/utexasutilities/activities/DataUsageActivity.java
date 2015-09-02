@@ -19,7 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.androidplot.xy.BarFormatter;
 import com.androidplot.xy.BoundaryMode;
@@ -36,9 +35,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.acra.ACRA;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.text.FieldPosition;
