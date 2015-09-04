@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="StyledIndicators" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <style name="StyledIndicators" parent="@style/Theme.AppCompat.Light">
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
         <item name="vpiTitlePageIndicatorStyle">@style/CustomTitlePageIndicator</item>
     </style>
@@ -35,7 +35,7 @@
         <item name="android:background">@drawable/ab_solid_utilities</item>
     </style>
     
-    <style name="Theme.UTilities" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.UTilities" parent="@style/Theme.AppCompat.Light">
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
         <item name="vpiTitlePageIndicatorStyle">@style/CustomTitlePageIndicator</item>
         <item name="android:windowBackground">@drawable/background_holo_light</item>
