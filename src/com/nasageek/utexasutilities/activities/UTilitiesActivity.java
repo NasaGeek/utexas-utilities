@@ -76,6 +76,7 @@ public class UTilitiesActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
 
         UTilitiesApplication mApp = (UTilitiesApplication) getApplication();
@@ -99,7 +100,6 @@ public class UTilitiesActivity extends BaseActivity {
         }
 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.main);
         setSupportProgressBarIndeterminateVisibility(isLoggingIn());
 
