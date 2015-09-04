@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name = "burnt_orange">#ffcc5500</color>
+    <color name = "burnt_orange_dark">#ffa34400</color>
+    <color name = "blue_accent">#ff005F86</color>
     <color name = "lt_gray">#ffcccccc</color>
 </resources>
