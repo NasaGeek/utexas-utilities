@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static com.nasageek.utexasutilities.UTilitiesApplication.BB_AUTH_COOKIE_KEY;
 import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
 import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
@@ -58,8 +57,8 @@ public class UTilitiesActivity extends BaseActivity {
 
     private SharedPreferences settings;
     private Toast message;
-    private ImageView scheduleCheck, balanceCheck, dataCheck, blackboardCheck;
-    private ProgressBar scheduleProgress, balanceProgress, dataProgress, blackboardProgress;
+    private ImageView scheduleCheck, balanceCheck, dataCheck;
+    private ProgressBar scheduleProgress, balanceProgress, dataProgress;
     private AlertDialog nologin;
 
     private AuthCookie authCookies[];
@@ -67,7 +66,6 @@ public class UTilitiesActivity extends BaseActivity {
     private UpdateUiTask updateUiTask;
     private AuthCookie utdAuthCookie;
     private AuthCookie pnaAuthCookie;
-    private AuthCookie bbAuthCookie;
 
     private HashMap<String, ImageButton[]> cookiesToFeatures;
     private HashMap<String, Boolean> serviceLoggedIn;
@@ -82,8 +80,7 @@ public class UTilitiesActivity extends BaseActivity {
         UTilitiesApplication mApp = (UTilitiesApplication) getApplication();
         utdAuthCookie = mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY);
         pnaAuthCookie = mApp.getAuthCookie(PNA_AUTH_COOKIE_KEY);
-        bbAuthCookie = mApp.getAuthCookie(BB_AUTH_COOKIE_KEY);
-        authCookies = new AuthCookie[]{utdAuthCookie, pnaAuthCookie, bbAuthCookie};
+        authCookies = new AuthCookie[]{utdAuthCookie, pnaAuthCookie};
 
         loginTasks = (List<AsyncTask>) getLastCustomNonConfigurationInstance();
         if (loginTasks != null) {
@@ -97,7 +94,6 @@ public class UTilitiesActivity extends BaseActivity {
         } else {
             serviceLoggedIn = new HashMap<>();
             serviceLoggedIn.put(UTD_AUTH_COOKIE_KEY, true);
-            serviceLoggedIn.put(BB_AUTH_COOKIE_KEY, true);
             serviceLoggedIn.put(PNA_AUTH_COOKIE_KEY, true);
         }
 
@@ -218,19 +214,16 @@ public class UTilitiesActivity extends BaseActivity {
         scheduleCheck = (ImageView) findViewById(R.id.scheduleCheck);
         balanceCheck = (ImageView) findViewById(R.id.balanceCheck);
         dataCheck = (ImageView) findViewById(R.id.dataCheck);
-        blackboardCheck = (ImageView) findViewById(R.id.blackboardCheck);
 
         scheduleProgress = (ProgressBar) findViewById(R.id.scheduleProgress);
         balanceProgress = (ProgressBar) findViewById(R.id.balanceProgress);
         dataProgress = (ProgressBar) findViewById(R.id.dataProgress);
-        blackboardProgress = (ProgressBar) findViewById(R.id.blackboardProgress);
 
         final Intent schedule = new Intent(this, ScheduleActivity.class);
         final Intent balance = new Intent(this, BalanceActivity.class);
         final Intent map = new Intent(this, CampusMapActivity.class);
         final Intent data = new Intent(this, DataUsageActivity.class);
         final Intent menu = new Intent(this, MenuActivity.class);
-        final Intent blackboard = new Intent(this, BlackboardPanesActivity.class);
 
 
 
@@ -239,15 +232,13 @@ public class UTilitiesActivity extends BaseActivity {
                 scheduleCheck, scheduleProgress, serviceLoggedIn.get(UTD_AUTH_COOKIE_KEY));
         buttonData[1] = new DashboardButtonData(balance, R.id.balance_button, utdAuthCookie, 'u',
                 balanceCheck, balanceProgress, serviceLoggedIn.get(UTD_AUTH_COOKIE_KEY));
-        buttonData[2] = new DashboardButtonData(blackboard, R.id.blackboard_button, bbAuthCookie,
-                'b', blackboardCheck, blackboardProgress, serviceLoggedIn.get(BB_AUTH_COOKIE_KEY));
-        buttonData[3] = new DashboardButtonData(data, R.id.data_button, pnaAuthCookie, 'p',
+        buttonData[2] = new DashboardButtonData(data, R.id.data_button, pnaAuthCookie, 'p',
                 dataCheck, dataProgress, serviceLoggedIn.get(PNA_AUTH_COOKIE_KEY));
-        buttonData[4] = new DashboardButtonData(map, R.id.map_button);
-        buttonData[5] = new DashboardButtonData(menu, R.id.menu_button);
+        buttonData[3] = new DashboardButtonData(map, R.id.map_button);
+        buttonData[4] = new DashboardButtonData(menu, R.id.menu_button);
 
-        featureButtons = new ImageButton[6];
-        for (int i = 0; i < 6; i++) {
+        featureButtons = new ImageButton[5];
+        for (int i = 0; i < 5; i++) {
             ImageButton ib = (ImageButton) findViewById(buttonData[i].imageButtonId);
             ib.setOnTouchListener(new ImageButtonTouchListener(
                     (TransitionDrawable) ib.getDrawable()));
@@ -263,8 +254,7 @@ public class UTilitiesActivity extends BaseActivity {
         cookiesToFeatures = new HashMap<>();
         cookiesToFeatures.put(UTD_AUTH_COOKIE_KEY,
                 new ImageButton[] {featureButtons[0], featureButtons[1]});
-        cookiesToFeatures.put(BB_AUTH_COOKIE_KEY, new ImageButton[] {featureButtons[2]});
-        cookiesToFeatures.put(PNA_AUTH_COOKIE_KEY, new ImageButton[] {featureButtons[3]});
+        cookiesToFeatures.put(PNA_AUTH_COOKIE_KEY, new ImageButton[] {featureButtons[2]});
     }
 
     /**
@@ -716,7 +706,6 @@ public class UTilitiesActivity extends BaseActivity {
             scheduleCheck.setVisibility(View.GONE);
             balanceCheck.setVisibility(View.GONE);
             dataCheck.setVisibility(View.GONE);
-            blackboardCheck.setVisibility(View.GONE);
         } else {
             if (!utdAuthCookie.hasCookieBeenSet()) {
                 scheduleCheck.setImageResource(R.drawable.ic_done_translucent);
@@ -724,11 +713,6 @@ public class UTilitiesActivity extends BaseActivity {
             } else {
                 scheduleCheck.setImageResource(R.drawable.ic_done);
                 balanceCheck.setImageResource(R.drawable.ic_done);
-            }
-            if (!bbAuthCookie.hasCookieBeenSet()) {
-                blackboardCheck.setImageResource(R.drawable.ic_done_translucent);
-            } else {
-                blackboardCheck.setImageResource(R.drawable.ic_done);
             }
             if (!pnaAuthCookie.hasCookieBeenSet()) {
                 dataCheck.setImageResource(R.drawable.ic_done_translucent);
@@ -738,7 +722,6 @@ public class UTilitiesActivity extends BaseActivity {
             scheduleCheck.setVisibility(View.VISIBLE);
             balanceCheck.setVisibility(View.VISIBLE);
             dataCheck.setVisibility(View.VISIBLE);
-            blackboardCheck.setVisibility(View.VISIBLE);
         }
     }
 

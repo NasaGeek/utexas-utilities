@@ -20,9 +20,6 @@
     <screenName name="com.nasageek.utexasutilities.activities.MenuActivity">
         UTilities MenuScreen
     </screenName>
-    <screenName name="com.nasageek.utexasutilities.activities.BlackboardPanesActivity">
-        UTilities CoursesScreen
-    </screenName>
     <screenName name="com.nasageek.utexasutilities.activities.CampusMapActivity">
         UTilities CampusMapScreen
     </screenName>

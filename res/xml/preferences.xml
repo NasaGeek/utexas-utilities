@@ -81,21 +81,6 @@
             android:summary="%s"
             android:title="Default Restaurant" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Blackboard" >
-        <com.nasageek.utexasutilities.FixedListPreference
-            android:defaultValue="0"
-            android:entries="@array/blackboard_tabs_array"
-            android:entryValues="@array/blackboard_tabs_value_array"
-            android:key="default_blackboard_tab"
-            android:summary="%s"
-            android:title="Default Blackboard Tab" />
-
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="blackboard_class_longform"
-            android:summary="@string/preference_blackboard_class_longform_summary"
-            android:title="Use raw class names" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="Privacy" >
         <Preference
             android:summary="@string/preference_privacy_category_summary"

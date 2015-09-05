@@ -73,35 +73,6 @@
 		android:layout_width="match_parent"
 		android:baselineAligned="true">
 	    
-	    <RelativeLayout
-		    android:layout_weight="1"
-		    android:layout_height="match_parent"
-		    android:layout_width="match_parent"
-		    android:layout_gravity="center">
-		<ImageButton
-			android:id="@+id/blackboard_button"
-			android:layout_height="wrap_content"
-		    android:layout_width="wrap_content"
-		    android:src="@drawable/courses_image_button"
-			android:layout_centerInParent="true"
-			android:background="#00000000"
-			/>
-		<ImageView 
-		    android:id="@+id/blackboardCheck"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:src="@drawable/ic_done"
-		    android:layout_alignBottom="@+id/blackboard_button"
-		    android:layout_alignRight="@+id/blackboard_button"/>
-        <ProgressBar
-            android:id="@+id/blackboardProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            style="@android:style/Widget.ProgressBar"
-            android:visibility="gone"/>
-		</RelativeLayout>
-	    
 	   <RelativeLayout
 		    android:layout_weight="1"
 		    android:layout_height="match_parent"

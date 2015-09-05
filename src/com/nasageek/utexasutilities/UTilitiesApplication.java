@@ -5,7 +5,6 @@ import android.app.Application;
 import android.preference.PreferenceManager;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
-import com.nasageek.utexasutilities.fragments.BlackboardFragment;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -33,7 +32,6 @@ public class UTilitiesApplication extends Application {
 
     public static final String UTD_AUTH_COOKIE_KEY = "utd_auth_cookie";
     public static final String PNA_AUTH_COOKIE_KEY = "pna_auth_cookie";
-    public static final String BB_AUTH_COOKIE_KEY = "bb_auth_cookie";
 
     private Map<String, AuthCookie> authCookies;
 
@@ -44,13 +42,6 @@ public class UTilitiesApplication extends Application {
         authCookies.put(UTD_AUTH_COOKIE_KEY, new UtdAuthCookie(this));
 
         authCookies.put(PNA_AUTH_COOKIE_KEY, new PnaAuthCookie(this));
-
-        authCookies.put(BB_AUTH_COOKIE_KEY, new AuthCookie(BB_AUTH_COOKIE_KEY,
-                    "s_session_id",
-                    BlackboardFragment.BLACKBOARD_DOMAIN + "/webapps/login/",
-                    "user_id",
-                    "password",
-                    this));
 
         CookieManager cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
@@ -104,10 +95,6 @@ public class UTilitiesApplication extends Application {
 
     public String getPnaAuthCookieVal() {
         return authCookies.get(PNA_AUTH_COOKIE_KEY).getAuthCookieVal();
-    }
-
-    public String getBbAuthCookieVal() {
-        return authCookies.get(BB_AUTH_COOKIE_KEY).getAuthCookieVal();
     }
 
     public void logoutAll() {

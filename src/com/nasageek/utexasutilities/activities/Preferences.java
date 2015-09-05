@@ -201,7 +201,6 @@ public class Preferences extends SherlockPreferenceActivity {
     private boolean isUserLoggedIn() {
         UTilitiesApplication mApp = (UTilitiesApplication) getApplication();
         return mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).hasCookieBeenSet() &&
-                mApp.getAuthCookie(PNA_AUTH_COOKIE_KEY).hasCookieBeenSet() &&
-                mApp.getAuthCookie(BB_AUTH_COOKIE_KEY).hasCookieBeenSet();
+                mApp.getAuthCookie(PNA_AUTH_COOKIE_KEY).hasCookieBeenSet();
     }
 }

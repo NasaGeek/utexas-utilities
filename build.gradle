@@ -104,6 +104,5 @@ dependencies {
         exclude group: 'org.json'
     }
 
-    compile project(':libs:Android-PanesLibrary')
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }

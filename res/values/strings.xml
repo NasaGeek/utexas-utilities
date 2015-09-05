@@ -11,15 +11,12 @@
     <string name="semesterprompt">Select a Semester</string>
     <string name="map_search_hint">Search building name or code, e.g., PCL, UTC</string>
     <string name="building_intent">BUILDING</string>
-    <string name="coursemap_intent">COURSE_BBID</string>
-    <string name="coursemap_nest_intent">COURSEMAP_ITEM</string>
     <string name="developer">Developer: Chris Roberts</string>
     <string name="classinfo">Electrical Engineering Class of 2015\nComputer Science Class of 2015</string>
     <string name="contact">Love the app?  Hate it?  Suggestions? Snide remarks?</string>
     <string name="email">Chris_Roberts@utexas.edu</string>
     <string name="loading_content">Loading content…</string>
     <string name="login_first">Please log in before using this feature</string>
-    <string name="preference_blackboard_class_longform_summary">Check this if Blackboard crashes on launch, might fix it.</string>
     <string name="preference_privacy_category_summary">Help me help you! No personal information will be sent.</string>
     <string name="button_send_data">Send anonymous information about my courses to help improve UTilities.</string>
     <string name="thankskevin">Also, a huge thanks to fellow UT student, Kevin Lin, for providing many of the graphical assets for this application.  It would be an ugly jumble of gray buttons if not for him.</string>
@@ -172,16 +169,7 @@ Also a big thanks to yukuku for his AmazingListView library (http://code.google.
     	<item>stripehour</item>
     	<item>stripehalf</item>
     </string-array>
-    
-     <string-array name="blackboard_tabs_array">
-        <item>Course List</item>
-        <item>Dashboard</item>
-    </string-array>
-    <string-array name="blackboard_tabs_value_array">
-        <item>0</item>
-        <item>1</item>
-    </string-array>
-    
+
     <string-array name="balance_tabs_array">
         <item>Dine In</item>
         <item>Bevo Bucks</item>

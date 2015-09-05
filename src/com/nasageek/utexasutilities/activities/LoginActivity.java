@@ -9,7 +9,6 @@ import android.webkit.WebView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.LoginWebViewClient;
-import com.nasageek.utexasutilities.fragments.BlackboardFragment;
 
 public class LoginActivity extends BaseActivity {
     /** Called when the activity is first created. */
@@ -36,10 +35,6 @@ public class LoginActivity extends BaseActivity {
                 wv.getSettings().setJavaScriptEnabled(true);
                 wv.loadUrl("https://login.utexas.edu/login/UI/Login");
                 actionbar.setSubtitle("UTLogin");
-                break;
-            case 'b':
-                wv.loadUrl(BlackboardFragment.BLACKBOARD_DOMAIN);
-                actionbar.setSubtitle("Blackboard");
                 break;
             case 'p':
                 wv.loadUrl("https://management.pna.utexas.edu/server/graph.cgi");

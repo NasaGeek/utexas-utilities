@@ -10,9 +10,7 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import com.nasageek.utexasutilities.activities.UTilitiesActivity;
-import com.nasageek.utexasutilities.fragments.BlackboardFragment;
 
-import static com.nasageek.utexasutilities.UTilitiesApplication.BB_AUTH_COOKIE_KEY;
 import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
 import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
@@ -64,30 +62,6 @@ public class LoginWebViewClient extends WebViewClient {
                 }
                 break;
 
-            case 'b':
-                if (url.contains(BlackboardFragment.BLACKBOARD_DOMAIN_NOPROT)) {
-                    cookies = CookieManager.getInstance().getCookie(
-                            BlackboardFragment.BLACKBOARD_DOMAIN);
-
-                    if (url.equals(BlackboardFragment.BLACKBOARD_DOMAIN
-                            + "/webapps/portal/frameset.jsp")
-                            && cookies != null) {
-                        for (String s : cookies.split("; ")) {
-                            if (s.startsWith("s_session_id=")) {
-                                authCookie = s.substring(13);
-                                break;
-                            }
-                        }
-                    }
-                    if (!authCookie.equals("")) {
-                        AuthCookie bbAuthCookie = ((UTilitiesApplication) ((Activity) context)
-                                .getApplication()).getAuthCookie(BB_AUTH_COOKIE_KEY);
-                        bbAuthCookie.setAuthCookieVal(authCookie);
-                        continueToActivity("Blackboard");
-                        return;
-                    }
-                }
-                break;
             case 'u':
                 if (url.contains("utexas.edu")) {
                     cookies = CookieManager.getInstance().getCookie("https://login.utexas.edu");
