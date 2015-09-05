@@ -470,7 +470,7 @@ public class UTilitiesActivity extends BaseActivity {
     }
 
     private void loadSettings() {
-        final Intent pref_intent = new Intent(this, Preferences.class);
+        final Intent pref_intent = new Intent(this, PreferenceActivity.class);
         startActivity(pref_intent);
     }
 

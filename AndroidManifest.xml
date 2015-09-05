@@ -71,7 +71,7 @@
             android:noHistory="true" >
         </activity>
         <activity
-            android:name=".activities.Preferences"
+            android:name=".activities.PreferenceActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" >
         </activity>
         <activity
