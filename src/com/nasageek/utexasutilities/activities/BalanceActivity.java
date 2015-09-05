@@ -38,7 +38,6 @@ public class BalanceActivity extends BaseActivity {
         this.initialisePaging();
 
         actionbar = getSupportActionBar();
-        actionbar.setTitle("Transactions");
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionbar.setHomeButtonEnabled(true);
         actionbar.setDisplayHomeAsUpEnabled(true);

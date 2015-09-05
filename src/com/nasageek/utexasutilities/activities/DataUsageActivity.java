@@ -90,7 +90,6 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
         detv = (TextView) findViewById(R.id.tv_failure);
         deb = (Button) findViewById(R.id.button_send_data);
         actionbar = getSupportActionBar();
-        actionbar.setTitle("Data Usage");
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionbar.setHomeButtonEnabled(true);
         actionbar.setDisplayHomeAsUpEnabled(true);

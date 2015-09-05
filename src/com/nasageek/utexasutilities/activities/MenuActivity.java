@@ -229,7 +229,6 @@ public class MenuActivity extends BaseActivity {
         settings = PreferenceManager.getDefaultSharedPreferences(this);
 
         actionbar = getSupportActionBar();
-        actionbar.setTitle("Menus");
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         actionbar.setHomeButtonEnabled(true);
         actionbar.setDisplayHomeAsUpEnabled(true);

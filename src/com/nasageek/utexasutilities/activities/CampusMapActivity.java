@@ -360,7 +360,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
     private void setupActionBar() {
         ActionBar actionbar = getSupportActionBar();
-        actionbar.setTitle("Map and Bus Routes");
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         actionbar.setHomeButtonEnabled(true);
         actionbar.setDisplayHomeAsUpEnabled(true);

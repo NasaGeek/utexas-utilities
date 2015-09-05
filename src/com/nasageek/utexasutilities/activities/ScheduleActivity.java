@@ -33,7 +33,6 @@ public class ScheduleActivity extends BaseActivity implements
         initialisePaging();
 
         ActionBar actionbar = getSupportActionBar();
-        actionbar.setTitle("Schedule");
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionbar.setHomeButtonEnabled(true);
         actionbar.setDisplayHomeAsUpEnabled(true);

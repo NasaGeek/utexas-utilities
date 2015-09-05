@@ -16,8 +16,6 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         char service = getIntent().getCharExtra("service", 'z');
         ActionBar actionbar = getSupportActionBar();
-        actionbar.setTitle("Login");
-
         actionbar.setHomeButtonEnabled(true);
         actionbar.setDisplayHomeAsUpEnabled(true);
         CookieSyncManager.createInstance(this);
