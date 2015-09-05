@@ -87,7 +87,7 @@ apply plugin: 'aar-link-sources'
 dependencies {
     compile 'com.google.maps.android:android-maps-utils:0.4'
 
-    compile 'com.android.support:support-v4:23.0.1'
+    compile 'com.android.support:support-v4:22.1.+'
     aarLinkSources 'com.android.support:support-v4:21.0.+:sources@jar'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     aarLinkSources 'com.actionbarsherlock:actionbarsherlock:4.4.0:sources@jar'
