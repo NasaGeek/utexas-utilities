@@ -785,13 +785,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go home
-                super.onBackPressed();
-                break;
             case R.id.search:
                 onSearchRequested();
-                break;
+                return true;
             case R.id.showAllBuildings:
                 if (checkReady()) {
                     if (item.isChecked()) {
@@ -802,14 +798,15 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                         item.setChecked(true);
                     }
                 }
-                break;
+                return true;
             // debug option
             case R.id.mockGarageData:
                 mockGarageData = !item.isChecked();
                 item.setChecked(!item.isChecked());
-                break;
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return true;
     }
 
     private CharSequence setupGarageMarkerText(String number) {

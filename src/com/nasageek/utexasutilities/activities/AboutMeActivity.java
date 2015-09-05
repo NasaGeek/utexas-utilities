@@ -75,18 +75,6 @@ public class AboutMeActivity extends BaseActivity {
         versionNumberView.setText(versionName);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go home
-                super.onBackPressed();
-                break;
-        }
-        return false;
-    }
-
     public static class PrivacyPolicyDialog extends DialogFragment {
 
         public PrivacyPolicyDialog() {

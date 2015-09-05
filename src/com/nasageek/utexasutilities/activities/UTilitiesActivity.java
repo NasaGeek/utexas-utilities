@@ -378,22 +378,23 @@ public class UTilitiesActivity extends BaseActivity {
         switch (id) {
             case R.id.settings:
                 loadSettings();
-                break;
+                return true;
             case R.id.login_button:
                 login();
                 invalidateOptionsMenu();
-                break;
+                return true;
             case R.id.logout_button:
                 AnalyticsHandler.trackLogoutEvent();
                 logout();
                 invalidateOptionsMenu();
-                break;
+                return true;
             case R.id.cancel_button:
                 cancelLogin();
                 invalidateOptionsMenu();
-                break;
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return true;
     }
 
     @Override

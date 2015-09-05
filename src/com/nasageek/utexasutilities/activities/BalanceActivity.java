@@ -84,12 +84,7 @@ public class BalanceActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        super.onOptionsItemSelected(item);
         switch (id) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go home
-                super.onBackPressed();
-                break;
             // tightly coupling the activity to the fragments for the sake of
             // graphical consistency
             // was getting weird disappearing menu buttons when I had them in
@@ -107,9 +102,10 @@ public class BalanceActivity extends BaseActivity {
                     ((TransactionsFragment) ((MultiPanePagerAdapter) pager.getAdapter())
                             .getItem(pager.getCurrentItem())).refresh();
                 }
-                break;
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return false;
     }
 
     @Override

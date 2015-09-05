@@ -478,17 +478,6 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go home
-                super.onBackPressed();
-                break;
-        }
-        return true;
-    }
-
     private class TimeFormat extends Format {
 
         private static final long serialVersionUID = 1L;

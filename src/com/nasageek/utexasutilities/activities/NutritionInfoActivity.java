@@ -3,8 +3,6 @@ package com.nasageek.utexasutilities.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -33,17 +31,5 @@ public class NutritionInfoActivity extends BaseActivity {
 
         wv.loadUrl(url);
         setContentView(wv);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go home
-                super.onBackPressed();
-                break;
-        }
-        return true;
     }
 }

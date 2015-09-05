@@ -7,7 +7,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -337,17 +336,5 @@ public class MenuActivity extends BaseActivity {
     public void onSaveInstanceState(Bundle out) {
         super.onSaveInstanceState(out);
         out.putInt("spinner_selection", actionbar.getSelectedNavigationIndex());
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go home
-                super.onBackPressed();
-                break;
-        }
-        return true;
     }
 }
