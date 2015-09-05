@@ -21,7 +21,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.SearchView;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
@@ -711,14 +713,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     }
 
     @Override
-    public boolean onSearchRequested() {
-        Bundle appData = new Bundle();
-        appData.putString("CampusMapActivity.BUILDINGDATASET", buildingDataSet.toString());
-        startSearch(null, false, appData, false);
-        return true;
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         if (mMap != null) {
@@ -777,16 +771,41 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = this.getMenuInflater();
         inflater.inflate(R.menu.map_menu, menu);
-        return true;
+        final MenuItem searchItem = menu.findItem(R.id.search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+            @Override
+            public boolean onSuggestionSelect(int position) {
+                return false;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int position) {
+                MenuItemCompat.collapseActionView(searchItem);
+                return false;
+            }
+        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                MenuItemCompat.collapseActionView(searchItem);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.search:
-                onSearchRequested();
-                return true;
             case R.id.showAllBuildings:
                 if (checkReady()) {
                     if (item.isChecked()) {
