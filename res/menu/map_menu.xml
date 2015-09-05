@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/search"
-        	android:showAsAction="ifRoom"
-    		android:icon="@drawable/ic_action_search"
-          	android:title="Search" />
+            android:icon="@drawable/ic_action_search"
+            android:title="Search"
+            app:showAsAction="ifRoom" />
     <item android:id="@+id/showAllBuildings"
-        	android:showAsAction="never"
+            app:showAsAction="never"
             android:title="Show all buildings"
             android:checkable="true"
             android:checked="false"/>
