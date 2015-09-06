@@ -26,7 +26,7 @@ def buildTime = new Date().format("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone(
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23"
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         minSdkVersion 10
@@ -87,11 +87,11 @@ apply plugin: 'aar-link-sources'
 dependencies {
     compile 'com.google.maps.android:android-maps-utils:0.4'
 
-    compile 'com.android.support:support-v4:22.1.+'
-    aarLinkSources 'com.android.support:support-v4:21.0.+:sources@jar'
+    compile 'com.android.support:support-v4:23.0.1'
+    aarLinkSources 'com.android.support:support-v4:23.0.1:sources@jar'
     compile 'com.android.support:preference-v7:23.0.1'
     compile 'com.android.support:appcompat-v7:23.0.1'
-    aarLinkSources 'com.android.support:support-v7:23.0.1:sources@jar'
+    aarLinkSources 'com.android.support:appcompat-v7:23.0.1:sources@jar'
 
     compile 'com.google.android.gms:play-services-analytics:7.8.0'
     compile 'com.google.android.gms:play-services-base:7.8.0'
