@@ -319,7 +319,7 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
             ((ScheduleActivity) parentAct).getFragments().add(
                     CourseScheduleFragment.newInstance(false, params[0].trim(), params[1]));
             ((ScheduleActivity) parentAct).getAdapter().notifyDataSetChanged();
-            ((ScheduleActivity) parentAct).getIndicator().notifyDataSetChanged();
+//            ((ScheduleActivity) parentAct).getIndicator().requestLayout();
         }
 
         @Override

@@ -4,6 +4,7 @@ package com.nasageek.utexasutilities.activities;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -15,7 +16,6 @@ import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
 import com.nasageek.utexasutilities.fragments.TransactionsFragment;
 import com.nasageek.utexasutilities.fragments.TransactionsFragment.TransactionType;
-import com.viewpagerindicator.MyTabPageIndicator;
 
 import java.util.List;
 import java.util.Vector;
@@ -63,18 +63,17 @@ public class BalanceActivity extends BaseActivity {
             fragments.add(TransactionsFragment.newInstance("Bevo Bucks", TransactionType.Bevo));
         }
 
-        final MyTabPageIndicator tabIndicator = (MyTabPageIndicator) findViewById(R.id.titles);
-
         mPagerAdapter = new MultiPanePagerAdapter(getSupportFragmentManager(), fragments);
         mPagerAdapter.setPagesDisplayed(pagesDisplayed);
 
         pager.setAdapter(this.mPagerAdapter);
         pager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.pager_margin));
-        if (pagesDisplayed > 1) {
-            tabIndicator.setSelectAll(true);
-        }
+        // TODO: reimplement selectAll hack with design support library
+//        if (pagesDisplayed > 1) {
+//            tabIndicator.setSelectAll(true);
+//        }
 
-        tabIndicator.setViewPager(pager);
+        ((TabLayout) findViewById(R.id.tabs)).setupWithViewPager(pager);
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         pager.setCurrentItem(Integer.parseInt(sp.getString("default_balance_tab", "0")));
