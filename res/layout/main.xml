@@ -8,34 +8,31 @@
 	<TableRow
 		android:layout_weight="1"
 		android:layout_gravity="center">
-		
 		<RelativeLayout
 		    android:layout_weight="1"
 		    android:layout_height="match_parent"
 		    android:layout_width="match_parent"
 		    android:layout_gravity="center">
-		<ImageButton	
-			android:id="@+id/schedule_button"
-			android:layout_height="wrap_content"
-		    android:layout_width="wrap_content"
-		    android:src="@drawable/schedule_image_button"
-			android:layout_centerInParent="true"
-			android:background="#00000000"
-			/>
-		<ImageView 
-		    android:id="@+id/scheduleCheck"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:src="@drawable/ic_done"
-		    android:layout_alignBottom="@+id/schedule_button"
-		    android:layout_alignRight="@+id/schedule_button"/>
-        <ProgressBar
-            android:id="@+id/scheduleProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-			android:indeterminate="true"
-            android:visibility="gone"/>
+            <ImageView
+                android:id="@+id/schedule_button"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:src="@drawable/schedule_image_button"
+                android:layout_centerInParent="true"/>
+            <ImageView
+                android:id="@+id/scheduleCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_done"
+                android:layout_alignBottom="@+id/schedule_button"
+                android:layout_alignRight="@+id/schedule_button"/>
+            <ProgressBar
+                android:id="@+id/scheduleProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:indeterminate="true"
+                android:visibility="gone"/>
 		</RelativeLayout>
 
 		<RelativeLayout
@@ -43,28 +40,26 @@
 		    android:layout_height="match_parent"
 		    android:layout_width="match_parent"
 		    android:layout_gravity="center">
-		<ImageButton
-			android:id="@+id/balance_button"
-			android:layout_height="wrap_content"
-		    android:layout_width="wrap_content"
-		    android:src="@drawable/balance_image_button"
-			android:layout_centerInParent="true"
-			android:background="#00000000"
-			/>
-		<ImageView 
-		    android:id="@+id/balanceCheck"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:src="@drawable/ic_done"
-		    android:layout_alignBottom="@+id/balance_button"
-		    android:layout_alignRight="@+id/balance_button"/>
-        <ProgressBar
-            android:id="@+id/balanceProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-			android:indeterminate="true"
-            android:visibility="gone"/>
+            <ImageView
+                android:id="@+id/balance_button"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:src="@drawable/balance_image_button"
+                android:layout_centerInParent="true"/>
+            <ImageView
+                android:id="@+id/balanceCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_done"
+                android:layout_alignBottom="@+id/balance_button"
+                android:layout_alignRight="@+id/balance_button"/>
+            <ProgressBar
+                android:id="@+id/balanceProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:indeterminate="true"
+                android:visibility="gone"/>
 		</RelativeLayout>
 	</TableRow>
 	<TableRow
@@ -72,34 +67,31 @@
 		android:layout_gravity="center"
 		android:layout_width="match_parent"
 		android:baselineAligned="true">
-	    
 	   <RelativeLayout
 		    android:layout_weight="1"
 		    android:layout_height="match_parent"
 		    android:layout_width="match_parent"
 		    android:layout_gravity="center">
-		<ImageButton	
-			android:id="@+id/data_button"
-			android:layout_height="wrap_content"
-		    android:layout_width="wrap_content"
-		    android:src="@drawable/data_image_button"
-			android:layout_centerInParent="true"
-			android:background="#00000000"
-			/>
-		<ImageView 
-		    android:id="@+id/dataCheck"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:src="@drawable/ic_done"
-		    android:layout_alignBottom="@+id/data_button"
-		    android:layout_alignRight="@+id/data_button"/>
-        <ProgressBar
-            android:id="@+id/dataProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-			android:indeterminate="true"
-            android:visibility="gone"/>
+            <ImageView
+                android:id="@+id/data_button"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:src="@drawable/data_image_button"
+                android:layout_centerInParent="true"/>
+            <ImageView
+                android:id="@+id/dataCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_done"
+                android:layout_alignBottom="@+id/data_button"
+                android:layout_alignRight="@+id/data_button"/>
+            <ProgressBar
+                android:id="@+id/dataProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:indeterminate="true"
+                android:visibility="gone"/>
 		</RelativeLayout>
 	</TableRow>
 
@@ -109,27 +101,23 @@
 	    android:layout_weight="1"
 		android:layout_width="wrap_content" 
 		android:baselineAligned="true">
-		
 		<RelativeLayout
 		    android:layout_weight="1"
 		    android:layout_height="match_parent"
 		    android:layout_width="match_parent"
 		    android:layout_gravity="center">
-		<ImageButton
-			
-			android:id="@+id/map_button"
-			android:layout_height="wrap_content"
-		    android:layout_width="wrap_content"
-		    android:src="@drawable/map_image_button"
-			android:layout_centerInParent="true"
-			android:background="#00000000"
-			/>
-		<ImageView 
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:src="@null"
-		    android:layout_alignBottom="@+id/map_button"
-		    android:layout_alignRight="@+id/map_button"/>
+            <ImageView
+                android:id="@+id/map_button"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:src="@drawable/map_image_button"
+                android:layout_centerInParent="true"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@null"
+                android:layout_alignBottom="@+id/map_button"
+                android:layout_alignRight="@+id/map_button"/>
 		</RelativeLayout>
 	    
 		<RelativeLayout
@@ -137,20 +125,18 @@
 		    android:layout_height="match_parent"
 		    android:layout_width="match_parent"
 		    android:layout_gravity="center">
-		<ImageButton
-			android:id="@+id/menu_button"
-			android:layout_height="wrap_content"
-		    android:layout_width="wrap_content"
-		    android:src="@drawable/menu_image_button"
-			android:layout_centerInParent="true"
-			android:background="#00000000"
-			/>
-		<ImageView 
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:src="@null"
-		    android:layout_alignBottom="@+id/menu_button"
-		    android:layout_alignRight="@+id/menu_button"/>
+            <ImageView
+                android:id="@+id/menu_button"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:src="@drawable/menu_image_button"
+                android:layout_centerInParent="true"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@null"
+                android:layout_alignBottom="@+id/menu_button"
+                android:layout_alignRight="@+id/menu_button"/>
 		</RelativeLayout>
 	</TableRow>
 </TableLayout>

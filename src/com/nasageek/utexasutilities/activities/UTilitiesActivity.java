@@ -67,9 +67,9 @@ public class UTilitiesActivity extends BaseActivity {
     private AuthCookie utdAuthCookie;
     private AuthCookie pnaAuthCookie;
 
-    private HashMap<String, ImageButton[]> cookiesToFeatures;
+    private HashMap<String, ImageView[]> cookiesToFeatures;
     private HashMap<String, Boolean> serviceLoggedIn;
-    private ImageButton[] featureButtons;
+    private ImageView[] featureButtons;
     private View.OnClickListener enabledFeatureButtonListener;
     private View.OnClickListener disabledFeatureButtonListener;
 
@@ -237,9 +237,9 @@ public class UTilitiesActivity extends BaseActivity {
         buttonData[3] = new DashboardButtonData(map, R.id.map_button);
         buttonData[4] = new DashboardButtonData(menu, R.id.menu_button);
 
-        featureButtons = new ImageButton[5];
+        featureButtons = new ImageView[5];
         for (int i = 0; i < 5; i++) {
-            ImageButton ib = (ImageButton) findViewById(buttonData[i].imageButtonId);
+            ImageView ib = (ImageView) findViewById(buttonData[i].imageButtonId);
             ib.setOnTouchListener(new ImageButtonTouchListener(
                     (TransitionDrawable) ib.getDrawable()));
             ib.setOnFocusChangeListener(new ImageButtonFocusListener());
@@ -253,8 +253,8 @@ public class UTilitiesActivity extends BaseActivity {
         }
         cookiesToFeatures = new HashMap<>();
         cookiesToFeatures.put(UTD_AUTH_COOKIE_KEY,
-                new ImageButton[] {featureButtons[0], featureButtons[1]});
-        cookiesToFeatures.put(PNA_AUTH_COOKIE_KEY, new ImageButton[] {featureButtons[2]});
+                new ImageView[]{featureButtons[0], featureButtons[1]});
+        cookiesToFeatures.put(PNA_AUTH_COOKIE_KEY, new ImageView[]{featureButtons[2]});
     }
 
     /**
@@ -618,7 +618,7 @@ public class UTilitiesActivity extends BaseActivity {
         for (AuthCookie cookie : authCookies) {
             cookie.logout();
         }
-        for (ImageButton ib : featureButtons) {
+        for (ImageView ib : featureButtons) {
             enableFeature(ib);
             if (((DashboardButtonData) ib.getTag()).loginProgress != null) {
                 ((DashboardButtonData) ib.getTag()).loginProgress.setVisibility(View.GONE);
@@ -627,7 +627,7 @@ public class UTilitiesActivity extends BaseActivity {
         resetChecks();
     }
 
-    private void disableFeature(final ImageButton featureButton) {
+    private void disableFeature(final ImageView featureButton) {
         ColorMatrix matrix = new ColorMatrix();
         matrix.setSaturation(0);
         ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
@@ -636,7 +636,7 @@ public class UTilitiesActivity extends BaseActivity {
         featureButton.setOnClickListener(disabledFeatureButtonListener);
     }
 
-    private void enableFeature(final ImageButton featureButton) {
+    private void enableFeature(final ImageView featureButton) {
         featureButton.clearColorFilter();
         Utility.setImageAlpha(featureButton, 255);
         featureButton.setOnClickListener(enabledFeatureButtonListener);
@@ -646,14 +646,14 @@ public class UTilitiesActivity extends BaseActivity {
     public void loginFinished(final LoginFinishedEvent lfe) {
         boolean successful = lfe.loginSuccessful();
         serviceLoggedIn.put(lfe.getService(), successful);
-        for (ImageButton ib : cookiesToFeatures.get(lfe.getService())) {
+        for (ImageView iv : cookiesToFeatures.get(lfe.getService())) {
             if (successful) {
-                enableFeature(ib);
+                enableFeature(iv);
             } else {
-                disableFeature(ib);
+                disableFeature(iv);
             }
-            ((DashboardButtonData) ib.getTag()).loggedIn = successful;
-            ((DashboardButtonData) ib.getTag()).loginProgress.setVisibility(View.GONE);
+            ((DashboardButtonData) iv.getTag()).loggedIn = successful;
+            ((DashboardButtonData) iv.getTag()).loginProgress.setVisibility(View.GONE);
         }
     }
 
@@ -668,8 +668,8 @@ public class UTilitiesActivity extends BaseActivity {
         super.onResume();
         invalidateOptionsMenu();
         if (!settings.getBoolean("loginpref", false)) {
-            for (ImageButton ib : featureButtons) {
-                enableFeature(ib);
+            for (ImageView iv : featureButtons) {
+                enableFeature(iv);
             }
         }
         resetChecks();
