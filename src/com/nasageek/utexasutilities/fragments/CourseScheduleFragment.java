@@ -35,14 +35,20 @@ import com.nasageek.utexasutilities.activities.ScheduleActivity;
 import com.nasageek.utexasutilities.adapters.ScheduleClassAdapter;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
+import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import okio.Buffer;
+import okio.Okio;
 
 import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
@@ -303,6 +309,16 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
         @Override
         protected Integer doInBackground(Boolean... params) {
             Boolean recursing = params[0];
+            MockWebServer mockServer = new MockWebServer();
+            Buffer htmlBuffer = new Buffer();
+            try {
+                htmlBuffer.writeAll(Okio.source(getResources().openRawResource(R.raw.schedule_test_1)));
+                mockServer.enqueue(new MockResponse().setBody(htmlBuffer));
+                mockServer.start();
+            } catch (IOException ioe) {
+
+            }
+            HttpUrl testReqUrl = mockServer.url("");
 
             // "stateful" stuff, I'll get it figured out in the next release
             // if(classList == null)
@@ -312,7 +328,7 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
 
             String reqUrl = "https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId;
             Request request = new Request.Builder()
-                    .url(reqUrl)
+                    .url(testReqUrl)
                     .build();
             String pagedata = "";
 
@@ -474,6 +490,11 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
                     colorCount = (colorCount == colors.length - 1) ? 0 : colorCount + 1;
                     classCount++;
                 }
+            }
+            try {
+                mockServer.shutdown();
+            } catch (IOException ioe) {
+
             }
             return classCount;
 
