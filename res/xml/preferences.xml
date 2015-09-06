@@ -36,7 +36,7 @@
             android:title="Auto Login" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Schedule" >
-        <com.nasageek.utexasutilities.FixedListPreference
+        <ListPreference
             android:id="@+id/schedule_background_style"
             android:defaultValue="checkhour"
             android:entries="@array/schedule_background_array"
@@ -46,7 +46,7 @@
             android:title="Background Style" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Balance" >
-        <com.nasageek.utexasutilities.FixedListPreference
+        <ListPreference
             android:defaultValue="0"
             android:entries="@array/balance_tabs_array"
             android:entryValues="@array/balance_tabs_value_array"
@@ -62,7 +62,7 @@
             android:summaryOn="Map currently centers on your location."
             android:title="Center on My Location" />
 
-        <com.nasageek.utexasutilities.FixedListPreference
+        <ListPreference
             android:id="@+id/default_map_bus_route"
             android:defaultValue="0"
             android:entries="@array/routes_array"
@@ -72,7 +72,7 @@
             android:title="Default Bus Route" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Menu" >
-        <com.nasageek.utexasutilities.FixedListPreference
+        <ListPreference
             android:id="@+id/default_menu_restaurant"
             android:defaultValue="0"
             android:entries="@array/restaurants_array"

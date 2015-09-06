@@ -23,7 +23,6 @@ import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.WrappedViewPager;
 import com.nasageek.utexasutilities.model.Classtime;
@@ -42,7 +41,7 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-public class DoubleDatePickerDialogFragment extends SherlockDialogFragment {
+public class DoubleDatePickerDialogFragment extends DialogFragment {
 
     private List<View> datePickers;
     private DatePicker startDatePicker, endDatePicker;

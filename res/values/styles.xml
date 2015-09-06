@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="StyledIndicators" parent="@style/Theme.Sherlock.Light">
+    <style name="StyledIndicators" parent="@style/Theme.AppCompat.Light">
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
         <item name="vpiTitlePageIndicatorStyle">@style/CustomTitlePageIndicator</item>
     </style>
@@ -29,12 +29,30 @@
     <style name="CustomTabPageIndicator.Text" parent="TextAppearance.TabPageIndicator">
         <item name="android:textColor">#FF555555</item>
     </style>
+
+    <style name="ActionBar.Solid.UTilities" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="background">@drawable/ab_solid_utilities</item>
+        <item name="android:background">@drawable/ab_solid_utilities</item>
+    </style>
     
-    <style name="Theme.UTilities" parent="@style/Theme.Sherlock.Light">
+    <style name="Theme.UTilities" parent="@style/Theme.AppCompat.Light">
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
         <item name="vpiTitlePageIndicatorStyle">@style/CustomTitlePageIndicator</item>
         <item name="android:windowBackground">@drawable/background_holo_light</item>
         <item name="android:cacheColorHint">@android:color/transparent</item>
+        <item name="actionBarStyle">@style/ActionBar.Solid.UTilities</item>
+        <item name="colorPrimary">@color/burnt_orange</item>
+        <item name="colorPrimaryDark">@color/burnt_orange_dark</item>
+        <item name="colorAccent">@color/blue_accent</item>
+        <item name="toolbarStyle">@style/Toolbar.UTilities</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+    </style>
+
+    <style name="Toolbar.UTilities" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
     
     

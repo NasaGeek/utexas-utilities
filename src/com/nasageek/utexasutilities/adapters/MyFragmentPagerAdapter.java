@@ -5,8 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.actionbarsherlock.app.SherlockFragment;
-
 import java.util.List;
 
 /**
@@ -17,13 +15,13 @@ import java.util.List;
 public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
     int pos;
-    private List<SherlockFragment> fragments;
+    private List<Fragment> fragments;
 
     /**
      * @param fm
      * @param fragments
      */
-    public MyFragmentPagerAdapter(FragmentManager fm, List<SherlockFragment> fragments) {
+    public MyFragmentPagerAdapter(FragmentManager fm, List<Fragment> fragments) {
         super(fm);
         this.fragments = fragments;
     }
@@ -52,7 +50,7 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
         return this.fragments.get(position).getArguments().getString("title");
     }
 
-    public void updateFragments(List<SherlockFragment> fragments) {
+    public void updateFragments(List<Fragment> fragments) {
         this.fragments = fragments;
     }
 }

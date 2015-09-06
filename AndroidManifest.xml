@@ -59,27 +59,28 @@
 
         <activity
             android:name=".activities.DataUsageActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" >
-        </activity>
+            android:label="Data Usage"
+            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" />
         <activity
             android:name=".activities.AboutMeActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" >
-        </activity>
+            android:label="About"
+            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" />
         <activity
             android:name=".activities.LoginActivity"
+            android:label="Login"
             android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"
-            android:noHistory="true" >
-        </activity>
+            android:noHistory="true" />
         <activity
-            android:name=".activities.Preferences"
-            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" >
-        </activity>
+            android:name=".activities.PreferenceActivity"
+            android:label="Preferences"
+            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" />
         <activity
             android:name=".activities.ScheduleActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" >
-        </activity>
+            android:label="Schedule"
+            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" />
         <activity
             android:name=".activities.CampusMapActivity"
+            android:label=""
             android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"
             android:launchMode="singleTop" >
             <intent-filter>
@@ -90,12 +91,14 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".activities.BalanceActivity" >
-        </activity>
-        <activity android:name=".activities.MenuActivity" >
-        </activity>
-        <activity android:name=".activities.NutritionInfoActivity" >
-        </activity>
+        <activity
+            android:name=".activities.BalanceActivity"
+            android:label="Transactions" />
+        <activity
+            android:name=".activities.MenuActivity"
+            android:label="Menus" />
+        <activity
+            android:name=".activities.NutritionInfoActivity" />
 
         <provider
             android:name="com.nasageek.utexasutilities.BuildingProvider"

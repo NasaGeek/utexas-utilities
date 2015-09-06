@@ -2,15 +2,15 @@
 package com.nasageek.utexasutilities.fragments;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.DatePicker;
 
-import com.actionbarsherlock.app.SherlockFragment;
 
-public class DatePickerFragment extends SherlockFragment {
+public class DatePickerFragment extends Fragment {
     public DatePickerFragment() {
     }
 

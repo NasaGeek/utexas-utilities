@@ -5,17 +5,15 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.nasageek.utexasutilities.R;
 
@@ -28,7 +26,6 @@ public class AboutMeActivity extends BaseActivity {
         setContentView(R.layout.aboutme_layout);
 
         actionbar = getSupportActionBar();
-        actionbar.setTitle("About");
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionbar.setHomeButtonEnabled(true);
         actionbar.setDisplayHomeAsUpEnabled(true);
@@ -75,19 +72,7 @@ public class AboutMeActivity extends BaseActivity {
         versionNumberView.setText(versionName);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go home
-                super.onBackPressed();
-                break;
-        }
-        return false;
-    }
-
-    public static class PrivacyPolicyDialog extends SherlockDialogFragment {
+    public static class PrivacyPolicyDialog extends DialogFragment {
 
         public PrivacyPolicyDialog() {
         }
@@ -101,7 +86,7 @@ public class AboutMeActivity extends BaseActivity {
         }
     }
 
-    public static class LibraryLicenseDialog extends SherlockDialogFragment {
+    public static class LibraryLicenseDialog extends DialogFragment {
 
         public LibraryLicenseDialog() {
         }

@@ -4,12 +4,10 @@ package com.nasageek.utexasutilities.activities;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.widget.Spinner;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.adapters.MyFragmentPagerAdapter;
 import com.nasageek.utexasutilities.fragments.ActionModeFragment;
@@ -17,7 +15,6 @@ import com.nasageek.utexasutilities.fragments.CourseScheduleFragment;
 import com.nasageek.utexasutilities.fragments.ExamScheduleFragment;
 import com.viewpagerindicator.TitlePageIndicator;
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
@@ -25,7 +22,7 @@ public class ScheduleActivity extends BaseActivity implements
         ViewPager.OnPageChangeListener {
 
     protected MyFragmentPagerAdapter mPagerAdapter;
-    protected List<SherlockFragment> fragments;
+    protected List<Fragment> fragments;
     protected TitlePageIndicator titleIndicator;
 
 
@@ -36,7 +33,6 @@ public class ScheduleActivity extends BaseActivity implements
         initialisePaging();
 
         ActionBar actionbar = getSupportActionBar();
-        actionbar.setTitle("Schedule");
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionbar.setHomeButtonEnabled(true);
         actionbar.setDisplayHomeAsUpEnabled(true);
@@ -60,21 +56,7 @@ public class ScheduleActivity extends BaseActivity implements
         pager.setCurrentItem(1, false);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go home
-                super.onBackPressed();
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-        return true;
-    }
-
-    public List<SherlockFragment> getFragments() {
+    public List<Fragment> getFragments() {
         return fragments;
     }
 
@@ -98,7 +80,7 @@ public class ScheduleActivity extends BaseActivity implements
 
     @Override
     public void onPageSelected(int location) {
-        for (SherlockFragment csf : fragments) {
+        for (Fragment csf : fragments) {
             if (((ActionModeFragment) csf).getActionMode() != null) {
                 ((ActionModeFragment) csf).getActionMode().finish();
             }

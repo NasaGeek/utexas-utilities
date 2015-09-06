@@ -12,19 +12,20 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.view.MenuItemCompat;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.AuthCookie;
@@ -76,6 +77,7 @@ public class UTilitiesActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
 
         UTilitiesApplication mApp = (UTilitiesApplication) getApplication();
@@ -99,18 +101,7 @@ public class UTilitiesActivity extends BaseActivity {
         }
 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.main);
-        setSupportProgressBarIndeterminateVisibility(isLoggingIn());
-
-        // use one Activity-wide Toast so they don't stack up
-        message = Toast.makeText(this, R.string.login_first, Toast.LENGTH_SHORT);
-
-        handleUnencryptedPassword();
-        handleFirstLaunch();
-        if (settings.getBoolean("autologin", false) && !isLoggingIn() && !mApp.anyCookiesSet()) {
-            login();
-        }
         enabledFeatureButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -174,6 +165,17 @@ public class UTilitiesActivity extends BaseActivity {
             }
         };
         setupDashBoardButtons();
+        setLoginProgressBarVisiblity(isLoggingIn());
+
+        // use one Activity-wide Toast so they don't stack up
+        message = Toast.makeText(this, R.string.login_first, Toast.LENGTH_SHORT);
+
+        handleUnencryptedPassword();
+        handleFirstLaunch();
+        if (settings.getBoolean("autologin", false) && !isLoggingIn() && !mApp.anyCookiesSet()) {
+            login();
+        }
+
         MyBus.getInstance().register(this);
     }
 
@@ -328,7 +330,7 @@ public class UTilitiesActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = this.getSupportMenuInflater();
+        MenuInflater inflater = this.getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         boolean anyLoggedIn = false;
         for (AuthCookie cookie : authCookies) {
@@ -369,7 +371,7 @@ public class UTilitiesActivity extends BaseActivity {
         menu.removeGroup(R.id.login_menu_group);
         menu.add(R.id.login_menu_group, id, Menu.NONE, text);
         MenuItem item = menu.findItem(id);
-        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
     }
 
     @Override
@@ -378,22 +380,23 @@ public class UTilitiesActivity extends BaseActivity {
         switch (id) {
             case R.id.settings:
                 loadSettings();
-                break;
+                return true;
             case R.id.login_button:
                 login();
                 invalidateOptionsMenu();
-                break;
+                return true;
             case R.id.logout_button:
                 AnalyticsHandler.trackLogoutEvent();
                 logout();
                 invalidateOptionsMenu();
-                break;
+                return true;
             case R.id.cancel_button:
                 cancelLogin();
                 invalidateOptionsMenu();
-                break;
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return true;
     }
 
     @Override
@@ -470,7 +473,7 @@ public class UTilitiesActivity extends BaseActivity {
     }
 
     private void loadSettings() {
-        final Intent pref_intent = new Intent(this, Preferences.class);
+        final Intent pref_intent = new Intent(this, PreferenceActivity.class);
         startActivity(pref_intent);
     }
 
@@ -559,7 +562,7 @@ public class UTilitiesActivity extends BaseActivity {
               */
             cancel(false);
             mActivity.invalidateOptionsMenu();
-            mActivity.setSupportProgressBarIndeterminateVisibility(false);
+            mActivity.setLoginProgressBarVisiblity(false);
         }
 
         @Override
@@ -582,7 +585,7 @@ public class UTilitiesActivity extends BaseActivity {
                 message.setDuration(Toast.LENGTH_LONG);
                 message.show();
             } else {
-                setSupportProgressBarIndeterminateVisibility(true);
+                setLoginProgressBarVisiblity(true);
                 loginTasks = new ArrayList<>();
                 CountDownLatch loginLatch = new CountDownLatch(authCookies.length);
                 updateUiTask = new UpdateUiTask(this);
@@ -609,7 +612,7 @@ public class UTilitiesActivity extends BaseActivity {
             task.cancel(true);
         }
         logout();
-        setSupportProgressBarIndeterminateVisibility(false);
+        setLoginProgressBarVisiblity(false);
     }
 
     /**
@@ -732,6 +735,15 @@ public class UTilitiesActivity extends BaseActivity {
             balanceCheck.setVisibility(View.VISIBLE);
             dataCheck.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void setLoginProgressBarVisiblity(Boolean showOrHide) {
+       for (ImageView featureButton : featureButtons) {
+           DashboardButtonData dbd = (DashboardButtonData) featureButton.getTag();
+           if (dbd.loginProgress != null) {
+                dbd.loginProgress. setVisibility(showOrHide ? View.VISIBLE : View.GONE);
+           }
+       }
     }
 
     static class LoginFinishedEvent {

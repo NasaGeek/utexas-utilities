@@ -7,7 +7,9 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,8 +20,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.MenuItem;
 import com.androidplot.xy.BarFormatter;
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.SimpleXYSeries;
@@ -90,7 +90,6 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
         detv = (TextView) findViewById(R.id.tv_failure);
         deb = (Button) findViewById(R.id.button_send_data);
         actionbar = getSupportActionBar();
-        actionbar.setTitle("Data Usage");
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionbar.setHomeButtonEnabled(true);
         actionbar.setDisplayHomeAsUpEnabled(true);
@@ -476,17 +475,6 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
                 deb.setVisibility(View.VISIBLE);
             }
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // app icon in action bar clicked; go home
-                super.onBackPressed();
-                break;
-        }
-        return true;
     }
 
     private class TimeFormat extends Format {

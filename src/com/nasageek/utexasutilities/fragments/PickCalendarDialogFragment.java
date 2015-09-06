@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,14 +25,13 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.R;
 
 import java.util.ArrayList;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-public class PickCalendarDialogFragment extends SherlockDialogFragment {
+public class PickCalendarDialogFragment extends DialogFragment {
 
     private FragmentActivity parentAct;
 
