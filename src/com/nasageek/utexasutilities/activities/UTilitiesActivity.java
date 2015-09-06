@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.MotionEvent;
@@ -628,16 +629,24 @@ public class UTilitiesActivity extends BaseActivity {
     }
 
     private void disableFeature(final ImageView featureButton) {
-        ColorMatrix matrix = new ColorMatrix();
-        matrix.setSaturation(0);
-        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
-        featureButton.setColorFilter(filter);
+        // Some sort of bug in Android 4.x causes the ImageView to disappear if a ColorMatrix
+        // is applied, so only do it in 2.3/5.0+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1 ||
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ColorMatrix matrix = new ColorMatrix();
+            matrix.setSaturation(0);
+            ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+            featureButton.setColorFilter(filter);
+        }
         Utility.setImageAlpha(featureButton, 75);
         featureButton.setOnClickListener(disabledFeatureButtonListener);
     }
 
     private void enableFeature(final ImageView featureButton) {
-        featureButton.clearColorFilter();
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1 ||
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            featureButton.clearColorFilter();
+        }
         Utility.setImageAlpha(featureButton, 255);
         featureButton.setOnClickListener(enabledFeatureButtonListener);
     }
