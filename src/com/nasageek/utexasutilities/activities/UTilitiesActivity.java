@@ -101,16 +101,6 @@ public class UTilitiesActivity extends BaseActivity {
 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
         setContentView(R.layout.main);
-        setSupportProgressBarIndeterminateVisibility(isLoggingIn());
-
-        // use one Activity-wide Toast so they don't stack up
-        message = Toast.makeText(this, R.string.login_first, Toast.LENGTH_SHORT);
-
-        handleUnencryptedPassword();
-        handleFirstLaunch();
-        if (settings.getBoolean("autologin", false) && !isLoggingIn() && !mApp.anyCookiesSet()) {
-            login();
-        }
         enabledFeatureButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -174,6 +164,17 @@ public class UTilitiesActivity extends BaseActivity {
             }
         };
         setupDashBoardButtons();
+        setLoginProgressBarVisiblity(isLoggingIn());
+
+        // use one Activity-wide Toast so they don't stack up
+        message = Toast.makeText(this, R.string.login_first, Toast.LENGTH_SHORT);
+
+        handleUnencryptedPassword();
+        handleFirstLaunch();
+        if (settings.getBoolean("autologin", false) && !isLoggingIn() && !mApp.anyCookiesSet()) {
+            login();
+        }
+
         MyBus.getInstance().register(this);
     }
 
@@ -560,7 +561,7 @@ public class UTilitiesActivity extends BaseActivity {
               */
             cancel(false);
             mActivity.invalidateOptionsMenu();
-            mActivity.setSupportProgressBarIndeterminateVisibility(false);
+            mActivity.setLoginProgressBarVisiblity(false);
         }
 
         @Override
@@ -583,7 +584,7 @@ public class UTilitiesActivity extends BaseActivity {
                 message.setDuration(Toast.LENGTH_LONG);
                 message.show();
             } else {
-                setSupportProgressBarIndeterminateVisibility(true);
+                setLoginProgressBarVisiblity(true);
                 loginTasks = new ArrayList<>();
                 CountDownLatch loginLatch = new CountDownLatch(authCookies.length);
                 updateUiTask = new UpdateUiTask(this);
@@ -610,7 +611,7 @@ public class UTilitiesActivity extends BaseActivity {
             task.cancel(true);
         }
         logout();
-        setSupportProgressBarIndeterminateVisibility(false);
+        setLoginProgressBarVisiblity(false);
     }
 
     /**
@@ -725,6 +726,15 @@ public class UTilitiesActivity extends BaseActivity {
             balanceCheck.setVisibility(View.VISIBLE);
             dataCheck.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void setLoginProgressBarVisiblity(Boolean showOrHide) {
+       for (ImageView featureButton : featureButtons) {
+           DashboardButtonData dbd = (DashboardButtonData) featureButton.getTag();
+           if (dbd.loginProgress != null) {
+                dbd.loginProgress. setVisibility(showOrHide ? View.VISIBLE : View.GONE);
+           }
+       }
     }
 
     static class LoginFinishedEvent {
