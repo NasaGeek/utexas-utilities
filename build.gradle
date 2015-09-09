@@ -29,7 +29,7 @@ android {
     buildToolsVersion "23"
 
     defaultConfig {
-        minSdkVersion 10
+        minSdkVersion 14
         targetSdkVersion 21
         versionCode 41
         versionName "1.99.9"
@@ -89,7 +89,7 @@ dependencies {
 
     compile 'com.android.support:support-v4:22.1.+'
     aarLinkSources 'com.android.support:support-v4:21.0.+:sources@jar'
-    compile 'com.android.support:preference-v7:23.0.1'
+    compile 'com.android.support:preference-v14:23.0.1'
     compile 'com.android.support:appcompat-v7:23.0.1'
     aarLinkSources 'com.android.support:support-v7:23.0.1:sources@jar'
 

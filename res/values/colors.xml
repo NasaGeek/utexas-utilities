@@ -4,4 +4,6 @@
     <color name = "burnt_orange_dark">#ffa34400</color>
     <color name = "blue_accent">#ff005F86</color>
     <color name = "lt_gray">#ffcccccc</color>
+    <!-- Properly set accent color for Preferences, default is an unsightly bright blue -->
+    <color name="preference_fallback_accent_color">@color/blue_accent</color>
 </resources>
