@@ -4,6 +4,7 @@ package com.nasageek.utexasutilities.activities;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -14,7 +15,6 @@ import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
 import com.nasageek.utexasutilities.fragments.MenuFragment;
-import com.viewpagerindicator.MyTabPageIndicator;
 
 import java.util.Calendar;
 import java.util.List;
@@ -314,18 +314,17 @@ public class MenuActivity extends BaseActivity {
             fragments.add(MenuFragment.newInstance("Dinner", restId));
         }
 
-        final MyTabPageIndicator tabIndicator = (MyTabPageIndicator) findViewById(R.id.titles);
-
         int pagesDisplayed = getResources().getInteger(R.integer.menu_num_visible_pages);
         mPagerAdapter = new MultiPanePagerAdapter(getSupportFragmentManager(), fragments);
         mPagerAdapter.setPagesDisplayed(pagesDisplayed);
 
         pager.setAdapter(mPagerAdapter);
-        if (pagesDisplayed > 1) {
-            tabIndicator.setSelectAll(true);
-        }
+        // TODO: reimplement selectAll hack with design support library
+//        if (pagesDisplayed > 1) {
+//            tabIndicator.setSelectAll(true);
+//        }
 
-        tabIndicator.setViewPager(pager);
+        ((TabLayout) findViewById(R.id.tabs)).setupWithViewPager(pager);
 
         pager.setOffscreenPageLimit(2);
         pager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.pager_margin));

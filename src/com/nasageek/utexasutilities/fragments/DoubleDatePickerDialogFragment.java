@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.view.Gravity;
@@ -27,7 +28,6 @@ import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.WrappedViewPager;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
-import com.viewpagerindicator.TabPageIndicator;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -295,8 +295,7 @@ public class DoubleDatePickerDialogFragment extends DialogFragment {
         pager.setPageMargin(2);
         pager.setAdapter(adapter);
 
-        TabPageIndicator tabIndicator = (TabPageIndicator) view.findViewById(R.id.titles);
-        tabIndicator.setViewPager(pager);
+        ((TabLayout) view.findViewById(R.id.tabs)).setupWithViewPager(pager);
     }
 
     /*

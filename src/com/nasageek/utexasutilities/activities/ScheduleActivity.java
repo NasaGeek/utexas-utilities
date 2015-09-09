@@ -3,6 +3,7 @@ package com.nasageek.utexasutilities.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerTabStripV22;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,6 @@ import com.nasageek.utexasutilities.adapters.MyFragmentPagerAdapter;
 import com.nasageek.utexasutilities.fragments.ActionModeFragment;
 import com.nasageek.utexasutilities.fragments.CourseScheduleFragment;
 import com.nasageek.utexasutilities.fragments.ExamScheduleFragment;
-import com.viewpagerindicator.TitlePageIndicator;
 
 import java.util.List;
 import java.util.Vector;
@@ -23,7 +23,7 @@ public class ScheduleActivity extends BaseActivity implements
 
     protected MyFragmentPagerAdapter mPagerAdapter;
     protected List<Fragment> fragments;
-    protected TitlePageIndicator titleIndicator;
+    protected PagerTabStripV22 titleIndicator;
 
 
     @Override
@@ -48,10 +48,11 @@ public class ScheduleActivity extends BaseActivity implements
         pager.setPageMargin(2);
         pager.setOffscreenPageLimit(2);
         pager.setAdapter(this.mPagerAdapter);
+        pager.addOnPageChangeListener(this);
 
-        titleIndicator = (TitlePageIndicator) findViewById(R.id.titles);
-        titleIndicator.setViewPager(pager);
-        titleIndicator.setOnPageChangeListener(this);
+//        titleIndicator.setOnPageChangeListener(this);
+//        ((PagerTabStrip) findViewById(R.id.titles)).no
+        titleIndicator = (PagerTabStripV22) findViewById(R.id.tabs);
 
         pager.setCurrentItem(1, false);
     }
@@ -64,7 +65,7 @@ public class ScheduleActivity extends BaseActivity implements
         return mPagerAdapter;
     }
 
-    public TitlePageIndicator getIndicator() {
+    public PagerTabStripV22 getIndicator() {
         return titleIndicator;
     }
 
