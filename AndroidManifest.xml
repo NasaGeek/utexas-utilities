@@ -72,8 +72,9 @@
             android:noHistory="true" />
         <activity
             android:name=".activities.PreferenceActivity"
-            android:label="Preferences"
-            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" />
+            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"
+            android:theme="@style/Theme.UTilities.Preferences" >
+        </activity>
         <activity
             android:name=".activities.ScheduleActivity"
             android:label="Schedule"
