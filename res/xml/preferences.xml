@@ -12,18 +12,18 @@
             android:title="Persistent login" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:dependency="loginpref"
+        android:dependency="@string/pref_logintype_key"
         android:key="loginfields"
         android:title="@string/login_category" >
         <EditTextPreference
             android:id="@+id/eidfield"
-            android:dependency="loginpref"
+            android:dependency="@string/pref_logintype_key"
             android:dialogTitle="Enter your EID"
             android:key="eid"
             android:title="Edit UT EID" />
         <EditTextPreference
             android:id="@+id/passwordfield"
-            android:dependency="loginpref"
+            android:dependency="@string/pref_logintype_key"
             android:dialogTitle="Enter your password"
             android:inputType="textPassword"
             android:key="password"
@@ -31,7 +31,7 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:dependency="loginpref"
+            android:dependency="@string/pref_logintype_key"
             android:key="autologin"
             android:title="Auto Login" />
     </PreferenceCategory>

@@ -677,7 +677,7 @@ public class UTilitiesActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         invalidateOptionsMenu();
-        if (!settings.getBoolean("loginpref", false)) {
+        if (!settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
             for (ImageView iv : featureButtons) {
                 enableFeature(iv);
             }
