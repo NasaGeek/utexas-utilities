@@ -3,6 +3,7 @@ package com.nasageek.utexasutilities.fragments;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.Preference;
@@ -11,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.nasageek.utexasutilities.PasswordEditTextPreferenceDialogFragmentCompat;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.UTilitiesApplication;
@@ -167,5 +169,18 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
         UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();
         return mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).hasCookieBeenSet() &&
                 mApp.getAuthCookie(PNA_AUTH_COOKIE_KEY).hasCookieBeenSet();
+    }
+
+    @Override
+    public void onDisplayPreferenceDialog(Preference preference) {
+        final String DIALOG_FRAGMENT_TAG =
+                "android.support.v7.preference.PreferenceFragment.DIALOG";
+        if (preference.getKey().equals("password")) {
+            DialogFragment f = PasswordEditTextPreferenceDialogFragmentCompat.newInstance(preference.getKey());
+            f.setTargetFragment(this, 0);
+            f.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
+        }  else {
+            super.onDisplayPreferenceDialog(preference);
+        }
     }
 }

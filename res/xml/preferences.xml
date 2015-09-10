@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  xmlns:app="http://schemas.android.com/apk/res-auto" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
         android:key="loginstyle"
@@ -20,14 +19,12 @@
             android:id="@+id/eidfield"
             android:dependency="@string/pref_logintype_key"
             android:dialogTitle="Enter your EID"
-            app:dialogLayout="@layout/edittext_normal"
             android:key="eid"
             android:title="Edit UT EID" />
         <EditTextPreference
             android:id="@+id/passwordfield"
             android:dependency="@string/pref_logintype_key"
             android:dialogTitle="Enter your password"
-            app:dialogLayout="@layout/edittext_password"
             android:key="password"
             android:title="Edit Password" />
 
