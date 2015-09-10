@@ -5,7 +5,6 @@
         android:key="loginstyle"
         android:title="Login Style" >
         <CheckBoxPreference
-            android:id="@+id/login_pref"
             android:defaultValue="false"
             android:key="@string/pref_logintype_key"
             android:summary="Save credentials on device for faster login."
@@ -16,13 +15,11 @@
         android:key="loginfields"
         android:title="@string/login_category" >
         <EditTextPreference
-            android:id="@+id/eidfield"
             android:dependency="@string/pref_logintype_key"
             android:dialogTitle="Enter your EID"
             android:key="eid"
             android:title="Edit UT EID" />
         <EditTextPreference
-            android:id="@+id/passwordfield"
             android:dependency="@string/pref_logintype_key"
             android:dialogTitle="Enter your password"
             android:key="password"
@@ -36,7 +33,6 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="Schedule" >
         <ListPreference
-            android:id="@+id/schedule_background_style"
             android:defaultValue="checkhour"
             android:entries="@array/schedule_background_array"
             android:entryValues="@array/schedule_background_value_array"
@@ -62,7 +58,6 @@
             android:title="Center on My Location" />
 
         <ListPreference
-            android:id="@+id/default_map_bus_route"
             android:defaultValue="0"
             android:entries="@array/routes_array"
             android:entryValues="@array/routes_value_array"
@@ -72,7 +67,6 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="Menu" >
         <ListPreference
-            android:id="@+id/default_menu_restaurant"
             android:defaultValue="0"
             android:entries="@array/restaurants_array"
             android:entryValues="@array/restaurants_value_array"
@@ -86,13 +80,11 @@
             android:selectable="false" />
 
         <CheckBoxPreference
-            android:id="@+id/sendcrashes"
             android:defaultValue="true"
             android:key="acra.enable"
             android:title="Auto-send crash reports" />
 
         <CheckBoxPreference
-            android:id="@+id/pref_analytics"
             android:defaultValue="true"
             android:key="@string/pref_analytics_key"
             android:title="Google Analytics" />
@@ -105,7 +97,6 @@
             android:title="Use embedded browser" />
 
         <Preference
-            android:id="@+id/about"
             android:key="about"
             android:title="About UTilities" />
     </PreferenceCategory>
@@ -115,7 +106,6 @@
         android:selectable="false"
         android:title="Experimental" >
         <Preference
-            android:id="@+id/update_stops"
             android:key="update_stops"
             android:title="Update Bus Stops" />
     </PreferenceScreen>
