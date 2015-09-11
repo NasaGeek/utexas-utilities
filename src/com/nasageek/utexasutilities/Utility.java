@@ -2,7 +2,6 @@
 package com.nasageek.utexasutilities;
 
 import android.content.Context;
-import android.os.Build;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -199,12 +198,8 @@ public class Utility {
     }
 
     public static void setImageAlpha(ImageView iv, int alpha) {
-        // The 2 methods below technically do different things, but the setImageAlpha method in
-        // ImageView seems to be broken on 4.x, so use the View.setAlpha method instead.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            iv.setAlpha(alpha/255f);
-        } else {
-            iv.setAlpha(alpha);
-        }
+        // imageView#setImageAlpha method seems to be broken on 4.x, so use the View.setAlpha
+        // method instead.
+        iv.setAlpha(alpha/255f);
     }
 }

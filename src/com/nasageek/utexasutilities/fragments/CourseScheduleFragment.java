@@ -1,10 +1,8 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -94,7 +92,6 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
         return csf;
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View vg = inflater.inflate(R.layout.course_schedule_fragment_layout, container, false);
@@ -168,20 +165,9 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (classList == null || classList.size() == 0) {
-            menu.findItem(R.id.map_all_classes).setEnabled(false);
-            MenuItem exportSchedule;
-            // <4.0 can't export schedule, so MenuItem will be null
-            if ((exportSchedule = menu.findItem(R.id.export_schedule)) != null) {
-                exportSchedule.setEnabled(false);
-            }
-        } else {
-            menu.findItem(R.id.map_all_classes).setEnabled(true);
-            MenuItem exportSchedule;
-            if ((exportSchedule = menu.findItem(R.id.export_schedule)) != null) {
-                exportSchedule.setEnabled(true);
-            }
-        }
+        boolean scheduleHasClasses = (classList != null && classList.size() > 0);
+        menu.findItem(R.id.map_all_classes).setEnabled(scheduleHasClasses);
+        menu.findItem(R.id.export_schedule).setEnabled(scheduleHasClasses);
     }
 
     @Override
@@ -209,22 +195,14 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
                     break;
                 }
             case R.id.export_schedule:
-                // version-gate handled by xml, but just to make sure...
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                    // check to see if we're done loading the schedules (the
-                    // ScheduleClassAdapter is initialized in onPostExecute)
-                    if (adapter != null) {
-                        FragmentManager fm = parentAct.getSupportFragmentManager();
-                        DoubleDatePickerDialogFragment ddpDlg = DoubleDatePickerDialogFragment
-                                .newInstance(classList);
-                        ddpDlg.show(fm, "fragment_double_date_picker");
-                    }
-                } else {
-                    Toast.makeText(parentAct,
-                            "Export to calendar is not supported on this version of Android",
-                            Toast.LENGTH_SHORT).show();
+                // check to see if we're done loading the schedules (the
+                // ScheduleClassAdapter is initialized in onPostExecute)
+                if (adapter != null) {
+                    FragmentManager fm = parentAct.getSupportFragmentManager();
+                    DoubleDatePickerDialogFragment ddpDlg = DoubleDatePickerDialogFragment
+                            .newInstance(classList);
+                    ddpDlg.show(fm, "fragment_double_date_picker");
                 }
-
                 break;
             default:
                 return super.onOptionsItemSelected(item);

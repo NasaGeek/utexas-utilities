@@ -1,11 +1,9 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -24,7 +22,6 @@ import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.activities.NutritionInfoActivity;
 import com.nasageek.utexasutilities.adapters.StickyHeaderAdapter;
-
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -85,7 +82,6 @@ public class MenuFragment extends Fragment {
         mAdapter = new MenuAdapter(listOfLists);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void updateView(String restId, Boolean update) {
         this.restId = restId;
 

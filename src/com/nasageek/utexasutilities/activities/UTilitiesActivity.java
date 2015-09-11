@@ -632,8 +632,7 @@ public class UTilitiesActivity extends BaseActivity {
     private void disableFeature(final ImageView featureButton) {
         // Some sort of bug in Android 4.x causes the ImageView to disappear if a ColorMatrix
         // is applied, so only do it in 2.3/5.0+
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1 ||
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ColorMatrix matrix = new ColorMatrix();
             matrix.setSaturation(0);
             ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
@@ -644,8 +643,7 @@ public class UTilitiesActivity extends BaseActivity {
     }
 
     private void enableFeature(final ImageView featureButton) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1 ||
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             featureButton.clearColorFilter();
         }
         Utility.setImageAlpha(featureButton, 255);

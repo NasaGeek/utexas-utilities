@@ -1,9 +1,7 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -149,7 +147,6 @@ public class TransactionsFragment extends Fragment {
         out.putString("balance", balance);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void parser(boolean refresh) {
         httpclient = new OkHttpClient();
         httpclient.setCookieHandler(CookieHandler.getDefault());

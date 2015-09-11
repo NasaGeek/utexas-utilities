@@ -2,7 +2,6 @@
 package com.nasageek.utexasutilities.fragments;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.AsyncQueryHandler;
@@ -12,7 +11,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.v4.app.DialogFragment;
@@ -30,7 +28,6 @@ import com.nasageek.utexasutilities.R;
 
 import java.util.ArrayList;
 
-@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class PickCalendarDialogFragment extends DialogFragment {
 
     private FragmentActivity parentAct;

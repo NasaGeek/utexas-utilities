@@ -1,12 +1,10 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
@@ -40,7 +38,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Vector;
 
-@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class DoubleDatePickerDialogFragment extends DialogFragment {
 
     private List<View> datePickers;
@@ -99,7 +96,6 @@ public class DoubleDatePickerDialogFragment extends DialogFragment {
         ((Button) view.findViewById(R.id.calendar_button_ok))
                 .setOnClickListener(new OnClickListener() {
 
-                    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
                     @Override
                     public void onClick(View v) {
                         Calendar startDate = new GregorianCalendar(startDatePicker.getYear(),
@@ -263,7 +259,6 @@ public class DoubleDatePickerDialogFragment extends DialogFragment {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void initialisePaging(View view) {
         datePickers = new Vector<>();
         FrameLayout fl1 = new FrameLayout(getActivity());
@@ -275,12 +270,8 @@ public class DoubleDatePickerDialogFragment extends DialogFragment {
         endDatePicker.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT, Gravity.CENTER));
 
-        // not entirely necessary since this feature will never be supported
-        // below Honeycomb
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            startDatePicker.setCalendarViewShown(false);
-            endDatePicker.setCalendarViewShown(false);
-        }
+        startDatePicker.setCalendarViewShown(false);
+        endDatePicker.setCalendarViewShown(false);
         fl1.addView(startDatePicker);
         fl1.setTag("Start Date");
         fl2.addView(endDatePicker);

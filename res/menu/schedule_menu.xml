@@ -3,4 +3,7 @@
     <item android:id="@+id/map_all_classes"
         	android:showAsAction="never"
             android:title="Show all classes on map" />
+    <item android:id="@+id/export_schedule"
+        	android:showAsAction="never"
+        	android:title="Export to Google Calendar" />
 </menu>
