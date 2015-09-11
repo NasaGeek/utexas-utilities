@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/map_all_classes"
-        	android:showAsAction="never"
+            app:showAsAction="never"
             android:title="Show all classes on map" />
     <item android:id="@+id/export_schedule"
         	android:showAsAction="never"
