@@ -54,7 +54,14 @@ public class UTClass implements Parcelable, Serializable {
 
         ArrayList<Building> buildings = new ArrayList<>();
         for (int i = 0; i < buildingIds.length; i++) {
-            buildings.add(new Building(buildingIds[i], buildingRooms[i]));
+            // If there are fewer rooms than buildings, just don't give rooms to later buildings.
+            // I suspect a blank room indicates an error/oversight on the class listing, so
+            // hopefully it's not an issue that will occur frequently
+            if (i < buildingRooms.length) {
+                buildings.add(new Building(buildingIds[i], buildingRooms[i]));
+            } else {
+                buildings.add(new Building(buildingIds[i], ""));
+            }
         }
 
         /* Class Listing page leaves out building info if there are multiple sections in the same
