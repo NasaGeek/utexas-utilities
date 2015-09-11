@@ -1,11 +1,14 @@
 
 package com.nasageek.utexasutilities.fragments;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.view.LayoutInflater;
@@ -24,6 +27,7 @@ import android.widget.Toast;
 
 import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.BuildConfig;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.TempLoginException;
 import com.nasageek.utexasutilities.UTilitiesApplication;
@@ -44,6 +48,8 @@ import com.squareup.okhttp.mockwebserver.MockWebServer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,6 +91,8 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
     private AppCompatActivity parentAct;
     private String semId;
     private Boolean initialFragment;
+    private int dataIndex = 0;
+    private OkHttpClient client;
 
     public static CourseScheduleFragment newInstance(boolean initialFragment, String title, String id) {
         CourseScheduleFragment csf = new CourseScheduleFragment();
@@ -123,7 +131,7 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
         slidingDrawer.setOnDrawerOpenListener(this);
         slidingDrawer.setVisibility(View.INVISIBLE);
 
-        OkHttpClient client = UTilitiesApplication.getInstance(getActivity()).getHttpClient();
+        client = UTilitiesApplication.getInstance(getActivity()).getHttpClient();
         fetch = new parseTask(client);
         Utility.parallelExecute(fetch, false);
         return vg;
@@ -154,6 +162,9 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
         this.mMenu = menu;
         menu.removeItem(R.id.map_all_classes);
         inflater.inflate(R.menu.schedule_menu, menu);
+        if (BuildConfig.DEBUG) {
+            inflater.inflate(R.menu.data_sources, menu);
+        }
     }
 
     /*
@@ -210,6 +221,28 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
                     ddpDlg.show(fm, "fragment_double_date_picker");
                 }
                 break;
+            case R.id.data_sources:
+                String[] tmpHtmlFiles;
+                try {
+                    tmpHtmlFiles = getActivity().getAssets().list("test_html/schedule");
+                } catch (IOException ioe) {
+                    tmpHtmlFiles = new String[]{"Failed"};
+                }
+                List<String> tmp = new ArrayList<>(Arrays.asList(tmpHtmlFiles));
+                tmp.add(0, "Web");
+                final String[] htmlFiles = tmp.toArray(new String[]{});
+                AlertDialog.Builder dataSourceDlg = new AlertDialog.Builder(getActivity())
+                        .setTitle("Set Data Source")
+                        .setItems(htmlFiles, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(getActivity(), htmlFiles[which], Toast.LENGTH_SHORT).show();
+                                dataIndex = which;
+                                Utility.parallelExecute(new parseTask(client), false);
+                            }
+                        });
+                dataSourceDlg.create().show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -303,22 +336,29 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
             ((ScheduleActivity) parentAct).getFragments().add(
                     CourseScheduleFragment.newInstance(false, params[0].trim(), params[1]));
             ((ScheduleActivity) parentAct).getAdapter().notifyDataSetChanged();
-//            ((ScheduleActivity) parentAct).getIndicator().requestLayout();
         }
 
         @Override
         protected Integer doInBackground(Boolean... params) {
             Boolean recursing = params[0];
-            MockWebServer mockServer = new MockWebServer();
-            Buffer htmlBuffer = new Buffer();
-            try {
-                htmlBuffer.writeAll(Okio.source(getResources().openRawResource(R.raw.schedule_test_1)));
-                mockServer.enqueue(new MockResponse().setBody(htmlBuffer));
-                mockServer.start();
-            } catch (IOException ioe) {
-
+            HttpUrl reqUrl;
+            MockWebServer mockServer = null;
+            if (dataIndex == 0) {
+                reqUrl = HttpUrl.parse("https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId);
+            } else {
+                mockServer = new MockWebServer();
+                Buffer htmlBuffer = new Buffer();
+                try {
+                    AssetManager assets = getActivity().getAssets();
+                    String[] files = assets.list("test_html/schedule");
+                    htmlBuffer.writeAll(Okio.source(assets.open("test_html/schedule/" + files[dataIndex - 1])));
+                    mockServer.enqueue(new MockResponse().setBody(htmlBuffer));
+                    mockServer.start();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+                reqUrl = mockServer.url("");
             }
-            HttpUrl testReqUrl = mockServer.url("");
 
             // "stateful" stuff, I'll get it figured out in the next release
             // if(classList == null)
@@ -326,9 +366,8 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
             // else
             // return classList.size();
 
-            String reqUrl = "https://utdirect.utexas.edu/registration/classlist.WBX?sem=" + semId;
             Request request = new Request.Builder()
-                    .url(testReqUrl)
+                    .url(reqUrl)
                     .build();
             String pagedata = "";
 
@@ -492,9 +531,11 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
                 }
             }
             try {
-                mockServer.shutdown();
+                if (mockServer != null) {
+                    mockServer.shutdown();
+                }
             } catch (IOException ioe) {
-
+                ioe.printStackTrace();
             }
             return classCount;
 
