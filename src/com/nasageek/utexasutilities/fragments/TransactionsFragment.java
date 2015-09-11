@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -162,7 +163,6 @@ public class TransactionsFragment extends Fragment {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void refresh() {
         if (fetch != null) {
             fetch.cancel(true);
@@ -180,7 +180,7 @@ public class TransactionsFragment extends Fragment {
 
         parser(true);
         ta.resetPage();
-        tlv.setSelectionFromTop(0, 0);
+        ((ListView) tlv).setSelectionFromTop(0, 0);
     }
 
     private class fetchTransactionDataTask extends AsyncTask<Boolean, Void, Character> {
@@ -315,7 +315,6 @@ public class TransactionsFragment extends Fragment {
             }
         }
 
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         @Override
         protected void onPostExecute(Character result) {
             if (!this.isCancelled()) {
@@ -333,7 +332,7 @@ public class TransactionsFragment extends Fragment {
                     ta.notifyNoMorePages();
                 }
                 if (!refresh) {
-                    tlv.setSelectionFromTop(index, top);
+                    ((ListView) tlv).setSelectionFromTop(index, top);
                 } else {
                     tlv.setSelection(0);
                 }
