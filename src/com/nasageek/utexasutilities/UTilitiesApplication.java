@@ -2,19 +2,29 @@
 package com.nasageek.utexasutilities;
 
 import android.app.Application;
+import android.content.Context;
 import android.preference.PreferenceManager;
 
+import com.commonsware.cwac.security.trust.TrustManagerBuilder;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.squareup.leakcanary.LeakCanary;
+import com.squareup.okhttp.OkHttpClient;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 
+import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.net.ssl.SSLContext;
 
 @ReportsCrashes(
 customReportContent = {
@@ -35,11 +45,27 @@ public class UTilitiesApplication extends Application {
     public static final String PNA_AUTH_COOKIE_KEY = "pna_auth_cookie";
 
     private Map<String, AuthCookie> authCookies;
+    private static UTilitiesApplication sInstance;
+    private OkHttpClient client;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        sInstance = this;
         LeakCanary.install(this);
+
+        client = new OkHttpClient();
+        try {
+            TrustManagerBuilder trustManagerBuilder = new TrustManagerBuilder(this);
+            trustManagerBuilder.allowCA(R.raw.pna_cert).or().useDefault();
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustManagerBuilder.buildArray(), null);
+            client.setSslSocketFactory(sslContext.getSocketFactory());
+        } catch (NoSuchAlgorithmException|KeyManagementException|IOException|CertificateException|
+                KeyStoreException nsae) {
+            nsae.printStackTrace();
+        }
+
         authCookies = new HashMap<>();
         authCookies.put(UTD_AUTH_COOKIE_KEY, new UtdAuthCookie(this));
 
@@ -103,5 +129,17 @@ public class UTilitiesApplication extends Application {
         for (AuthCookie authCookie : authCookies.values()) {
             authCookie.logout();
         }
+    }
+
+    public OkHttpClient getHttpClient() {
+        return client;
+    }
+
+    public static UTilitiesApplication getInstance() {
+        return sInstance;
+    }
+
+    public static UTilitiesApplication getInstance(Context context) {
+        return context != null ? (UTilitiesApplication) context.getApplicationContext() : sInstance;
     }
 }

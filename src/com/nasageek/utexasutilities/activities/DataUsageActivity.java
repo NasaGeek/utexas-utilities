@@ -102,7 +102,7 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
         downdata = new Float[288];
         totaldata = new Float[288];
 
-        httpclient = new OkHttpClient();
+        httpclient = UTilitiesApplication.getInstance(this).getHttpClient();
 
         new fetchDataTask(httpclient).execute();
         new fetchProgressTask(httpclient).execute();
