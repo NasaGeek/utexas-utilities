@@ -4,15 +4,27 @@ package com.nasageek.utexasutilities;
 import android.app.Application;
 
 import com.nasageek.utexasutilities.fragments.BlackboardFragment;
+import android.content.Context;
+import android.preference.PreferenceManager;
+
+import com.commonsware.cwac.security.trust.TrustManagerBuilder;
+import com.squareup.okhttp.OkHttpClient;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 
+import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.net.ssl.SSLContext;
 
 @ReportsCrashes(formKey = "", // This is required for backward compatibility but
 // not used
@@ -35,11 +47,27 @@ public class UTilitiesApplication extends Application {
     public static final String BB_AUTH_COOKIE_KEY = "bb_auth_cookie";
 
     private Map<String, AuthCookie> authCookies;
+    private static UTilitiesApplication sInstance;
+    private OkHttpClient client;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        authCookies = new HashMap<String, AuthCookie>();
+        sInstance = this;
+
+        client = new OkHttpClient();
+        try {
+            TrustManagerBuilder trustManagerBuilder = new TrustManagerBuilder(this);
+            trustManagerBuilder.allowCA(R.raw.pna_cert).or().useDefault();
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustManagerBuilder.buildArray(), null);
+            client.setSslSocketFactory(sslContext.getSocketFactory());
+        } catch (NoSuchAlgorithmException|KeyManagementException|IOException|CertificateException|
+                KeyStoreException nsae) {
+            nsae.printStackTrace();
+        }
+
+        authCookies = new HashMap<>();
         authCookies.put(UTD_AUTH_COOKIE_KEY, new UtdAuthCookie(this));
 
         authCookies.put(PNA_AUTH_COOKIE_KEY, new PnaAuthCookie(this));
@@ -100,5 +128,17 @@ public class UTilitiesApplication extends Application {
         for (AuthCookie authCookie : authCookies.values()) {
             authCookie.logout();
         }
+    }
+
+    public OkHttpClient getHttpClient() {
+        return client;
+    }
+
+    public static UTilitiesApplication getInstance() {
+        return sInstance;
+    }
+
+    public static UTilitiesApplication getInstance(Context context) {
+        return context != null ? (UTilitiesApplication) context.getApplicationContext() : sInstance;
     }
 }

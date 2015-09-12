@@ -49,7 +49,7 @@ public class AuthCookie {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        this.client = new OkHttpClient();
+        this.client = UTilitiesApplication.getInstance().getHttpClient();
         this.client.setConnectTimeout(10, TimeUnit.SECONDS);
         this.secureSettings = new SecurePreferences(con, "com.nasageek.utexasutilities.password",
                 false);
