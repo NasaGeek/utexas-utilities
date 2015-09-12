@@ -34,113 +34,130 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
     private CheckBoxPreference autologin;
     private RecyclerView.Adapter ba;
     private SecurePreferences sp;
+    private String preferenceScreenKey;
+
+    public static UTilitiesPreferenceFragment newInstance(String key) {
+        Bundle args = new Bundle();
+        args.putString("preferenceScreenKey", key);
+        UTilitiesPreferenceFragment upf = new UTilitiesPreferenceFragment();
+        upf.setArguments(args);
+        return upf;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        preferenceScreenKey = args.getString("preferenceScreenKey");
         super.onCreate(savedInstanceState);
-        sp = new SecurePreferences(getActivity(), "com.nasageek.utexasutilities.password", false);
-        autologin = (CheckBoxPreference) findPreference("autologin");
-        loginfield = findPreference("eid");
-        passwordfield = findPreference("password");
 
-        // bypass the default SharedPreferences and save the password to the
-        // encrypted SP instead
-        passwordfield.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        if (preferenceScreenKey.equals("root")) {
+            sp = new SecurePreferences(getActivity(), "com.nasageek.utexasutilities.password", false);
+            autologin = (CheckBoxPreference) findPreference("autologin");
+            loginfield = findPreference("eid");
+            passwordfield = findPreference("password");
 
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                sp.put(preference.getKey(), (String) newValue);
-                return false;
-            }
-        });
 
-        final Preference logincheckbox = findPreference(getString(R.string.pref_logintype_key));
+            // bypass the default SharedPreferences and save the password to the
+            // encrypted SP instead
+            passwordfield.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 
-        // TODO: figure out why this is here, was it related to the old Login
-        // Pref stuff?
-        logincheckbox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if ((Boolean) newValue == false) {
-                    autologin.setChecked(false);
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    sp.put(preference.getKey(), (String) newValue);
+                    return false;
                 }
-                return true;
-            }
-        });
+            });
 
-        logincheckbox.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(final Preference preference) {
-                if (((CheckBoxPreference) preference).isChecked()) {
-                    AlertDialog.Builder nologin_builder = new AlertDialog.Builder(getActivity());
-                    nologin_builder
-                            .setMessage(
-                                    "NOTE: This will save your UT credentials to your device! If that worries you, "
-                                            + "uncheck this preference and go tap one of the buttons on the main screen to log in. See "
-                                            + "the Privacy Policy on the About page for more information.")
-                            .setCancelable(true)
-                            .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
+            final Preference logincheckbox = findPreference(getString(R.string.pref_logintype_key));
 
-                    AlertDialog nologin = nologin_builder.create();
-                    nologin.show();
-                } else {
+            // Disable autologin when user switches to temp login
+            logincheckbox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    if ((Boolean) newValue == false) {
+                        autologin.setChecked(false);
+                    }
+                    return true;
+                }
+            });
+
+            logincheckbox.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(final Preference preference) {
+                    if (((CheckBoxPreference) preference).isChecked()) {
+                        AlertDialog.Builder nologin_builder = new AlertDialog.Builder(getActivity());
+                        nologin_builder
+                                .setMessage(
+                                        "NOTE: This will save your UT credentials to your device! If that worries you, "
+                                                + "uncheck this preference and go tap one of the buttons on the main screen to log in. See "
+                                                + "the Privacy Policy on the About page for more information.")
+                                .setCancelable(true)
+                                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                        AlertDialog nologin = nologin_builder.create();
+                        nologin.show();
+                    } else {
                     /*
                      * if they switch to temp login we'll save their EID, but
                      * clear their password for security purposes
                      */
-                    sp.removeValue("password");
-                    ba.notifyDataSetChanged();
+                        sp.removeValue("password");
+                        ba.notifyDataSetChanged();
+                    }
+                    // whenever they switch between temp and persistent, log them out
+                    UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();
+                    mApp.logoutAll();
+                    return true;
                 }
-                // whenever they switch between temp and persistent, log them out
-                UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();
-                mApp.logoutAll();
-                return true;
-            }
-        });
+            });
 
-        setupLoginFields();
+            setupLoginFields();
 
-        final CheckBoxPreference analytics =
-                (CheckBoxPreference) findPreference(getString(R.string.pref_analytics_key));
-        analytics.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                GoogleAnalytics.getInstance(getActivity()).setAppOptOut(!((Boolean) newValue));
-                return true;
-            }
-        });
-
-        final Preference about = findPreference("about");
-        about.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                final Intent about_intent = new Intent(getActivity(), AboutMeActivity.class);
-                startActivity(about_intent);
-                return true;
-            }
-        });
-        final Preference updateBusStops = findPreference("update_stops");
-        updateBusStops.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                try {
-                    Utility.updateBusStops(getActivity());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Toast.makeText(getActivity(), "Stops could not be written to file.",
-                            Toast.LENGTH_SHORT).show();
+            final CheckBoxPreference analytics =
+                    (CheckBoxPreference) findPreference(getString(R.string.pref_analytics_key));
+            analytics.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    GoogleAnalytics.getInstance(getActivity()).setAppOptOut(!((Boolean) newValue));
+                    return true;
                 }
-                return true;
-            }
-        });
+            });
+
+            final Preference about = findPreference("about");
+            about.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    final Intent about_intent = new Intent(getActivity(), AboutMeActivity.class);
+                    startActivity(about_intent);
+                    return true;
+                }
+            });
+        } else if (preferenceScreenKey.equals("experimental")) {
+            final Preference updateBusStops = findPreference("update_stops");
+            updateBusStops.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    try {
+                        Utility.updateBusStops(getActivity());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getActivity(), "Stops could not be written to file.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    return true;
+                }
+            });
+        } else {
+            throw new IllegalStateException("Unimplemented PreferenceScreen: " + preferenceScreenKey);
+        }
     }
 
     @Override
@@ -151,7 +168,7 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        addPreferencesFromResource(R.xml.preferences);
+        setPreferencesFromResource(R.xml.preferences, preferenceScreenKey);
     }
 
     private void setupLoginFields() {
