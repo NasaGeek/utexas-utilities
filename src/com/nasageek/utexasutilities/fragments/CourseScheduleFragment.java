@@ -391,7 +391,7 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
                 // if no <table>, user probably isn't enrolled for semester
                 return 0;
             }
-            Pattern classPattern = Pattern.compile("<tr  .*?</tr>", Pattern.DOTALL);
+            Pattern classPattern = Pattern.compile("<tr  ?v.*?</tr>", Pattern.DOTALL);
             Matcher classMatcher = classPattern.matcher(pagedata);
             int classCount = 0, colorCount = 0;
 
@@ -402,7 +402,7 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
                 String[] buildings, rooms, days, times;
                 boolean dropped = false;
 
-                Pattern classAttPattern = Pattern.compile("<td >(.*?)</td>", Pattern.DOTALL);
+                Pattern classAttPattern = Pattern.compile("<td ?>(.*?)</td>", Pattern.DOTALL);
                 Matcher classAttMatcher = classAttPattern.matcher(classContent);
                 if (classAttMatcher.find()) {
                     uniqueid = classAttMatcher.group(1);
@@ -423,7 +423,7 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
                     continue;
                 }
                 if (classAttMatcher.find()) {
-                    buildings = classAttMatcher.group(1).split("<br />");
+                    buildings = classAttMatcher.group(1).split("<br( /)?>");
                     for (int i = 0; i < buildings.length; i++) {
                         buildings[i] = buildings[i].replaceAll("<.*?>", "").trim();
                     }
@@ -432,7 +432,7 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
                     continue;
                 }
                 if (classAttMatcher.find()) {
-                    rooms = classAttMatcher.group(1).split("<br />");
+                    rooms = classAttMatcher.group(1).split("<br( /)?>");
                     for (int i = 0; i < rooms.length; i++) {
                         rooms[i] = rooms[i].trim();
                     }
@@ -441,7 +441,7 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
                     continue;
                 }
                 if (classAttMatcher.find()) {
-                    days = classAttMatcher.group(1).split("<br />");
+                    days = classAttMatcher.group(1).split("<br( /)?>");
                     // Thursday represented by H so I can treat all days as single characters
                     for (int a = 0; a < days.length; a++) {
                         days[a] = days[a].replaceAll("TH", "H").trim();
@@ -451,7 +451,7 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
                     continue;
                 }
                 if (classAttMatcher.find()) {
-                    times = classAttMatcher.group(1).replaceAll("- ", "-").split("<br />");
+                    times = classAttMatcher.group(1).replaceAll("- ", "-").split("<br( /)?>");
                     for (int i = 0; i < times.length; i++) {
                         times[i] = times[i].trim();
                     }
