@@ -99,8 +99,8 @@
     </PreferenceCategory>
 
     <PreferenceScreen
-        android:enabled="false"
-        android:selectable="false"
+        android:enabled="@bool/debug"
+        android:selectable="@bool/debug"
         android:title="Experimental" >
         <Preference
             android:key="update_stops"
