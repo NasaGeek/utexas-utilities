@@ -149,7 +149,7 @@ public class TransactionsFragment extends Fragment {
     }
 
     public void parser(boolean refresh) {
-        httpclient = new OkHttpClient();
+        httpclient = UTilitiesApplication.getInstance(getActivity()).getHttpClient();
         httpclient.setCookieHandler(CookieHandler.getDefault());
         fetch = new fetchTransactionDataTask(httpclient, refresh);
         Utility.parallelExecute(fetch, false);

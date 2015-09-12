@@ -117,7 +117,7 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
         slidingDrawer.setOnDrawerOpenListener(this);
         slidingDrawer.setVisibility(View.INVISIBLE);
 
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = UTilitiesApplication.getInstance(getActivity()).getHttpClient();
         fetch = new parseTask(client);
         Utility.parallelExecute(fetch, false);
         return vg;

@@ -105,7 +105,7 @@ public class ExamScheduleFragment extends Fragment implements ActionModeFragment
     }
 
     public void parser() {
-        httpclient = new OkHttpClient();
+        httpclient = UTilitiesApplication.getInstance(getActivity()).getHttpClient();
         new fetchExamDataTask(httpclient).execute(false);
     }
 

@@ -85,7 +85,7 @@ public class Utility {
             // Context.MODE_PRIVATE);
             File folder = con.getDir("stops", Context.MODE_PRIVATE);
 
-            OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = UTilitiesApplication.getInstance(con).getHttpClient();
             for (int route : routes) {
                 // BufferedOutputStream bos = new
                 // BufferedOutputStream(con.openFileOutput(route+"_stops.txt",

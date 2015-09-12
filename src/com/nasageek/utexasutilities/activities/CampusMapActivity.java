@@ -64,6 +64,7 @@ import com.nasageek.utexasutilities.BuildingSaxHandler;
 import com.nasageek.utexasutilities.MarkerManager;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.RouteSaxHandler;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.model.Placemark;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -124,7 +125,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private MarkerManager<Placemark> shownStops;
     private Map<String, Polyline> polylineMap;
     private GoogleMap mMap;
-    private final OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client;
     private final SimpleDateFormat lastModDateFormat =
             new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
     private boolean handleCheckInAsyncLoad = false;
@@ -218,6 +219,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_layout);
         restoring = savedInstanceState != null;
+        client = UTilitiesApplication.getInstance(this).getHttpClient();
         ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                 .getMapAsync(this);
         assets = getAssets();
@@ -1063,7 +1065,8 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                 int i = (Integer) params[0];
                 stopMarker = (Marker) params[1];
                 String times;
-                OkHttpClient httpclient = new OkHttpClient();
+                OkHttpClient httpclient = UTilitiesApplication.getInstance(CampusMapActivity.this)
+                        .getHttpClient();
                 String data;
                 String reqUrl = "http://www.capmetro.org/planner/s_service.asp?tool=NB&stopid="+ i;
 

@@ -19,6 +19,7 @@ import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.activities.NutritionInfoActivity;
 import com.nasageek.utexasutilities.adapters.StickyHeaderAdapter;
@@ -77,7 +78,7 @@ public class MenuFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         restId = getArguments().getString("restId");
-        httpclient = new OkHttpClient();
+        httpclient = UTilitiesApplication.getInstance(getActivity()).getHttpClient();
         listOfLists = new ArrayList<>();
         mAdapter = new MenuAdapter(listOfLists);
     }
