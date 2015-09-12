@@ -329,6 +329,7 @@ public class CourseScheduleFragment extends Fragment implements ActionModeFragme
             progress.setVisibility(View.VISIBLE);
             scheduleGridView.setVisibility(View.GONE);
             errorLayout.setVisibility(View.GONE);
+            slidingDrawer.setVisibility(View.INVISIBLE);
         }
 
         @Override
