@@ -68,15 +68,12 @@ public class UTilitiesApplication extends Application {
 
         authCookies = new HashMap<>();
         authCookies.put(UTD_AUTH_COOKIE_KEY, new UtdAuthCookie(this));
-
         authCookies.put(PNA_AUTH_COOKIE_KEY, new PnaAuthCookie(this));
 
         CookieManager cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
 
-        // The following line triggers the initialization of ACRA
         ACRA.init(this);
-        // Init google analytics tracker
         initGoogleAnalytics();
         AnalyticsHandler.initTrackerIfNeeded(this);
     }
