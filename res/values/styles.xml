@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="ActionBar.Solid.UTilities" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="background">@drawable/ab_solid_utilities</item>
-        <item name="android:background">@drawable/ab_solid_utilities</item>
-    </style>
-    
     <style name="Theme.UTilities" parent="@style/Theme.AppCompat.Light">
         <item name="android:windowBackground">@drawable/background_holo_light</item>
         <item name="android:cacheColorHint">@android:color/transparent</item>
-        <item name="actionBarStyle">@style/ActionBar.Solid.UTilities</item>
         <item name="colorPrimary">@color/burnt_orange</item>
         <item name="colorPrimaryDark">@color/burnt_orange_dark</item>
         <item name="colorAccent">@color/blue_accent</item>
