@@ -181,9 +181,9 @@ public class MenuFragment extends Fragment {
             }
 
             if (pagedata.contains("No Data Available")) {
-                foodList.add(new food("", ""));
-                listOfLists.add(new MyPair<>("No Food Offered at this Time", foodList));
-                return meal;
+                errorMsg = "No food offered at this time";
+                cancel(true);
+                return null;
             } else {
                 // have to leave in the lookahead so the regex matches don't
                 // overlap
