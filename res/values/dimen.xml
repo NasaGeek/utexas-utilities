@@ -2,4 +2,5 @@
 <resources>
     <dimen name="checkbox_drawable_left_padding">45dp</dimen>
     <dimen name="pager_margin">1dp</dimen>
+    <dimen name="actionbar_elevation">4dp</dimen>
 </resources>

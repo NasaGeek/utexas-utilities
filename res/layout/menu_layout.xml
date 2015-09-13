@@ -5,46 +5,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_holo_light"
-    android:showDividers="middle"
-    android:divider="?android:attr/dividerHorizontal"
     android:orientation="vertical" >
 
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/open_times"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="3" >
+        android:gravity="center"
+        android:background="?attr/colorPrimary">
 
-        <TextView
-            android:id="@+id/breakfast_times"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="13sp"
-            tools:text="7am - 9:30am"/>
+        <LinearLayout
+            android:layout_width="330dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/lunch_times"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="13sp"
-            tools:text="10:30am - 2pm"/>
+            <TextView
+                android:id="@+id/breakfast_times"
+                tools:text="7am - 9:30am"
+                style="@style/Text.MenuTime"/>
 
-        <TextView
-            android:id="@+id/dinner_times"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="13sp"
-            tools:text="7pm - 10pm"/>
-    </LinearLayout>
+            <TextView
+                android:id="@+id/lunch_times"
+                tools:text="10:30am - 2pm"
+                style="@style/Text.MenuTime"/>
+
+            <TextView
+                android:id="@+id/dinner_times"
+                tools:text="7pm - 10pm"
+                style="@style/Text.MenuTime"/>
+        </LinearLayout>
+    </FrameLayout>
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tabs"
+        style="@style/TabLayout.UTilities"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

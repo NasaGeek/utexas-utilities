@@ -99,6 +99,7 @@
             android:label="Transactions" />
         <activity
             android:name=".activities.MenuActivity"
+            android:theme="@style/Theme.UTilities.NoShadow"
             android:label="Menus" />
         <activity
             android:name=".activities.NutritionInfoActivity" />

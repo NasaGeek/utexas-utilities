@@ -51,4 +51,13 @@
     <style name="TextAppearance.Tab.UTilities" parent="TextAppearance.Design.Tab">
         <item name="android:textColor">@android:color/secondary_text_dark</item>
     </style>
+
+    <style name="Text.MenuTime" parent="android:Widget">
+        <item name="android:layout_width">110dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@android:color/primary_text_dark</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.widget.ArrayAdapter;
@@ -233,6 +234,7 @@ public class MenuActivity extends BaseActivity {
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         actionbar.setHomeButtonEnabled(true);
         actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setElevation(0);
         @SuppressWarnings({
                 "rawtypes", "unchecked"
         })
@@ -327,6 +329,9 @@ public class MenuActivity extends BaseActivity {
 //        }
 
         ((TabLayout) findViewById(R.id.tabs)).setupWithViewPager(pager);
+        float elevationPx = getResources().getDimensionPixelSize(R.dimen.actionbar_elevation);
+        ViewCompat.setElevation(findViewById(R.id.tabs), elevationPx);
+        ViewCompat.setElevation(findViewById(R.id.open_times), elevationPx);
 
         pager.setOffscreenPageLimit(2);
         pager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.pager_margin));
