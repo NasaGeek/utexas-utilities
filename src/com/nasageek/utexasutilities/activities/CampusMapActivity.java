@@ -60,6 +60,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.ui.MyIconGenerator;
 import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.BuildConfig;
 import com.nasageek.utexasutilities.BuildingSaxHandler;
 import com.nasageek.utexasutilities.MarkerManager;
 import com.nasageek.utexasutilities.R;
@@ -775,6 +776,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = this.getMenuInflater();
         inflater.inflate(R.menu.map_menu, menu);
+        if (BuildConfig.DEBUG) {
+            inflater.inflate(R.menu.map_menu_debug, menu);
+        }
         final MenuItem searchItem = menu.findItem(R.id.search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
