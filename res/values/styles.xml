@@ -14,6 +14,10 @@
         <item name="colorPrimaryDark">@color/burnt_orange_dark</item>
         <item name="colorAccent">@color/blue_accent</item>
         <item name="toolbarStyle">@style/Toolbar.UTilities</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="autoCompleteTextViewStyle">@style/AutoCompleteTextView.UTilities</item>
+        <item name="textAppearanceSearchResultSubtitle">@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse</item>
+        <item name="textAppearanceSearchResultTitle">@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
@@ -21,10 +25,13 @@
         <item name="android:activatedBackgroundIndicator">?android:attr/selectableItemBackground</item>
     </style>
 
+    <style name="AutoCompleteTextView.UTilities" parent="Widget.AppCompat.Light.AutoCompleteTextView">
+        <item name="android:popupBackground">@android:color/background_light</item>
+    </style>
+
     <style name="Toolbar.UTilities" parent="Widget.AppCompat.Toolbar">
         <item name="android:background">?attr/colorPrimary</item>
         <item name="android:minHeight">?attr/actionBarSize</item>
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 

@@ -64,6 +64,7 @@ import com.nasageek.utexasutilities.BuildingSaxHandler;
 import com.nasageek.utexasutilities.MarkerManager;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.RouteSaxHandler;
+import com.nasageek.utexasutilities.ThemedArrayAdapter;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.model.Placemark;
 import com.squareup.okhttp.Callback;
@@ -374,8 +375,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         @SuppressWarnings({
                 "unchecked", "rawtypes"
         })
-        final ArrayAdapter<CharSequence> adapter = new ArrayAdapter(actionbar.getThemedContext(),
+        final ArrayAdapter<CharSequence> adapter = new ThemedArrayAdapter(actionbar.getThemedContext(),
                 android.R.layout.simple_spinner_item, Route.values());
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         actionbar.setListNavigationCallbacks(adapter, new ActionBar.OnNavigationListener() {
@@ -1200,4 +1202,5 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             opendirections.show();
         }
     }
+
 }

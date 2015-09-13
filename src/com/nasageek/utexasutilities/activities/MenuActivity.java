@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.ThemedArrayAdapter;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
 import com.nasageek.utexasutilities.fragments.MenuFragment;
@@ -235,8 +236,9 @@ public class MenuActivity extends BaseActivity {
         @SuppressWarnings({
                 "rawtypes", "unchecked"
         })
-        final ArrayAdapter<Restaurant> adapter = new ArrayAdapter(actionbar.getThemedContext(),
-                android.R.layout.simple_spinner_item, Restaurant.values());
+        final ArrayAdapter<Restaurant> adapter = new ThemedArrayAdapter(
+                actionbar.getThemedContext(), android.R.layout.simple_spinner_item,
+                Restaurant.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         if (savedInstanceState != null) {
