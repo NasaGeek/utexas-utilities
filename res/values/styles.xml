@@ -15,6 +15,10 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
+    <style name="Theme.UTilities.NoShadow">
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
     <style name="Theme.UTilities.Preferences">
         <item name="android:activatedBackgroundIndicator">?android:attr/selectableItemBackground</item>
     </style>
@@ -35,6 +39,16 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
-    
-    
+
+    <style name="TabLayout.UTilities" parent="Widget.Design.TabLayout">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="tabIndicatorColor">@android:color/white</item>
+        <item name="tabBackground">?attr/colorPrimary</item>
+        <item name="tabTextAppearance">@style/TextAppearance.Tab.UTilities</item>
+        <item name="tabSelectedTextColor">@android:color/primary_text_dark</item>
+    </style>
+
+    <style name="TextAppearance.Tab.UTilities" parent="TextAppearance.Design.Tab">
+        <item name="android:textColor">@android:color/secondary_text_dark</item>
+    </style>
 </resources>

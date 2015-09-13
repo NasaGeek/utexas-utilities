@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
@@ -41,6 +42,7 @@ public class BalanceActivity extends BaseActivity {
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionbar.setHomeButtonEnabled(true);
         actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setElevation(0);
     }
 
     private void initialisePaging() {
@@ -74,6 +76,8 @@ public class BalanceActivity extends BaseActivity {
 //        }
 
         ((TabLayout) findViewById(R.id.tabs)).setupWithViewPager(pager);
+        float elevationPx = getResources().getDimensionPixelSize(R.dimen.actionbar_elevation);
+        ViewCompat.setElevation(findViewById(R.id.tabs), elevationPx);
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         pager.setCurrentItem(Integer.parseInt(sp.getString("default_balance_tab", "0")));
