@@ -317,55 +317,48 @@ public class TransactionsFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Character result) {
-            if (!this.isCancelled()) {
-                transactionlist.addAll(tempTransactionList);
-                ta.notifyDataSetChanged();
-                ta.updateHeaders();
-                ta.notifyDataSetChanged();
-                int index = tlv.getFirstVisiblePosition();
-                View v = tlv.getChildAt(0);
-                int top = (v == null) ? 0 : v.getTop();
-                if (result == 'm') {
-                    ta.notifyMayHaveMorePages();
-                }
-                if (result == 'n') {
-                    ta.notifyNoMorePages();
-                }
-                if (!refresh) {
-                    ((ListView) tlv).setSelectionFromTop(index, top);
-                } else {
-                    tlv.setSelection(0);
-                }
-
-                if (transactionlist.isEmpty()) {
-                    balanceLabelView.setText(getResources().getText(R.string.balance_tabs_no_balance));
-                } else {
-                    balanceView.setText(balance);
-                }
-
-                t_pb_ll.setVisibility(View.GONE);
-                ell.setVisibility(View.GONE);
-                transactionsLayout.setVisibility(View.VISIBLE);
-                balanceLabelSeparatorView.setVisibility(transactionlist.isEmpty() ? View.GONE
-                                                                                  : View.VISIBLE);
+            transactionlist.addAll(tempTransactionList);
+            ta.notifyDataSetChanged();
+            ta.updateHeaders();
+            ta.notifyDataSetChanged();
+            int index = tlv.getFirstVisiblePosition();
+            View v = tlv.getChildAt(0);
+            int top = (v == null) ? 0 : v.getTop();
+            if (result == 'm') {
+                ta.notifyMayHaveMorePages();
             }
+            if (result == 'n') {
+                ta.notifyNoMorePages();
+            }
+            if (!refresh) {
+                ((ListView) tlv).setSelectionFromTop(index, top);
+            } else {
+                tlv.setSelection(0);
+            }
+
+            if (transactionlist.isEmpty()) {
+                transactionsLayout.setVisibility(View.GONE);
+                etv.setText(getText(R.string.balance_tabs_no_balance));
+                ell.setVisibility(View.VISIBLE);
+            } else {
+                balanceView.setText(balance);
+                transactionsLayout.setVisibility(View.VISIBLE);
+                ell.setVisibility(View.GONE);
+            }
+            t_pb_ll.setVisibility(View.GONE);
         }
 
         @Override
         protected void onCancelled(Character nullIfError) {
             if (nullIfError == null) {
-                if (ta.page == 1) { // if the first page fails just hide
-                                    // everything
-                    // etv off center, not sure if worth hiding the balance
-                    // stuff to get it centered
+                if (ta.page == 1) {
+                    // if the first page fails just hide everything
                     etv.setText(errorMsg);
                     t_pb_ll.setVisibility(View.GONE);
                     transactionsLayout.setVisibility(View.GONE);
                     ell.setVisibility(View.VISIBLE);
-                } else { // on later pages we should let them see what's already
-                         // loaded
-                         // got an NPE here, seems like a race condition where
-                         // cancel is called externally
+                } else {
+                    // on later pages we should let them see what's already loaded
                     if (getActivity() != null) {
                         Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
                     }
