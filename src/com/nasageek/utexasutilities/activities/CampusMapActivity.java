@@ -78,6 +78,9 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -100,8 +103,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -1192,27 +1193,25 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         }
 
         private class checkStopTask extends AsyncTask<Object, Void, String> {
-            public static final String STOP_ROUTE_REGEX = "<b>\\d+</b>-(.*?) <span.*?</span></div>";
-            public static final String STOP_ROUTE_NUMBER_REGEX = "<b>(\\d+)</b>";
-            public static final String STOP_TIME_REGEX = "<span.*?>(.*?)</span>";
-
             // trailing spaces are necessary because last character is trimmed
             public static final String ERROR_NO_STOP_TIMES =
-                    "Oops! There are no specified times\nfor this stop on capmetro.org ";
+                    "There are no upcoming times\nfor this stop on capmetro.org ";
             public static final String ERROR_COULD_NOT_REACH_CAPMETRO =
                     "CapMetro.org could not be reached;\ntry checking your internet connection ";
+            public static final String CAPMETRO_STOP_URL =
+                    "http://www.capmetro.org/planner/s_nextbus2.asp?opt=2&route=%s&stopid=%d";
 
             Marker stopMarker;
 
             @Override
             protected String doInBackground(Object... params) {
-                int i = (Integer) params[0];
+                int stopid = (Integer) params[0];
                 stopMarker = (Marker) params[1];
-                String times;
+                String times = "";
                 OkHttpClient httpclient = UTilitiesApplication.getInstance(CampusMapActivity.this)
                         .getHttpClient();
-                String data;
-                String reqUrl = "http://www.capmetro.org/planner/s_service.asp?tool=NB&stopid="+ i;
+                JSONObject data;
+                String reqUrl = String.format(CAPMETRO_STOP_URL, routeid, stopid);
 
                 try {
                     Request get = new Request.Builder()
@@ -1222,49 +1221,33 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                     if(!response.isSuccessful()) {
                         throw new IOException("Bad response code " + response);
                     }
-                    data = response.body().string();
-                } catch (Exception e) {
+                    data = new JSONObject(response.body().string());
+                } catch (IOException | JSONException e) {
                     times = ERROR_COULD_NOT_REACH_CAPMETRO;
                     e.printStackTrace();
                     return times;
                 }
 
-                times = parseTimes(data);
-
-                // if something goes wrong during the time check, times string
-                // will be set to "" and not populate
-                // with times (this was happening when routes would have a
-                // detour tag, though hopefully I fixed that).
-                // Set back to default error message.
-                if ("".equals(times)) {
-                    times = ERROR_NO_STOP_TIMES;
-                }
-                return times;
-            }
-
-            private String parseTimes(String data) {
-                String times = ERROR_NO_STOP_TIMES;
-                Pattern routePattern = Pattern.compile(STOP_ROUTE_REGEX, Pattern.DOTALL);
-                Matcher routeMatcher = routePattern.matcher(data);
-
-                while (routeMatcher.find()) {
-                    Pattern routeNumberPattern = Pattern.compile(STOP_ROUTE_NUMBER_REGEX);
-                    Matcher routeNumberMatcher = routeNumberPattern.matcher(routeMatcher.group(0));
-
-                    if (routeNumberMatcher.find()) {
-                        if (routeNumberMatcher.group(1).equals(routeid)) {
-                            times = "";
-                            Pattern timePattern = Pattern.compile(STOP_TIME_REGEX);
-                            Matcher timeMatcher = timePattern.matcher(routeMatcher.group(0));
-                            while (timeMatcher.find()) {
-                                if (!timeMatcher.group(1).equals("[PDF]")) {
-                                    times += timeMatcher.group(1) + "\n";
-                                }
-                            }
-                            break;
+                try {
+                    if (!data.getString("status").equals("OK")) {
+                        times = ERROR_NO_STOP_TIMES;
+                        return times;
+                    } else {
+                        JSONArray buses = data.getJSONArray("list");
+                        if (buses.length() == 0) {
+                            times = ERROR_NO_STOP_TIMES;
+                            return times;
+                        }
+                        for (int i = 0; i < buses.length(); i++) {
+                            JSONObject bus = buses.getJSONObject(i);
+                            times += bus.getString("est") + "\n";
                         }
                     }
+                } catch (JSONException je) {
+                    times = ERROR_COULD_NOT_REACH_CAPMETRO;
+                    return times;
                 }
+
                 return times;
             }
 
