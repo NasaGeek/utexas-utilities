@@ -52,6 +52,7 @@ import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_
  */
 public class UTilitiesActivity extends BaseActivity {
 
+    private static final float CHECK_TRANSLUCENT_OPACITY = 0.3f;
     private final static int BUTTON_ANIMATION_DURATION = 90;
 
     private final static String SECURE_PREF_PW_KEY = "com.nasageek.utexasutilities.password";
@@ -721,16 +722,16 @@ public class UTilitiesActivity extends BaseActivity {
             dataCheck.setVisibility(View.GONE);
         } else {
             if (!utdAuthCookie.hasCookieBeenSet()) {
-                scheduleCheck.setImageResource(R.drawable.ic_done_translucent);
-                balanceCheck.setImageResource(R.drawable.ic_done_translucent);
+                scheduleCheck.setAlpha(CHECK_TRANSLUCENT_OPACITY);
+                balanceCheck.setAlpha(CHECK_TRANSLUCENT_OPACITY);
             } else {
-                scheduleCheck.setImageResource(R.drawable.ic_done);
-                balanceCheck.setImageResource(R.drawable.ic_done);
+                scheduleCheck.setAlpha(1f);
+                balanceCheck.setAlpha(1f);
             }
             if (!pnaAuthCookie.hasCookieBeenSet()) {
-                dataCheck.setImageResource(R.drawable.ic_done_translucent);
+                dataCheck.setAlpha(CHECK_TRANSLUCENT_OPACITY);
             } else {
-                dataCheck.setImageResource(R.drawable.ic_done);
+                dataCheck.setAlpha(1f);
             }
             scheduleCheck.setVisibility(View.VISIBLE);
             balanceCheck.setVisibility(View.VISIBLE);
