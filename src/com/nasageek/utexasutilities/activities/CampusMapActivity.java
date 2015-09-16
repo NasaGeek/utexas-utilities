@@ -675,17 +675,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
     private Marker addGaragePlacemarkToMap(MyIconGenerator ig, Placemark pm) {
         // special rotations to prevent overlap
-        if (pm.getTitle().equals("SWG")) {
-            ig.setRotation(180);
-            ig.setContentRotation(180);
-        } else if (pm.getTitle().equals("TRG")) {
-            ig.setRotation(90);
-            ig.setContentRotation(270);
-        } else {
-            ig.setRotation(0);
-            ig.setContentRotation(0);
-        }
-
+        setGarageRotation(pm, ig);
         int count = (int) (Math.random() * 100);
         ig.setColor(mockGarageData ? styles2[4 * count / 100] : STYLE_GRAY);
 
@@ -853,24 +843,31 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
     private void setGarageIcon(MyIconGenerator ig, Placemark pm, Marker marker, String iconText,
                                int bgColor) {
-        // special rotations to prevent overlap
-        if (pm.getTitle().equals("SWG")) {
-            ig.setRotation(180);
-            ig.setContentRotation(180);
-        } else if (pm.getTitle().equals("TRG")) {
-            ig.setRotation(90);
-            ig.setContentRotation(270);
-        } else {
-            ig.setRotation(0);
-            ig.setContentRotation(0);
-        }
-
+        setGarageRotation(pm, ig);
         CharSequence text = setupGarageMarkerText(iconText);
         ig.setColor(bgColor);
         if (shownGarages.isShowing(pm, marker.getId())) {
             boolean infoWindow = marker.isInfoWindowShown();
             marker.setIcon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)));
             if (infoWindow) marker.showInfoWindow();
+        }
+    }
+
+    private void setGarageRotation(Placemark pm, MyIconGenerator ig) {
+        // special rotations to prevent overlap
+        switch (pm.getTitle()) {
+            case "SWG":
+                ig.setRotation(180);
+                ig.setContentRotation(180);
+                break;
+            case "TRG":
+                ig.setRotation(90);
+                ig.setContentRotation(270);
+                break;
+            default:
+                ig.setRotation(0);
+                ig.setContentRotation(0);
+                break;
         }
     }
 
