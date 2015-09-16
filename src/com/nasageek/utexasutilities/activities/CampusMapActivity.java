@@ -63,12 +63,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.MarkerManager;
 import com.google.maps.android.ui.MyIconGenerator;
 import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.BuildConfig;
 import com.nasageek.utexasutilities.BuildingSaxHandler;
-import com.nasageek.utexasutilities.MarkerManager;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.ThemedArrayAdapter;
 import com.nasageek.utexasutilities.UTilitiesApplication;
@@ -143,9 +143,10 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private LatLngBounds.Builder llbuilder;
     private List<String> buildingIdList;
 
-    private MarkerManager<Placemark> shownBuildings;
-    private MarkerManager<Placemark> shownGarages;
-    private MarkerManager<Placemark> shownStops;
+    private MarkerManager markerManager;
+    private MarkerManager.Collection shownBuildings;
+    private MarkerManager.Collection shownGarages;
+    private MarkerManager.Collection shownStops;
     private Map<String, Polyline> polylineMap;
     private GoogleMap mMap;
     private OkHttpClient client;
@@ -216,10 +217,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             return fullName;
         }
     }
-
-    private static final String GARAGE_TAG = "%";
-    private static final String BUILDING_TAG = "^";
-    private static final String STOP_TAG = "*";
 
     private static final String GARAGE_BASE_URL =
             "http://www.utexas.edu/parking/garage-availability/gar-PROD-%s-central.dat";
@@ -359,6 +356,11 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
 
+        markerManager = new MarkerManager(mMap);
+        shownGarages = markerManager.newCollection();
+        shownBuildings = markerManager.newCollection();
+        shownStops = markerManager.newCollection();
+
         UiSettings ui = mMap.getUiSettings();
         ui.setMyLocationButtonEnabled(true);
         ui.setZoomControlsEnabled(true);
@@ -366,12 +368,11 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         ui.setCompassEnabled(true);
         ui.setMapToolbarEnabled(true);
 
-        mMap.setInfoWindowAdapter(new StopInfoAdapter());
+        shownStops.setOnInfoWindowAdapter(new StopInfoWindowAdapter());
+        shownBuildings.setOnInfoWindowAdapter(new MyInfoWindowAdapter());
+        shownGarages.setOnInfoWindowAdapter(new MyInfoWindowAdapter());
         mMap.setOnInfoWindowClickListener(new InfoClickListener());
-
-        shownBuildings = new MarkerManager<>(mMap);
-        shownGarages = new MarkerManager<>(mMap);
-        shownStops = new MarkerManager<>(mMap);
+        mMap.setInfoWindowAdapter(markerManager);
 
         setupLocation(!restoring);
         loadRoute(routeid);
@@ -385,7 +386,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (checkReady()) {
                     if (!isChecked) {
-                        shownGarages.clearMarkers();
+                        shownGarages.clear();
                     } else {
                         showAllGarageMarkers();
                     }
@@ -558,11 +559,11 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                     ig.setTextAppearance(android.R.style.TextAppearance_Inverse);
                     buildingMarker = addGaragePlacemarkToMap(ig, pm);
                 } else {
-                    buildingMarker = shownBuildings.placeMarker(pm, new MarkerOptions()
+                    buildingMarker = shownBuildings.addMarker(new MarkerOptions()
                             .position(buildingLatLng)
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_building2))
-                            .title(BUILDING_TAG + pm.getTitle())
-                            .snippet(pm.getDescription()), false);
+                            .title(pm.getTitle())
+                            .snippet(pm.getDescription()));
                 }
                 llbuilder.include(buildingLatLng);
 
@@ -746,7 +747,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         if (NO_ROUTE_ID.equals(routeid)) {
             // remove any currently showing routes and return
             clearAllMapRoutes();
-            shownStops.clearMarkers();
+            shownStops.clear();
             return;
         }
         AnalyticsHandler.trackBusRouteEvent();
@@ -767,7 +768,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             String[] stops = stopData.split("\n");
 
             // clear the stops from the old route
-            shownStops.clearMarkers();
+            shownStops.clear();
 
             for (String stop : stops) {
                 String data[] = stop.split("\t");
@@ -776,12 +777,11 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                 String title = data[1];
                 String description = data[2].trim();
 
-                Placemark stopPlacemark = new Placemark(title, description, lat, lng);
-                shownStops.placeMarker(stopPlacemark, new MarkerOptions()
+                shownStops.addMarker(new MarkerOptions()
                         .position(new LatLng(lat, lng))
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_bus))
-                        .title(STOP_TAG + title)
-                        .snippet(description), false);
+                        .title(title)
+                        .snippet(description));
             }
 
         } catch (IOException e) {
@@ -808,13 +808,13 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         llbuilder.include(new LatLng(pm.getLatitude(), pm.getLongitude()));
 
         CharSequence text = setupGarageMarkerText(mockGarageData ? count + "" : "...");
-        Marker garageMarker = shownGarages.placeMarker(pm, new MarkerOptions()
+        Marker garageMarker = shownGarages.addMarker(new MarkerOptions()
                 .position(new LatLng(pm.getLatitude(), pm.getLongitude()))
                 .icon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)))
-                .title(GARAGE_TAG + pm.getTitle())
+                .title(pm.getTitle())
                 // strip out the "(formerly PGX)" text for garage descriptions
                 .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
-                .anchor(ig.getAnchorU(), ig.getAnchorV()), false);
+                .anchor(ig.getAnchorU(), ig.getAnchorV()));
         if (!mockGarageData) {
             long expireTime = garageCache.getLong(pm.getTitle() + "expire", 0);
             if (System.currentTimeMillis() > expireTime) {
@@ -946,7 +946,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             case R.id.showAllBuildings:
                 if (checkReady()) {
                     if (item.isChecked()) {
-                        shownBuildings.clearMarkers();
+                        shownBuildings.clear();
                         item.setChecked(false);
                     } else {
                         showAllBuildingMarkers();
@@ -985,7 +985,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         setGarageRotation(pm, ig);
         CharSequence text = setupGarageMarkerText(iconText);
         ig.setColor(bgColor);
-        if (shownGarages.isShowing(pm, marker.getId())) {
+        if (shownGarages.getMarkers().contains(marker)) {
             boolean infoWindow = marker.isInfoWindowShown();
             marker.setIcon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)));
             if (infoWindow) marker.showInfoWindow();
@@ -1120,11 +1120,11 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
     private void showAllBuildingMarkers() {
         for (Placemark pm : buildingDataSet) {
-            shownBuildings.placeMarker(pm, new MarkerOptions()
+            shownBuildings.addMarker(new MarkerOptions()
                     .position(new LatLng(pm.getLatitude(), pm.getLongitude()))
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_building2))
-                    .title(BUILDING_TAG + pm.getTitle())
-                    .snippet(pm.getDescription()), false);
+                    .title(pm.getTitle())
+                    .snippet(pm.getDescription()));
         }
     }
 
@@ -1135,69 +1135,56 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         polylineMap.clear();
     }
 
-    class StopInfoAdapter implements InfoWindowAdapter {
-        private final LinearLayout infoLayout;
-        private final TextView infoTitle, infoSnippet;
+    class MyInfoWindowAdapter implements InfoWindowAdapter {
+        protected final LinearLayout infoLayout;
+        protected final TextView infoTitle, infoSnippet;
 
-        public StopInfoAdapter() {
+        public MyInfoWindowAdapter() {
             infoLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.info_window_layout,
                     null);
             infoTitle = (TextView) infoLayout.findViewById(R.id.iw_title);
             infoSnippet = (TextView) infoLayout.findViewById(R.id.iw_snippet);
         }
 
-        /**
-         * Super hacky way to support different types of InfoWindows. I don't
-         * feel like finding a better way. Prepend marker title with special character
-         * (either '*' or '^') depending on what kind of marker it is.
-         */
         @Override
         public View getInfoContents(Marker marker) {
-            String tag = marker.getTitle().substring(0, 1);
-            String realTitle = marker.getTitle().substring(1);
-            switch (tag) {
-                case STOP_TAG:
-                    if (infoTitle.getText().equals("")
-                            || !(infoTitle.getText() + "").contains(realTitle)) {
-                        // Span for bolding the title
-                        SpannableString title = new SpannableString(realTitle);
-                        title.setSpan(new StyleSpan(Typeface.BOLD), 0, realTitle.length(), 0);
+            String title = marker.getTitle();
+            String snippet = marker.getSnippet();
+            if (infoTitle.getText().equals("") || !(infoTitle.getText() + "").contains(title)) {
+                // Span for bolding the title
+                SpannableString styledTitle = new SpannableString(title);
+                styledTitle.setSpan(new StyleSpan(Typeface.BOLD), 0, title.length(), 0);
 
-                        String snippet = "Loading...";
-                        infoTitle.setText(title);
-                        infoSnippet.setText(snippet);
-
-                        new checkStopTask().execute(Integer.parseInt(marker.getSnippet()), marker);
-                    }
-                    break;
-                case BUILDING_TAG:
-                default:
-                    // Will need to change this if default behavior ever
-                    // differs from building behavior
-
-                    // Span for bolding the title
-                    SpannableString title = new SpannableString(realTitle);
-                    title.setSpan(new StyleSpan(Typeface.BOLD), 0, realTitle.length(), 0);
-
-                    String snippet = marker.getSnippet();
-                    infoTitle.setText(title);
-                    infoSnippet.setText(snippet);
-                    break;
+                infoTitle.setText(styledTitle);
+                infoSnippet.setText(snippet);
             }
             return infoLayout;
         }
 
         @Override
-        public View getInfoWindow(Marker marker) {
-            return null;
+        public View getInfoWindow(Marker marker) { return null; }
+    }
+
+    class StopInfoWindowAdapter extends MyInfoWindowAdapter {
+        @Override
+        public View getInfoContents(Marker marker) {
+            if (marker.getSnippet().equals("Loading...")) {
+                // we've already shown the InfoWindow and set the snippet to "Loading..."
+                // this must just be a refresh of the InfoWindow
+                return infoLayout;
+            }
+            int stopid = Integer.parseInt(marker.getSnippet());
+            marker.setSnippet("Loading...");
+            View infoWindow = super.getInfoContents(marker);
+            new checkStopTask().execute(stopid, marker);
+            return infoWindow;
         }
 
         private class checkStopTask extends AsyncTask<Object, Void, String> {
-            // trailing spaces are necessary because last character is trimmed
             public static final String ERROR_NO_STOP_TIMES =
-                    "There are no upcoming times\nfor this stop on capmetro.org ";
+                    "There are no upcoming times\nfor this stop on capmetro.org";
             public static final String ERROR_COULD_NOT_REACH_CAPMETRO =
-                    "CapMetro.org could not be reached;\ntry checking your internet connection ";
+                    "CapMetro.org could not be reached;\ntry checking your internet connection";
             public static final String CAPMETRO_STOP_URL =
                     "http://www.capmetro.org/planner/s_nextbus2.asp?opt=2&route=%s&stopid=%d";
 
@@ -1242,6 +1229,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                             JSONObject bus = buses.getJSONObject(i);
                             times += bus.getString("est") + "\n";
                         }
+                        // trim off that trailing \n
+                        times = times.trim();
+
                     }
                 } catch (JSONException je) {
                     times = ERROR_COULD_NOT_REACH_CAPMETRO;
@@ -1257,7 +1247,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                     // fix issue with InfoWindow "cycling" if the user taps
                     // other markers while a marker's InfoWindow is loading data.
                     if (stopMarker.isInfoWindowShown()) {
-                        infoSnippet.setText(times.substring(0, times.length() - 1));
+                        infoSnippet.setText(times);
                         stopMarker.showInfoWindow();
                     }
                 }
@@ -1269,13 +1259,15 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         @Override
         public void onInfoWindowClick(final Marker marker) {
             final String markerType;
-            switch (Character.toString(marker.getTitle().charAt(0))) {
-                case BUILDING_TAG: markerType = "building"; break;
-                case STOP_TAG: markerType = "stop"; break;
-                case GARAGE_TAG: markerType = "garage"; break;
-                default: markerType = "location"; break;
+            if (shownBuildings.getMarkers().contains(marker)) {
+                markerType = "building";
+            } else if (shownStops.getMarkers().contains(marker)) {
+                markerType = "stop";
+            } else if (shownGarages.getMarkers().contains(marker)) {
+                markerType = "garage";
+            } else {
+                markerType = "location";
             }
-
             AlertDialog.Builder opendirections_builder = new AlertDialog.Builder(
                     CampusMapActivity.this);
             opendirections_builder
@@ -1319,5 +1311,4 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             opendirections.show();
         }
     }
-
 }
