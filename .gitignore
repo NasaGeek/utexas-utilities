@@ -17,7 +17,7 @@ future_feature_list.txt
 /libs/*/build
 
 # private test data
-assets/test_html/*/*_private.html
+assets-debug/test_html/*/*_private.html
 
 # Local configuration file (sdk path, etc)
 local.properties

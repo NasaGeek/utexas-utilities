@@ -55,6 +55,7 @@ android {
         }
         debug {
             res.srcDirs = ['res-debug']
+            assets.srcDirs = ['assets-debug']
         }
     }
     // TODO: You can put sensitive keystore data in an untracked .properties file or ENV variables
