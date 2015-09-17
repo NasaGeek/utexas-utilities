@@ -4,6 +4,7 @@ package com.nasageek.utexasutilities.activities;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerTabStripV22;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +37,7 @@ public class ScheduleActivity extends BaseActivity implements
         actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionbar.setHomeButtonEnabled(true);
         actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setElevation(0);
     }
 
     private void initialisePaging() {
@@ -53,7 +55,7 @@ public class ScheduleActivity extends BaseActivity implements
 //        titleIndicator.setOnPageChangeListener(this);
 //        ((PagerTabStrip) findViewById(R.id.titles)).no
         titleIndicator = (PagerTabStripV22) findViewById(R.id.tabs);
-
+        ViewCompat.setElevation(titleIndicator, getResources().getDimensionPixelSize(R.dimen.actionbar_elevation));
         pager.setCurrentItem(1, false);
     }
 
