@@ -2,7 +2,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <style name="Theme.UTilities" parent="@style/Theme.AppCompat.Light">
-        <item name="android:windowBackground">@drawable/background_holo_light</item>
         <item name="android:cacheColorHint">@android:color/transparent</item>
         <item name="colorPrimary">@color/burnt_orange</item>
         <item name="colorPrimaryDark">@color/burnt_orange_dark</item>
