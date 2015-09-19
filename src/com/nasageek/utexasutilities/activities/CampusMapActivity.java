@@ -83,6 +83,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -894,8 +895,11 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                 final String lastModified = response.header("Last-Modified");
                 long lastModMillis = System.currentTimeMillis();
                 if (lastModified != null) {
-                    lastModMillis = lastModDateFormat.parse(lastModified,
-                            new ParsePosition(0)).getTime();
+                    Date lastModMillisTest =
+                            lastModDateFormat.parse(lastModified, new ParsePosition(0));
+                    if (lastModMillisTest != null) {
+                        lastModMillis = lastModMillisTest.getTime();
+                    }
                 }
                 final SharedPreferences.Editor edit = garageCache.edit();
                 boolean parseError = false;
