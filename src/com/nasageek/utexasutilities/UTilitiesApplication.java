@@ -3,15 +3,20 @@ package com.nasageek.utexasutilities;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import com.commonsware.cwac.security.trust.TrustManagerBuilder;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.squareup.leakcanary.AndroidExcludedRefs;
 import com.squareup.leakcanary.DisplayLeakService;
 import com.squareup.leakcanary.ExcludedRefs;
+import com.nasageek.utexasutilities.fragments.UTilitiesPreferenceFragment;
+import com.securepreferences.SecurePreferences;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.okhttp.OkHttpClient;
+import com.tozny.crypto.android.AesCbcWithIntegrity;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -20,6 +25,7 @@ import org.acra.annotation.ReportsCrashes;
 import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -51,9 +57,11 @@ public class UTilitiesApplication extends Application {
     private Map<String, AuthCookie> authCookies = new HashMap<>();
     private OkHttpClient client = new OkHttpClient();
     private Map<String, AsyncTask> asyncTaskCache = new HashMap<>();
+    private SharedPreferences securePreferences;
 
     @Override
     public void onCreate() {
+//        Debug.startMethodTracing();
         super.onCreate();
         sInstance = this;
         ExcludedRefs.Builder excludedRefsBuilder = AndroidExcludedRefs.createAppDefaults();
@@ -61,6 +69,15 @@ public class UTilitiesApplication extends Application {
         excludedRefsBuilder.instanceField("com.google.android.gms.location.internal.y", "a");
         excludedRefsBuilder.staticField("com.google.android.chimera.container.a", "a");
         LeakCanary.install(this, DisplayLeakService.class, excludedRefsBuilder.build());
+        try {
+            AesCbcWithIntegrity.SecretKeys myKey = AesCbcWithIntegrity.generateKeyFromPassword(
+                    Utility.id(this), AesCbcWithIntegrity.generateSalt(), 100);
+            securePreferences = new SecurePreferences(this, myKey, null);
+        } catch (GeneralSecurityException gse) {
+            // no clue what to do here
+            gse.printStackTrace();
+        }
+        upgradePasswordEncryption();
 
         try {
             TrustManagerBuilder trustManagerBuilder = new TrustManagerBuilder(this);
@@ -81,6 +98,24 @@ public class UTilitiesApplication extends Application {
         ACRA.init(this);
         initGoogleAnalytics();
         AnalyticsHandler.initTrackerIfNeeded(this);
+//        Debug.stopMethodTracing();
+    }
+
+    private void upgradePasswordEncryption() {
+        LegacySecurePreferences lsp = new LegacySecurePreferences(this,
+                UTilitiesPreferenceFragment.OLD_PASSWORD_PREF_FILE, false);
+        if (lsp.containsKey("password")) {
+            try {
+                String password = lsp.getString("password");
+                securePreferences.edit().putString("password", password).apply();
+            } catch (LegacySecurePreferences.SecurePreferencesException spe) {
+                spe.printStackTrace();
+                Toast.makeText(this, "Your saved password has been wiped for security purposes" +
+                        " and will need to be re-entered just this once", Toast.LENGTH_LONG).show();
+            } finally {
+                lsp.clear();
+            }
+        }
     }
 
     public void initGoogleAnalytics() {
@@ -150,6 +185,10 @@ public class UTilitiesApplication extends Application {
 
     public void removeCachedTask(String tag) {
         asyncTaskCache.remove(tag);
+    }
+
+    public SharedPreferences getSecurePreferences() {
+        return securePreferences;
     }
 
     public static UTilitiesApplication getInstance() {

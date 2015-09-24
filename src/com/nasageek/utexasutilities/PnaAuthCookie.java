@@ -27,7 +27,8 @@ public class PnaAuthCookie extends AuthCookie {
     @Override
     protected Request buildLoginRequest() {
         String user = settings.getString("eid", "error").trim();
-        String pw = secureSettings.getString("password");
+        String pw = UTilitiesApplication.getInstance().getSecurePreferences()
+                .getString("password", "error");
 
         RequestBody requestBody = new MultipartBuilder()
                 .type(MultipartBuilder.FORM)

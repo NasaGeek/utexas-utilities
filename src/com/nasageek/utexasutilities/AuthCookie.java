@@ -35,7 +35,6 @@ public class AuthCookie {
     protected boolean cookieHasBeenSet;
     protected OkHttpClient client;
     protected SharedPreferences settings;
-    protected SecurePreferences secureSettings;
     protected URL url;
     protected Application mApp;
 
@@ -53,8 +52,6 @@ public class AuthCookie {
         }
         this.client = UTilitiesApplication.getInstance().getHttpClient();
         this.client.setConnectTimeout(10, TimeUnit.SECONDS);
-        this.secureSettings = new SecurePreferences(mApp, "com.nasageek.utexasutilities.password",
-                false);
         this.settings = PreferenceManager.getDefaultSharedPreferences(mApp);
         this.mApp = mApp;
     }
@@ -168,7 +165,8 @@ public class AuthCookie {
 
     protected Request buildLoginRequest() {
         String user = settings.getString("eid", "error");
-        String pw = secureSettings.getString("password");
+        String pw = UTilitiesApplication.getInstance().getSecurePreferences()
+                .getString("password", "error");
 
         RequestBody requestBody = new FormEncodingBuilder()
                 .add(userNameKey, user)

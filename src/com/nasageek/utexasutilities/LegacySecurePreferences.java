@@ -39,7 +39,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class SecurePreferences {
+public class LegacySecurePreferences {
 
     public static class SecurePreferencesException extends RuntimeException {
 
@@ -78,7 +78,7 @@ public class SecurePreferences {
      *            can be used to decipher the value.
      * @throws SecurePreferencesException
      */
-    public SecurePreferences(Context context, String preferenceName, boolean encryptKeys)
+    public LegacySecurePreferences(Context context, String preferenceName, boolean encryptKeys)
             throws SecurePreferencesException {
         try {
             this.writer = Cipher.getInstance(TRANSFORMATION);

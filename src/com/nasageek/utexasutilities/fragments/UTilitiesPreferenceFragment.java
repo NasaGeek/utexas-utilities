@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.nasageek.utexasutilities.PasswordEditTextPreferenceDialogFragmentCompat;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.activities.AboutMeActivity;
@@ -34,8 +33,10 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
     private Preference passwordfield;
     private CheckBoxPreference autologin;
     private RecyclerView.Adapter ba;
-    private SecurePreferences sp;
     private String preferenceScreenKey;
+
+    public static final String NEW_PASSWORD_PREF_FILE = "new_encrypted_password";
+    public static final String OLD_PASSWORD_PREF_FILE = "com.nasageek.utexasutilities.password";
 
     public static UTilitiesPreferenceFragment newInstance(String key) {
         Bundle args = new Bundle();
@@ -52,7 +53,6 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
         super.onCreate(savedInstanceState);
 
         if (preferenceScreenKey.equals("root")) {
-            sp = new SecurePreferences(getActivity(), "com.nasageek.utexasutilities.password", false);
             autologin = (CheckBoxPreference) findPreference("autologin");
             loginfield = findPreference("eid");
             passwordfield = findPreference("password");
@@ -64,7 +64,8 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
 
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    sp.put(preference.getKey(), (String) newValue);
+                    UTilitiesApplication.getInstance(getActivity()).getSecurePreferences().edit()
+                            .putString(preference.getKey(), (String) newValue).apply();
                     return false;
                 }
             });
@@ -86,6 +87,7 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
             logincheckbox.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(final Preference preference) {
+                    UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();
                     if (((CheckBoxPreference) preference).isChecked()) {
                         new AutoLoginWarningDialog().show(getChildFragmentManager(),
                                 AutoLoginWarningDialog.class.getSimpleName());
@@ -94,11 +96,10 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
                      * if they switch to temp login we'll save their EID, but
                      * clear their password for security purposes
                      */
-                        sp.removeValue("password");
+                        mApp.getSecurePreferences().edit().remove("password");
                         ba.notifyDataSetChanged();
                     }
                     // whenever they switch between temp and persistent, log them out
-                    UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();
                     mApp.logoutAll();
                     return true;
                 }

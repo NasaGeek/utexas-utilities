@@ -32,7 +32,6 @@ import com.nasageek.utexasutilities.ChangeLogCompat;
 import com.nasageek.utexasutilities.ChangeableContextTask;
 import com.nasageek.utexasutilities.MyBus;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.SecurePreferences;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.Utility;
 import com.squareup.otto.Subscribe;
@@ -54,8 +53,6 @@ public class UTilitiesActivity extends BaseActivity {
 
     private static final float CHECK_TRANSLUCENT_OPACITY = 0.3f;
     private final static int BUTTON_ANIMATION_DURATION = 90;
-
-    private final static String SECURE_PREF_PW_KEY = "com.nasageek.utexasutilities.password";
 
     private SharedPreferences settings;
     private Toast message;
@@ -575,12 +572,11 @@ public class UTilitiesActivity extends BaseActivity {
      * Perform a login with the user's saved credentials.
      */
     private void login() {
-        SecurePreferences sp =
-                new SecurePreferences(UTilitiesActivity.this, SECURE_PREF_PW_KEY, false);
+        SharedPreferences sp = ((UTilitiesApplication) getApplication()).getSecurePreferences();
         if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
-            if (!settings.contains("eid") || !sp.containsKey("password")
-                    || settings.getString("eid", "error").equals("")
-                    || sp.getString("password").equals("")) {
+            if (!settings.contains("eid") || !sp.contains("password")
+                    || settings.getString("eid", "").equals("")
+                    || sp.getString("password", "").equals("")) {
                 message.setText("Please enter your credentials to log in");
                 message.setDuration(Toast.LENGTH_LONG);
                 message.show();
