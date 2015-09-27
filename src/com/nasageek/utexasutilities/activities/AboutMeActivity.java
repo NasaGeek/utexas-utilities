@@ -1,13 +1,13 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.view.View;

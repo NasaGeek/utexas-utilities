@@ -1,7 +1,6 @@
 package com.nasageek.utexasutilities.activities;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,6 +22,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.text.SpannableString;
 import android.text.TextUtils;

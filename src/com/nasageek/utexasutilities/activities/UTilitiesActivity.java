@@ -1,7 +1,6 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.AuthCookie;
+import com.nasageek.utexasutilities.ChangeLogCompat;
 import com.nasageek.utexasutilities.ChangeableContextTask;
 import com.nasageek.utexasutilities.MyBus;
 import com.nasageek.utexasutilities.R;
@@ -41,8 +42,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-
-import de.cketti.library.changelog.ChangeLog;
 
 import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
 import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
@@ -429,11 +428,11 @@ public class UTilitiesActivity extends BaseActivity {
             settings.edit().putBoolean("firstRun", false).apply();
             Utility.id(this);
         } else {
-            ChangeLog cl = new ChangeLog(this);
+            ChangeLogCompat cl = new ChangeLogCompat(this);
             if (cl.isFirstRun()) {
                 // first launch after an update
                 // this will actually show after the second launch if it's a fresh install
-                cl.getFullLogDialog().show();
+                cl.getFullLogDialogCompat().show();
             }
         }
     }

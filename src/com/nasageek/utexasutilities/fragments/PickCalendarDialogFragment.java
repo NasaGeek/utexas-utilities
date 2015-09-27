@@ -2,7 +2,6 @@
 package com.nasageek.utexasutilities.fragments;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
@@ -13,8 +12,9 @@ import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +28,7 @@ import com.nasageek.utexasutilities.R;
 
 import java.util.ArrayList;
 
-public class PickCalendarDialogFragment extends DialogFragment {
+public class PickCalendarDialogFragment extends AppCompatDialogFragment {
 
     private FragmentActivity parentAct;
 
