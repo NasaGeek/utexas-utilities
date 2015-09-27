@@ -1,10 +1,12 @@
 package com.nasageek.utexasutilities.activities;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Color;
@@ -23,6 +25,7 @@ import android.provider.Settings;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDialogFragment;
 import android.support.v7.widget.SearchView;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -43,6 +46,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
@@ -99,12 +106,23 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class CampusMapActivity extends BaseActivity implements OnMapReadyCallback {
+public class CampusMapActivity extends BaseActivity implements OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private LocationManager locationManager;
     private LocationListener locationListener;
     private String locProvider;
     private Location lastKnownLocation;
+
+    // Request code to use when launching the resolution activity
+    private static final int REQUEST_RESOLVE_ERROR = 1001;
+    // Unique tag for the error dialog fragment
+    private static final String DIALOG_ERROR = "dialog_error";
+    // Bool to track whether the app is already resolving an error
+    private boolean mResolvingError = false;
+    private static final String STATE_RESOLVING_ERROR = "resolving_error";
+    private GoogleApiClient apiClient;
+
     private XMLReader xmlreader;
     private RouteSaxHandler navSaxHandler;
     private AssetManager assets;
@@ -222,7 +240,13 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_layout);
         restoring = savedInstanceState != null;
+        mResolvingError = restoring && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
         client = UTilitiesApplication.getInstance(this).getHttpClient();
+        apiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
         ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                 .getMapAsync(this);
         assets = getAssets();
@@ -248,6 +272,75 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                 handleCheckInAsyncLoad = isChecked;
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        apiClient.connect();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Toast.makeText(this, "ApiClient connection suspended", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        if (mResolvingError) {
+            // Already attempting to resolve an error.
+            return;
+        } else if (connectionResult.hasResolution()) {
+            try {
+                mResolvingError = true;
+                connectionResult.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
+            } catch (IntentSender.SendIntentException e) {
+                // There was an error with the resolution intent. Try again.
+                apiClient.connect();
+            }
+        } else {
+            // Show dialog using GoogleApiAvailability.getErrorDialog()
+            showErrorDialog(connectionResult.getErrorCode());
+            mResolvingError = true;
+        }
+    }
+
+    private void showErrorDialog(int errorCode) {
+        // Create a fragment for the error dialog
+        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
+        // Pass the error that should be displayed
+        Bundle args = new Bundle();
+        args.putInt(DIALOG_ERROR, errorCode);
+        dialogFragment.setArguments(args);
+        dialogFragment.show(getSupportFragmentManager(), "errordialog");
+    }
+
+    /* Called from ErrorDialogFragment when the dialog is dismissed. */
+    public void onDialogDismissed() {
+        mResolvingError = false;
+    }
+
+    /* A fragment to display an error dialog */
+    public static class ErrorDialogFragment extends AppCompatDialogFragment {
+        public ErrorDialogFragment() { }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Get the error code and retrieve the appropriate dialog
+            int errorCode = this.getArguments().getInt(DIALOG_ERROR);
+            return GoogleApiAvailability.getInstance().getErrorDialog(
+                    this.getActivity(), errorCode, REQUEST_RESOLVE_ERROR);
+        }
+
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            ((CampusMapActivity) getActivity()).onDialogDismissed();
+        }
     }
 
     @Override
@@ -418,6 +511,14 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == GPS_SETTINGS_REQ_CODE && resultCode == RESULT_CANCELED) {
             setupLocation(true);
+        } else if (requestCode == REQUEST_RESOLVE_ERROR) {
+            mResolvingError = false;
+            if (resultCode == RESULT_OK) {
+                // Make sure the app is not already connected or attempting to connect
+                if (!apiClient.isConnecting() && !apiClient.isConnected()) {
+                    apiClient.connect();
+                }
+            }
         }
     }
 
@@ -566,6 +667,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(STATE_RESOLVING_ERROR, mResolvingError);
     }
 
     @Override
@@ -729,6 +831,21 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         if (locationManager != null && locationListener != null) {
             locationManager.removeUpdates(locationListener);
         }
+    }
+
+    @Override
+    public void onStop() {
+        apiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (apiClient != null) {
+            apiClient.unregisterConnectionCallbacks(this);
+            apiClient.unregisterConnectionFailedListener(this);
+        }
+        super.onDestroy();
     }
 
     /**
