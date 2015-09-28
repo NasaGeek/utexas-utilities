@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
@@ -17,7 +16,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.view.MenuItemCompat;
@@ -25,9 +23,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.text.SpannableString;
-import android.text.TextUtils;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.LineHeightSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.Menu;
@@ -36,8 +31,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -57,10 +50,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.ui.MyIconGenerator;
 import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.AsyncTask;
-import com.nasageek.utexasutilities.BuildConfig;
 import com.nasageek.utexasutilities.BuildingSaxHandler;
 import com.nasageek.utexasutilities.MarkerManager;
 import com.nasageek.utexasutilities.R;
@@ -68,7 +59,6 @@ import com.nasageek.utexasutilities.RouteSaxHandler;
 import com.nasageek.utexasutilities.ThemedArrayAdapter;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.model.Placemark;
-import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -79,19 +69,13 @@ import org.xml.sax.XMLReader;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.NavigableMap;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -113,10 +97,8 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private String routeid;
     private List<Placemark> fullDataSet;
     private Deque<Placemark> buildingDataSet;
-    private List<Placemark> garageDataSet;
 
     private SharedPreferences settings;
-    private SharedPreferences garageCache;
 
     private View mapView;
     protected Boolean mSetCameraToBounds = false;
@@ -124,14 +106,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private List<String> buildingIdList;
 
     private MarkerManager<Placemark> shownBuildings;
-    private MarkerManager<Placemark> shownGarages;
     private MarkerManager<Placemark> shownStops;
     private Map<String, Polyline> polylineMap;
     private GoogleMap mMap;
-    private OkHttpClient client;
-    private final SimpleDateFormat lastModDateFormat =
-            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-    private boolean handleCheckInAsyncLoad = false;
 
     private static final int CURRENT_ROUTES_VERSION = 1;
     private static final int BURNT_ORANGE = Color.parseColor("#DDCC5500");
@@ -139,28 +116,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private static final int GPS_SETTINGS_REQ_CODE = 0;
     private static final String NO_ROUTE_ID = "0";
 
-    private static final int STYLE_RED = 0xFFF44336;
-    private static final int STYLE_GREEN = 0xFF4CAF50;
-    private static final int STYLE_GRAY = 0xFFBDBDBD;
-
-    private static final int STYLE_GREEN_FADED = 0xFF81C784;
-    private static final int STYLE_RED_FADED = 0xFFEF9A9A;
-
-    private static final int styles[] = {STYLE_GRAY, STYLE_GREEN_FADED, STYLE_GREEN};
-    private static final int styles2[] =
-            {STYLE_RED, STYLE_RED_FADED, STYLE_GREEN_FADED, STYLE_GREEN};
-
-    private static NavigableMap<Integer, Integer> stylesMap;
-    static {
-        stylesMap = new TreeMap<>();
-        stylesMap.put(0, STYLE_RED);
-        stylesMap.put(20, STYLE_RED_FADED);
-        stylesMap.put(30, STYLE_GREEN_FADED);
-        stylesMap.put(50, STYLE_GREEN);
-    }
-
-    private static String GARAGE_CACHE_NAME = "garage_cache";
-    private boolean mockGarageData = false;
     private boolean restoring;
 
     //@formatter:off
@@ -197,37 +152,18 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         }
     }
 
-    private static final String GARAGE_TAG = "%";
     private static final String BUILDING_TAG = "^";
     private static final String STOP_TAG = "*";
-
-    private static final String GARAGE_BASE_URL =
-            "http://www.utexas.edu/parking/garage-availability/gar-PROD-%s-central.dat";
-    private static final Map<String, String> garageFileMap;
-    static {
-        garageFileMap = new HashMap<>();
-        garageFileMap.put("BRG", "BRAZOS");
-        garageFileMap.put("CCG", "CONFCNTR");
-        garageFileMap.put("GUG", "GUADALUPE");
-        garageFileMap.put("MAG", "MANOR");
-        garageFileMap.put("SAG", "SAG");
-        garageFileMap.put("SJG", "SJG");
-        garageFileMap.put("SWG", "SPEEDWAY");
-        garageFileMap.put("TRG", "TRINITY");
-        garageFileMap.put("TSG", "27TH");
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_layout);
         restoring = savedInstanceState != null;
-        client = UTilitiesApplication.getInstance(this).getHttpClient();
         ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                 .getMapAsync(this);
         assets = getAssets();
         settings = PreferenceManager.getDefaultSharedPreferences(this);
-        garageCache = getSharedPreferences(GARAGE_CACHE_NAME, 0);
         buildingIdList = new ArrayList<>();
         polylineMap = new HashMap<>();
 
@@ -240,14 +176,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         } else {
             fullDataSet = new ArrayList<>();
         }
-        garageDataSet = filterGarages(buildingDataSet);
-        CheckBox showGaragesCheck = (CheckBox) findViewById(R.id.chkbox_show_garages);
-        showGaragesCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                handleCheckInAsyncLoad = isChecked;
-            }
-        });
     }
 
     @Override
@@ -266,28 +194,10 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         mMap.setOnInfoWindowClickListener(new InfoClickListener());
 
         shownBuildings = new MarkerManager<>(mMap);
-        shownGarages = new MarkerManager<>(mMap);
         shownStops = new MarkerManager<>(mMap);
 
         setupLocation(!restoring);
         loadRoute(routeid);
-
-        CheckBox showGaragesCheck = (CheckBox) findViewById(R.id.chkbox_show_garages);
-        if (handleCheckInAsyncLoad) {
-            showAllGarageMarkers();
-        }
-        showGaragesCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (checkReady()) {
-                    if (!isChecked) {
-                        shownGarages.clearMarkers();
-                    } else {
-                        showAllGarageMarkers();
-                    }
-                }
-            }
-        });
 
         mapView = getSupportFragmentManager().findFragmentById(R.id.map).getView();
         if (mapView != null && mapView.getViewTreeObserver() != null
@@ -321,27 +231,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         } catch (ParserConfigurationException | SAXException e1) {
             e1.printStackTrace();
         }
-    }
-
-    /**
-     * Removes and returns garages from the collection of buildings because garages get special
-     * treatment
-     *
-     * @param buildings Iterable containing garages that you wish to extract
-     * @return List containing all garage Placemarks removed from {@code buildings}
-     */
-    private List<Placemark> filterGarages(Iterable<Placemark> buildings) {
-        List<Placemark> garages = new ArrayList<>();
-        Placemark bp;
-        Iterator<Placemark> iter = buildings.iterator();
-        while (iter.hasNext()) {
-            bp = iter.next();
-            if (garageFileMap.containsKey(bp.getTitle())) {
-                garages.add(bp);
-                iter.remove();
-            }
-        }
-        return garages;
     }
 
     /**
@@ -440,19 +329,11 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                 foundCount++;
 
                 LatLng buildingLatLng = new LatLng(pm.getLatitude(), pm.getLongitude());
-                Marker buildingMarker;
-
-                if (garageDataSet.contains(pm)) {
-                    MyIconGenerator ig = new MyIconGenerator(this);
-                    ig.setTextAppearance(android.R.style.TextAppearance_Inverse);
-                    buildingMarker = addGaragePlacemarkToMap(ig, pm);
-                } else {
-                    buildingMarker = shownBuildings.placeMarker(pm, new MarkerOptions()
-                            .position(buildingLatLng)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_building2))
-                            .title(BUILDING_TAG + pm.getTitle())
-                            .snippet(pm.getDescription()), false);
-                }
+                Marker buildingMarker = shownBuildings.placeMarker(pm, new MarkerOptions()
+                        .position(buildingLatLng)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_building2))
+                        .title(BUILDING_TAG + pm.getTitle())
+                        .snippet(pm.getDescription()), false);
                 llbuilder.include(buildingLatLng);
 
                 // don't move the camera around or showing InfoWindows for more than one building
@@ -563,7 +444,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         }
     }
 
-    //TODO: save and restore all map items (markers & polylines & garages in some cases)
+    //TODO: save and restore all map items (markers & polylines in some cases)
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
@@ -674,40 +555,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         kml_al = Arrays.asList(kml);
     }
 
-    private Marker addGaragePlacemarkToMap(MyIconGenerator ig, Placemark pm) {
-        // special rotations to prevent overlap
-        setGarageRotation(pm, ig);
-        int count = (int) (Math.random() * 100);
-        ig.setColor(mockGarageData ? styles2[4 * count / 100] : STYLE_GRAY);
-
-        // for bounding the camera later
-        llbuilder.include(new LatLng(pm.getLatitude(), pm.getLongitude()));
-
-        CharSequence text = setupGarageMarkerText(mockGarageData ? count + "" : "...");
-        Marker garageMarker = shownGarages.placeMarker(pm, new MarkerOptions()
-                .position(new LatLng(pm.getLatitude(), pm.getLongitude()))
-                .icon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)))
-                .title(GARAGE_TAG + pm.getTitle())
-                // strip out the "(formerly PGX)" text for garage descriptions
-                .snippet(pm.getDescription().replaceAll("\\(.*\\)", ""))
-                .anchor(ig.getAnchorU(), ig.getAnchorV()), false);
-        if (!mockGarageData) {
-            long expireTime = garageCache.getLong(pm.getTitle() + "expire", 0);
-            if (System.currentTimeMillis() > expireTime) {
-                try {
-                    fetchGarageData(pm.getTitle(), garageMarker, pm, ig);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                int openSpots = garageCache.getInt(pm.getTitle() + "spots", 0);
-                int backgroundColor = stylesMap.floorEntry(openSpots).getValue();
-                setGarageIcon(ig, pm, garageMarker, openSpots + "", backgroundColor);
-            }
-        }
-        return garageMarker;
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -767,9 +614,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = this.getMenuInflater();
         inflater.inflate(R.menu.map_menu, menu);
-        if (BuildConfig.DEBUG) {
-            inflater.inflate(R.menu.map_menu_debug, menu);
-        }
         final MenuItem searchItem = menu.findItem(R.id.search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
@@ -816,167 +660,8 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                     }
                 }
                 return true;
-            // debug option
-            case R.id.mockGarageData:
-                mockGarageData = !item.isChecked();
-                item.setChecked(!item.isChecked());
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private CharSequence setupGarageMarkerText(String number) {
-        SpannableString numberSpan = new SpannableString(number);
-        numberSpan.setSpan(new AbsoluteSizeSpan(25, true), 0, number.length(), 0);
-        SpannableString spotsSpan = new SpannableString("open\nspots");
-        spotsSpan.setSpan(new AbsoluteSizeSpan(12, true), 0, spotsSpan.length(), 0);
-        numberSpan.setSpan(new LineHeightSpan() {
-            @Override
-            public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v,
-                                     Paint.FontMetricsInt fm) {
-                fm.bottom -= 6;
-                fm.descent -= 6;
-            }
-        }, 0, numberSpan.length(), 0);
-        return TextUtils.concat(numberSpan, "\n", spotsSpan);
-    }
-
-    private void setGarageIcon(MyIconGenerator ig, Placemark pm, Marker marker, String iconText,
-                               int bgColor) {
-        setGarageRotation(pm, ig);
-        CharSequence text = setupGarageMarkerText(iconText);
-        ig.setColor(bgColor);
-        if (shownGarages.isShowing(pm, marker.getId())) {
-            boolean infoWindow = marker.isInfoWindowShown();
-            marker.setIcon(BitmapDescriptorFactory.fromBitmap(ig.makeIcon(text)));
-            if (infoWindow) marker.showInfoWindow();
-        }
-    }
-
-    private void setGarageRotation(Placemark pm, MyIconGenerator ig) {
-        // special rotations to prevent overlap
-        switch (pm.getTitle()) {
-            case "SWG":
-                ig.setRotation(180);
-                ig.setContentRotation(180);
-                break;
-            case "TRG":
-                ig.setRotation(90);
-                ig.setContentRotation(270);
-                break;
-            default:
-                ig.setRotation(0);
-                ig.setContentRotation(0);
-                break;
-        }
-    }
-
-    private void fetchGarageData(String garage, final Marker marker, final Placemark pm,
-                                 final MyIconGenerator ig) throws IOException {
-        Request request = new Request.Builder()
-                .url(String.format(GARAGE_BASE_URL, garageFileMap.get(garage)))
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                //e.printStackTrace();
-                showErrorGarageMarker();
-            }
-
-            @Override
-            public void onResponse(final Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    showErrorGarageMarker();
-                    return;
-                }
-                final String responseString = response.body().string();
-                final String lastModified = response.header("Last-Modified");
-                long lastModMillis = System.currentTimeMillis();
-                if (lastModified != null) {
-                    Date lastModMillisTest =
-                            lastModDateFormat.parse(lastModified, new ParsePosition(0));
-                    if (lastModMillisTest != null) {
-                        lastModMillis = lastModMillisTest.getTime();
-                    }
-                }
-                final SharedPreferences.Editor edit = garageCache.edit();
-                boolean parseError = false;
-                int tempOpenSpots;
-                try {
-                    tempOpenSpots = parseGarageData(responseString);
-                } catch (IOException e) {
-                    tempOpenSpots = 0;
-                    parseError = true;
-                    //e.printStackTrace();
-                }
-                final int openSpots = tempOpenSpots;
-                if (!parseError) {
-                    // cache for 7 minutes
-                    edit.putLong(pm.getTitle() + "expire", lastModMillis + 7 * 60 * 1000)
-                            .apply();
-                    edit.putInt(pm.getTitle() + "spots", openSpots).apply();
-                }
-
-                new Handler(CampusMapActivity.this.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        int backgroundColor = stylesMap.floorEntry(openSpots).getValue();
-                        setGarageIcon(ig, pm, marker, openSpots + "", backgroundColor);
-                    }
-                });
-            }
-
-            private void showErrorGarageMarker() {
-                new Handler(CampusMapActivity.this.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        setGarageIcon(ig, pm, marker, "X", STYLE_GRAY);
-                    }
-                });
-            }
-        });
-    }
-
-    /**
-     * Parses the garage data file and returns the number of free spots on the garage.
-     * @param rawData Plaintext data from the garage dat file
-     * @return the total number of free spots
-     * @throws java.io.IOException if the parsing failed
-     */
-    private int parseGarageData(String rawData) throws IOException {
-        String lines[] = rawData.split("\n");
-        if (lines.length < 6) {
-            // error
-            throw new IOException("Not enough lines in the garage file.");
-        }
-        if ("Facility".equals(lines[2].trim())) {
-            int total, occupied;
-            try {
-                total = Integer.parseInt(lines[3].trim());
-                occupied = Integer.parseInt(lines[4].trim());
-                return total - occupied;
-            } catch (NumberFormatException nfe) {
-                throw new IOException("Parking counts could not be parsed from the garage file.");
-            }
-        } else {
-            // error
-            throw new IOException("Facility data could not be found in the garage file.");
-        }
-    }
-
-    private void showAllGarageMarkers() {
-        llbuilder = LatLngBounds.builder();
-        MyIconGenerator ig = new MyIconGenerator(CampusMapActivity.this);
-        ig.setTextAppearance(android.R.style.TextAppearance_Inverse);
-
-        for (Placemark pm : garageDataSet) {
-            addGaragePlacemarkToMap(ig, pm);
-        }
-        // we let the map do its own thing if the Activity is being restored
-        if (!restoring) {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 120));
         }
     }
 
@@ -1152,7 +837,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             switch (Character.toString(marker.getTitle().charAt(0))) {
                 case BUILDING_TAG: markerType = "building"; break;
                 case STOP_TAG: markerType = "stop"; break;
-                case GARAGE_TAG: markerType = "garage"; break;
                 default: markerType = "location"; break;
             }
 
@@ -1179,8 +863,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                             }
 
                             if (myLocation != null) {
-                                // people tend to drive to garages
-                                boolean walkingDirections = !markerType.equals("garage");
                                 double dstLat = marker.getPosition().latitude;
                                 double dstLng = marker.getPosition().longitude;
 
@@ -1189,7 +871,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                                         Uri.parse("http://maps.google.com/maps?saddr="
                                                 + myLocation.latitude + "," + myLocation.longitude
                                                 + "&daddr=" + dstLat + "," + dstLng
-                                                + "&dirflg=" + (walkingDirections ? "w" : "d")));
+                                                + "&dirflg=w"));
                                 startActivity(intent);
                             } else {
                                 Toast.makeText(CampusMapActivity.this,

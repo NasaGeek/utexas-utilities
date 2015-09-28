@@ -9,21 +9,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <CheckBox
-        android:id="@+id/chkbox_show_garages"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="16dp"
-        android:background="@drawable/btn_map_parking"
-        android:minHeight="40dp"
-        android:paddingBottom="8dp"
-        android:paddingRight="8dp"
-        android:paddingLeft="@dimen/checkbox_drawable_left_padding"
-        android:paddingTop="8dp"
-        android:text="Parking Garages"
-        android:textColor="#FF5A5A5A"
-        android:textSize="16sp"/>
 </RelativeLayout>
