@@ -7,6 +7,9 @@ import android.preference.PreferenceManager;
 
 import com.commonsware.cwac.security.trust.TrustManagerBuilder;
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.squareup.leakcanary.AndroidExcludedRefs;
+import com.squareup.leakcanary.DisplayLeakService;
+import com.squareup.leakcanary.ExcludedRefs;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -52,7 +55,9 @@ public class UTilitiesApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sInstance = this;
-        LeakCanary.install(this);
+        ExcludedRefs.Builder excludedRefsBuilder = AndroidExcludedRefs.createAppDefaults();
+        excludedRefsBuilder.staticField("com.google.android.chimera.container.a", "a");
+        LeakCanary.install(this, DisplayLeakService.class, excludedRefsBuilder.build());
 
         client = new OkHttpClient();
         try {
