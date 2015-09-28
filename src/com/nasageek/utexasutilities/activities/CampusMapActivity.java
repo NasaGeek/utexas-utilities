@@ -3,7 +3,6 @@ package com.nasageek.utexasutilities.activities;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -12,16 +11,14 @@ import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -49,6 +46,8 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -107,12 +106,11 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 public class CampusMapActivity extends BaseActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
 
-    private LocationManager locationManager;
-    private LocationListener locationListener;
-    private String locProvider;
     private Location lastKnownLocation;
+    private LocationRequest locationRequest;
 
     // Request code to use when launching the resolution activity
     private static final int REQUEST_RESOLVE_ERROR = 1001;
@@ -138,6 +136,8 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
     private View mapView;
     protected Boolean mSetCameraToBounds = false;
+    private boolean setInitialLocation = false;
+    private static final String STATE_SET_INITIAL_LOCATION = "set_initial_location";
     private LatLngBounds.Builder llbuilder;
     private List<String> buildingIdList;
 
@@ -240,7 +240,10 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_layout);
         restoring = savedInstanceState != null;
-        mResolvingError = restoring && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
+        if (restoring) {
+            mResolvingError = savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
+            setInitialLocation = savedInstanceState.getBoolean(STATE_SET_INITIAL_LOCATION, false);
+        }
         client = UTilitiesApplication.getInstance(this).getHttpClient();
         apiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -282,7 +285,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
     @Override
     public void onConnected(Bundle bundle) {
-
+        LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest, this);
+        lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(apiClient);
+        moveToInitialLoc();
     }
 
     @Override
@@ -341,6 +346,11 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         public void onDismiss(DialogInterface dialog) {
             ((CampusMapActivity) getActivity()).onDialogDismissed();
         }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        lastKnownLocation = location;
     }
 
     @Override
@@ -577,6 +587,13 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     }
 
     private void setupLocation(boolean initialLaunch) {
+        locationRequest = new LocationRequest()
+                .setInterval(5000)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+/*
+
+
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         Criteria crit = new Criteria();
         locProvider = locationManager.getBestProvider(crit, true);
@@ -611,55 +628,38 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                 noproviders.show();
             }
         }
-        if (locProvider != null) {
-            locationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    // Called when a new location is found by the network
-                    // location provider.
-
-                    if (lastKnownLocation != null) {
-                        lastKnownLocation.set(location);
-                    }
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-                }
-            };
-
-            // Register the listener with the Location Manager to receive location updates
-            locationManager.requestLocationUpdates(locProvider, 0, 0, locationListener);
-
-            lastKnownLocation = locationManager.getLastKnownLocation(locProvider);
-        }
-        moveToInitialLoc(initialLaunch);
+        */
     }
 
-    private void moveToInitialLoc(boolean initialLaunch) {
-        if (checkReady() && initialLaunch) {
-            if (mMap.getMyLocation() != null && settings.getBoolean("starting_location", false)) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(mMap.getMyLocation().getLatitude(),
-                                mMap.getMyLocation().getLongitude()), 16f
-                ));
-            } else if (lastKnownLocation != null
-                    && settings.getBoolean("starting_location", false)) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(lastKnownLocation.getLatitude(),
-                                lastKnownLocation.getLongitude()), 16f
-                ));
+    private void moveToInitialLoc() {
+        if (checkReady() && !setInitialLocation) {
+            LatLng initialLocation;
+            if (settings.getBoolean("starting_location", false)) {
+                if (mMap.getMyLocation() != null) {
+                    initialLocation = new LatLng(mMap.getMyLocation().getLatitude(),
+                            mMap.getMyLocation().getLongitude());
+                } else if (lastKnownLocation != null) {
+                    initialLocation = new LatLng(lastKnownLocation.getLatitude(),
+                            lastKnownLocation.getLongitude());
+                } else {
+                    Snackbar.make(findViewById(R.id.map),
+                            "User location unavailable",
+                            Snackbar.LENGTH_LONG)
+                            .setAction("Enable location", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                    startActivityForResult(intent, GPS_SETTINGS_REQ_CODE);
+                                }
+                            })
+                            .show();
+                    initialLocation = UT_TOWER_LOC;
+                }
             } else {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(UT_TOWER_LOC, 16f));
+                initialLocation = UT_TOWER_LOC;
             }
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialLocation, 16f));
+            setInitialLocation = true;
         }
     }
 
@@ -668,6 +668,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean(STATE_RESOLVING_ERROR, mResolvingError);
+        savedInstanceState.putBoolean(STATE_SET_INITIAL_LOCATION, setInitialLocation);
     }
 
     @Override
@@ -816,8 +817,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             mMap.getUiSettings().setCompassEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
         }
-        if (locationManager != null && locProvider != null && locationListener != null) {
-            locationManager.requestLocationUpdates(locProvider, 0, 0, locationListener);
+        if (apiClient.isConnected()) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest,
+                    this);
         }
     }
 
@@ -828,8 +830,8 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             mMap.getUiSettings().setCompassEnabled(false);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
-        if (locationManager != null && locationListener != null) {
-            locationManager.removeUpdates(locationListener);
+        if (apiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, this);
         }
     }
 
