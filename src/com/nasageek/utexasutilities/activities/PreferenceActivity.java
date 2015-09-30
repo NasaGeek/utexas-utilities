@@ -24,7 +24,7 @@ public class PreferenceActivity extends BaseActivity implements
                 UTilitiesPreferenceFragment.class.getSimpleName());
             transaction.commit();
         }
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setupActionBar();
     }
 
     @Override

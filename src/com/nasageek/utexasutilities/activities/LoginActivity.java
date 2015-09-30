@@ -2,7 +2,6 @@
 package com.nasageek.utexasutilities.activities;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
@@ -14,10 +13,8 @@ public class LoginActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupActionBar();
         char service = getIntent().getCharExtra("service", 'z');
-        ActionBar actionbar = getSupportActionBar();
-        actionbar.setHomeButtonEnabled(true);
-        actionbar.setDisplayHomeAsUpEnabled(true);
         CookieSyncManager.createInstance(this);
         WebView wv = new WebView(this);
         CookieManager.getInstance().removeAllCookie();
@@ -31,11 +28,11 @@ public class LoginActivity extends BaseActivity {
             case 'u':
                 wv.getSettings().setJavaScriptEnabled(true);
                 wv.loadUrl("https://login.utexas.edu/login/UI/Login");
-                actionbar.setSubtitle("UTLogin");
+                actionBar.setSubtitle("UTLogin");
                 break;
             case 'p':
                 wv.loadUrl("https://management.pna.utexas.edu/server/graph.cgi");
-                actionbar.setSubtitle("UT PNA");
+                actionBar.setSubtitle("UT PNA");
                 break;
         }
         setContentView(wv);

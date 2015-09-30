@@ -365,11 +365,10 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         return null;
     }
 
-    private void setupActionBar() {
-        ActionBar actionbar = getSupportActionBar();
-        actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        actionbar.setHomeButtonEnabled(true);
-        actionbar.setDisplayHomeAsUpEnabled(true);
+    @Override
+    protected void setupActionBar() {
+        super.setupActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
         final Spinner spinner = new Spinner(this);
         spinner.setPromptId(R.string.routeprompt);
@@ -377,12 +376,12 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         @SuppressWarnings({
                 "unchecked", "rawtypes"
         })
-        final ArrayAdapter<CharSequence> adapter = new ThemedArrayAdapter(actionbar.getThemedContext(),
+        final ArrayAdapter<CharSequence> adapter = new ThemedArrayAdapter(actionBar.getThemedContext(),
                 android.R.layout.simple_spinner_item, Route.values());
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        actionbar.setListNavigationCallbacks(adapter, new ActionBar.OnNavigationListener() {
+        actionBar.setListNavigationCallbacks(adapter, new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {
                 loadRoute(((Route) spinner.getAdapter().getItem(itemPosition)).getCode());
@@ -412,7 +411,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         }
 
         routeid = ((Route) spinner.getAdapter().getItem(default_route)).getCode();
-        actionbar.setSelectedNavigationItem(default_route);
+        actionBar.setSelectedNavigationItem(default_route);
     }
 
     @Override

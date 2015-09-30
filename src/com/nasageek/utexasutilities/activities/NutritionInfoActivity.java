@@ -2,7 +2,6 @@
 package com.nasageek.utexasutilities.activities;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -15,10 +14,8 @@ public class NutritionInfoActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         String url = getIntent().getExtras().getString("url");
         String title = getIntent().getExtras().getString("title");
-        final ActionBar actionbar = getSupportActionBar();
-        actionbar.setTitle(title);
-        actionbar.setHomeButtonEnabled(true);
-        actionbar.setDisplayHomeAsUpEnabled(true);
+        setupActionBar();
+        actionBar.setTitle(title);
         final WebView wv = new WebView(this);
         wv.getSettings().setJavaScriptEnabled(true);
         wv.getSettings().setBuiltInZoomControls(true);

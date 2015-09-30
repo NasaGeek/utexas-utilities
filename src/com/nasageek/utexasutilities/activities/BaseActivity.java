@@ -1,11 +1,25 @@
 package com.nasageek.utexasutilities.activities;
 
+import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 
 public abstract class BaseActivity extends AppCompatActivity {
+
+    protected ActionBar actionBar;
+
+    protected void setupActionBar() {
+        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        actionBar = getSupportActionBar();
+    }
 
     @Override
     public void onStart() {

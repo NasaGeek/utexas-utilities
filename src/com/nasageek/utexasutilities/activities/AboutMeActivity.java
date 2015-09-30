@@ -6,7 +6,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
@@ -18,17 +17,12 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.nasageek.utexasutilities.R;
 
 public class AboutMeActivity extends BaseActivity {
-    private ActionBar actionbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.aboutme_layout);
-
-        actionbar = getSupportActionBar();
-        actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionbar.setHomeButtonEnabled(true);
-        actionbar.setDisplayHomeAsUpEnabled(true);
+        setupActionBar();
 
         // force the License Dialog link to be underlined so it looks "linky"
         TextView licenseView = (TextView) findViewById(R.id.library_license_link);

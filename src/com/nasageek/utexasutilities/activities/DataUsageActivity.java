@@ -82,6 +82,7 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.data_layout);
+        setupActionBar();
 
         d_pb_ll = (LinearLayout) findViewById(R.id.data_progressbar_ll);
         dataUsedText = (TextView) findViewById(R.id.dataUsedText);
@@ -89,10 +90,6 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
         dell = (LinearLayout) findViewById(R.id.data_error);
         detv = (TextView) findViewById(R.id.tv_failure);
         deb = (Button) findViewById(R.id.button_send_data);
-        actionbar = getSupportActionBar();
-        actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionbar.setHomeButtonEnabled(true);
-        actionbar.setDisplayHomeAsUpEnabled(true);
 
         graph = (XYPlot) findViewById(R.id.mySimpleXYPlot);
         graph.setOnTouchListener(this);

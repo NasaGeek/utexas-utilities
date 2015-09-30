@@ -8,7 +8,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -23,7 +22,6 @@ import java.util.Vector;
 
 public class BalanceActivity extends BaseActivity {
 
-    private ActionBar actionbar;
     private MultiPanePagerAdapter mPagerAdapter;
     private ViewPager pager;
     private int pagesDisplayed;
@@ -38,11 +36,8 @@ public class BalanceActivity extends BaseActivity {
 
         this.initialisePaging();
 
-        actionbar = getSupportActionBar();
-        actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionbar.setHomeButtonEnabled(true);
-        actionbar.setDisplayHomeAsUpEnabled(true);
-        actionbar.setElevation(0);
+        setupActionBar();
+        actionBar.setElevation(0);
     }
 
     private void initialisePaging() {

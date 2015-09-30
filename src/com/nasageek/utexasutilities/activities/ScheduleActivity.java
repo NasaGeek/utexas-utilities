@@ -6,9 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerTabStripV22;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.adapters.MyFragmentPagerAdapter;
@@ -32,12 +29,8 @@ public class ScheduleActivity extends BaseActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.schedule_layout);
         initialisePaging();
-
-        ActionBar actionbar = getSupportActionBar();
-        actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionbar.setHomeButtonEnabled(true);
-        actionbar.setDisplayHomeAsUpEnabled(true);
-        actionbar.setElevation(0);
+        setupActionBar();
+        actionBar.setElevation(0);
     }
 
     private void initialisePaging() {

@@ -217,7 +217,6 @@ public class MenuActivity extends BaseActivity {
     }
 
     private ViewPager pager;
-    private ActionBar actionbar;
     private SharedPreferences settings;
     private MultiPanePagerAdapter mPagerAdapter;
 
@@ -230,16 +229,14 @@ public class MenuActivity extends BaseActivity {
 
         settings = PreferenceManager.getDefaultSharedPreferences(this);
 
-        actionbar = getSupportActionBar();
-        actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        actionbar.setHomeButtonEnabled(true);
-        actionbar.setDisplayHomeAsUpEnabled(true);
-        actionbar.setElevation(0);
+        setupActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        actionBar.setElevation(0);
         @SuppressWarnings({
                 "rawtypes", "unchecked"
         })
         final ArrayAdapter<Restaurant> adapter = new ThemedArrayAdapter(
-                actionbar.getThemedContext(), android.R.layout.simple_spinner_item,
+                actionBar.getThemedContext(), android.R.layout.simple_spinner_item,
                 Restaurant.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -250,7 +247,7 @@ public class MenuActivity extends BaseActivity {
         }
         initialisePaging(adapter.getItem(previousItem).code + "");
 
-        actionbar.setListNavigationCallbacks(adapter, new ActionBar.OnNavigationListener() {
+        actionBar.setListNavigationCallbacks(adapter, new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 
@@ -284,10 +281,10 @@ public class MenuActivity extends BaseActivity {
             }
         });
         if (savedInstanceState == null) {
-            actionbar.setSelectedNavigationItem(Integer.parseInt(settings.getString(
+            actionBar.setSelectedNavigationItem(Integer.parseInt(settings.getString(
                     "default_restaurant", "0")));
         } else {
-            actionbar.setSelectedNavigationItem(savedInstanceState.getInt("spinner_selection"));
+            actionBar.setSelectedNavigationItem(savedInstanceState.getInt("spinner_selection"));
         }
 
     }
@@ -340,6 +337,6 @@ public class MenuActivity extends BaseActivity {
     @Override
     public void onSaveInstanceState(Bundle out) {
         super.onSaveInstanceState(out);
-        out.putInt("spinner_selection", actionbar.getSelectedNavigationIndex());
+        out.putInt("spinner_selection", actionBar.getSelectedNavigationIndex());
     }
 }
