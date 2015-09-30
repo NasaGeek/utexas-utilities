@@ -112,7 +112,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-    private Location lastKnownLocation;
     private LocationRequest locationRequest;
 
     // Request code to use when launching the resolution activity
@@ -249,6 +248,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+        locationRequest = new LocationRequest()
+                .setInterval(5000)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                 .getMapAsync(this);
         assets = getAssets();
@@ -283,8 +285,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
     @Override
     public void onConnected(Bundle bundle) {
+        // hopefully this will keep the current location fairly fresh? Not really sure
+        // if this is necessary
         LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest, this);
-        lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(apiClient);
         moveToInitialLoc();
     }
 
@@ -348,7 +351,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
     @Override
     public void onLocationChanged(Location location) {
-        lastKnownLocation = location;
     }
 
     @Override
@@ -374,7 +376,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         mMap.setOnInfoWindowClickListener(new InfoClickListener());
         mMap.setInfoWindowAdapter(markerManager);
 
-        setupLocation(!restoring);
         loadRoute(routeid);
 
         CheckBox showGaragesCheck = (CheckBox) findViewById(R.id.chkbox_show_garages);
@@ -521,9 +522,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == GPS_SETTINGS_REQ_CODE && resultCode == RESULT_CANCELED) {
-            setupLocation(true);
-        } else if (requestCode == REQUEST_RESOLVE_ERROR) {
+        if (requestCode == REQUEST_RESOLVE_ERROR) {
             mResolvingError = false;
             if (resultCode == RESULT_OK) {
                 // Make sure the app is not already connected or attempting to connect
@@ -588,51 +587,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         buildingIdList.clear();
     }
 
-    private void setupLocation(boolean initialLaunch) {
-        locationRequest = new LocationRequest()
-                .setInterval(5000)
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-/*
-
-
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        Criteria crit = new Criteria();
-        locProvider = locationManager.getBestProvider(crit, true);
-        if (locProvider == null) {
-            if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                locProvider = locationManager.getProvider(LocationManager.NETWORK_PROVIDER)
-                        .getName();
-            } else if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                locProvider = locationManager.getProvider(LocationManager.GPS_PROVIDER).getName();
-            } else {
-                AlertDialog.Builder noproviders_builder = new AlertDialog.Builder(this);
-                noproviders_builder
-                        .setMessage(
-                                "You don't have any location services enabled. If you want to see your "
-                                        + "location you'll need to enable at least one in the Location menu of your device's Settings.  "
-                                        + "Would you like to do that now?"
-                        ).setCancelable(true)
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivityForResult(intent, GPS_SETTINGS_REQ_CODE);
-                            }
-                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-                AlertDialog noproviders = noproviders_builder.create();
-                noproviders.show();
-            }
-        }
-        */
-    }
-
     private void moveToInitialLoc() {
         if (checkReady() && !setInitialLocation) {
             LatLng initialLocation;
@@ -648,7 +602,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                                 @Override
                                 public void onClick(View v) {
                                     Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                    startActivityForResult(intent, GPS_SETTINGS_REQ_CODE);
+                                    startActivity(intent);
                                 }
                             })
                             .show();
