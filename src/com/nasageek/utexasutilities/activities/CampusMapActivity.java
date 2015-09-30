@@ -39,7 +39,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -97,11 +96,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -126,7 +127,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private AssetManager assets;
     private List<String> stops_al;
     private List<String> traces_al;
-    private String routeid;
+    private String routeid = null;
+    private int routeIndex;
+    private static final String STATE_ROUTE_INDEX = "route_index";
     private List<Placemark> fullDataSet;
     private Deque<Placemark> buildingDataSet;
     private List<Placemark> garageDataSet;
@@ -139,7 +142,10 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private boolean setInitialLocation = false;
     private static final String STATE_SET_INITIAL_LOCATION = "set_initial_location";
     private LatLngBounds.Builder llbuilder;
-    private List<String> buildingIdList;
+    private boolean showAllBuildings = false;
+    private static final String STATE_SHOW_ALL_BUILDINGS = "show_all_buildings";
+    private List<String> buildingIdList = new ArrayList<>();
+    private static final String STATE_BUILDING_LIST = "building_id_list";
 
     private MarkerManager markerManager;
     private MarkerManager.Collection shownBuildings;
@@ -150,12 +156,10 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private OkHttpClient client;
     private final SimpleDateFormat lastModDateFormat =
             new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-    private boolean handleCheckInAsyncLoad = false;
 
     private static final int CURRENT_ROUTES_VERSION = 1;
     private static final int BURNT_ORANGE = Color.parseColor("#DDCC5500");
     private static final LatLng UT_TOWER_LOC = new LatLng(30.285706, -97.739423);
-    private static final int GPS_SETTINGS_REQ_CODE = 0;
     private static final String NO_ROUTE_ID = "0";
 
     private static final int STYLE_RED = 0xFFF44336;
@@ -180,7 +184,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
     private static String GARAGE_CACHE_NAME = "garage_cache";
     private boolean mockGarageData = false;
-    private boolean restoring;
 
     //@formatter:off
     public enum Route {
@@ -236,10 +239,15 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_layout);
-        restoring = savedInstanceState != null;
-        if (restoring) {
+        settings = PreferenceManager.getDefaultSharedPreferences(this);
+        if (savedInstanceState != null) {
             mResolvingError = savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
             setInitialLocation = savedInstanceState.getBoolean(STATE_SET_INITIAL_LOCATION, false);
+            buildingIdList = savedInstanceState.getStringArrayList(STATE_BUILDING_LIST);
+            showAllBuildings = savedInstanceState.getBoolean(STATE_SHOW_ALL_BUILDINGS);
+            routeIndex = savedInstanceState.getInt(STATE_ROUTE_INDEX);
+        } else {
+            routeIndex = Integer.parseInt(settings.getString("default_bus_route", NO_ROUTE_ID));
         }
         client = UTilitiesApplication.getInstance(this).getHttpClient();
         apiClient = new GoogleApiClient.Builder(this)
@@ -253,26 +261,16 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                 .getMapAsync(this);
         assets = getAssets();
-        settings = PreferenceManager.getDefaultSharedPreferences(this);
         garageCache = getSharedPreferences(GARAGE_CACHE_NAME, 0);
-        buildingIdList = new ArrayList<>();
         polylineMap = new HashMap<>();
 
         setupActionBar();
+        // buildingDataSet initially contains both campus buildings and garages
         buildingDataSet = parseBuildings();
-        if (buildingDataSet != null) {
-            fullDataSet = new ArrayList<>(buildingDataSet);
-        } else {
-            fullDataSet = new ArrayList<>();
-        }
+        // keep a copy of it
+        fullDataSet = new ArrayList<>(buildingDataSet);
+        // and split it into 2 different lists (garages are removed from buildingDataSet)
         garageDataSet = filterGarages(buildingDataSet);
-        CheckBox showGaragesCheck = (CheckBox) findViewById(R.id.chkbox_show_garages);
-        showGaragesCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                handleCheckInAsyncLoad = isChecked;
-            }
-        });
     }
 
     @Override
@@ -375,11 +373,11 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         mMap.setInfoWindowAdapter(markerManager);
 
         loadRoute(routeid);
+        if (buildingIdList.size() > 0) {
+            loadBuildingOverlay(false, false);
+        }
 
         CheckBox showGaragesCheck = (CheckBox) findViewById(R.id.chkbox_show_garages);
-        if (handleCheckInAsyncLoad) {
-            showAllGarageMarkers();
-        }
         showGaragesCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -441,7 +439,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     /**
      * Parses building kml data into a Deque
      *
-     * @return null if parse fails
+     * @return empty ArrayDeque if parse fails
      */
     private Deque<Placemark> parseBuildings() {
         try {
@@ -456,37 +454,27 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return new ArrayDeque<>();
     }
 
     @Override
     protected void setupActionBar() {
         super.setupActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
-        final Spinner spinner = new Spinner(this);
-        spinner.setPromptId(R.string.routeprompt);
-
         @SuppressWarnings({
                 "unchecked", "rawtypes"
         })
-        final ArrayAdapter<CharSequence> adapter = new ThemedArrayAdapter(actionBar.getThemedContext(),
+        final ArrayAdapter<Route> adapter = new ThemedArrayAdapter(actionBar.getThemedContext(),
                 android.R.layout.simple_spinner_item, Route.values());
-
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         actionBar.setListNavigationCallbacks(adapter, new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-                loadRoute(((Route) spinner.getAdapter().getItem(itemPosition)).getCode());
+                loadRoute(adapter.getItem(itemPosition).getCode());
                 return true;
             }
         });
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        int default_route = Integer.parseInt(settings.getString("default_bus_route", NO_ROUTE_ID));
         // use a simple versioning scheme to ensure that I can trigger a wipe
         // of the default route on an update
         int routesVersion = settings.getInt("routes_version", 0);
@@ -494,18 +482,18 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             settings.edit().putString("default_bus_route", NO_ROUTE_ID).apply();
             settings.edit().putInt("routes_version", CURRENT_ROUTES_VERSION).apply();
             // only bother the user if they've set a default route
-            if (default_route != 0) {
+            if (routeIndex != 0) {
                 Toast.makeText(
                         this,
                         "Your default bus route has been reset due to" +
                                 " a change in UT's shuttle system.",
                         Toast.LENGTH_LONG).show();
             }
-            default_route = 0;
+            routeIndex = 0;
         }
 
-        routeid = ((Route) spinner.getAdapter().getItem(default_route)).getCode();
-        actionBar.setSelectedNavigationItem(default_route);
+        routeid = adapter.getItem(routeIndex).getCode();
+        actionBar.setSelectedNavigationItem(routeIndex);
     }
 
     @Override
@@ -530,7 +518,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
      *                 only be true when you are entering the map from an entry point
      *                 other than the dashboard
      */
-    public void loadBuildingOverlay(boolean autoZoom) {
+    public void loadBuildingOverlay(boolean centerCameraOnBuildings, boolean autoZoom) {
         int foundCount = 0;
         llbuilder = LatLngBounds.builder();
 
@@ -554,8 +542,8 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                 }
                 llbuilder.include(buildingLatLng);
 
-                // don't move the camera around or showing InfoWindows for more than one building
-                if (buildingIdList.size() == 1) {
+                // don't move the camera around or show InfoWindows for more than one building
+                if (buildingIdList.size() == 1 && centerCameraOnBuildings) {
                     if (autoZoom) {
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(buildingLatLng, 16f));
                     } else {
@@ -565,7 +553,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                 }
             }
         }
-        if (foundCount > 1) {
+        if (foundCount > 1 && centerCameraOnBuildings) {
             mSetCameraToBounds = true;
         }
         if (foundCount != buildingIdList.size()) {
@@ -604,12 +592,21 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         }
     }
 
-    //TODO: save and restore all map items (markers & polylines & garages in some cases)
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean(STATE_RESOLVING_ERROR, mResolvingError);
         savedInstanceState.putBoolean(STATE_SET_INITIAL_LOCATION, setInitialLocation);
+        Set<String> savedBuildings = new HashSet<>();
+        for (Marker m : shownBuildings.getMarkers()) {
+            savedBuildings.add(m.getTitle());
+        }
+        for (Marker m : shownGarages.getMarkers()) {
+            savedBuildings.add(m.getTitle());
+        }
+        savedInstanceState.putStringArrayList(STATE_BUILDING_LIST, new ArrayList<>(savedBuildings));
+        savedInstanceState.putBoolean(STATE_SHOW_ALL_BUILDINGS, showAllBuildings);
+        savedInstanceState.putInt(STATE_ROUTE_INDEX, actionBar.getSelectedNavigationIndex());
     }
 
     @Override
@@ -623,16 +620,16 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
                 buildingIdList.add(intent.getStringExtra(SearchManager.QUERY).toUpperCase(
                         Locale.ENGLISH));
-                loadBuildingOverlay(false); // IDs gotten from search, no need to zoom
+                loadBuildingOverlay(true, false); // IDs gotten from search, no need to zoom
             } else if (getString(R.string.building_intent).equals(intent.getAction())) {
                 if (!intent.hasExtra("buildings")) // didn't come from an external activity
                 {
                     buildingIdList.add(intent.getDataString());
-                    loadBuildingOverlay(false); // IDs from search suggestions, no auto-zoom
+                    loadBuildingOverlay(true, false); // IDs from search suggestions, no auto-zoom
 
                 } else {
                     buildingIdList.addAll(intent.getStringArrayListExtra("buildings"));
-                    loadBuildingOverlay(true); // IDs from external source, should auto-zoom
+                    loadBuildingOverlay(true, true); // IDs from external source, should auto-zoom
                 }
             }
         }
@@ -847,6 +844,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         if (BuildConfig.DEBUG) {
             inflater.inflate(R.menu.map_menu_debug, menu);
         }
+        menu.findItem(R.id.showAllBuildings).setChecked(showAllBuildings);
         final MenuItem searchItem = menu.findItem(R.id.search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
@@ -886,11 +884,11 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                 if (checkReady()) {
                     if (item.isChecked()) {
                         shownBuildings.clear();
-                        item.setChecked(false);
                     } else {
                         showAllBuildingMarkers();
-                        item.setChecked(true);
                     }
+                    showAllBuildings = !item.isChecked();
+                    item.setChecked(showAllBuildings);
                 }
                 return true;
             // debug option
@@ -1051,10 +1049,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         for (Placemark pm : garageDataSet) {
             addGaragePlacemarkToMap(ig, pm);
         }
-        // we let the map do its own thing if the Activity is being restored
-        if (!restoring) {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 120));
-        }
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 120));
     }
 
     private void showAllBuildingMarkers() {
