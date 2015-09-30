@@ -635,12 +635,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         if (checkReady() && !setInitialLocation) {
             LatLng initialLocation;
             if (settings.getBoolean("starting_location", false)) {
-                if (mMap.getMyLocation() != null) {
-                    initialLocation = new LatLng(mMap.getMyLocation().getLatitude(),
-                            mMap.getMyLocation().getLongitude());
-                } else if (lastKnownLocation != null) {
-                    initialLocation = new LatLng(lastKnownLocation.getLatitude(),
-                            lastKnownLocation.getLongitude());
+                Location loc = LocationServices.FusedLocationApi.getLastLocation(apiClient);
+                if (loc != null) {
+                    initialLocation = new LatLng(loc.getLatitude(), loc.getLongitude());
                 } else {
                     Snackbar.make(findViewById(R.id.map),
                             "User location unavailable",
@@ -1286,17 +1283,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-
-                            LatLng myLocation = null;
-                            if (mMap.getMyLocation() != null) {
-                                myLocation = new LatLng(mMap.getMyLocation().getLatitude(), mMap
-                                        .getMyLocation().getLongitude());
-                            } else if (lastKnownLocation != null) {
-                                myLocation = new LatLng(lastKnownLocation.getLatitude(),
-                                        lastKnownLocation.getLongitude());
-                            }
-
-                            if (myLocation != null) {
+                            Location loc =
+                                    LocationServices.FusedLocationApi.getLastLocation(apiClient);
+                            if (loc != null) {
                                 // people tend to drive to garages
                                 boolean walkingDirections = !markerType.equals("garage");
                                 double dstLat = marker.getPosition().latitude;
@@ -1305,7 +1294,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                                 AnalyticsHandler.trackGetDirectionsEvent();
                                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
                                         Uri.parse("http://maps.google.com/maps?saddr="
-                                                + myLocation.latitude + "," + myLocation.longitude
+                                                + loc.getLatitude() + "," + loc.getLongitude()
                                                 + "&daddr=" + dstLat + "," + dstLng
                                                 + "&dirflg=" + (walkingDirections ? "w" : "d")));
                                 startActivity(intent);
