@@ -123,7 +123,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
     private GoogleApiClient apiClient;
 
-    private XMLReader xmlreader;
     private AssetManager assets;
     private List<String> stops_al;
     private List<String> traces_al;
@@ -260,7 +259,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         polylineMap = new HashMap<>();
 
         setupActionBar();
-        setupXmlReader();
         buildingDataSet = parseBuildings();
         if (buildingDataSet != null) {
             fullDataSet = new ArrayList<>(buildingDataSet);
@@ -419,16 +417,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
     }
 
-    private void setupXmlReader() {
-        try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parser = factory.newSAXParser();
-            xmlreader = parser.getXMLReader();
-        } catch (ParserConfigurationException | SAXException e1) {
-            e1.printStackTrace();
-        }
-    }
-
     /**
      * Removes and returns garages from the collection of buildings because garages get special
      * treatment
@@ -456,16 +444,16 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
      * @return null if parse fails
      */
     private Deque<Placemark> parseBuildings() {
-        if (xmlreader == null) {
-            setupXmlReader();
-        }
         try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser parser = factory.newSAXParser();
+            XMLReader xmlreader = parser.getXMLReader();
             BuildingSaxHandler builSaxHandler = new BuildingSaxHandler();
             xmlreader.setContentHandler(builSaxHandler);
             InputSource is = new InputSource(assets.open("buildings.kml"));
             xmlreader.parse(is);
             return builSaxHandler.getParsedData();
-        } catch (SAXException | IOException e) {
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -695,9 +683,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             return;
         }
         this.routeid = routeid;
-        if (xmlreader == null) {
-            setupXmlReader();
-        }
         if (NO_ROUTE_ID.equals(routeid)) {
             // remove any currently showing routes and return
             clearAllMapRoutes();
