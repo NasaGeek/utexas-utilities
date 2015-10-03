@@ -43,13 +43,14 @@ customReportContent = {
 
 )
 public class UTilitiesApplication extends Application {
+    private static UTilitiesApplication sInstance;
 
     public static final String UTD_AUTH_COOKIE_KEY = "utd_auth_cookie";
     public static final String PNA_AUTH_COOKIE_KEY = "pna_auth_cookie";
 
-    private Map<String, AuthCookie> authCookies;
-    private static UTilitiesApplication sInstance;
-    private OkHttpClient client;
+    private Map<String, AuthCookie> authCookies = new HashMap<>();
+    private OkHttpClient client = new OkHttpClient();
+    private Map<String, AsyncTask> asyncTaskCache = new HashMap<>();
 
     @Override
     public void onCreate() {
@@ -61,7 +62,6 @@ public class UTilitiesApplication extends Application {
         excludedRefsBuilder.staticField("com.google.android.chimera.container.a", "a");
         LeakCanary.install(this, DisplayLeakService.class, excludedRefsBuilder.build());
 
-        client = new OkHttpClient();
         try {
             TrustManagerBuilder trustManagerBuilder = new TrustManagerBuilder(this);
             trustManagerBuilder.allowCA(R.raw.pna_cert).or().useDefault();
@@ -72,8 +72,6 @@ public class UTilitiesApplication extends Application {
                 KeyStoreException nsae) {
             nsae.printStackTrace();
         }
-
-        authCookies = new HashMap<>();
         authCookies.put(UTD_AUTH_COOKIE_KEY, new UtdAuthCookie(this));
         authCookies.put(PNA_AUTH_COOKIE_KEY, new PnaAuthCookie(this));
 
@@ -137,6 +135,21 @@ public class UTilitiesApplication extends Application {
 
     public OkHttpClient getHttpClient() {
         return client;
+    }
+
+    public void cacheTask(String tag, AsyncTask task) {
+        if (asyncTaskCache.containsKey(tag)) {
+            throw new IllegalStateException("Task already cached");
+        }
+        asyncTaskCache.put(tag, task);
+    }
+
+    public AsyncTask getCachedTask(String tag) {
+        return asyncTaskCache.get(tag);
+    }
+
+    public void removeCachedTask(String tag) {
+        asyncTaskCache.remove(tag);
     }
 
     public static UTilitiesApplication getInstance() {

@@ -3,26 +3,29 @@ package com.nasageek.utexasutilities.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.commonsware.cwac.pager.PageDescriptor;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.ThemedArrayAdapter;
-import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.adapters.MultiPanePagerAdapter;
 import com.nasageek.utexasutilities.fragments.MenuFragment;
+import com.nasageek.utexasutilities.model.SimplePageDescriptor;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Vector;
 
-public class MenuActivity extends BaseActivity {
+public class MenuActivity extends BaseActivity implements ActionBar.OnNavigationListener {
 
     //@formatter:off
     public enum Restaurant {
@@ -216,107 +219,47 @@ public class MenuActivity extends BaseActivity {
         }
     }
 
-    private ViewPager pager;
-    private SharedPreferences settings;
-    private MultiPanePagerAdapter mPagerAdapter;
-
+    private MenuPagerAdapter mPagerAdapter;
+    private ArrayAdapter<Restaurant> navigationAdapter;
     private int previousItem;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu_layout);
-
-        settings = PreferenceManager.getDefaultSharedPreferences(this);
-
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         setupActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         actionBar.setElevation(0);
-        @SuppressWarnings({
-                "rawtypes", "unchecked"
-        })
-        final ArrayAdapter<Restaurant> adapter = new ThemedArrayAdapter(
+        navigationAdapter = new ThemedArrayAdapter<>(
                 actionBar.getThemedContext(), android.R.layout.simple_spinner_item,
                 Restaurant.values());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        navigationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         if (savedInstanceState != null) {
             previousItem = savedInstanceState.getInt("spinner_selection");
         } else {
             previousItem = 0;
         }
-        initialisePaging(adapter.getItem(previousItem).code + "");
 
-        actionBar.setListNavigationCallbacks(adapter, new ActionBar.OnNavigationListener() {
-            @Override
-            public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-
-                Restaurant r = adapter.getItem(itemPosition);
-
-                String restId = r.getCode();
-
-                if (!"0".equals(restId)) {
-                    String[] times = r.getTimes();
-                    if (!r.allDay) {
-                        ((TextView) findViewById(R.id.breakfast_times)).setText(times[0]);
-                        ((TextView) findViewById(R.id.lunch_times)).setText(times[1]);
-                        ((TextView) findViewById(R.id.dinner_times)).setText(times[2]);
-                    } else {
-                        ((TextView) findViewById(R.id.breakfast_times)).setText("");
-                        ((TextView) findViewById(R.id.lunch_times)).setText(times[0]);
-                        ((TextView) findViewById(R.id.dinner_times)).setText("");
-                    }
-
-                    if (itemPosition != previousItem) {
-
-                        ((MenuFragment) mPagerAdapter.getItem(0)).updateView(restId, true);
-                        ((MenuFragment) mPagerAdapter.getItem(1)).updateView(restId, true);
-                        ((MenuFragment) mPagerAdapter.getItem(2)).updateView(restId, true);
-
-                        previousItem = -1;
-                    }
-                }
-
-                return true;
-            }
-        });
+        initialisePaging(navigationAdapter.getItem(previousItem).code + "");
+        actionBar.setListNavigationCallbacks(navigationAdapter, this);
         if (savedInstanceState == null) {
             actionBar.setSelectedNavigationItem(Integer.parseInt(settings.getString(
                     "default_restaurant", "0")));
         } else {
-            actionBar.setSelectedNavigationItem(savedInstanceState.getInt("spinner_selection"));
+            actionBar.setSelectedNavigationItem(previousItem);
         }
-
     }
 
     private void initialisePaging(String restId) {
-
-        List<Fragment> fragments = new Vector<>();
-        pager = (ViewPager) findViewById(R.id.viewpager);
-
-        /**
-         * this is a bit of a hacky solution for something that should be
-         * handled by default. on a rotate, pager caches the old fragments (with
-         * setRetainInstance(true)), but the adapter does not, so I have to add
-         * the old fragments back to the adapter manually
-         */
-        if (getSupportFragmentManager().findFragmentByTag(
-                Utility.makeFragmentName(pager.getId(), 0)) != null) {
-
-            fragments.add(getSupportFragmentManager().findFragmentByTag(
-                    Utility.makeFragmentName(pager.getId(), 0)));
-            fragments.add(getSupportFragmentManager().findFragmentByTag(
-                    Utility.makeFragmentName(pager.getId(), 1)));
-            fragments.add(getSupportFragmentManager().findFragmentByTag(
-                    Utility.makeFragmentName(pager.getId(), 2)));
-        } else {
-            fragments.add(MenuFragment.newInstance("Breakfast", restId));
-            fragments.add(MenuFragment.newInstance("Lunch", restId));
-            fragments.add(MenuFragment.newInstance("Dinner", restId));
-        }
-
+        ViewPager pager = (ViewPager) findViewById(R.id.viewpager);
         int pagesDisplayed = getResources().getInteger(R.integer.menu_num_visible_pages);
-        mPagerAdapter = new MultiPanePagerAdapter(getSupportFragmentManager(), fragments);
+        List<PageDescriptor> pages = new ArrayList<>();
+        pages.add(new MenuPageDescriptor("Breakfast", restId));
+        pages.add(new MenuPageDescriptor("Lunch", restId));
+        pages.add(new MenuPageDescriptor("Dinner", restId));
+        mPagerAdapter = new MenuPagerAdapter(getSupportFragmentManager(), pages);
         mPagerAdapter.setPagesDisplayed(pagesDisplayed);
 
         pager.setAdapter(mPagerAdapter);
@@ -324,7 +267,6 @@ public class MenuActivity extends BaseActivity {
 //        if (pagesDisplayed > 1) {
 //            tabIndicator.setSelectAll(true);
 //        }
-
         ((TabLayout) findViewById(R.id.tabs)).setupWithViewPager(pager);
         float elevationPx = getResources().getDimensionPixelSize(R.dimen.actionbar_elevation);
         ViewCompat.setElevation(findViewById(R.id.tabs), elevationPx);
@@ -335,8 +277,82 @@ public class MenuActivity extends BaseActivity {
     }
 
     @Override
+    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+        Restaurant r = navigationAdapter.getItem(itemPosition);
+        String restId = r.getCode();
+        if (!"0".equals(restId)) {
+            String[] times = r.getTimes();
+            if (!r.allDay) {
+                ((TextView) findViewById(R.id.breakfast_times)).setText(times[0]);
+                ((TextView) findViewById(R.id.lunch_times)).setText(times[1]);
+                ((TextView) findViewById(R.id.dinner_times)).setText(times[2]);
+            } else {
+                ((TextView) findViewById(R.id.breakfast_times)).setText("");
+                ((TextView) findViewById(R.id.lunch_times)).setText(times[0]);
+                ((TextView) findViewById(R.id.dinner_times)).setText("");
+            }
+            if (itemPosition != previousItem) {
+                mPagerAdapter.getExistingFragment(0).updateView(restId, true);
+                mPagerAdapter.getExistingFragment(1).updateView(restId, true);
+                mPagerAdapter.getExistingFragment(2).updateView(restId, true);
+                previousItem = -1;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle out) {
         super.onSaveInstanceState(out);
         out.putInt("spinner_selection", actionBar.getSelectedNavigationIndex());
+    }
+
+    static class MenuPagerAdapter extends MultiPanePagerAdapter<MenuFragment> {
+
+        public MenuPagerAdapter(FragmentManager fm, List<PageDescriptor> pages) {
+            super(fm, pages);
+        }
+
+        @Override
+        protected MenuFragment createFragment(PageDescriptor pageDescriptor) {
+            return MenuFragment.newInstance(pageDescriptor.getTitle(),
+                    ((MenuPageDescriptor) pageDescriptor).getRestId());
+        }
+    }
+
+    static class MenuPageDescriptor extends SimplePageDescriptor {
+        private String restId;
+
+        public static final Parcelable.Creator<MenuPageDescriptor> CREATOR =
+                new Parcelable.Creator<MenuPageDescriptor>() {
+                    public MenuPageDescriptor createFromParcel(Parcel in) {
+                        return new MenuPageDescriptor(in);
+                    }
+
+                    public MenuPageDescriptor[] newArray(int size) {
+                        return new MenuPageDescriptor[size];
+                    }
+                };
+
+        public MenuPageDescriptor(String title, String restId) {
+            // title's unique, can double as tag
+            super(title, title);
+            this.restId = restId;
+        }
+
+        protected MenuPageDescriptor(Parcel in) {
+            super(in);
+            this.restId = in.readString();
+        }
+
+        public String getRestId() {
+            return restId;
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeString(restId);
+        }
     }
 }

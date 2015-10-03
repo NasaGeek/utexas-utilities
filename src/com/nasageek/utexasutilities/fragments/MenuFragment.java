@@ -1,6 +1,7 @@
 
 package com.nasageek.utexasutilities.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -11,41 +12,41 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.foound.widget.AmazingListView;
-import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.MyBus;
 import com.nasageek.utexasutilities.MyPair;
 import com.nasageek.utexasutilities.R;
+import com.nasageek.utexasutilities.TaggedAsyncTask;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.activities.NutritionInfoActivity;
 import com.nasageek.utexasutilities.adapters.StickyHeaderAdapter;
+import com.nasageek.utexasutilities.model.LoadFailedEvent;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MenuFragment extends Fragment {
-    private OkHttpClient httpclient;
-    private List<MyPair<String, List<food>>> listOfLists;
-    private AmazingListView mlv;
-    private LinearLayout m_pb_ll;
-    private TextView metv;
-    private LinearLayout mell;
-    private fetchMenuTask fetchMTask;
+public class MenuFragment extends Fragment implements AdapterView.OnItemClickListener {
+    private List<MyPair<String, List<Food>>> listOfLists = new ArrayList<>();
+    private AmazingListView foodListView;
+    private LinearLayout progressLayout;
+    private TextView errorTextView;
+    private LinearLayout errorLayout;
     private String restId;
-    private MenuAdapter mAdapter;
-
-    public MenuFragment() {
-    }
+    private String title;
+    private String TASK_TAG;
+    private final UTilitiesApplication mApp = UTilitiesApplication.getInstance();
 
     public static MenuFragment newInstance(String title, String restId) {
         MenuFragment f = new MenuFragment();
@@ -61,10 +62,10 @@ public class MenuFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View vg = inflater.inflate(R.layout.menu_fragment_layout, container, false);
 
-        m_pb_ll = (LinearLayout) vg.findViewById(R.id.menu_progressbar_ll);
-        mlv = (AmazingListView) vg.findViewById(R.id.menu_listview);
-        metv = (TextView) vg.findViewById(R.id.tv_failure);
-        mell = (LinearLayout) vg.findViewById(R.id.menu_error);
+        progressLayout = (LinearLayout) vg.findViewById(R.id.menu_progressbar_ll);
+        foodListView = (AmazingListView) vg.findViewById(R.id.menu_listview);
+        errorTextView = (TextView) vg.findViewById(R.id.tv_failure);
+        errorLayout = (LinearLayout) vg.findViewById(R.id.menu_error);
 
         if (restId.equals("0")) {
             return vg;
@@ -76,94 +77,101 @@ public class MenuFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        restId = getArguments().getString("restId");
-        httpclient = UTilitiesApplication.getInstance(getActivity()).getHttpClient();
-        listOfLists = new ArrayList<>();
-        mAdapter = new MenuAdapter(listOfLists);
+        if (savedInstanceState != null) {
+            restId = savedInstanceState.getString("restid");
+            listOfLists = (ArrayList) savedInstanceState.getSerializable("listoflists");
+        } else {
+            restId = getArguments().getString("restId");
+        }
+        title = getArguments().getString("title");
+        TASK_TAG = getClass().getSimpleName() + restId + title;
     }
 
     public void updateView(String restId, Boolean update) {
         this.restId = restId;
-
-        mlv.setAdapter(mAdapter);
-        mlv.setPinnedHeaderView(getActivity().getLayoutInflater().inflate(
-                R.layout.menu_header_item_view, mlv, false));
-        mlv.setOnItemClickListener(new OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-
-                String url = "http://hf-food.austin.utexas.edu/foodpro/"
-                        + ((food) (arg0.getItemAtPosition(arg2))).nutritionLink;
-
-                SharedPreferences sp = PreferenceManager
-                        .getDefaultSharedPreferences(getActivity());
-                if (sp.getBoolean("embedded_browser", true)) {
-
-                    Intent i = new Intent(getActivity(), NutritionInfoActivity.class);
-                    i.putExtra("url", url);
-                    i.putExtra("title", ((food) arg0.getItemAtPosition(arg2)).name);
-                    startActivity(i);
-                } else {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(url));
-                    startActivity(i);
-                }
-
-            }
-        });
-
+        foodListView.setPinnedHeaderView(getActivity().getLayoutInflater().inflate(
+                R.layout.menu_header_item_view, foodListView, false));
+        foodListView.setOnItemClickListener(this);
         if (listOfLists.size() == 0 || update) {
-            listOfLists.clear();
-            fetchMTask = new fetchMenuTask(httpclient);
-            Utility.parallelExecute(fetchMTask, restId,
-                    this.getArguments().getString("title"), mlv);
+            if (mApp.getCachedTask(TASK_TAG) == null) {
+                FetchMenuTask fetchMTask = new FetchMenuTask(TASK_TAG);
+                mApp.cacheTask(fetchMTask.getTag(), fetchMTask);
+                prepareToLoad();
+                Utility.parallelExecute(fetchMTask, restId, title);
+            }
+        } else {
+            setupAdapter();
         }
+    }
+
+    private void setupAdapter() {
+        MenuAdapter mAdapter = new MenuAdapter(getActivity(), listOfLists);
+        foodListView.setAdapter(mAdapter);
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (fetchMTask != null) {
-            fetchMTask.cancel(true);
+    public void onStart() {
+        super.onStart();
+        MyBus.getInstance().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        MyBus.getInstance().unregister(this);
+        super.onStop();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("listoflists", (ArrayList) listOfLists);
+        outState.putString("restid", restId);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        String url = "http://hf-food.austin.utexas.edu/foodpro/"
+                + ((Food) (parent.getItemAtPosition(position))).nutritionLink;
+
+        SharedPreferences sp = PreferenceManager
+                .getDefaultSharedPreferences(getActivity());
+        if (sp.getBoolean("embedded_browser", true)) {
+            Intent i = new Intent(getActivity(), NutritionInfoActivity.class);
+            i.putExtra("url", url);
+            i.putExtra("title", ((Food) parent.getItemAtPosition(position)).name);
+            startActivity(i);
+        } else {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
         }
     }
 
-    private class fetchMenuTask extends AsyncTask<Object, Integer, String> {
-        private OkHttpClient client;
-        private String meal;
+    static class FetchMenuTask extends TaggedAsyncTask<String, Integer, List<MyPair<String,List<Food>>>> {
         private String errorMsg;
-        private List<MyPair<String, List<food>>> tempListOfLists;
+        private final String FETCH_URL =
+                "http://hf-food.austin.utexas.edu/foodpro/pickMenu.asp?locationNum=%s&mealName=%s";
 
-        public fetchMenuTask(OkHttpClient client) {
-            this.client = client;
+        public FetchMenuTask(String tag) {
+            super(tag);
         }
 
         @Override
-        protected void onPreExecute() {
-            m_pb_ll.setVisibility(View.VISIBLE);
-            mell.setVisibility(View.GONE);
-            mlv.setVisibility(View.GONE);
-        }
-
-        @Override
-        protected String doInBackground(Object... params) {
-            ArrayList<String> categories = new ArrayList<>();
-            List<food> foodList = new ArrayList<>();
-            tempListOfLists = new ArrayList<>();
-            meal = (String) params[1];
+        protected List<MyPair<String, List<Food>>> doInBackground(String... params) {
+            List<Food> foodList;
+            List<MyPair<String, List<Food>>> tempListOfLists = new ArrayList<>();
+            OkHttpClient client = UTilitiesApplication.getInstance().getHttpClient();
+            String restId = params [0];
+            String meal = params[1];
             String location;
 
             // Special case for JCM, which combines Lunch and Dinner
             if (restId.equals("05") && (meal.equals("Lunch") || meal.equals("Dinner"))) {
-                location = "http://hf-food.austin.utexas.edu/foodpro/pickMenu.asp?locationNum=" + params[0]
-                        + "&mealName=Lunch/Dinner";
+                location = String.format(FETCH_URL, restId, "Lunch/Dinner");
             } else {
-                location = "http://hf-food.austin.utexas.edu/foodpro/pickMenu.asp?locationNum=" + params[0]
-                        + "&mealName=" + meal;
+                location = String.format(FETCH_URL, restId, meal);
             }
-
 
             Request request = new Request.Builder()
                     .url(location)
@@ -194,61 +202,94 @@ public class MenuFragment extends Fragment {
                 Matcher catMatcher = catPattern.matcher(pagedata);
                 while (catMatcher.find()) {
                     String categoryData = catMatcher.group();
+                    String category;
                     foodList = new ArrayList<>();
 
                     Pattern catNamePattern = Pattern.compile(">-- (.*?) --<");
                     Matcher catNameMatcher = catNamePattern.matcher(categoryData);
                     if (catNameMatcher.find()) {
-                        categories.add(catNameMatcher.group(1));
+                        category = catNameMatcher.group(1);
                     } else {
-                        categories.add("Unknown Category");
+                        category = "Unknown Category";
                     }
 
                     Pattern nutritionLinkPattern = Pattern.compile("a href=\'(.*?)\'");
                     Matcher nutritionLinkMatcher = nutritionLinkPattern.matcher(categoryData);
 
-                    // This pattern is glitchy on a Nexus S 4G running CM10.1
-                    // nightly
+                    // This pattern is glitchy on a Nexus S 4G running CM10.1 nightly
                     // Seems to activate Pattern.DOTALL by default. Set flags to
                     // 0 to try and mitigate?
                     Pattern foodPattern = Pattern.compile("<a href=.*?\">(\\w.*?)</a>", 0);
                     Matcher foodMatcher = foodPattern.matcher(categoryData);
 
                     while (foodMatcher.find() && nutritionLinkMatcher.find()) {
-                        foodList.add(new food(foodMatcher.group(1), nutritionLinkMatcher.group(1)));
+                        foodList.add(new Food(foodMatcher.group(1), nutritionLinkMatcher.group(1)));
                     }
-                    tempListOfLists.add(new MyPair<>(catNameMatcher.group(1), foodList));
+                    tempListOfLists.add(new MyPair<>(category, foodList));
                     if (isCancelled()) {
-                        return "";
+                        return null;
                     }
                 }
             }
-            return meal;
+            return tempListOfLists;
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            listOfLists.addAll(tempListOfLists);
-            mAdapter.notifyDataSetChanged();
-            mlv.setVisibility(View.VISIBLE);
-            m_pb_ll.setVisibility(View.GONE);
-            mell.setVisibility(View.GONE);
+        protected void onPostExecute(List<MyPair<String, List<Food>>> listOfLists) {
+            MyBus.getInstance().post(new LoadSucceededEvent(getTag(), listOfLists));
+            UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
 
         @Override
         protected void onCancelled() {
-            metv.setText(errorMsg);
-            mell.setVisibility(View.VISIBLE);
-            mlv.setVisibility(View.GONE);
-            m_pb_ll.setVisibility(View.GONE);
+            MyBus.getInstance().post(new LoadFailedEvent(getTag(), errorMsg));
+            UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
     }
 
-    class food {
+    @Subscribe
+    public void loadFailed(LoadFailedEvent event) {
+        if (TASK_TAG.equals(event.tag)) {
+            errorTextView.setText(event.errorMessage);
+            progressLayout.setVisibility(View.GONE);
+            errorLayout.setVisibility(View.VISIBLE);
+            foodListView.setVisibility(View.GONE);
+        }
+    }
+
+    @Subscribe
+    public void loadSucceeded(LoadSucceededEvent event) {
+        if (TASK_TAG.equals(event.tag)) {
+            listOfLists.clear();
+            listOfLists.addAll(event.listOfLists);
+            setupAdapter();
+            foodListView.setVisibility(View.VISIBLE);
+            progressLayout.setVisibility(View.GONE);
+            errorLayout.setVisibility(View.GONE);
+        }
+    }
+
+     private void prepareToLoad() {
+        progressLayout.setVisibility(View.VISIBLE);
+        errorLayout.setVisibility(View.GONE);
+        foodListView.setVisibility(View.GONE);
+    }
+
+    static class LoadSucceededEvent {
+        public String tag;
+        public List<MyPair<String, List<Food>>> listOfLists;
+
+        public LoadSucceededEvent(String tag, List<MyPair<String, List<Food>>> listOfLists) {
+            this.tag = tag;
+            this.listOfLists = listOfLists;
+        }
+    }
+
+    static class Food implements Serializable {
         String name;
         String nutritionLink;
 
-        public food(String name, String nutritionLink) {
+        public Food(String name, String nutritionLink) {
             this.name = name;
             this.nutritionLink = nutritionLink;
         }
@@ -262,23 +303,22 @@ public class MenuFragment extends Fragment {
         }
     }
 
-    class MenuAdapter extends StickyHeaderAdapter<food> {
+    static class MenuAdapter extends StickyHeaderAdapter<Food> {
 
-        public MenuAdapter(List<MyPair<String, List<food>>> all) {
-            super(all);
+        public MenuAdapter(Context con, List<MyPair<String, List<Food>>> all) {
+            super(con, all);
         }
 
         @Override
         public View getAmazingView(int position, View convertView, ViewGroup parent) {
             View res = convertView;
             if (res == null) {
-                res = getActivity().getLayoutInflater().inflate(R.layout.menu_item_view, parent,
-                        false);
+                res = LayoutInflater.from(mContext).inflate(R.layout.menu_item_view, parent, false);
             }
 
             TextView lName = (TextView) res.findViewById(R.id.lName);
 
-            food f = getItem(position);
+            Food f = getItem(position);
             lName.setText(f.name);
             return res;
         }

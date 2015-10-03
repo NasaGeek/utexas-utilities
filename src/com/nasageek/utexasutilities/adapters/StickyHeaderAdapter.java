@@ -1,5 +1,6 @@
 package com.nasageek.utexasutilities.adapters;
 
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -13,9 +14,11 @@ import java.util.List;
 public abstract class StickyHeaderAdapter<T> extends AmazingAdapter {
 
     private List<MyPair<String, List<T>>> all;
+    protected Context mContext;
 
-    public StickyHeaderAdapter(List<MyPair<String, List<T>>> all) {
+    public StickyHeaderAdapter(Context con, List<MyPair<String, List<T>>> all) {
         this.all = all;
+        this.mContext = con;
     }
 
     @Override
