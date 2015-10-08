@@ -23,11 +23,15 @@ import com.nasageek.utexasutilities.model.UTClass;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ScheduleClassAdapter extends BaseAdapter {
 
-    private ArrayList<Classtime> orderedClasstimes;
-    private ArrayList<Boolean> firstlist;
+    // contains the Classtimes that have been ordered/grouped into a fake "grid"
+    private List<Classtime> orderedClasstimes = new ArrayList<>(180);
+    // element is true if it's the first cell of a class in the schedule (cells are a half hour)
+    private List<Boolean> firstlist = new ArrayList<>(180);
     private Context mContext;
     private int currentTimePos = -1;
     private int currMinutes;
@@ -36,7 +40,7 @@ public class ScheduleClassAdapter extends BaseAdapter {
     private static final int DARKGRAY = 0xFFCECECE;
     private static final int LIGHTGRAY = 0xFFDCDCDC;
 
-    public ScheduleClassAdapter(Context c, ArrayList<UTClass> classList) {
+    public ScheduleClassAdapter(Context c, List<UTClass> classList) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
         emptyCellBackgroundPref = sp.getString("schedule_background_style", "checkhour");
         mContext = c;
@@ -50,20 +54,12 @@ public class ScheduleClassAdapter extends BaseAdapter {
             }
         }
 
-        // element is true if it's the first cell of a class in the schedule (cells are a half hour)
-        firstlist = new ArrayList<>();
-        firstlist.ensureCapacity(180);
-
-        // contains the Classtimes that have been ordered/grouped into a fake "grid"
-        orderedClasstimes = new ArrayList<>();
-        orderedClasstimes.ensureCapacity(180);
-
         for (int x = 0; x < 180; x++) {
             orderedClasstimes.add(null);
             firstlist.add(false);
         }
 
-        HashMap<Character, Integer> dayCharMap = new HashMap<>();
+        Map<Character, Integer> dayCharMap = new HashMap<>();
         // set up day map for manipulating orderedClasstimes as if it were a grid
         dayCharMap.put('M', 0);
         dayCharMap.put('T', 1);

@@ -4,7 +4,6 @@ package com.nasageek.utexasutilities.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -41,7 +40,7 @@ import java.util.regex.Pattern;
 
 import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
-public class ExamScheduleFragment extends Fragment implements ActionModeFragment {
+public class ExamScheduleFragment extends ScheduleFragment implements ActionModeFragment {
 
     private TextView login_first;
     private OkHttpClient httpclient;
@@ -55,15 +54,13 @@ public class ExamScheduleFragment extends Fragment implements ActionModeFragment
     private TextView netv;
     private TextView eetv;
     private LinearLayout ell;
-    String semId;
     private AuthCookie utdAuthCookie;
 
-    public static ExamScheduleFragment newInstance(String title, String id) {
+    public static ExamScheduleFragment newInstance(String title) {
         ExamScheduleFragment esf = new ExamScheduleFragment();
 
         Bundle args = new Bundle();
         args.putString("title", title);
-        args.putString("semId", id);
         esf.setArguments(args);
 
         return esf;
@@ -73,22 +70,6 @@ public class ExamScheduleFragment extends Fragment implements ActionModeFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View vg = inflater.inflate(R.layout.exam_schedule_fragment_layout, container, false);
-        updateView(semId, vg);
-        return vg;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        parentAct = this.getActivity();
-        semId = getArguments().getString("semId");
-        utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
-                .getAuthCookie(UTD_AUTH_COOKIE_KEY);
-    }
-
-    public void updateView(String semId, View vg) {
-        this.semId = semId;
-        examlist = new ArrayList<>();
         login_first = (TextView) vg.findViewById(R.id.login_first_tv);
         pb_ll = (LinearLayout) vg.findViewById(R.id.examschedule_progressbar_ll);
         examlistview = (ListView) vg.findViewById(R.id.examschedule_listview);
@@ -100,13 +81,19 @@ public class ExamScheduleFragment extends Fragment implements ActionModeFragment
             pb_ll.setVisibility(View.GONE);
             login_first.setVisibility(View.VISIBLE);
         } else {
-            parser();
+            httpclient = UTilitiesApplication.getInstance(getActivity()).getHttpClient();
+            new FetchExamDataTask(httpclient).execute(false);
         }
+        return vg;
     }
 
-    public void parser() {
-        httpclient = UTilitiesApplication.getInstance(getActivity()).getHttpClient();
-        new fetchExamDataTask(httpclient).execute(false);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        parentAct = this.getActivity();
+        examlist = new ArrayList<>();
+        utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
+                .getAuthCookie(UTD_AUTH_COOKIE_KEY);
     }
 
     @Override
@@ -114,7 +101,7 @@ public class ExamScheduleFragment extends Fragment implements ActionModeFragment
         return mode;
     }
 
-    private class fetchExamDataTask extends AsyncTask<Boolean, Void, Integer> {
+    private class FetchExamDataTask extends AsyncTask<Boolean, Void, Integer> {
         private OkHttpClient client;
         private String errorMsg;
 
@@ -123,7 +110,7 @@ public class ExamScheduleFragment extends Fragment implements ActionModeFragment
         private final static int RESULT_FAIL_TOO_EARLY = 2;
 
 
-        public fetchExamDataTask(OkHttpClient client) {
+        public FetchExamDataTask(OkHttpClient client) {
             this.client = client;
         }
 
@@ -265,7 +252,7 @@ public class ExamScheduleFragment extends Fragment implements ActionModeFragment
             super(c, 0, objects);
             con = c;
             exams = objects;
-            li = (LayoutInflater) con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            li = LayoutInflater.from(con);
         }
 
         @Override

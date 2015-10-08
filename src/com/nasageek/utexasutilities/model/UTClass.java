@@ -12,7 +12,7 @@ public class UTClass implements Parcelable, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String courseId, unique, name, semId, color;
+    private String courseId, unique, name, color;
 
     private ArrayList<Classtime> classtimes;
 
@@ -37,16 +37,14 @@ public class UTClass implements Parcelable, Serializable {
 
         classtimes = new ArrayList<>();
         in.readTypedList(classtimes, Classtime.CREATOR);
-        semId = in.readString();
         color = in.readString();
     }
 
     public UTClass(String unique, String courseId, String name, String[] buildingIds,
-            String[] buildingRooms, String[] days, String[] times, String semId, String color) {
+            String[] buildingRooms, String[] days, String[] times, String color) {
         this.unique = unique;
         this.courseId = courseId;
         this.name = name.replace("&amp;", "&");
-        this.semId = semId;
         this.color = color;
 
         if (buildingIds.length != buildingRooms.length) {
@@ -122,10 +120,6 @@ public class UTClass implements Parcelable, Serializable {
         return unique;
     }
 
-    public String getSemId() {
-        return semId;
-    }
-
     public String getColor() {
         return color;
     }
@@ -141,7 +135,6 @@ public class UTClass implements Parcelable, Serializable {
         out.writeString(courseId);
         out.writeString(name);
         out.writeTypedList(classtimes);
-        out.writeString(semId);
         out.writeString(color);
     }
 }

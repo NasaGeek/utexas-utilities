@@ -3,6 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <include
+        android:id="@+id/schedule_progressbar_ll"
+        layout="@layout/loading_content_layout" />
+
+    <include
+        android:id="@+id/schedule_error"
+        layout="@layout/error_message_view" />
+
     <LinearLayout
         android:id="@+id/schedule_ll"
         android:layout_width="match_parent"
@@ -58,14 +66,6 @@
                 android:text="Fri" />
         </LinearLayout>
 
-        <include
-            android:id="@+id/schedule_progressbar_ll"
-            layout="@layout/loading_content_layout" />
-
-        <include
-            android:id="@+id/schedule_error"
-            layout="@layout/error_message_view" />
-
         <GridView
             android:id="@+id/scheduleview"
             android:layout_width="match_parent"
@@ -75,18 +75,7 @@
             android:numColumns="5"
             android:stretchMode="columnWidth"
             android:verticalSpacing="0dp"
-            android:visibility="gone" 
             android:choiceMode="singleChoice"/>
-
-        <TextView
-            android:id="@+id/no_courses"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textSize="19sp"
-            android:visibility="gone" />
     </LinearLayout>
 
     <com.nasageek.utexasutilities.WrappingSlidingDrawer
@@ -96,7 +85,8 @@
         android:layout_gravity="bottom"
         android:content="@+id/content"
         android:handle="@+id/handle"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:visibility="invisible" >
 
         <ImageView
             android:id="@id/handle"
