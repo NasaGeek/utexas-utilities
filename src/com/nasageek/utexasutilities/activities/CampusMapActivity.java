@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
@@ -289,7 +290,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
     @Override
     public void onConnectionSuspended(int i) {
-        Toast.makeText(this, "ApiClient connection suspended", Toast.LENGTH_LONG).show();
+        if (BuildConfig.DEBUG) {
+            Toast.makeText(this, "ApiClient connection suspended", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -331,6 +334,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     public static class ErrorDialogFragment extends AppCompatDialogFragment {
         public ErrorDialogFragment() { }
 
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Get the error code and retrieve the appropriate dialog
