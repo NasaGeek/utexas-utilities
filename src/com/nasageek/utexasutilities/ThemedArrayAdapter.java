@@ -13,7 +13,7 @@ import android.widget.TextView;
 /**
  * Created by chris on 9/13/15.
  */
-public class ThemedArrayAdapter<T> extends ArrayAdapter implements ThemedSpinnerAdapter {
+public class ThemedArrayAdapter<T> extends ArrayAdapter<T> implements ThemedSpinnerAdapter {
 
     private final Helper mDropDownHelper;
     private int dropdownResId;

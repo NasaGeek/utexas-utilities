@@ -466,10 +466,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     protected void setupActionBar() {
         super.setupActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        @SuppressWarnings({
-                "unchecked", "rawtypes"
-        })
-        final ArrayAdapter<Route> adapter = new ThemedArrayAdapter(actionBar.getThemedContext(),
+        final ArrayAdapter<Route> adapter = new ThemedArrayAdapter<>(actionBar.getThemedContext(),
                 android.R.layout.simple_spinner_item, Route.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         actionBar.setListNavigationCallbacks(adapter, new ActionBar.OnNavigationListener() {
