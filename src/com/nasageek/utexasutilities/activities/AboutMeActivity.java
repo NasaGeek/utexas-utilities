@@ -4,6 +4,7 @@ package com.nasageek.utexasutilities.activities;
 import android.app.Dialog;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
@@ -68,36 +69,28 @@ public class AboutMeActivity extends BaseActivity {
 
     public static class PrivacyPolicyDialog extends DialogFragment {
 
-        public PrivacyPolicyDialog() {
-        }
-
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder build = new AlertDialog.Builder(getActivity());
-            build.setMessage(getString(R.string.privacy_policy)).setNeutralButton("Okay", null)
-                    .setTitle("Privacy Policy");
-            return build.create();
+            return new AlertDialog.Builder(getActivity())
+                    .setMessage(getString(R.string.privacy_policy))
+                    .setNeutralButton("Okay", null)
+                    .setTitle("Privacy Policy")
+                    .create();
         }
     }
 
     public static class LibraryLicenseDialog extends DialogFragment {
 
-        public LibraryLicenseDialog() {
-        }
-
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder build = new AlertDialog.Builder(getActivity());
-            String licenseText = getString(R.string.licenses) + "\n\n" + "Legal Notices:" + "\n\n"
-                    + GooglePlayServicesUtil.getOpenSourceSoftwareLicenseInfo(getActivity());
-
-            // licenseTextView = (TextView)
-            // view.findViewById(R.id.license_text);
-            // licenseTextView.setText(licenseText.getText()+"\n\n"+"Legal Notices:"+"\n\n"+
-            // GooglePlayServicesUtil.getOpenSourceSoftwareLicenseInfo(AboutMeActivity.this));
-            build.setMessage(licenseText).setNeutralButton("Okay", null)
-                    .setTitle("Licenses and Legal Notices");
-            return build.create();
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle("Licenses and Legal Notices")
+                    .setMessage(getString(R.string.licenses) + "\n\n" + "Legal Notices:" + "\n\n"
+                        + GooglePlayServicesUtil.getOpenSourceSoftwareLicenseInfo(getActivity()))
+                    .setNeutralButton("Okay", null)
+                    .create();
         }
     }
 }

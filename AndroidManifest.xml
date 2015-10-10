@@ -63,8 +63,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" />
         <activity
             android:name=".activities.AboutMeActivity"
-            android:label="About"
-            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" />
+            android:label="About" />
         <activity
             android:name=".activities.LoginActivity"
             android:label="Login"
