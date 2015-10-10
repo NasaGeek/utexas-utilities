@@ -407,6 +407,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                     if (mSetCameraToBounds) {
                         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(llbuilder.build(), 100));
                         mSetCameraToBounds = false;
+                        setInitialLocation = true;
                     }
                 }
             });
@@ -549,6 +550,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                     } else {
                         mMap.animateCamera(CameraUpdateFactory.newLatLng(buildingLatLng));
                     }
+                    setInitialLocation = true;
                     buildingMarker.showInfoWindow();
                 }
             }
