@@ -1,8 +1,9 @@
 package com.nasageek.utexasutilities.fragments;
 
-import android.content.DialogInterface;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.CheckBoxPreference;
@@ -86,22 +87,8 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
                 @Override
                 public boolean onPreferenceClick(final Preference preference) {
                     if (((CheckBoxPreference) preference).isChecked()) {
-                        AlertDialog.Builder nologin_builder = new AlertDialog.Builder(getActivity());
-                        nologin_builder
-                                .setMessage(
-                                        "NOTE: This will save your UT credentials to your device! If that worries you, "
-                                                + "uncheck this preference and go tap one of the buttons on the main screen to log in. See "
-                                                + "the Privacy Policy on the About page for more information.")
-                                .setCancelable(true)
-                                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-
-                        AlertDialog nologin = nologin_builder.create();
-                        nologin.show();
+                        new AutoLoginWarningDialog().show(getChildFragmentManager(),
+                                AutoLoginWarningDialog.class.getSimpleName());
                     } else {
                     /*
                      * if they switch to temp login we'll save their EID, but
@@ -198,6 +185,25 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
             f.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
         }  else {
             super.onDisplayPreferenceDialog(preference);
+        }
+    }
+
+    public static class AutoLoginWarningDialog extends DialogFragment {
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return new AlertDialog.Builder(getActivity())
+                    .setMessage(
+                            "NOTE: This will save your UT credentials to your device! If that" +
+                                    " worries you, uncheck this preference and go tap one of " +
+                                    "the buttons on the main screen to log in. See the Privacy " +
+                                    "Policy on the About page for more information.")
+                    .setCancelable(true)
+                    .setPositiveButton("Okay", (dialog, id) -> {
+                        dialog.cancel();
+                    })
+                    .create();
         }
     }
 }
