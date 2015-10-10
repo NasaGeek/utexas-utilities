@@ -156,7 +156,7 @@ public class ScheduleActivity extends BaseActivity implements
                 return CourseScheduleFragment.newInstance(coursePage.isCurrentSemester(),
                         coursePage.getUrl());
             } else {
-                return ExamScheduleFragment.newInstance(pageDescriptor.getTitle());
+                return ExamScheduleFragment.newInstance();
             }
         }
     }

@@ -4,7 +4,6 @@ package com.nasageek.utexasutilities.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.text.Html;
@@ -22,67 +21,89 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.AuthCookie;
+import com.nasageek.utexasutilities.MyBus;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.TempLoginException;
+import com.nasageek.utexasutilities.TaggedAsyncTask;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
-import com.nasageek.utexasutilities.activities.LoginActivity;
+import com.nasageek.utexasutilities.model.LoadFailedEvent;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
-public class ExamScheduleFragment extends ScheduleFragment implements ActionModeFragment {
+public class ExamScheduleFragment extends ScheduleFragment implements ActionModeFragment,
+        ActionMode.Callback, AdapterView.OnItemClickListener {
 
-    private TextView login_first;
-    private OkHttpClient httpclient;
-    private ArrayList<String> examlist;
-    private ListView examlistview;
-    private ExamAdapter ea;
-    private LinearLayout pb_ll;
-    private FragmentActivity parentAct;
-    // private View vg;
-    public ActionMode mode;
-    private TextView netv;
-    private TextView eetv;
-    private LinearLayout ell;
+    private ArrayList<String> exams = new ArrayList<>();
+    private ListView examListview;
+    private LinearLayout progressLayout;
+    private TextView errorTextView;
+    private LinearLayout errorLayout;
+    private ActionMode mode;
     private AuthCookie utdAuthCookie;
+    private String TASK_TAG;
+    private String selectedExam;
+    private UTilitiesApplication mApp = UTilitiesApplication.getInstance();
 
-    public static ExamScheduleFragment newInstance(String title) {
-        ExamScheduleFragment esf = new ExamScheduleFragment();
-
-        Bundle args = new Bundle();
-        args.putString("title", title);
-        esf.setArguments(args);
-
-        return esf;
+    public static ExamScheduleFragment newInstance() {
+        return new ExamScheduleFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View vg = inflater.inflate(R.layout.exam_schedule_fragment_layout, container, false);
-        login_first = (TextView) vg.findViewById(R.id.login_first_tv);
-        pb_ll = (LinearLayout) vg.findViewById(R.id.examschedule_progressbar_ll);
-        examlistview = (ListView) vg.findViewById(R.id.examschedule_listview);
-        netv = (TextView) vg.findViewById(R.id.no_exams);
-        ell = (LinearLayout) vg.findViewById(R.id.examschedule_error);
-        eetv = (TextView) vg.findViewById(R.id.tv_failure);
+        progressLayout = (LinearLayout) vg.findViewById(R.id.examschedule_progressbar_ll);
+        examListview = (ListView) vg.findViewById(R.id.examschedule_listview);
+        errorLayout = (LinearLayout) vg.findViewById(R.id.examschedule_error);
+        errorTextView = (TextView) vg.findViewById(R.id.tv_failure);
+
+        if (savedInstanceState != null) {
+            switch (loadStatus) {
+                case NOT_STARTED:
+                    // defaults should suffice
+                    break;
+                case LOADING:
+                    progressLayout.setVisibility(View.VISIBLE);
+                    errorLayout.setVisibility(View.GONE);
+                    examListview.setVisibility(View.GONE);
+                    break;
+                case SUCCEEDED:
+                    progressLayout.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.GONE);
+                    examListview.setVisibility(View.VISIBLE);
+                    break;
+                case FAILED:
+                    errorTextView.setText(savedInstanceState.getString("errorText"));
+                    progressLayout.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.VISIBLE);
+                    examListview.setVisibility(View.GONE);
+                    break;
+            }
+        }
 
         if (!utdAuthCookie.hasCookieBeenSet()) {
-            pb_ll.setVisibility(View.GONE);
-            login_first.setVisibility(View.VISIBLE);
+            progressLayout.setVisibility(View.GONE);
+            errorTextView.setText(getString(R.string.login_first));
+            errorTextView.setVisibility(View.VISIBLE);
+        } else if (loadStatus == LoadStatus.NOT_STARTED && mApp.getCachedTask(TASK_TAG) == null){
+            loadStatus = LoadStatus.LOADING;
+            prepareToLoad();
+            FetchExamDataTask task = new FetchExamDataTask(TASK_TAG);
+            mApp.cacheTask(task.getTag(), task);
+            task.execute(false);
         } else {
-            httpclient = UTilitiesApplication.getInstance(getActivity()).getHttpClient();
-            new FetchExamDataTask(httpclient).execute(false);
+            setupAdapter();
         }
         return vg;
     }
@@ -90,10 +111,35 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        parentAct = this.getActivity();
-        examlist = new ArrayList<>();
-        utdAuthCookie = ((UTilitiesApplication) getActivity().getApplication())
-                .getAuthCookie(UTD_AUTH_COOKIE_KEY);
+        if (savedInstanceState != null) {
+            exams = savedInstanceState.getStringArrayList("exams");
+        }
+        utdAuthCookie = mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY);
+        TASK_TAG = getClass().getSimpleName();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        MyBus.getInstance().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        MyBus.getInstance().unregister(this);
+        super.onStop();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList("exams", exams);
+        outState.putString("errorText", errorTextView.getText().toString());
+    }
+
+    private void setupAdapter() {
+        ExamAdapter adapter = new ExamAdapter(getActivity(), exams);
+        examListview.setAdapter(adapter);
     }
 
     @Override
@@ -101,30 +147,75 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
         return mode;
     }
 
-    private class FetchExamDataTask extends AsyncTask<Boolean, Void, Integer> {
-        private OkHttpClient client;
+    private void prepareToLoad() {
+        progressLayout.setVisibility(View.VISIBLE);
+        examListview.setVisibility(View.GONE);
+        errorLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        mode.setTitle("Exam Info");
+        MenuInflater inflater = getActivity().getMenuInflater();
+        String[] elements = selectedExam.split("\\^");
+        if (elements.length >= 3) { // TODO: check this?
+            if (elements[2].contains("The department")
+                    || elements[2]
+                    .contains("Information on final exams is available for Nine-Week Summer Session(s) only.")
+                    || elements.length <= 4) {
+                return true;
+            }
+        } else {
+            return true;
+        }
+        inflater.inflate(R.menu.schedule_action_mode, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.locate_class:
+                ArrayList<String> building = new ArrayList<>();
+                Intent map = new Intent(getActivity().getString(R.string.building_intent), null,
+                        getActivity(), CampusMapActivity.class);
+
+                String[] elements = selectedExam.split("\\^");
+                if (elements.length >= 5) {
+                    building.add(elements[4].split(" ")[0]);
+                    map.putStringArrayListExtra("buildings", building);
+                    // map.setData(Uri.parse(elements[4].split(" ")[0]));
+                    getActivity().startActivity(map);
+                    return true;
+                } else {
+                    Toast.makeText(getActivity(), "Your exam's location could not be found",
+                            Toast.LENGTH_SHORT).show();
+                }
+        }
+        return true;
+
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) { }
+
+    static class FetchExamDataTask extends TaggedAsyncTask<Boolean, Void, List<String>> {
         private String errorMsg;
 
-        private final static int RESULT_SUCCESS = 0;
-        private final static int RESULT_FAIL_NOT_ENROLLED = 1;
-        private final static int RESULT_FAIL_TOO_EARLY = 2;
-
-
-        public FetchExamDataTask(OkHttpClient client) {
-            this.client = client;
+        public FetchExamDataTask(String tag) {
+            super(tag);
         }
 
         @Override
-        protected void onPreExecute() {
-            pb_ll.setVisibility(View.VISIBLE);
-            examlistview.setVisibility(View.GONE);
-            netv.setVisibility(View.GONE);
-            ell.setVisibility(View.GONE);
-        }
-
-        @Override
-        protected Integer doInBackground(Boolean... params) {
+        protected List<String> doInBackground(Boolean... params) {
             Boolean recursing = params[0];
+            List<String> examlist = new ArrayList<>();
+            OkHttpClient client = UTilitiesApplication.getInstance().getHttpClient();
 
             String reqUrl = "https://utdirect.utexas.edu/registrar/exam_schedule.WBX";
             Request request = new Request.Builder()
@@ -142,47 +233,52 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
                 return null;
             }
 
-            if (pagedata.contains("<title>UT EID Login</title>")) {
-                errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-                if (parentAct != null) {
-                    UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
-                    if (!recursing) {
-                        try {
-                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
-                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
-                        } catch (IOException e) {
-                            errorMsg = "UTilities could not fetch your exam schedule";
-                            cancel(true);
-                            e.printStackTrace();
-                            return null;
-                        } catch (TempLoginException tle) {
-                            /*
-                            ooooh boy is this lazy. I'd rather not init SharedPreferences here
-                            to check if persistent login is on, so we'll just catch the exception
-                             */
-                            Intent login = new Intent(parentAct, LoginActivity.class);
-                            login.putExtra("activity", parentAct.getIntent().getComponent()
-                                    .getClassName());
-                            login.putExtra("service", 'u');
-                            parentAct.startActivity(login);
-                            parentAct.finish();
-                            errorMsg = "Session expired, please log in again";
-                            cancel(true);
-                            return null;
-                        }
-                        return doInBackground(true);
-                    } else {
-                        mApp.logoutAll();
-                    }
-                }
-                cancel(true);
-                return null;
-            }
+//            if (pagedata.contains("<title>UT EID Login</title>")) {
+//                errorMsg = "You've been logged out of UTDirect, back out and log in again.";
+//                if (parentAct != null) {
+//                    UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
+//                    if (!recursing) {
+//                        try {
+//                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
+//                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
+//                        } catch (IOException e) {
+//                            errorMsg = "UTilities could not fetch your exam schedule";
+//                            cancel(true);
+//                            e.printStackTrace();
+//                            return null;
+//                        } catch (TempLoginException tle) {
+//                            /*
+//                            ooooh boy is this lazy. I'd rather not init SharedPreferences here
+//                            to check if persistent login is on, so we'll just catch the exception
+//                             */
+//                            Intent login = new Intent(parentAct, LoginActivity.class);
+//                            login.putExtra("activity", parentAct.getIntent().getComponent()
+//                                    .getClassName());
+//                            login.putExtra("service", 'u');
+//                            parentAct.startActivity(login);
+//                            parentAct.finish();
+//                            errorMsg = "Session expired, please log in again";
+//                            cancel(true);
+//                            return null;
+//                        }
+//                        return doInBackground(true);
+//                    } else {
+//                        mApp.logoutAll();
+//                    }
+//                }
+//                cancel(true);
+//                return null;
+//            }
             if (pagedata.contains("will be available approximately three weeks")) {
-                return RESULT_FAIL_TOO_EARLY;
+                cancel(true);
+                errorMsg = "'Tis not the season for final exams.\nTry back later!" +
+                            "\n(about 3 weeks before they begin)";
+                return null;
             } else if (pagedata.contains("Our records indicate that you are not enrolled" +
                     " for the current semester.")) {
-                return RESULT_FAIL_NOT_ENROLLED;
+                cancel(true);
+                errorMsg = "You aren't enrolled for the current semester.";
+                return null;
             }
 
             Pattern rowpattern = Pattern.compile("<tr >.*?</tr>", Pattern.DOTALL);
@@ -206,68 +302,56 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
                 }
                 examlist.add(rowstring);
             }
-            return RESULT_SUCCESS;
+            return examlist;
         }
 
         @Override
-        protected void onPostExecute(Integer result) {
-            switch (result) {
-                case RESULT_SUCCESS:
-                    ea = new ExamAdapter(parentAct, examlist);
-                    examlistview.setAdapter(ea);
-                    examlistview.setOnItemClickListener(ea);
-                    examlistview.setVisibility(View.VISIBLE);
-                    break;
-                case RESULT_FAIL_TOO_EARLY:
-                    netv.setText("'Tis not the season for final exams.\nTry back later!" +
-                            "\n(about 3 weeks before they begin)");
-                    netv.setVisibility(View.VISIBLE);
-                    break;
-                case RESULT_FAIL_NOT_ENROLLED:
-                    netv.setText("You aren't enrolled for the current semester.");
-                    netv.setVisibility(View.VISIBLE);
-                    break;
-            }
-            pb_ll.setVisibility(View.GONE);
+        protected void onPostExecute(List<String> result) {
+            MyBus.getInstance().post(new LoadSucceededEvent(getTag(), result));
+            UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
 
         @Override
         protected void onCancelled() {
-            eetv.setText(errorMsg);
-            netv.setVisibility(View.GONE);
-            pb_ll.setVisibility(View.GONE);
-            examlistview.setVisibility(View.GONE);
-            login_first.setVisibility(View.GONE);
-            ell.setVisibility(View.VISIBLE);
+            MyBus.getInstance().post(new LoadFailedEvent(getTag(), errorMsg));
+            UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
     }
 
-    private class ExamAdapter extends ArrayAdapter<String> implements
-            AdapterView.OnItemClickListener {
-        private Context con;
-        private ArrayList<String> exams;
-        private LayoutInflater li;
+    @Subscribe
+    public void loadFailed(LoadFailedEvent event) {
+        if (event.tag.equals(TASK_TAG)) {
+            loadStatus = LoadStatus.FAILED;
+            progressLayout.setVisibility(View.GONE);
+            examListview.setVisibility(View.GONE);
+            errorTextView.setText(event.errorMessage);
+            errorLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Subscribe
+    public void loadSucceeded(LoadSucceededEvent event) {
+        if (event.tag.equals(TASK_TAG)) {
+            loadStatus = LoadStatus.SUCCEEDED;
+            exams.clear();
+            exams.addAll(event.exams);
+            progressLayout.setVisibility(View.GONE);
+            setupAdapter();
+            examListview.setOnItemClickListener(this);
+            examListview.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        selectedExam = exams.get(position);
+        mode = ((AppCompatActivity)getActivity()).startSupportActionMode(this);
+    }
+
+    static class ExamAdapter extends ArrayAdapter<String> {
 
         public ExamAdapter(Context c, ArrayList<String> objects) {
             super(c, 0, objects);
-            con = c;
-            exams = objects;
-            li = LayoutInflater.from(con);
-        }
-
-        @Override
-        public int getCount() {
-            return exams.size();
-        }
-
-        @Override
-        public String getItem(int position) {
-            return exams.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
         }
 
         @Override
@@ -282,7 +366,7 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            String[] examdata = exams.get(position).split("\\^");
+            String[] examdata = getItem(position).split("\\^");
             boolean examRequested = false, summerSession = false;
             String id = "", name = "", date = "", location = "", unique = "";
 
@@ -310,9 +394,11 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
                 ex.printStackTrace();
             }
             String course = "";
-            ViewGroup vg = (ViewGroup) convertView;
+
+            View vg = convertView;
             if (vg == null) {
-                vg = (ViewGroup) li.inflate(R.layout.exam_item_view, parent, false);
+                vg = LayoutInflater.from(getContext())
+                        .inflate(R.layout.exam_item_view, parent, false);
             }
             TextView courseview = (TextView) vg.findViewById(R.id.exam_item_header_text);
             TextView left = (TextView) vg.findViewById(R.id.examdateview);
@@ -328,75 +414,18 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
                 right.setVisibility(View.VISIBLE);
                 right.setText(location);
             }
-
             courseview.setText(course);
             return vg;
         }
+    }
 
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            mode = ((AppCompatActivity)getActivity())
-                    .startSupportActionMode(new ScheduleActionMode(position));
-        }
+    static class LoadSucceededEvent {
+        public List<String> exams;
+        public String tag;
 
-        final class ScheduleActionMode implements ActionMode.Callback {
-
-            int position;
-
-            public ScheduleActionMode(int pos) {
-                position = pos;
-            }
-
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.setTitle("Exam Info");
-                MenuInflater inflater = getActivity().getMenuInflater();
-                String[] elements = exams.get(position).split("\\^");
-                if (elements.length >= 3) { // TODO: check this?
-                    if (elements[2].contains("The department")
-                            || elements[2]
-                                    .contains("Information on final exams is available for Nine-Week Summer Session(s) only.")
-                            || elements.length <= 4) {
-                        return true;
-                    }
-                } else {
-                    return true;
-                }
-                inflater.inflate(R.menu.schedule_action_mode, menu);
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.locate_class:
-                        ArrayList<String> building = new ArrayList<>();
-                        Intent map = new Intent(con.getString(R.string.building_intent), null, con,
-                                CampusMapActivity.class);
-
-                        String[] elements = exams.get(position).split("\\^");
-                        if (elements.length >= 5) {
-                            building.add(elements[4].split(" ")[0]);
-                            map.putStringArrayListExtra("buildings", building);
-                            // map.setData(Uri.parse(elements[4].split(" ")[0]));
-                            con.startActivity(map);
-                            return true;
-                        } else {
-                            Toast.makeText(con, "Your exam's location could not be found",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                }
-                return true;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-            }
+        public LoadSucceededEvent(String tag, List<String> exams) {
+            this.tag = tag;
+            this.exams = exams;
         }
     }
 }
