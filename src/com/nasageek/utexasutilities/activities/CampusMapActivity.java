@@ -521,6 +521,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
      *                 other than the dashboard
      */
     public void loadBuildingOverlay(boolean centerCameraOnBuildings, boolean autoZoom) {
+        // TODO: don't center on buildings when restoring state
         int foundCount = 0;
         llbuilder = LatLngBounds.builder();
 

@@ -80,7 +80,6 @@
         <activity
             android:name=".activities.CampusMapActivity"
             android:label=""
-            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"
             android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
