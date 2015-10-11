@@ -7,7 +7,7 @@ import android.support.v4.app.Fragment;
  * Created by chris on 10/3/15.
  */
 public abstract class DataLoadFragment extends Fragment {
-    enum LoadStatus {
+    public enum LoadStatus {
         NOT_STARTED, LOADING, SUCCEEDED, FAILED
     }
     protected LoadStatus loadStatus = LoadStatus.NOT_STARTED;

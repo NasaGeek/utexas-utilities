@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingBottom="3dp"
+        android:freezesText="true"
         android:textSize="15sp" />
 
     <me.zhanghai.android.materialprogressbar.MaterialProgressBar

@@ -59,8 +59,7 @@
 
         <activity
             android:name=".activities.DataUsageActivity"
-            android:label="Data Usage"
-            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout" />
+            android:label="Data Usage" />
         <activity
             android:name=".activities.AboutMeActivity"
             android:label="About" />
