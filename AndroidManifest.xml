@@ -67,7 +67,6 @@
         <activity
             android:name=".activities.LoginActivity"
             android:label="Login"
-            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"
             android:noHistory="true" />
         <activity
             android:name=".activities.PreferenceActivity"
