@@ -50,6 +50,7 @@ public class TransactionsFragment extends DataLoadFragment {
     private RequestBody form;
     private ArrayList<Transaction> transactionlist = new ArrayList<>();
     private FetchTransactionDataTask fetch;
+    private String url;
     private String TASK_TAG;
     private final UTilitiesApplication mApp = UTilitiesApplication.getInstance();
 
@@ -59,11 +60,12 @@ public class TransactionsFragment extends DataLoadFragment {
 
     private TransactionType mType;
 
-    public static TransactionsFragment newInstance(TransactionType type) {
+    public static TransactionsFragment newInstance(TransactionType type, String url) {
         TransactionsFragment f = new TransactionsFragment();
 
         Bundle args = new Bundle();
         args.putSerializable("type", type);
+        args.putString("url", url);
         f.setArguments(args);
 
         return f;
@@ -117,6 +119,7 @@ public class TransactionsFragment extends DataLoadFragment {
 
         FormEncodingBuilder postdata = new FormEncodingBuilder();
         mType = (TransactionType) getArguments().getSerializable("type");
+        url = getArguments().getString("url");
         TASK_TAG = getClass().getSimpleName() + mType.toString();
         if (TransactionType.Bevo.equals(mType)) {
             postdata.add("sRequestSw", "B");
@@ -159,7 +162,7 @@ public class TransactionsFragment extends DataLoadFragment {
         if (adapter.page == 1 || refresh) {
             prepareToLoad();
         }
-        fetch = new FetchTransactionDataTask(TASK_TAG, mType, form);
+        fetch = new FetchTransactionDataTask(TASK_TAG, mType, url, form);
         mApp.cacheTask(fetch.getTag(), fetch);
         Utility.parallelExecute(fetch, false);
     }
@@ -189,12 +192,14 @@ public class TransactionsFragment extends DataLoadFragment {
         private String balance = "";
         private List<Transaction> transactions = new ArrayList<>();
         private TransactionType type;
+        private String url;
         private RequestBody form;
 
-        public FetchTransactionDataTask(String tag, TransactionType type,
+        public FetchTransactionDataTask(String tag, TransactionType type, String url,
                                         RequestBody form) {
             super(tag);
             this.type = type;
+            this.url = url;
             this.form = form;
         }
 
@@ -204,14 +209,13 @@ public class TransactionsFragment extends DataLoadFragment {
             OkHttpClient client = UTilitiesApplication.getInstance().getHttpClient();
             client.setCookieHandler(CookieHandler.getDefault());
 
-            String reqUrl = "https://utdirect.utexas.edu/hfis/transactions.WBX";
             HttpCookie screenSizeCookie = new HttpCookie("webBrowserSize", "B");
             screenSizeCookie.setDomain(".utexas.edu");
             ((CookieManager) client.getCookieHandler()).getCookieStore()
                    .add(URI.create(".utexas.edu"), screenSizeCookie);
             Request request = new Request.Builder()
                     .post(form)
-                    .url(reqUrl)
+                    .url(url)
                     .build();
             String pagedata = "";
             transactions = new ArrayList<>();
