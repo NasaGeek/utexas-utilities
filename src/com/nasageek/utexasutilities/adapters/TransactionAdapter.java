@@ -135,7 +135,7 @@ public class TransactionAdapter extends AmazingAdapter {
         if (super.automaticNextPageLoading) {
             nextPage();
             // Log.d("TransactionAdapter","Page requested!");
-            frag.parser(false);
+            frag.loadData(false);
         }
         super.automaticNextPageLoading = false;
     }

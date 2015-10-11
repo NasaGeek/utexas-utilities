@@ -1,9 +1,7 @@
 
 package com.nasageek.utexasutilities.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,18 +11,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.foound.widget.AmazingListView;
-import com.nasageek.utexasutilities.AsyncTask;
+import com.nasageek.utexasutilities.MyBus;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.TempLoginException;
+import com.nasageek.utexasutilities.TaggedAsyncTask;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.Utility;
-import com.nasageek.utexasutilities.activities.LoginActivity;
 import com.nasageek.utexasutilities.adapters.TransactionAdapter;
+import com.nasageek.utexasutilities.model.LoadFailedEvent;
 import com.nasageek.utexasutilities.model.Transaction;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
 import java.net.CookieHandler;
@@ -32,29 +32,26 @@ import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
-
 //TODO: last transaction doesn't show when loading dialog is present at the bottom, low priority fix
 
-public class TransactionsFragment extends Fragment {
-    private OkHttpClient httpclient;
-    private LinearLayout t_pb_ll;
-    private AmazingListView tlv;
-    private ArrayList<Transaction> transactionlist;
-    private TransactionAdapter ta;
-    private TextView balanceLabelView, balanceView;
-    private View balanceLabelSeparatorView;
-    private TextView etv;
-    private LinearLayout ell, transactionsLayout;
+public class TransactionsFragment extends DataLoadFragment {
+    private LinearLayout progressLayout;
+    private LinearLayout transactionsLayout;
+    private AmazingListView transactionsListView;
+    private TextView balanceView;
+    private LinearLayout errorLayout;
+    private TextView errorTextView;
+    private TransactionAdapter adapter;
 
-    private FormEncodingBuilder postdata;
-
-    private View vg;
-    private String balance;
-    private fetchTransactionDataTask fetch;
+    private RequestBody form;
+    private ArrayList<Transaction> transactionlist = new ArrayList<>();
+    private FetchTransactionDataTask fetch;
+    private String TASK_TAG;
+    private final UTilitiesApplication mApp = UTilitiesApplication.getInstance();
 
     public enum TransactionType {
         Bevo, Dinein
@@ -62,15 +59,11 @@ public class TransactionsFragment extends Fragment {
 
     private TransactionType mType;
 
-    public TransactionsFragment() {
-    }
-
-    public static TransactionsFragment newInstance(String title, TransactionType type) {
+    public static TransactionsFragment newInstance(TransactionType type) {
         TransactionsFragment f = new TransactionsFragment();
 
         Bundle args = new Bundle();
         args.putSerializable("type", type);
-        args.putString("title", title);
         f.setArguments(args);
 
         return f;
@@ -78,80 +71,96 @@ public class TransactionsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        vg = inflater.inflate(R.layout.transactions_fragment_layout, container, false);
+        View vg = inflater.inflate(R.layout.transactions_fragment_layout, container, false);
 
-        tlv = (AmazingListView) vg.findViewById(R.id.transactions_listview);
-        t_pb_ll = (LinearLayout) vg.findViewById(R.id.trans_progressbar_ll);
+        transactionsListView = (AmazingListView) vg.findViewById(R.id.transactions_listview);
+        progressLayout = (LinearLayout) vg.findViewById(R.id.trans_progressbar_ll);
         transactionsLayout = (LinearLayout) vg.findViewById(R.id.transactions_layout);
-        etv = (TextView) vg.findViewById(R.id.tv_failure);
-        ell = (LinearLayout) vg.findViewById(R.id.trans_error);
-        balanceLabelView = (TextView) vg.findViewById(R.id.balance_label_tv);
-        balanceLabelSeparatorView = vg.findViewById(R.id.balance_label_separator);
+        errorTextView = (TextView) vg.findViewById(R.id.tv_failure);
+        errorLayout = (LinearLayout) vg.findViewById(R.id.trans_error);
         balanceView = (TextView) vg.findViewById(R.id.balance_tv);
-
-        /*
-         * if(TransactionType.Bevo.equals(mType))
-         * balanceLabelView.setText("Bevo Bucks "); else
-         * if(TransactionType.Dinein.equals(mType))
-         * balanceLabelView.setText("Dine In Dollars ");
-         */
-        if (!"".equals(balance)) {
-            balanceView.setText(balance);
+        if (savedInstanceState != null) {
+            balanceView.setText(savedInstanceState.getString("balance"));
+            switch (loadStatus) {
+                case NOT_STARTED:
+                    // defaults should suffice
+                    break;
+                case LOADING:
+                    progressLayout.setVisibility(View.VISIBLE);
+                    errorLayout.setVisibility(View.GONE);
+                    transactionsLayout.setVisibility(View.GONE);
+                    break;
+                case SUCCEEDED:
+                    progressLayout.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.GONE);
+                    transactionsLayout.setVisibility(View.VISIBLE);
+                    break;
+                case FAILED:
+                    errorTextView.setText(savedInstanceState.getString("errorText"));
+                    progressLayout.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.VISIBLE);
+                    transactionsLayout.setVisibility(View.GONE);
+                    break;
+            }
         }
-
-        tlv.setLoadingView(inflater.inflate(R.layout.loading_content_layout, null));
-        tlv.setAdapter(ta);
-
-        if (ta.getCount() == 0) {
-            parser(false);
+        transactionsListView.setLoadingView(inflater.inflate(R.layout.loading_content_layout, null));
+        transactionsListView.setAdapter(adapter);
+        if (loadStatus == LoadStatus.NOT_STARTED && mApp.getCachedTask(TASK_TAG) == null) {
+            loadData(false);
         }
-
         return vg;
-
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
 
-        postdata = new FormEncodingBuilder();
+        FormEncodingBuilder postdata = new FormEncodingBuilder();
         mType = (TransactionType) getArguments().getSerializable("type");
+        TASK_TAG = getClass().getSimpleName() + mType.toString();
         if (TransactionType.Bevo.equals(mType)) {
             postdata.add("sRequestSw", "B");
         } else if (TransactionType.Dinein.equals(mType)) {
             postdata.add("rRequestSw", "B");
         }
+        form = postdata.build();
 
-        if (savedInstanceState == null) {
-            transactionlist = new ArrayList<>();
-            balance = "";
-        } else {
+        if (savedInstanceState != null) {
             transactionlist = savedInstanceState.getParcelableArrayList("transactions");
-            // someone was crashing with a null transactionlist, shouldn't be
-            // happening
-            // but this should fix it regardless
-            if (transactionlist == null) {
-                transactionlist = new ArrayList<>();
-            }
-            balance = savedInstanceState.getString("balance");
         }
+        adapter = new TransactionAdapter(getActivity(), this, transactionlist);
+    }
 
-        ta = new TransactionAdapter(getActivity(), this, transactionlist);
+    @Override
+    public void onStart() {
+        super.onStart();
+        MyBus.getInstance().register(this);
+    }
 
+    @Override
+    public void onStop() {
+        MyBus.getInstance().unregister(this);
+        super.onStop();
     }
 
     @Override
     public void onSaveInstanceState(Bundle out) {
         super.onSaveInstanceState(out);
         out.putParcelableArrayList("transactions", transactionlist);
-        out.putString("balance", balance);
+        out.putString("balance", balanceView.getText().toString());
+        out.putString("errorText", errorTextView.getText().toString());
+//        out.putSerializable("form", form);
     }
 
-    public void parser(boolean refresh) {
-        httpclient = UTilitiesApplication.getInstance(getActivity()).getHttpClient();
-        httpclient.setCookieHandler(CookieHandler.getDefault());
-        fetch = new fetchTransactionDataTask(httpclient, refresh);
+    public void loadData(boolean refresh) {
+        // only show the loading view if we're loading the first page of
+        // transactions or refreshing
+        loadStatus = LoadStatus.LOADING;
+        if (adapter.page == 1 || refresh) {
+            prepareToLoad();
+        }
+        fetch = new FetchTransactionDataTask(TASK_TAG, mType, form);
+        mApp.cacheTask(fetch.getTag(), fetch);
         Utility.parallelExecute(fetch, false);
     }
 
@@ -169,45 +178,31 @@ public class TransactionsFragment extends Fragment {
             fetch = null;
         }
         transactionlist.clear();
-        balance = "";
 
-        postdata = new FormEncodingBuilder();
-        if (TransactionType.Bevo.equals(mType)) {
-            postdata.add("sRequestSw", "B");
-        } else if (TransactionType.Dinein.equals(mType)) {
-            postdata.add("rRequestSw", "B");
-        }
-
-        parser(true);
-        ta.resetPage();
-        ((ListView) tlv).setSelectionFromTop(0, 0);
+        loadData(true);
+        adapter.resetPage();
+        ((ListView) transactionsListView).setSelectionFromTop(0, 0);
     }
 
-    private class fetchTransactionDataTask extends AsyncTask<Boolean, Void, Character> {
-        private OkHttpClient client;
-        private boolean refresh;
+    static class FetchTransactionDataTask extends TaggedAsyncTask<Boolean, Void, Boolean> {
         private String errorMsg;
-        private ArrayList<Transaction> tempTransactionList;
+        private String balance = "";
+        private List<Transaction> transactions = new ArrayList<>();
+        private TransactionType type;
+        private RequestBody form;
 
-        public fetchTransactionDataTask(OkHttpClient client, boolean refresh) {
-            this.client = client;
-            this.refresh = refresh;
+        public FetchTransactionDataTask(String tag, TransactionType type,
+                                        RequestBody form) {
+            super(tag);
+            this.type = type;
+            this.form = form;
         }
 
         @Override
-        protected void onPreExecute() {
-            // only show the loading view if we're loading the first page of
-            // transactions or refreshing
-            if (ta.page == 1 || refresh) {
-                t_pb_ll.setVisibility(View.VISIBLE);
-                transactionsLayout.setVisibility(View.GONE);
-                ell.setVisibility(View.GONE);
-            }
-        }
-
-        @Override
-        protected Character doInBackground(Boolean... params) {
+        protected Boolean doInBackground(Boolean... params) {
             Boolean recursing = params[0];
+            OkHttpClient client = UTilitiesApplication.getInstance().getHttpClient();
+            client.setCookieHandler(CookieHandler.getDefault());
 
             String reqUrl = "https://utdirect.utexas.edu/hfis/transactions.WBX";
             HttpCookie screenSizeCookie = new HttpCookie("webBrowserSize", "B");
@@ -215,11 +210,11 @@ public class TransactionsFragment extends Fragment {
             ((CookieManager) client.getCookieHandler()).getCookieStore()
                    .add(URI.create(".utexas.edu"), screenSizeCookie);
             Request request = new Request.Builder()
-                    .post(postdata.build())
+                    .post(form)
                     .url(reqUrl)
                     .build();
             String pagedata = "";
-            tempTransactionList = new ArrayList<>();
+            transactions = new ArrayList<>();
             try {
                 Response response = client.newCall(request).execute();
                 pagedata = response.body().string();
@@ -229,44 +224,42 @@ public class TransactionsFragment extends Fragment {
                 cancel(true);
                 return null;
             }
-
-            if (pagedata.contains("<title>UT EID Login</title>")) {
-                errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-                if (getActivity() != null) {
-                    UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();
-                    if (!recursing) {
-                        try {
-                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
-                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
-                        } catch (IOException e) {
-                            errorMsg
-                                    = "UTilities could not fetch your transaction data.  Try refreshing.";
-                            cancel(true);
-                            e.printStackTrace();
-                            return null;
-                        } catch (TempLoginException tle) {
-                            /*
-                            ooooh boy is this lazy. I'd rather not init SharedPreferences here
-                            to check if persistent login is on, so we'll just catch the exception
-                             */
-                            Intent login = new Intent(getActivity(), LoginActivity.class);
-                            login.putExtra("activity", getActivity().getIntent().getComponent()
-                                    .getClassName());
-                            login.putExtra("service", 'u');
-                            getActivity().startActivity(login);
-                            getActivity().finish();
-                            errorMsg = "Session expired, please log in again";
-                            cancel(true);
-                            return null;
-                        }
-                        return doInBackground(true);
-                    } else {
-                      mApp.logoutAll();
-                    }
-                }
-                cancel(true);
-                return null;
-            }
+//
+//            if (pagedata.contains("<title>UT EID Login</title>")) {
+//                errorMsg = "You've been logged out of UTDirect, back out and log in again.";
+//                UTilitiesApplication mApp = UTilitiesApplication.getInstance();
+//                if (!recursing) {
+//                    try {
+//                        mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
+//                        mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
+//                    } catch (IOException e) {
+//                        errorMsg
+//                                = "UTilities could not fetch your transaction data.  Try refreshing.";
+//                        cancel(true);
+//                        e.printStackTrace();
+//                        return null;
+//                    } catch (TempLoginException tle) {
+//                        /*
+//                        ooooh boy is this lazy. I'd rather not init SharedPreferences here
+//                        to check if persistent login is on, so we'll just catch the exception
+//                         */
+//                        Intent login = new Intent(mApp, LoginActivity.class);
+//                        login.putExtra("activity", getActivity().getIntent().getComponent()
+//                                .getClassName());
+//                        login.putExtra("service", 'u');
+//                        mApp.startActivity(login);
+//                        getActivity().finish();
+//                        errorMsg = "Session expired, please log in again";
+//                        cancel(true);
+//                        return null;
+//                    }
+//                    return doInBackground(true);
+//                } else {
+//                  mApp.logoutAll();
+//                }
+//                cancel(true);
+//                return null;
+//            }
 
             Pattern reasonPattern = Pattern.compile("\"center\">\\s+(.*?)\\s*<");
             Matcher reasonMatcher = reasonPattern.matcher(pagedata);
@@ -280,14 +273,21 @@ public class TransactionsFragment extends Fragment {
             Pattern balancePattern = Pattern.compile("\"right\">\\s*(.*)</td>\\s*</tr");
             Matcher balanceMatcher = balancePattern.matcher(pagedata);
 
-            if (balanceMatcher.find() && ta.page == 1) {
+            // might need to check if we're on page 1 before setting balance
+            if (balanceMatcher.find()) {
                 balance = balanceMatcher.group(1);
             }
             while (reasonMatcher.find() && costMatcher.find() && dateMatcher.find()
                     && !this.isCancelled()) {
                 Transaction tran = new Transaction(reasonMatcher.group(1).trim(), costMatcher
                         .group(1).replaceAll("\\s", ""), dateMatcher.group(1));
-                tempTransactionList.add(tran);
+                transactions.add(tran);
+            }
+            if (transactions.isEmpty()) {
+                cancel(true);
+                errorMsg = UTilitiesApplication.getInstance()
+                                .getText(R.string.balance_tabs_no_balance).toString();
+                return null;
             }
             // check for additional pages
             if (pagedata.contains("<form name=\"next\"") && !this.isCancelled()) {
@@ -299,73 +299,111 @@ public class TransactionsFragment extends Fragment {
                 Matcher dateTimeMatcher = dateTimePattern.matcher(pagedata);
                 if (nameMatcher.find() && nextTransMatcher.find() && dateTimeMatcher.find()
                         && !this.isCancelled()) {
-                    postdata = new FormEncodingBuilder();
+                    FormEncodingBuilder postdata = new FormEncodingBuilder();
                     postdata.add("sNameFL", nameMatcher.group(1));
                     postdata.add("nexttransid", nextTransMatcher.group(1));
-                    if (TransactionType.Bevo.equals(mType)) {
+                    if (TransactionType.Bevo.equals(type)) {
                         postdata.add("sRequestSw", "B");
-                    } else if (TransactionType.Dinein.equals(mType)) {
+                    } else if (TransactionType.Dinein.equals(type)) {
                         postdata.add("rRequestSw", "B");
                     }
                     postdata.add("sStartDateTime", dateTimeMatcher.group(1));
+                    form = postdata.build();
                 }
-                return 'm';
+                return true;
             } else {
-                return 'n';
+                return false;
             }
         }
 
         @Override
-        protected void onPostExecute(Character result) {
-            transactionlist.addAll(tempTransactionList);
-            ta.notifyDataSetChanged();
-            ta.updateHeaders();
-            ta.notifyDataSetChanged();
-            int index = tlv.getFirstVisiblePosition();
-            View v = tlv.getChildAt(0);
-            int top = (v == null) ? 0 : v.getTop();
-            if (result == 'm') {
-                ta.notifyMayHaveMorePages();
-            }
-            if (result == 'n') {
-                ta.notifyNoMorePages();
-            }
-            if (!refresh) {
-                ((ListView) tlv).setSelectionFromTop(index, top);
-            } else {
-                tlv.setSelection(0);
-            }
+        protected void onPostExecute(Boolean morePagesAvailable) {
+            MyBus.getInstance().post(new LoadSucceededEvent(getTag(), transactions, balance,
+                    morePagesAvailable, form));
+            UTilitiesApplication.getInstance().removeCachedTask(getTag());
+        }
 
-            if (transactionlist.isEmpty()) {
+        @Override
+        protected void onCancelled(Boolean nullIfError) {
+            MyBus.getInstance().post(new LoadFailedEvent(getTag(), errorMsg));
+            UTilitiesApplication.getInstance().removeCachedTask(getTag());
+        }
+    }
+
+    public void prepareToLoad() {
+        progressLayout.setVisibility(View.VISIBLE);
+        transactionsLayout.setVisibility(View.GONE);
+        errorLayout.setVisibility(View.GONE);
+    }
+
+    @Subscribe
+    public void loadFailed(LoadFailedEvent event) {
+        if (event.tag.equals(TASK_TAG)) {
+            if (adapter.page == 1) {
+                // if the first page fails just hide everything
+                errorTextView.setText(event.errorMessage);
+                progressLayout.setVisibility(View.GONE);
                 transactionsLayout.setVisibility(View.GONE);
-                etv.setText(getText(R.string.balance_tabs_no_balance));
-                ell.setVisibility(View.VISIBLE);
+                errorLayout.setVisibility(View.VISIBLE);
+                // only set LoadStatus to failed if it's loading the first page, otherwise
+                // everything gets hidden on rotate FIXME
+                loadStatus = LoadStatus.FAILED;
             } else {
-                balanceView.setText(balance);
-                transactionsLayout.setVisibility(View.VISIBLE);
-                ell.setVisibility(View.GONE);
+                // on later pages we should let them see what's already loaded
+                Toast.makeText(getActivity(), event.errorMessage, Toast.LENGTH_SHORT).show();
+                adapter.notifyNoMorePages();
+                adapter.notifyDataSetChanged();
+                // FIXME
+                loadStatus = LoadStatus.SUCCEEDED;
             }
-            t_pb_ll.setVisibility(View.GONE);
         }
+    }
 
-        @Override
-        protected void onCancelled(Character nullIfError) {
-            if (nullIfError == null) {
-                if (ta.page == 1) {
-                    // if the first page fails just hide everything
-                    etv.setText(errorMsg);
-                    t_pb_ll.setVisibility(View.GONE);
-                    transactionsLayout.setVisibility(View.GONE);
-                    ell.setVisibility(View.VISIBLE);
-                } else {
-                    // on later pages we should let them see what's already loaded
-                    if (getActivity() != null) {
-                        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
-                    }
-                    ta.notifyNoMorePages();
-                    ta.notifyDataSetChanged();
-                }
+    @Subscribe
+    public void loadSucceeded(LoadSucceededEvent event) {
+        if (event.tag.equals(TASK_TAG)) {
+            loadStatus = LoadStatus.SUCCEEDED;
+            transactionlist.addAll(event.transactions);
+            adapter.notifyDataSetChanged();
+            adapter.updateHeaders();
+            adapter.notifyDataSetChanged();
+            View v = transactionsListView.getChildAt(0);
+            int index = transactionsListView.getFirstVisiblePosition();
+            int top = (v == null) ? 0 : v.getTop();
+            if (event.morePagesAvailable) {
+                adapter.notifyMayHaveMorePages();
+                form = event.form;
+            } else {
+                adapter.notifyNoMorePages();
             }
+//        if (!refresh) {
+//            ((ListView) transactionsListView).setSelectionFromTop(index, top);
+//        } else {
+//            transactionsListView.setSelection(0);
+//        }
+            if (!"".equals(event.balance)) {
+                balanceView.setText(event.balance);
+            }
+            transactionsLayout.setVisibility(View.VISIBLE);
+            errorLayout.setVisibility(View.GONE);
+            progressLayout.setVisibility(View.GONE);
+        }
+    }
+
+    static class LoadSucceededEvent {
+        public String tag;
+        public List<Transaction> transactions;
+        public String balance;
+        public boolean morePagesAvailable;
+        public RequestBody form;
+
+        public LoadSucceededEvent(String tag, List<Transaction> transactions, String balance,
+                                  boolean morePagesAvailable, RequestBody form) {
+            this.tag = tag;
+            this.transactions = transactions;
+            this.balance = balance;
+            this.morePagesAvailable = morePagesAvailable;
+            this.form = form;
         }
     }
 }

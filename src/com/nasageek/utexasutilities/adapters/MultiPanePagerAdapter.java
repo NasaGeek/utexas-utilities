@@ -17,7 +17,12 @@ public abstract class MultiPanePagerAdapter<E extends Fragment> extends ArrayPag
     private int mPanesDisplayed;
 
     public MultiPanePagerAdapter(FragmentManager fm, List<PageDescriptor> pages) {
-        super(fm, pages);
+        this(fm, pages, null);
+    }
+
+    public MultiPanePagerAdapter(FragmentManager fm, List<PageDescriptor> pages,
+                                 RetentionStrategy strategy) {
+        super(fm, pages, strategy);
         mPanesDisplayed = 1;
     }
 

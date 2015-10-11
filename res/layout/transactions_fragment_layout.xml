@@ -6,8 +6,7 @@
 
     <include
         android:id="@+id/trans_progressbar_ll"
-        layout="@layout/loading_content_layout"
-        android:visibility="gone" />
+        layout="@layout/loading_content_layout"/>
 
     <include
         android:id="@+id/trans_error"
