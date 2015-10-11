@@ -4,7 +4,9 @@ package com.nasageek.utexasutilities;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.http.SslError;
 import android.webkit.CookieManager;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
@@ -83,6 +85,16 @@ public class LoginWebViewClient extends WebViewClient {
                     }
                 }
                 break;
+        }
+    }
+
+    @Override
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+        // Ignore SSL certificate errors for PNA, can't use my client cert :(
+        if (view.getUrl().equals("https://management.pna.utexas.edu/server/graph.cgi")) {
+            handler.proceed();
+        } else {
+            super.onReceivedSslError(view, handler, error);
         }
     }
 
