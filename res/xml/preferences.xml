@@ -104,6 +104,11 @@
         android:selectable="@bool/debug"
         android:key="experimental"
         android:title="Experimental" >
+        <CheckBoxPreference
+            android:key="dont_require_login"
+            android:defaultValue="false"
+            android:title="Don't require login"
+            android:summary="Don't require user to log in before accessing app features. Allows for testing with mocked data." />
         <Preference
             android:key="update_stops"
             android:title="Update Bus Stops" />

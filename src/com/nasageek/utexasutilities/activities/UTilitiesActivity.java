@@ -110,7 +110,8 @@ public class UTilitiesActivity extends BaseActivity {
                 } else {
                     if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
                         // persistent login
-                        if (!data.authCookie.hasCookieBeenSet() || isLoggingIn()) {
+                        if ((!data.authCookie.hasCookieBeenSet() || isLoggingIn())
+                                && isLoginRequired()) {
                             showLoginFirstToast();
                         } else {
                             startActivity(data.intent);
@@ -652,7 +653,7 @@ public class UTilitiesActivity extends BaseActivity {
 
     @Subscribe
     public void loginFinished(final LoginFinishedEvent lfe) {
-        boolean successful = lfe.loginSuccessful();
+        boolean successful = lfe.loginSuccessful() || !isLoginRequired();
         serviceLoggedIn.put(lfe.getService(), successful);
         for (ImageView iv : cookiesToFeatures.get(lfe.getService())) {
             if (successful) {
@@ -669,6 +670,10 @@ public class UTilitiesActivity extends BaseActivity {
         message.setText(R.string.login_first);
         message.setDuration(Toast.LENGTH_SHORT);
         message.show();
+    }
+
+    private boolean isLoginRequired() {
+        return !settings.getBoolean("dont_require_login", false);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.nasageek.utexasutilities;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
@@ -70,6 +71,7 @@ public class AuthCookie {
         return authCookieKey;
     }
 
+    @Nullable
     public String getAuthCookieVal() {
         if (cookieHasBeenSet) {
             return authCookie;
