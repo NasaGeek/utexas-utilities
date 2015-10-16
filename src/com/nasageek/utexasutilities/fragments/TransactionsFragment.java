@@ -98,7 +98,6 @@ public class TransactionsFragment extends DataLoadFragment {
                     transactionsLayout.setVisibility(View.VISIBLE);
                     break;
                 case FAILED:
-                    errorTextView.setText(savedInstanceState.getString("errorText"));
                     progressLayout.setVisibility(View.GONE);
                     errorLayout.setVisibility(View.VISIBLE);
                     transactionsLayout.setVisibility(View.GONE);
@@ -151,7 +150,6 @@ public class TransactionsFragment extends DataLoadFragment {
         super.onSaveInstanceState(out);
         out.putParcelableArrayList("transactions", transactionlist);
         out.putString("balance", balanceView.getText().toString());
-        out.putString("errorText", errorTextView.getText().toString());
 //        out.putSerializable("form", form);
     }
 

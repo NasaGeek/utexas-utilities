@@ -123,8 +123,7 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
                     setupGraph(labelsList, downdataList, totaldataList);
                     break;
                 case FAILED:
-                    dataLoadFailed(new DataLoadFailedEvent("",
-                            savedInstanceState.getString("errorText")));
+                    dataLoadFailed(new DataLoadFailedEvent("", errorTextView.getText()));
                     break;
             }
         }
@@ -165,7 +164,6 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
         outState.putLongArray("labels", labels);
         outState.putFloatArray("downdata", downdata);
         outState.putFloatArray("totaldata", totaldata);
-        outState.putString("errorText", errorTextView.getText().toString());
         outState.putSerializable("percentLoadStatus", percentLoadStatus);
         outState.putSerializable("dataLoadStatus", dataLoadStatus);
     }

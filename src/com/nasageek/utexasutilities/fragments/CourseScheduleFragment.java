@@ -111,7 +111,7 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
                     scheduleLayout.setVisibility(View.VISIBLE);
                     break;
                 case FAILED:
-                    loadFailed(new LoadFailedEvent(TASK_TAG, savedInstanceState.getString("errorText")));
+                    loadFailed(new LoadFailedEvent(TASK_TAG, errorTextView.getText()));
                     break;
             }
         }
@@ -185,7 +185,6 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
         out.putParcelableArrayList("classList", classList);
         out.putInt("lastClickedPosition", lastClickedPosition);
 
-        out.putString("errorText", errorTextView.getText().toString());
         out.putInt("drawerVisibility", slidingDrawer.getVisibility());
         out.putBoolean("drawerOpened", slidingDrawer.isOpened());
         out.putBoolean("actionModeOpen", mode != null);

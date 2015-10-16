@@ -84,7 +84,6 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
                     examListview.setVisibility(View.VISIBLE);
                     break;
                 case FAILED:
-                    errorTextView.setText(savedInstanceState.getString("errorText"));
                     progressLayout.setVisibility(View.GONE);
                     errorLayout.setVisibility(View.VISIBLE);
                     examListview.setVisibility(View.GONE);
@@ -134,7 +133,6 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList("exams", exams);
-        outState.putString("errorText", errorTextView.getText().toString());
     }
 
     private void setupAdapter() {
