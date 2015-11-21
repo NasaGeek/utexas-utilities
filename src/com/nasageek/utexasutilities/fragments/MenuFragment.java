@@ -95,7 +95,7 @@ public class MenuFragment extends SherlockFragment {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 
-                String url = "http://129.116.62.55/foodpro/"
+                String url = "http://hf-food.austin.utexas.edu/foodpro/"
                         + ((food) (arg0.getItemAtPosition(arg2))).nutritionLink;
 
                 SharedPreferences sp = PreferenceManager
@@ -158,10 +158,10 @@ public class MenuFragment extends SherlockFragment {
 
             // Special case for JCM, which combines Lunch and Dinner
             if (restId.equals("05") && (meal.equals("Lunch") || meal.equals("Dinner"))) {
-                location = "http://129.116.62.55/foodpro/pickMenu.asp?locationNum=" + params[0]
+                location = "http://hf-food.austin.utexas.edu/foodpro/pickMenu.asp?locationNum=" + params[0]
                         + "&mealName=Lunch/Dinner";
             } else {
-                location = "http://129.116.62.55/foodpro/pickMenu.asp?locationNum=" + params[0]
+                location = "http://hf-food.austin.utexas.edu/foodpro/pickMenu.asp?locationNum=" + params[0]
                         + "&mealName=" + meal;
             }
 
