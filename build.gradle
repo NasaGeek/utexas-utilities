@@ -26,8 +26,8 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 19
-        versionCode 41
-        versionName "1.99.9"
+        versionCode 42
+        versionName "1.99.99"
 
         // The git sha of the current head and build time
         //buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
