@@ -21,8 +21,9 @@ public class PasswordEditTextPreferenceDialogFragmentCompat extends EditTextPref
     }
 
     @Override
-    protected void onAddEditTextToDialogView(View dialogView, EditText editText) {
-        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        super.onAddEditTextToDialogView(dialogView, editText);
+    protected void onBindDialogView(View view) {
+        super.onBindDialogView(view);
+        ((EditText)view.findViewById(android.R.id.edit)).setInputType(InputType.TYPE_CLASS_TEXT
+                | InputType.TYPE_TEXT_VARIATION_PASSWORD);
     }
 }

@@ -3,7 +3,7 @@ package com.nasageek.utexasutilities.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerTabStripV22;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 
@@ -21,7 +21,7 @@ public class ScheduleActivity extends BaseActivity implements
 
     protected MyFragmentPagerAdapter mPagerAdapter;
     protected List<Fragment> fragments;
-    protected PagerTabStripV22 titleIndicator;
+    protected PagerTabStrip titleIndicator;
 
 
     @Override
@@ -47,7 +47,7 @@ public class ScheduleActivity extends BaseActivity implements
 
 //        titleIndicator.setOnPageChangeListener(this);
 //        ((PagerTabStrip) findViewById(R.id.titles)).no
-        titleIndicator = (PagerTabStripV22) findViewById(R.id.tabs);
+        titleIndicator = (PagerTabStrip) findViewById(R.id.tabs);
         ViewCompat.setElevation(titleIndicator, getResources().getDimensionPixelSize(R.dimen.actionbar_elevation));
         pager.setCurrentItem(1, false);
     }
@@ -60,7 +60,7 @@ public class ScheduleActivity extends BaseActivity implements
         return mPagerAdapter;
     }
 
-    public PagerTabStripV22 getIndicator() {
+    public PagerTabStrip getIndicator() {
         return titleIndicator;
     }
 
