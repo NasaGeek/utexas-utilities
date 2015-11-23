@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="1.99.99" versioncode="42">
+        <change>Fix access to Bandwidth and Menu features</change>
+        <change>Correct J2 dining hours</change>
+    </release>
     <release version="1.99.9" versioncode="41">
         <change>Separate the login process for each UT service so that one failure won't cause every service to be inaccessible</change>
     </release>

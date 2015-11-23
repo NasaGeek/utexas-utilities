@@ -216,3 +216,10 @@ prevent use of other services (the need for this functionality arose because UT
 update its SSL cert for the PNA website, and now Android doesn't like it), also
 the high versioncode is so this update will go out to people using the Canvas
 beta as well.
+
+Versioncode 42 - 1.99.99
+
+Fix access to Menus and Data Usage. I was hoping to delay this until the big
+2.0 update, but with both features down and people complaining I figured it was
+hotfix-worthy
+Also threw in a simple fix to J2 dining times

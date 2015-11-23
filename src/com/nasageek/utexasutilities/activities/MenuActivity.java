@@ -69,17 +69,17 @@ public class MenuActivity extends BaseActivity {
                 {
                         "", "", ""
                 }, {
-                        "", "11:30am - 2pm", "4:30pm - 7:30pm"
+                        "", "11am - 2pm", "5pm - 8pm"
                 }, {
-                        "", "11:30am - 2pm", "4:30pm - 7:30pm"
+                        "", "11am - 2pm", "5pm - 8pm"
                 }, {
-                        "", "11:30am - 2pm", "4:30pm - 7:30pm"
+                        "", "11am - 2pm", "5pm - 8pm"
                 }, {
-                        "", "11:30am - 2pm", "4:30pm - 7:30pm"
+                        "", "11am - 2pm", "5pm - 8pm"
                 }, {
-                        "", "11:30am - 2pm", "4:30pm - 7:30pm"
+                        "", "11am - 2pm", "5pm - 8pm"
                 }, {
-                        "", "11:30am - 2pm", "4:30pm - 7:30pm"
+                        "", "11am - 2pm", "5pm - 8pm"
                 }, {
                         "", "", ""
                 }
