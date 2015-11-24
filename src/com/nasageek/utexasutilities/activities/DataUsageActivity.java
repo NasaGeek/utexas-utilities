@@ -1,31 +1,28 @@
 
 package com.nasageek.utexasutilities.activities;
 
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PointF;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.view.MotionEvent;
+import android.support.annotation.Nullable;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.androidplot.xy.BarFormatter;
-import com.androidplot.xy.BoundaryMode;
-import com.androidplot.xy.SimpleXYSeries;
-import com.androidplot.xy.XYPlot;
-import com.androidplot.xy.XYSeries;
-import com.androidplot.xy.XYStepMode;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.nasageek.utexasutilities.AuthCookie;
+import com.nasageek.utexasutilities.BuildConfig;
 import com.nasageek.utexasutilities.MyBus;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.TaggedAsyncTask;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.fragments.DataLoadFragment.LoadStatus;
+import com.nasageek.utexasutilities.fragments.DataSourceSelectionFragment;
 import com.nasageek.utexasutilities.model.LoadFailedEvent;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -33,45 +30,35 @@ import com.squareup.okhttp.Response;
 import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
-import java.text.FieldPosition;
-import java.text.Format;
-import java.text.ParsePosition;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
 
-public class DataUsageActivity extends BaseActivity implements OnTouchListener {
+public class DataUsageActivity extends BaseActivity {
 
-    private float downdata[] = new float[288];
-    private float totaldata[] = new float[288];
-    private long labels[] = new long[288];
-    private XYPlot graph;
+    private static final int DATA_POINTS = 2016; // one week of 5-minute intervals
+    private ArrayList<Entry> downData = new ArrayList<>(DATA_POINTS);
+    private ArrayList<Entry> totalData = new ArrayList<>(DATA_POINTS);
+    private ArrayList<String> labels = new ArrayList<>(DATA_POINTS);
+    private LineChart chart;
     private ProgressBar percentDataUsedView;
     private TextView dataUsedText;
     private TextView errorTextView;
     private LinearLayout errorLayout;
     private LinearLayout progressLayout;
 
-    private PointD minXY;
-    private PointD maxXY;
-    private double absMinX;
-    private double absMaxX;
-    private double minNoError;
-    private double maxNoError;
-    private double minDif;
-    private double maxDif;
-
+    private String TASK_TAG;
     LoadStatus percentLoadStatus = LoadStatus.NOT_STARTED;
     LoadStatus dataLoadStatus = LoadStatus.NOT_STARTED;
+    private UTilitiesApplication mApp = UTilitiesApplication.getInstance();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,21 +66,18 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
         setContentView(R.layout.data_layout);
         setupActionBar();
 
-        String TASK_TAG = getClass().getSimpleName();
+        TASK_TAG = getClass().getSimpleName();
         progressLayout = (LinearLayout) findViewById(R.id.data_progressbar_ll);
         dataUsedText = (TextView) findViewById(R.id.dataUsedText);
         percentDataUsedView = (ProgressBar) findViewById(R.id.percentDataUsed);
         errorLayout = (LinearLayout) findViewById(R.id.data_error);
         errorTextView = (TextView) findViewById(R.id.tv_failure);
-
-        graph = (XYPlot) findViewById(R.id.mySimpleXYPlot);
-        graph.setOnTouchListener(this);
-        graph.setMarkupEnabled(false);
+        chart = (LineChart) findViewById(R.id.mp_usage_chart);
 
         if (savedInstanceState != null) {
-            labels = savedInstanceState.getLongArray("labels");
-            downdata = savedInstanceState.getFloatArray("downdata");
-            totaldata = savedInstanceState.getFloatArray("totaldata");
+            labels = savedInstanceState.getStringArrayList("labels");
+            downData = savedInstanceState.getParcelableArrayList("downData");
+            totalData = savedInstanceState.getParcelableArrayList("totalData");
             percentLoadStatus = (LoadStatus) savedInstanceState
                     .getSerializable("percentLoadStatus");
             dataLoadStatus = (LoadStatus) savedInstanceState.getSerializable("dataLoadStatus");
@@ -102,47 +86,63 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
                     // defaults should suffice
                     break;
                 case LOADING:
-                    progressLayout.setVisibility(View.VISIBLE);
-                    errorLayout.setVisibility(View.GONE);
-                    graph.setVisibility(View.GONE);
+                    prepareToLoad();
                     break;
                 case SUCCEEDED:
-                    List<Long> labelsList = new ArrayList<>(288);
-                    for (long l : labels) {
-                        labelsList.add(l);
-                    }
-                    List<Float> downdataList = new ArrayList<>(288);
-                    for (float f : downdata) {
-                        downdataList.add(f);
-                    }
-                    List<Float> totaldataList = new ArrayList<>(288);
-                    for (float f : totaldata) {
-                        totaldataList.add(f);
-                    }
                     errorLayout.setVisibility(View.GONE);
-                    setupGraph(labelsList, downdataList, totaldataList);
+                    dataLoadSucceeded(new DataLoadSucceededEvent(labels, downData, totalData));
                     break;
                 case FAILED:
                     dataLoadFailed(new DataLoadFailedEvent("", errorTextView.getText()));
                     break;
             }
         }
-
-        FetchDataTask dataTask = new FetchDataTask(TASK_TAG + FetchDataTask.class.getSimpleName());
+        String reqUrl = createDataUrl();
+        if (reqUrl != null) {
+            loadData(reqUrl, false);
+        } else if (dataLoadStatus != LoadStatus.SUCCEEDED) {
+            dataLoadFailed(new DataLoadFailedEvent("",
+                    "UTilities could not fetch your data usage"));
+        }
         FetchPercentTask percentTask =
                 new FetchPercentTask(TASK_TAG + FetchPercentTask.class.getSimpleName());
-        UTilitiesApplication mApp = UTilitiesApplication.getInstance();
-        if (dataLoadStatus == LoadStatus.NOT_STARTED &&
-                mApp.getCachedTask(dataTask.getTag()) == null) {
-            dataLoadStatus = LoadStatus.LOADING;
-            mApp.cacheTask(dataTask.getTag(), dataTask);
-            dataTask.execute();
-        }
         if (percentLoadStatus == LoadStatus.NOT_STARTED &&
                 mApp.getCachedTask(percentTask.getTag()) == null) {
             percentLoadStatus = LoadStatus.LOADING;
             mApp.cacheTask(percentTask.getTag(), percentTask);
             percentTask.execute();
+        }
+    }
+
+    private void prepareToLoad() {
+        progressLayout.setVisibility(View.VISIBLE);
+        errorLayout.setVisibility(View.GONE);
+        chart.setVisibility(View.GONE);
+    }
+
+    private void loadData(String url, boolean forceReload) {
+        FetchDataTask dataTask = new FetchDataTask(TASK_TAG + FetchDataTask.class.getSimpleName());
+        if ((dataLoadStatus == LoadStatus.NOT_STARTED &&
+                mApp.getCachedTask(dataTask.getTag()) == null) || forceReload) {
+            prepareToLoad();
+            dataLoadStatus = LoadStatus.LOADING;
+            mApp.cacheTask(dataTask.getTag(), dataTask);
+            dataTask.execute(url);
+        }
+    }
+
+    @Nullable
+    private String createDataUrl() {
+        AuthCookie pnaCookie = UTilitiesApplication.getInstance()
+                .getAuthCookie(PNA_AUTH_COOKIE_KEY);
+        Pattern authidpattern = Pattern.compile("(?<=%20)\\d+");
+        String cookie = pnaCookie.getAuthCookieVal();
+        Matcher authidmatcher = authidpattern.matcher(cookie != null ? cookie : "");
+        if (authidmatcher.find()) {
+            return "https://management.pna.utexas.edu/server/get-bw-graph-data.cgi?authid="
+                    + authidmatcher.group();
+        } else {
+            return null;
         }
     }
 
@@ -161,187 +161,84 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLongArray("labels", labels);
-        outState.putFloatArray("downdata", downdata);
-        outState.putFloatArray("totaldata", totaldata);
+        outState.putStringArrayList("labels", labels);
+        outState.putParcelableArrayList("downData", downData);
+        outState.putParcelableArrayList("totalData", totalData);
         outState.putSerializable("percentLoadStatus", percentLoadStatus);
         outState.putSerializable("dataLoadStatus", dataLoadStatus);
     }
 
-    private void setupGraph(List<Long> labels, List<Float> downdata, List<Float> totaldata) {
-        XYSeries series = new SimpleXYSeries(labels, downdata, "Downloaded");
-        XYSeries seriestotal = new SimpleXYSeries(labels, totaldata, "Uploaded");
-
-        BarFormatter downbarformatter = new BarFormatter(0xFF42D692, Color.BLACK);
-        BarFormatter upbarformatter = new BarFormatter(0xFF388DFF, Color.BLACK);
-
-        downbarformatter.getBorderPaint().setStrokeWidth(0);
-        upbarformatter.getBorderPaint().setStrokeWidth(0);
-
-        Paint gridpaint = new Paint();
-        gridpaint.setColor(Color.DKGRAY);
-        gridpaint.setAntiAlias(true);
-        gridpaint.setStyle(Paint.Style.STROKE);
-
-        graph.getGraphWidget().setDomainGridLinePaint(gridpaint);
-        graph.getGraphWidget().setRangeGridLinePaint(gridpaint);
-        graph.setTicksPerDomainLabel(4);
-
-        graph.addSeries(seriestotal, upbarformatter);
-        graph.addSeries(series, downbarformatter);
-
-        graph.setDomainStep(XYStepMode.INCREMENT_BY_VAL, 1800000);
-        graph.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 30);
-
-        graph.calculateMinMaxVals();
-        minXY = new PointD(graph.getCalculatedMinX().doubleValue(), graph.getCalculatedMinY()
-                .doubleValue()); // initial minimum data point
-        absMinX = minXY.x; // absolute minimum data point
-        // TODO: this crashes with a NPE sometimes. ??
-        // absolute minimum value for the domain boundary maximum
-        Number temp = series.getX(1);
-        if (temp == null) {
-            dataLoadFailed(new DataLoadFailedEvent("",
-                    "There was an error fetching or displaying your data usage."));
-            return;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (BuildConfig.DEBUG) {
+            getMenuInflater().inflate(R.menu.data_sources, menu);
+            return true;
         }
-        minNoError = Math.round(temp.doubleValue() + 2);
-        maxXY = new PointD(graph.getCalculatedMaxX().doubleValue(), graph.getCalculatedMaxY()
-                .doubleValue()); // initial maximum data point
-
-        graph.setTicksPerRangeLabel(maxXY.y > 61 ? 2 : 1);
-
-        absMaxX = maxXY.x; // absolute maximum data point
-        // absolute maximum value for the domain boundary minimum
-        maxNoError = (double) Math.round(series.getX(series.size() - 1).doubleValue()) - 2;
-        minDif = 3000000;
-        maxDif = 33000000;
-
-        graph.setRangeUpperBoundary(maxXY.y > 31 ? maxXY.y : 31, BoundaryMode.FIXED);
-        graph.setRangeLowerBoundary(0, BoundaryMode.FIXED);
-        graph.setDomainUpperBoundary(maxXY.x, BoundaryMode.FIXED);
-        graph.setDomainLowerBoundary(minXY.x, BoundaryMode.FIXED);
-        checkBoundaries();
-
-        graph.setDomainValueFormat(new TimeFormat());
-        graph.redraw();
-        graph.setVisibility(View.VISIBLE);
-        progressLayout.setVisibility(View.GONE);
+        return super.onCreateOptionsMenu(menu);
     }
 
-    // Definition of the touch states
-    static final private int NONE = 0;
-    static final private int ONE_FINGER_DRAG = 1;
-    private int mode = NONE;
-
-    private PointF firstFinger;
-    private float lastScrolling;
-    private float lastZooming;
-
     @Override
-    public boolean onTouch(View arg0, MotionEvent event) {
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN: // Start gesture
-                firstFinger = new PointF(event.getX(), event.getY());
-                mode = ONE_FINGER_DRAG;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.data_sources:
+                DataSourceSelectionFragment.newInstance("test_data/datausage", createDataUrl())
+                        .show(getSupportFragmentManager(),
+                                DataSourceSelectionFragment.class.getSimpleName());
                 break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_POINTER_UP:
-                // When the gesture ends, a thread is created to give inertia to
-                // the scrolling and zoom
-                final Timer t = new Timer();
-                t.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        while (Math.abs(lastScrolling) > 1f || Math.abs(lastZooming - 1) > 1.01) {
-                            lastScrolling *= .8; // speed of scrolling damping
-                            scroll(lastScrolling);
-                            lastZooming += (1 - lastZooming) * .2; // speed of
-                                                                   // zooming
-                                                                   // damping
-                            zoom(lastZooming);
-                            graph.redraw();
-                        }
-                    }
-                }, 0);
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                if (mode == ONE_FINGER_DRAG) {
-                    final PointF oldFirstFinger = firstFinger;
-                    firstFinger = new PointF(event.getX(), event.getY());
-                    lastScrolling = oldFirstFinger.x - firstFinger.x;
-                    scroll(lastScrolling);
-                    lastZooming = (firstFinger.y - oldFirstFinger.y) / graph.getHeight();
-                    if (lastZooming < 0) {
-                        lastZooming = 1 / (1 - lastZooming);
-                    } else {
-                        lastZooming += 1;
-                    }
-                    zoom(lastZooming);
-
-                    graph.redraw();
-
-                }
-                break;
+            default: return super.onOptionsItemSelected(item);
         }
         return true;
     }
 
-    private void zoom(float scale) {
-        final double domainSpan = maxXY.x - minXY.x;
-        final double domainMidPoint = maxXY.x - domainSpan / 2.0f;
-        final double offset = domainSpan * scale / 2.0f;
-        minXY.x = domainMidPoint - offset;
-        maxXY.x = domainMidPoint + offset;
-        checkBoundaries();
+    @Subscribe
+    public void onDataSourceSelected(DataSourceSelectionFragment.DataSourceSelectedEvent event) {
+        percentDataUsedView.setProgress(700);
+        dataUsedText.setText("70% of your data's been used");
+        chart.clear();
+        loadData(event.url, true);
     }
 
-    private void scroll(float pan) {
-        final double domainSpan = maxXY.x - minXY.x;
-        final double step = domainSpan / graph.getWidth();
-        final double offset = pan * step;
-        minXY.x += offset;
-        maxXY.x += offset;
+    private void setupChart(List<String> labels, List<Entry> downData, List<Entry> totalData) {
+        LineDataSet totalLineDataSet = new LineDataSet(totalData, "Uploaded");
+        totalLineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        totalLineDataSet.setDrawCircles(false);
+        totalLineDataSet.setDrawCubic(true);
+        totalLineDataSet.setDrawFilled(true);
+        totalLineDataSet.setDrawValues(false);
+        totalLineDataSet.setColor(getResources().getColor(R.color.data_usage_chart_upload));
+        totalLineDataSet.setFillColor(getResources().getColor(R.color.data_usage_chart_upload));
+        totalLineDataSet.setFillAlpha(255);
 
-        if (minXY.x < absMinX) {
-            minXY.x = absMinX;
-            maxXY.x -= offset;// (absMinX-minXY.x);
-        } else if (minXY.x > maxNoError) {
-            minXY.x = maxNoError;
-        }
-        if (maxXY.x > absMaxX) {
-            maxXY.x = absMaxX;// (maxXY.x-absMaxX);
-            minXY.x -= offset;// (maxXY.x-absMaxX);
-        } else if (maxXY.x < minNoError) {
-            maxXY.x = minNoError;
-        }
-        if (maxXY.x - minXY.x < minDif) {
-            maxXY.x = maxXY.x + (minDif - (maxXY.x - minXY.x));
-        }
+        LineDataSet downLineDataSet = new LineDataSet(downData, "Downloaded");
+        downLineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        downLineDataSet.setDrawCircles(false);
+        downLineDataSet.setDrawCubic(true);
+        downLineDataSet.setDrawFilled(true);
+        downLineDataSet.setDrawValues(false);
+        downLineDataSet.setColor(getResources().getColor(R.color.data_usage_chart_download));
+        downLineDataSet.setFillColor(getResources().getColor(R.color.data_usage_chart_download));
+        downLineDataSet.setFillAlpha(255);
 
-        graph.setDomainBoundaries(minXY.x, maxXY.x, BoundaryMode.FIXED);
-    }
+        List<LineDataSet> downAndUp = new ArrayList<>();
+        downAndUp.add(totalLineDataSet);
+        downAndUp.add(downLineDataSet);
 
-    private void checkBoundaries() {
-        // Make sure the proposed domain boundaries will not cause plotting
-        // issues
-        if (minXY.x < absMinX || ((Double) minXY.x).equals(Double.NaN)) {
-            minXY.x = absMinX;
-        } else if (minXY.x > maxNoError) {
-            minXY.x = maxNoError;
-        }
-        if (maxXY.x > absMaxX || ((Double) maxXY.x).equals(Double.NaN)) {
-            maxXY.x = absMaxX;
-        } else if (maxXY.x < minNoError) {
-            maxXY.x = minNoError;
-        }
-        if (maxXY.x - minXY.x < minDif) {
-            maxXY.x = maxXY.x + (minDif - (maxXY.x - minXY.x));
-        } else if (maxXY.x - minXY.x > maxDif) {
-            maxXY.x = maxXY.x + (maxDif - (maxXY.x - minXY.x));
-        }
-        graph.setDomainBoundaries(minXY.x, maxXY.x, BoundaryMode.FIXED);
+        LineData dataUsageLineData = new LineData(labels, downAndUp);
+        chart.setData(dataUsageLineData);
+        chart.setDescription("");
+        chart.setScaleXEnabled(true);
+        chart.setScaleYEnabled(false);
+        chart.setPinchZoom(true);
+        chart.setDoubleTapToZoomEnabled(true);
+        chart.getData().setHighlightEnabled(false);
+        chart.getAxisRight().setDrawLabels(false);
+        chart.getAxisLeft().setValueFormatter((value, yAxis) -> value + " MB");
+        // maximum viewable area is one day
+        chart.setScaleMinima(downData.size() / 288f, 1f);
+        // initially show the most recent 24 hours
+        chart.centerViewTo(Math.max(downData.size() - 144, 0), chart.getYChartMax() / 2, YAxis.AxisDependency.LEFT);
+        chart.setVisibility(View.VISIBLE);
+        progressLayout.setVisibility(View.GONE);
     }
 
     static class FetchPercentTask extends TaggedAsyncTask<Object, Void, Void> {
@@ -435,34 +332,20 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
         }
     }
 
-    static class FetchDataTask extends TaggedAsyncTask<Object, Void, Character> {
+    static class FetchDataTask extends TaggedAsyncTask<String, Void, Character> {
         private String errorMsg;
-        private List<Long> labels = new ArrayList<>(288);
-        private List<Float> downdata = new ArrayList<>(288);
-        private List<Float> totaldata = new ArrayList<>(288);
+        private ArrayList<String> labels = new ArrayList<>(DATA_POINTS);
+        private ArrayList<Entry> downdata = new ArrayList<>(DATA_POINTS);
+        private ArrayList<Entry> totaldata = new ArrayList<>(DATA_POINTS);
 
         public FetchDataTask(String tag) {
             super(tag);
         }
 
         @Override
-        protected Character doInBackground(Object... params) {
-            AuthCookie pnaCookie = UTilitiesApplication.getInstance()
-                    .getAuthCookie(PNA_AUTH_COOKIE_KEY);
-            Pattern authidpattern = Pattern.compile("(?<=%20)\\d+");
-            String cookie = pnaCookie.getAuthCookieVal();
-            Matcher authidmatcher = authidpattern.matcher(cookie == null ? "" : cookie);
+        protected Character doInBackground(String... params) {
             OkHttpClient client = UTilitiesApplication.getInstance().getHttpClient();
-            String reqUrl;
-            if (authidmatcher.find()) {
-                reqUrl = "https://management.pna.utexas.edu/server/get-bw-graph-data.cgi?authid="
-                                + authidmatcher.group();
-            } else {
-                cancel(true);
-                errorMsg = "UTilities could not fetch your data usage";
-                return null;
-            }
-
+            String reqUrl = params[0];
             Request request = new Request.Builder()
                     .url(reqUrl)
                     .build();
@@ -486,31 +369,22 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
             }
             Calendar date = Calendar.getInstance();
 
+            DateFormat inFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.US);
+            DateFormat outFormat = new SimpleDateFormat("E - hh:mm a", Locale.US);
             // if there's more than a week of data, show just the last week, otherwise show it all
-            for (int i = lines.length >= 288 ? lines.length - 288 : 0, x = 0; i < lines.length; i++, x++) {
+            for (int i = Math.max(lines.length - DATA_POINTS, 0), x = 0; i < lines.length; i++, x++) {
                 String[] entry = lines[i].split(",");
                 date.clear();
                 try {
-                    // TODO: this crashes sometimes on the [2] access, not sure why
-                    date.set(Integer.parseInt(entry[0].split("/")[0]),
-                            Integer.parseInt(entry[0].split("/")[1]) - 1,
-                            Integer.parseInt(entry[0].split("/| ")[2]),
-                            Integer.parseInt(entry[0].split(" |:")[1]),
-                            Integer.parseInt(entry[0].split(" |:")[2]));
-                } catch (NumberFormatException nfe) {
-                    errorMsg = "UTilities could not fetch your data usage";
-                    nfe.printStackTrace();
-                    cancel(true);
-                    return null;
-                } catch (ArrayIndexOutOfBoundsException aibe) {
+                    labels.add(outFormat.format(inFormat.parse(entry[0])));
+                } catch (ParseException e) {
                     errorMsg = "UTilities could not parse your data usage";
-                    aibe.printStackTrace();
+                    e.printStackTrace();
                     cancel(true);
                     return null;
                 }
-                labels.add(date.getTimeInMillis());
-                downdata.add(Float.valueOf(entry[1]));
-                totaldata.add(Float.valueOf(entry[3]));
+                downdata.add(new Entry(Float.parseFloat(entry[1]), x));
+                totaldata.add(new Entry(Float.parseFloat(entry[3]), x));
             }
             return null;
         }
@@ -531,23 +405,10 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
     @Subscribe
     public void dataLoadSucceeded(DataLoadSucceededEvent event) {
         dataLoadStatus = LoadStatus.SUCCEEDED;
-        int i = 0;
-        for (Long l : event.labels) {
-            labels[i] = l;
-            i++;
-        }
-        i = 0;
-        for (Float f : event.downdata) {
-            downdata[i] = f;
-            i++;
-        }
-        i = 0;
-        for (Float f : event.totaldata) {
-            totaldata[i] = f;
-            i++;
-        }
-        setupGraph(event.labels, event.downdata, event.totaldata);
-        Toast.makeText(this, "Swipe up and down to zoom in and out", Toast.LENGTH_SHORT).show();
+        labels = event.labels;
+        downData = event.downdata;
+        totalData = event.totaldata;
+        setupChart(labels, downData, totalData);
     }
 
     @Subscribe
@@ -559,12 +420,12 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
     }
 
     static class DataLoadSucceededEvent {
-        private List<Long> labels;
-        private List<Float> downdata;
-        private List<Float> totaldata;
+        private ArrayList<String> labels;
+        private ArrayList<Entry> downdata;
+        private ArrayList<Entry> totaldata;
 
-        public DataLoadSucceededEvent(List<Long> labels, List<Float> downdata,
-                                      List<Float> totaldata) {
+        public DataLoadSucceededEvent(ArrayList<String> labels, ArrayList<Entry> downdata,
+                                      ArrayList<Entry> totaldata) {
             this.labels = labels;
             this.downdata = downdata;
             this.totaldata = totaldata;
@@ -574,39 +435,6 @@ public class DataUsageActivity extends BaseActivity implements OnTouchListener {
     static class DataLoadFailedEvent extends LoadFailedEvent {
         public DataLoadFailedEvent(String tag, CharSequence errorMsg) {
             super(tag, errorMsg);
-        }
-    }
-
-    private class TimeFormat extends Format {
-
-        private static final long serialVersionUID = 1L;
-        // create a simple date format that draws on the year portion of our
-        // timestamp.
-        // see
-        // http://download.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
-        // for a full description of SimpleDateFormat.
-        private SimpleDateFormat dateFormat = new SimpleDateFormat("E - HH:mm", Locale.US);
-
-        @Override
-        public StringBuffer format(Object obj, @NonNull StringBuffer toAppendTo,
-                                   @NonNull FieldPosition pos) {
-            long timestamp = ((Number) obj).longValue();
-            Date date = new Date(timestamp);
-            return dateFormat.format(date, toAppendTo, pos);
-        }
-
-        @Override
-        public Object parseObject(String source, @NonNull ParsePosition pos) {
-            return null;
-        }
-    }
-
-    private class PointD {
-        double x, y;
-
-        public PointD(double x, double y) {
-            this.x = x;
-            this.y = y;
         }
     }
 }

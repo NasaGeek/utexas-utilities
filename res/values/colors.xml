@@ -2,6 +2,8 @@
 <resources>
     <color name = "burnt_orange">#ffcc5500</color>
     <color name = "burnt_orange_dark">#ffa34400</color>
+    <color name = "data_usage_chart_download">@color/blue_accent</color>
+    <color name = "data_usage_chart_upload">#FF42D692</color>
     <color name = "blue_accent">#ff005F86</color>
     <color name = "lt_gray">#ffcccccc</color>
     <!-- Properly set accent color for Preferences, default is an unsightly bright blue -->
