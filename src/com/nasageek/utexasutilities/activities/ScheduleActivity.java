@@ -2,6 +2,7 @@
 package com.nasageek.utexasutilities.activities;
 
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.app.FragmentManager;
@@ -179,5 +180,34 @@ public class ScheduleActivity extends BaseActivity implements
         public String getUrl() {
             return url;
         }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeByte(currentSemester ? (byte) 1 : (byte) 0);
+            dest.writeString(this.url);
+        }
+
+        protected CourseSchedulePageDescriptor(Parcel in) {
+            super(in);
+            this.currentSemester = in.readByte() != 0;
+            this.url = in.readString();
+        }
+
+        public static final Creator<CourseSchedulePageDescriptor> CREATOR =
+                new Creator<CourseSchedulePageDescriptor>() {
+            public CourseSchedulePageDescriptor createFromParcel(Parcel source) {
+                return new CourseSchedulePageDescriptor(source);
+            }
+
+            public CourseSchedulePageDescriptor[] newArray(int size) {
+                return new CourseSchedulePageDescriptor[size];
+            }
+        };
     }
 }

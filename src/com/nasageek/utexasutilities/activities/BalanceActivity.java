@@ -200,5 +200,10 @@ public class BalanceActivity extends BaseActivity implements ArrayPagerAdapter.R
             out.writeSerializable(type);
             out.writeString(url);
         }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
     }
 }
