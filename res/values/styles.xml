@@ -59,4 +59,12 @@
         <item name="android:textColor">@android:color/primary_text_dark</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="ProgressBar.Dashboard" parent="Widget.MaterialProgressBar.ProgressBar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:visibility">gone</item>
+    </style>
 </resources>

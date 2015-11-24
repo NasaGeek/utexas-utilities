@@ -29,13 +29,9 @@
 		    android:src="@drawable/ic_done"
 		    android:layout_alignBottom="@+id/schedule_button"
 		    android:layout_alignRight="@+id/schedule_button"/>
-        <ProgressBar
+        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
             android:id="@+id/scheduleProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-			android:indeterminate="true"
-            android:visibility="gone"/>
+            style="@style/ProgressBar.Dashboard"/>
 		</RelativeLayout>
 		
 		<RelativeLayout
@@ -88,13 +84,9 @@
 		    android:src="@drawable/ic_done"
 		    android:layout_alignBottom="@+id/balance_button"
 		    android:layout_alignRight="@+id/balance_button"/>
-		<ProgressBar
-			android:id="@+id/balanceProgress"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerInParent="true"
-			android:indeterminate="true"
-			android:visibility="gone"/>
+        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+            android:id="@+id/balanceProgress"
+            style="@style/ProgressBar.Dashboard"/>
 		</RelativeLayout>
 	    
 	   <RelativeLayout
@@ -118,13 +110,9 @@
 		    android:src="@drawable/ic_done"
 		    android:layout_alignBottom="@+id/data_button"
 		    android:layout_alignRight="@+id/data_button"/>
-	   <ProgressBar
-		   android:id="@+id/dataProgress"
-		   android:layout_width="wrap_content"
-		   android:layout_height="wrap_content"
-		   android:layout_centerInParent="true"
-		   android:indeterminate="true"
-		   android:visibility="gone"/>
+        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+            android:id="@+id/dataProgress"
+            style="@style/ProgressBar.Dashboard"/>
 		</RelativeLayout>
 		
 	   <RelativeLayout
