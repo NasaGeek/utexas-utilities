@@ -174,9 +174,8 @@ public class TransactionsFragment extends DataLoadFragment {
     }
 
     public void refresh() {
-        if (fetch != null) {
-            fetch.cancel(true);
-            fetch = null;
+        if (loadStatus == LoadStatus.LOADING) {
+            return;
         }
         transactionlist.clear();
 
