@@ -87,7 +87,7 @@ public class LoginWebViewClient extends WebViewClient {
     @Override
     public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
         // Ignore SSL certificate errors for PNA, can't use my client cert :(
-        if (view.getUrl().equals("https://management.pna.utexas.edu/server/graph.cgi")) {
+        if (view.getUrl() == null || view.getUrl().equals("https://management.pna.utexas.edu/server/graph.cgi")) {
             handler.proceed();
         } else {
             super.onReceivedSslError(view, handler, error);
