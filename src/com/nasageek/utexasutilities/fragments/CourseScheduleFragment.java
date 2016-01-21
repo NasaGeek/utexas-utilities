@@ -348,7 +348,7 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
 
         @Override
         protected void onProgressUpdate(String... params) {
-            MyBus.getInstance().post(new NewSemesterEvent(params[0].trim(), params[1]));
+            MyBus.getInstance().post(new NewSemesterEvent(getTag(), params[0].trim(), params[1]));
         }
 
         @Override
@@ -542,7 +542,9 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
 
     @Subscribe
     public void onSemesterFound(NewSemesterEvent event) {
-        parentAct.addCourseSchedule(false, event.name, event.semId);
+        if (TASK_TAG.equals(event.tag)) {
+            parentAct.addCourseSchedule(false, event.name, event.semId);
+        }
     }
 
     @Subscribe
@@ -634,10 +636,12 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
     }
 
     static class NewSemesterEvent {
+        public String tag;
         public String name;
         public String semId;
 
-        public NewSemesterEvent(String name, String semId) {
+        public NewSemesterEvent(String tag, String name, String semId) {
+            this.tag = tag;
             this.name = name;
             this.semId = semId;
         }
