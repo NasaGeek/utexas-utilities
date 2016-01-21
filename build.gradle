@@ -72,6 +72,8 @@ android {
     buildTypes {
         debug {
             // Can add package and versionName suffixes, makes it easier to differentiate if you have play store and debug builds installed
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.cfg'
             versionNameSuffix "-debug"
         }
         // Release build task. Uses the release signing config above for signing it
