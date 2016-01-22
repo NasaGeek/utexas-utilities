@@ -29,6 +29,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Security;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,9 +60,12 @@ public class UTilitiesApplication extends Application {
     private Map<String, AsyncTask> asyncTaskCache = new HashMap<>();
     private SharedPreferences securePreferences;
 
+    static {
+        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
+    }
+
     @Override
     public void onCreate() {
-//        Debug.startMethodTracing();
         super.onCreate();
         sInstance = this;
         ExcludedRefs.Builder excludedRefsBuilder = AndroidExcludedRefs.createAppDefaults();
@@ -71,7 +75,7 @@ public class UTilitiesApplication extends Application {
         LeakCanary.install(this, DisplayLeakService.class, excludedRefsBuilder.build());
         try {
             AesCbcWithIntegrity.SecretKeys myKey = AesCbcWithIntegrity.generateKeyFromPassword(
-                    Utility.id(this), AesCbcWithIntegrity.generateSalt(), 100);
+                    Utility.id(this), AesCbcWithIntegrity.generateSalt(), 10);
             securePreferences = new SecurePreferences(this, myKey, null);
         } catch (GeneralSecurityException gse) {
             // no clue what to do here
@@ -98,7 +102,6 @@ public class UTilitiesApplication extends Application {
         ACRA.init(this);
         initGoogleAnalytics();
         AnalyticsHandler.initTrackerIfNeeded(this);
-//        Debug.stopMethodTracing();
     }
 
     private void upgradePasswordEncryption() {
