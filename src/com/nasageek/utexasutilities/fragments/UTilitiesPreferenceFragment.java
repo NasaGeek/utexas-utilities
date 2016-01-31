@@ -35,7 +35,6 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
     private RecyclerView.Adapter ba;
     private String preferenceScreenKey;
 
-    public static final String NEW_PASSWORD_PREF_FILE = "new_encrypted_password";
     public static final String OLD_PASSWORD_PREF_FILE = "com.nasageek.utexasutilities.password";
 
     public static UTilitiesPreferenceFragment newInstance(String key) {
