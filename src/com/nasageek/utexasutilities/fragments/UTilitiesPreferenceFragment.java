@@ -96,7 +96,7 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
                      * if they switch to temp login we'll save their EID, but
                      * clear their password for security purposes
                      */
-                        mApp.getSecurePreferences().edit().remove("password");
+                        mApp.getSecurePreferences().edit().remove("password").apply();
                         ba.notifyDataSetChanged();
                     }
                     // whenever they switch between temp and persistent, log them out
