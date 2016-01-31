@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import com.commonsware.cwac.security.trust.TrustManagerBuilder;
@@ -75,7 +76,7 @@ public class UTilitiesApplication extends Application {
         LeakCanary.install(this, DisplayLeakService.class, excludedRefsBuilder.build());
         try {
             AesCbcWithIntegrity.SecretKeys myKey = AesCbcWithIntegrity.generateKeyFromPassword(
-                    Utility.id(this), AesCbcWithIntegrity.generateSalt(), 10);
+                    Utility.id(this), Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID).getBytes(), 10);
             securePreferences = new SecurePreferences(this, myKey, null);
         } catch (GeneralSecurityException gse) {
             // no clue what to do here
