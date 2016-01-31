@@ -47,6 +47,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    dexOptions {
+        dexInProcess true
+        preDexLibraries true
+        incremental true
+        javaMaxHeapSize "3584m"
+    }
+
     sourceSets {
         main {
             java.srcDirs = ['src']
