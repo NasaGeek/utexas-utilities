@@ -1,0 +1,6 @@
+
+/build
+/libs/*/build
+
+# private test data
+/src/main/assets-debug/test_html/*/*_private.html
