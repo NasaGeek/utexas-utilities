@@ -3,4 +3,4 @@
 /libs/*/build
 
 # private test data
-/src/main/assets-debug/test_html/*/*_private.html
+/src/debug/assets/test_html/*/*_private.html

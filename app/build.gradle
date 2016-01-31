@@ -33,12 +33,6 @@ android {
         javaMaxHeapSize "3584m"
     }
 
-    sourceSets {
-        debug {
-            res.srcDirs = ['res-debug']
-            assets.srcDirs = ['assets-debug']
-        }
-    }
     // TODO: You can put sensitive keystore data in an untracked .properties file or ENV variables
     // Example: http://stackoverflow.com/a/20872275/3034339
     signingConfigs {
