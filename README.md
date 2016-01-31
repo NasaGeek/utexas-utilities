@@ -9,12 +9,7 @@ It'd be really awesome if people felt like contributing to this project. Ya'know
 ## Building
 Regardless of what IDE you use, if you want the campus map to function you'll need a [Google Maps Android API v2](https://developers.google.com/maps/documentation/android/start#get_an_android_certificate_and_the_google_maps_api_key) key.
 
-
-### With Android Studio
 It should be possible to build UT Utilities using Gradle and Android Studio with no additional configuration. Gradle support is due almost entirely to [Henri Sweers'](https://github.com/hzsweers) efforts. Thanks!
-
-### With Eclipse
-Sorry, you're kind of on your own. Check out build.gradle to see what libraries you'll need to download.
 
 ## Contributors
 - Henri Sweers - https://github.com/hzsweers
