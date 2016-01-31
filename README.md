@@ -17,7 +17,7 @@ It should be possible to build UT Utilities using Gradle and Android Studio with
 
 ## Other
 
-Beta G+ Community: https://plus.google.com/communities/111016243219845743497
+Beta G+ Community: https://plus.google.com/communities/111016243219845743497  
 About the project developer/maintainer: https://www.linkedin.com/in/chrismcroberts
 
 ## License
