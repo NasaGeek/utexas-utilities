@@ -23,7 +23,7 @@
     <screenName name="com.nasageek.utexasutilities.activities.CampusMapActivity">
         UTilities CampusMapScreen
     </screenName>
-    <screenName name="com.nasageek.utexasutilities.activities.Preferences">
+    <screenName name="com.nasageek.utexasutilities.activities.PreferenceActivity">
         UTilities PreferenceScreen
     </screenName>
     <screenName name="com.nasageek.utexasutilities.activities.AboutMeActivity">
