@@ -10,9 +10,6 @@ import android.widget.Toast;
 
 import com.commonsware.cwac.security.trust.TrustManagerBuilder;
 import com.google.android.gms.analytics.GoogleAnalytics;
-import com.squareup.leakcanary.AndroidExcludedRefs;
-import com.squareup.leakcanary.DisplayLeakService;
-import com.squareup.leakcanary.ExcludedRefs;
 import com.nasageek.utexasutilities.fragments.UTilitiesPreferenceFragment;
 import com.securepreferences.SecurePreferences;
 import com.squareup.leakcanary.LeakCanary;
@@ -69,11 +66,7 @@ public class UTilitiesApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sInstance = this;
-        ExcludedRefs.Builder excludedRefsBuilder = AndroidExcludedRefs.createAppDefaults();
-        excludedRefsBuilder.instanceField("com.google.android.gms.location.internal.f", "a");
-        excludedRefsBuilder.instanceField("com.google.android.gms.location.internal.y", "a");
-        excludedRefsBuilder.staticField("com.google.android.chimera.container.a", "a");
-        LeakCanary.install(this, DisplayLeakService.class, excludedRefsBuilder.build());
+        LeakCanary.install(this);
         try {
             AesCbcWithIntegrity.SecretKeys myKey = AesCbcWithIntegrity.generateKeyFromPassword(
                     Utility.id(this), Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID).getBytes(), 10);
