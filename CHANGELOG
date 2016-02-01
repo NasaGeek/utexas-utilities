@@ -223,3 +223,15 @@ Fix access to Menus and Data Usage. I was hoping to delay this until the big
 2.0 update, but with both features down and people complaining I figured it was
 hotfix-worthy
 Also threw in a simple fix to J2 dining times
+
+Versioncode 43 - 2.0
+
+Basically rewrote the whole thing.
+Removed ABS and VPI in favor of appcompat theming (Material Design!)
+Officially stripped out all Blackboard support
+Rewrote all AsyncTasks to use the Otto event bus, no need for configChanges in the manifest anymore
+Updated bus routes and our usage of the bus stop arrival time API
+Using a different library for password encryption now, as the old one was super buggy
+Using a different library for data usage that is far more attractive and functional
+Google Analytics
+Dropped support for <14

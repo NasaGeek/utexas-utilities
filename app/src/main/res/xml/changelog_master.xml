@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="2.0" versioncode="43">
+        <change>Updated UI to fit modern design standards</change>
+        <change>Updated bus routes and arrival time API</change>
+        <change>Updated Data Usage graph to be more attractive and functional</change>
+        <change>Removed Blackboard support</change>
+        <change>Fixed a number of bugs (and introduced new ones I'm sure)</change>
+    </release>
     <release version="1.99.99" versioncode="42">
         <change>Fix access to Bandwidth and Menu features</change>
         <change>Correct J2 dining hours</change>
