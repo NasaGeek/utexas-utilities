@@ -116,17 +116,6 @@ public class TransactionsFragment extends DataLoadFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FormEncodingBuilder postdata = new FormEncodingBuilder();
-        mType = (TransactionType) getArguments().getSerializable("type");
-        url = getArguments().getString("url");
-        TASK_TAG = getClass().getSimpleName() + mType.toString();
-        if (TransactionType.Bevo.equals(mType)) {
-            postdata.add("sRequestSw", "B");
-        } else if (TransactionType.Dinein.equals(mType)) {
-            postdata.add("rRequestSw", "B");
-        }
-        form = postdata.build();
-
         if (savedInstanceState != null) {
             transactionlist = savedInstanceState.getParcelableArrayList("transactions");
         }
@@ -160,6 +149,17 @@ public class TransactionsFragment extends DataLoadFragment {
         if (adapter.page == 1 || refresh) {
             prepareToLoad();
         }
+        FormEncodingBuilder postdata = new FormEncodingBuilder();
+        mType = (TransactionType) getArguments().getSerializable("type");
+        url = getArguments().getString("url");
+        TASK_TAG = getClass().getSimpleName() + mType.toString();
+        if (TransactionType.Bevo.equals(mType)) {
+            postdata.add("sRequestSw", "B");
+        } else if (TransactionType.Dinein.equals(mType)) {
+            postdata.add("rRequestSw", "B");
+        }
+        form = postdata.build();
+
         fetch = new FetchTransactionDataTask(TASK_TAG, mType, url, form);
         mApp.cacheTask(fetch.getTag(), fetch);
         Utility.parallelExecute(fetch, false);
