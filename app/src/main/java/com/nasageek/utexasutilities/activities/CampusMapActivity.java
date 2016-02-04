@@ -1,5 +1,6 @@
 package com.nasageek.utexasutilities.activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -7,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -20,6 +22,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -43,6 +46,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.commonsware.cwac.security.RuntimePermissionUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -124,6 +128,8 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private boolean mResolvingError = false;
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
     private GoogleApiClient apiClient;
+    private boolean locationEnabled;
+    private static final String STATE_LOCATION_ENABLED = "location_enabled";
 
     private AssetManager assets;
     private List<String> stops_al;
@@ -163,6 +169,11 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private static final LatLng UT_TOWER_LOC = new LatLng(30.285706, -97.739423);
     private static final String NO_ROUTE_ID = "0";
 
+    private boolean haveRequestedLocationPermission;
+    private static final String STATE_REQUESTED_LOC_PERMISSION = "requested_loc_permission";
+    private static final int REQUEST_LOCATION_FOR_MAP = 1;
+    private RuntimePermissionUtils runtimePermissions;
+
     private static final int STYLE_RED = 0xFFF44336;
     private static final int STYLE_GREEN = 0xFF4CAF50;
     private static final int STYLE_GRAY = 0xFFBDBDBD;
@@ -173,6 +184,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private static final int styles[] = {STYLE_GRAY, STYLE_GREEN_FADED, STYLE_GREEN};
     private static final int styles2[] =
             {STYLE_RED, STYLE_RED_FADED, STYLE_GREEN_FADED, STYLE_GREEN};
+
 
     private static NavigableMap<Integer, Integer> stylesMap;
     static {
@@ -241,26 +253,24 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_layout);
         settings = PreferenceManager.getDefaultSharedPreferences(this);
+        runtimePermissions = new RuntimePermissionUtils(this);
         if (savedInstanceState != null) {
             mResolvingError = savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
             setInitialLocation = savedInstanceState.getBoolean(STATE_SET_INITIAL_LOCATION, false);
             buildingIdList = savedInstanceState.getStringArrayList(STATE_BUILDING_LIST);
             showAllBuildings = savedInstanceState.getBoolean(STATE_SHOW_ALL_BUILDINGS);
             routeIndex = savedInstanceState.getInt(STATE_ROUTE_INDEX);
+            locationEnabled = savedInstanceState.getBoolean(STATE_LOCATION_ENABLED);
+            haveRequestedLocationPermission = savedInstanceState.getBoolean(STATE_REQUESTED_LOC_PERMISSION);
         } else {
             routeIndex = Integer.parseInt(settings.getString("default_bus_route", NO_ROUTE_ID));
+            locationEnabled = runtimePermissions.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+            haveRequestedLocationPermission = false;
         }
         client = UTilitiesApplication.getInstance(this).getHttpClient();
-        apiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
         locationRequest = new LocationRequest()
                 .setInterval(5000)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                .getMapAsync(this);
         assets = getAssets();
         garageCache = getSharedPreferences(GARAGE_CACHE_NAME, 0);
         polylineMap = new HashMap<>();
@@ -272,20 +282,63 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         fullDataSet = new ArrayList<>(buildingDataSet);
         // and split it into 2 different lists (garages are removed from buildingDataSet)
         garageDataSet = filterGarages(buildingDataSet);
+
+        ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+                .getMapAsync(this);
+    }
+
+    public void setupLocationIfNeeded() {
+        if (apiClient == null) {
+            apiClient = new GoogleApiClient.Builder(this)
+                    .addApi(LocationServices.API)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+            apiClient.connect();
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        apiClient.connect();
+        if (runtimePermissions.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            setupLocationIfNeeded();
+        } else if (!haveRequestedLocationPermission) {
+            haveRequestedLocationPermission = true;
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION_FOR_MAP);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_FOR_MAP:
+                locationEnabled = grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                if (locationEnabled) {
+                    setupLocationIfNeeded();
+                } else {
+                    moveToInitialLoc(false);
+                }
+                if (checkReady()) {
+                    mMap.setMyLocationEnabled(locationEnabled);
+                }
+                break;
+        }
+    }
+
+    public void requestLocationUpdates() {
+        LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest, this);
     }
 
     @Override
     public void onConnected(Bundle bundle) {
         // hopefully this will keep the current location fairly fresh? Not really sure
         // if this is necessary
-        LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest, this);
-        moveToInitialLoc();
+        requestLocationUpdates();
+        moveToInitialLoc(true);
     }
 
     @Override
@@ -356,8 +409,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setMyLocationEnabled(true);
-
+        mMap.setMyLocationEnabled(locationEnabled);
         markerManager = new MarkerManager(mMap);
         shownGarages = markerManager.newCollection();
         shownBuildings = markerManager.newCollection();
@@ -418,6 +470,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                 }
             });
         }
+        moveToInitialLoc(locationEnabled);
         handleIntent(getIntent());
 
     }
@@ -569,10 +622,17 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         buildingIdList.clear();
     }
 
-    private void moveToInitialLoc() {
+    /**
+     * Centers map at some location, either the user's or the UT Tower's, depending on a
+     * combination of user preferences and permissions. This will only run once, so don't
+     * worry about calling it too much.
+     *
+     * @param locationEnabled whether user has granted the location permission
+     */
+    public void moveToInitialLoc(boolean locationEnabled) {
         if (checkReady() && !setInitialLocation) {
             LatLng initialLocation;
-            if (settings.getBoolean("starting_location", false)) {
+            if (settings.getBoolean("starting_location", false) && locationEnabled) {
                 Location loc = LocationServices.FusedLocationApi.getLastLocation(apiClient);
                 if (loc != null) {
                     initialLocation = new LatLng(loc.getLatitude(), loc.getLongitude());
@@ -613,6 +673,8 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         savedInstanceState.putStringArrayList(STATE_BUILDING_LIST, new ArrayList<>(savedBuildings));
         savedInstanceState.putBoolean(STATE_SHOW_ALL_BUILDINGS, showAllBuildings);
         savedInstanceState.putInt(STATE_ROUTE_INDEX, actionBar.getSelectedNavigationIndex());
+        savedInstanceState.putBoolean(STATE_LOCATION_ENABLED, locationEnabled);
+        savedInstanceState.putBoolean(STATE_REQUESTED_LOC_PERMISSION, haveRequestedLocationPermission);
     }
 
     @Override
@@ -779,11 +841,10 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         super.onResume();
         if (mMap != null) {
             mMap.getUiSettings().setCompassEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(locationEnabled);
         }
-        if (apiClient.isConnected()) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest,
-                    this);
+        if (apiClient != null && apiClient.isConnected()) {
+            requestLocationUpdates();
         }
     }
 
@@ -794,14 +855,16 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             mMap.getUiSettings().setCompassEnabled(false);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
-        if (apiClient.isConnected()) {
+        if (apiClient != null && apiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, this);
         }
     }
 
     @Override
     public void onStop() {
-        apiClient.disconnect();
+        if (apiClient != null) {
+            apiClient.disconnect();
+        }
         super.onStop();
     }
 
