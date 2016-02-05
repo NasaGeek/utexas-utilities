@@ -368,7 +368,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         ui.setZoomControlsEnabled(true);
         ui.setAllGesturesEnabled(true);
         ui.setCompassEnabled(true);
-        ui.setMapToolbarEnabled(true);
+        Intent testPackage = new Intent();
+        testPackage.setPackage("com.google.android.apps.maps");
+        ui.setMapToolbarEnabled(testPackage.resolveActivity(getPackageManager()) != null);
 
         shownStops.setOnInfoWindowAdapter(new StopInfoWindowAdapter());
         shownBuildings.setOnInfoWindowAdapter(new MyInfoWindowAdapter());
