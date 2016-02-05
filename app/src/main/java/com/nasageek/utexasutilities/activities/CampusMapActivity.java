@@ -1220,25 +1220,21 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Location loc =
-                                    LocationServices.FusedLocationApi.getLastLocation(apiClient);
-                            if (loc != null) {
-                                // people tend to drive to garages
-                                boolean walkingDirections = !markerType.equals("garage");
-                                double dstLat = marker.getPosition().latitude;
-                                double dstLng = marker.getPosition().longitude;
+                            // people tend to drive to garages
+                            boolean walkingDirections = !markerType.equals("garage");
+                            double dstLat = marker.getPosition().latitude;
+                            double dstLng = marker.getPosition().longitude;
 
-                                AnalyticsHandler.trackGetDirectionsEvent();
-                                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                                        Uri.parse("http://maps.google.com/maps?saddr="
-                                                + loc.getLatitude() + "," + loc.getLongitude()
-                                                + "&daddr=" + dstLat + "," + dstLng
-                                                + "&dirflg=" + (walkingDirections ? "w" : "d")));
+                            AnalyticsHandler.trackGetDirectionsEvent();
+                            Uri dirUri = Uri.parse("google.navigation:q="+dstLat+","+dstLng+"&mode="+(walkingDirections ? "w" : "d"));
+                            Intent intent = new Intent(android.content.Intent.ACTION_VIEW, dirUri);
+                            if (intent.resolveActivity(CampusMapActivity.this.getPackageManager()) != null) {
                                 startActivity(intent);
                             } else {
-                                Toast.makeText(CampusMapActivity.this,
-                                        "Your location must be known to get directions",
-                                        Toast.LENGTH_SHORT).show();
+                                Snackbar.make(findViewById(R.id.map),
+                                        "No apps available to handle directions",
+                                        Snackbar.LENGTH_LONG)
+                                        .show();
                             }
                         }
                     }).setNegativeButton("No", new DialogInterface.OnClickListener() {
