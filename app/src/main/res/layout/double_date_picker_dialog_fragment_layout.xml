@@ -7,9 +7,11 @@
     android:showDividers="middle" >
 
     <android.support.design.widget.TabLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/tabs"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        app:tabIndicatorColor="@color/blue_accent" />
 
     <com.nasageek.utexasutilities.WrappedViewPager
         android:id="@+id/wrappedviewpager"
@@ -28,6 +30,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="@color/blue_accent"
             android:text="Cancel" />
 
         <Button
@@ -36,6 +39,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="@color/blue_accent"
             android:text="Ok" />
     </LinearLayout>
 
