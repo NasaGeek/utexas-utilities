@@ -98,27 +98,21 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
                 endDatePicker.getMonth(), endDatePicker.getDayOfMonth());
         if (startDate.after(endDate)) {
             Toast.makeText(getActivity(),
-                    "Start date must be before end date.", Toast.LENGTH_SHORT)
-                    .show();
+                    "Start date must be before end date.", Toast.LENGTH_SHORT).show();
             return;
         }
         ContentResolver cr = getActivity().getContentResolver();
 
         SimpleDateFormat formatter = new SimpleDateFormat("hh:mmaa", Locale.US);
-        ArrayList<UTClass> classList = getArguments().getParcelableArrayList(
-                "classList");
-        SimpleDateFormat endDateFormatter = new SimpleDateFormat(
-                "yyyyMMdd'T000000Z'", Locale.US);
-        // roll forward one because RRULE will not place events
-        // on the specified end date
+        ArrayList<UTClass> classList = getArguments().getParcelableArrayList("classList");
+        SimpleDateFormat endDateFormatter = new SimpleDateFormat("yyyyMMdd'T000000Z'", Locale.US);
+        // roll forward one because RRULE will not place events on the specified end date
         endDate.roll(Calendar.DATE, true);
 
         String endDateString = endDateFormatter.format(endDate.getTime());
         ArrayList<ContentValues> valuesList = new ArrayList<>();
 
-        // copying our original selected start date for
-        // comparison to each class
-        // start date later
+        // copying our original selected start date for comparison to each class start date later
         Calendar selectedStartDate = (Calendar) startDate.clone();
         for (UTClass clz : classList) {
             for (Classtime clt : clz.getClassTimes()) {
@@ -137,23 +131,18 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
                     return;
                 }
 
-                // resetting startdate to the selected start
-                // date
+                // resetting startdate to the selected start date
                 startDate = (Calendar) selectedStartDate.clone();
                 startDate.clear(Calendar.DAY_OF_MONTH);
-                startDate.set(Calendar.DAY_OF_WEEK,
-                        getDayConstantFromChar(clt.getDay()));
+                startDate.set(Calendar.DAY_OF_WEEK, getDayConstantFromChar(clt.getDay()));
 
-                // forces us to start the schedule when the user
-                // asked us to,
-                // and not just on the week of the day they
-                // selected
+                // forces us to start the schedule when the user asked us to
+                // and not just on the week of the day they selected
                 if (startDate.before(selectedStartDate)) {
                     startDate.roll(Calendar.WEEK_OF_YEAR, true);
                 }
 
-                // if for some strange reason their end date is
-                // <1 week after start date
+                // if for some strange reason their end date is <1 week after start date
                 // don't add that class
                 if (startDate.after(endDate)) {
                     continue;
@@ -163,18 +152,15 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
                 startDate.set(Calendar.MINUTE, classStartTime.getMinutes());
 
                 ContentValues values = new ContentValues();
-                values.put(CalendarContract.Events.TITLE,
-                        clz.getId() + " - " + clz.getName());
-                values.put(CalendarContract.Events.EVENT_LOCATION, clt
-                        .getBuilding().getId() + " " + clt.getBuilding().getRoom());
+                values.put(CalendarContract.Events.TITLE, clz.getId() + " - " + clz.getName());
+                values.put(CalendarContract.Events.EVENT_LOCATION,
+                        clt.getBuilding().getId() + " " + clt.getBuilding().getRoom());
                 values.put(CalendarContract.Events.EVENT_COLOR,
                         Integer.parseInt(clt.getColor(), 16));
-                values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;UNTIL="
-                        + endDateString);
+                values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;UNTIL=" + endDateString);
                 values.put(CalendarContract.Events.DURATION,
                         startEndToDuration(classStartTime, classEndTime));
-                values.put(CalendarContract.Events.DTSTART,
-                        startDate.getTimeInMillis());
+                values.put(CalendarContract.Events.DTSTART, startDate.getTimeInMillis());
                 values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone
                         .getTimeZone("US/Central").getID());
                 valuesList.add(values);
@@ -182,8 +168,7 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
         }
         if (valuesList.size() == 0) {
             Toast.makeText(getActivity(),
-                    "You have no classes in this date range", Toast.LENGTH_SHORT)
-                    .show();
+                    "You have no classes in this date range", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -191,8 +176,7 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
         Uri uri = Calendars.CONTENT_URI;
 
         // show them Google Calendars where they are either:
-        // owner, editor, contributor, or domain admin
-        // (700, 600, 500, 800 respectively)
+        // owner, editor, contributor, or domain admin (700, 600, 500, 800 respectively)
         cur = cr.query(uri, EVENT_PROJECTION, "((" + Calendars.ACCOUNT_TYPE
                 + " = ?) AND ((" + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR "
                 + "(" + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR " + "("
@@ -206,8 +190,7 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
         // If no calendars are available, let them know
         if (cur == null) {
             Toast.makeText(getActivity(),
-                    "There are no available calendars to export to.",
-                    Toast.LENGTH_LONG).show();
+                    "There are no available calendars to export to.", Toast.LENGTH_LONG).show();
             DoubleDatePickerDialogFragment.this.dismiss();
             return;
         }
@@ -220,8 +203,7 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
             accountName = cur.getString(PROJECTION_ACCOUNT_NAME_INDEX);
             calendars.add(displayName + " ^^ " + accountName);
 
-            // going to hope that they don't have so many
-            // calendars that I actually need a long
+            // going to hope that they don't have so many calendars that I actually need a long
             indices.add((int) calID);
         }
         FragmentManager fm = getActivity().getSupportFragmentManager();
