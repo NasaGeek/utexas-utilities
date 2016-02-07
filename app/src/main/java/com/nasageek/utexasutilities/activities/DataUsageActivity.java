@@ -308,7 +308,7 @@ public class DataUsageActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void percentLoadFailed(LoadFailedEvent event) {
+    public void percentLoadFailed(PercentLoadFailedEvent event) {
         percentLoadStatus = LoadStatus.FAILED;
         dataUsedText.setText(event.errorMessage);
         percentDataUsedView.setProgress(0);
