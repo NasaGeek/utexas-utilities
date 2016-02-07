@@ -1,9 +1,13 @@
 
 package com.nasageek.utexasutilities.fragments;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,6 +23,7 @@ import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.commonsware.cwac.security.RuntimePermissionUtils;
 import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.MyBus;
 import com.nasageek.utexasutilities.R;
@@ -49,6 +54,9 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
         AdapterView.OnItemClickListener, ActionMode.Callback {
 
     public static final int TRANSLUCENT_GRAY = 0x99F0F0F0;
+
+    private static final int REQUEST_CALENDAR_PERMISSION = 1;
+    private RuntimePermissionUtils runtimePermissions;
 
     private GridView scheduleGridView;
     private WrappingSlidingDrawer slidingDrawer;
@@ -147,6 +155,7 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         parentAct = (ScheduleActivity) getActivity();
+        runtimePermissions = new RuntimePermissionUtils(getActivity());
         reqUrl = getArguments().getString("url");
         initialFragment = getArguments().getBoolean("initialFragment");
         TASK_TAG = getClass().getSimpleName() + reqUrl;
@@ -252,14 +261,34 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
                 // check to see if we're done loading the schedules (the
                 // ScheduleClassAdapter is initialized in onPostExecute)
                 if (adapter != null) {
-                    DoubleDatePickerDialogFragment.newInstance(classList)
-                            .show(getActivity().getSupportFragmentManager(), "double_date_picker");
+                    if (runtimePermissions.hasPermission(Manifest.permission.READ_CALENDAR)) {
+                        DoubleDatePickerDialogFragment.newInstance(classList)
+                                .show(getActivity().getSupportFragmentManager(), "double_date_picker");
+                    } else {
+                        requestPermissions(new String[]{Manifest.permission.READ_CALENDAR},
+                                REQUEST_CALENDAR_PERMISSION);
+                    }
                 }
                 break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CALENDAR_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // work around crash when showing fragment in onRequestPermissionsResult
+                    // https://code.google.com/p/android/issues/detail?id=190966
+                    new Handler().postDelayed(() -> DoubleDatePickerDialogFragment.newInstance(classList)
+                            .show(getActivity().getSupportFragmentManager(), "double_date_picker"), 200);
+                }
+                break;
+        }
     }
 
     @Override

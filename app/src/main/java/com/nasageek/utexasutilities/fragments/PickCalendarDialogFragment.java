@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatDialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +27,7 @@ import com.nasageek.utexasutilities.R;
 
 import java.util.ArrayList;
 
-public class PickCalendarDialogFragment extends AppCompatDialogFragment {
+public class PickCalendarDialogFragment extends ExportScheduleDialogFragment {
 
     private FragmentActivity parentAct;
 
@@ -66,7 +65,6 @@ public class PickCalendarDialogFragment extends AppCompatDialogFragment {
                     cvList.get(i).put(CalendarContract.Events.CALENDAR_ID, selection);
                     cih.startInsert(i, null, CalendarContract.Events.CONTENT_URI, cvList.get(i));
                 }
-
             }
         }).setTitle("Select calendar");
         AlertDialog dlg = build.create();

@@ -3,6 +3,7 @@ package com.nasageek.utexasutilities.activities;
 
 import android.os.Bundle;
 import android.os.Parcel;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.app.FragmentManager;
@@ -112,6 +113,10 @@ public class ScheduleActivity extends BaseActivity implements
     public void addCourseSchedule(boolean currentSchedule, String title, String semId) {
         mPagerAdapter.add(new CourseSchedulePageDescriptor(currentSchedule, title,
                String.format(COURSE_SCHEDULE_URL_WITH_SEMID, semId)));
+    }
+
+    public void showSnackbar(String message) {
+        Snackbar.make(pager, message, Snackbar.LENGTH_LONG).show();
     }
 
     @Override

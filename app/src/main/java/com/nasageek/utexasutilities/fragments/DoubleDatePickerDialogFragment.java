@@ -22,8 +22,10 @@ import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.commonsware.cwac.security.RuntimePermissionUtils;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.WrappedViewPager;
+import com.nasageek.utexasutilities.activities.ScheduleActivity;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
 
@@ -38,7 +40,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.Vector;
 
-public class DoubleDatePickerDialogFragment extends DialogFragment {
+public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment {
 
     private List<View> datePickers;
     private DatePicker startDatePicker, endDatePicker;
@@ -89,6 +91,140 @@ public class DoubleDatePickerDialogFragment extends DialogFragment {
      * build.create(); }
      */
 
+    public void setupScheduleData() {
+        Calendar startDate = new GregorianCalendar(startDatePicker.getYear(),
+                startDatePicker.getMonth(), startDatePicker.getDayOfMonth());
+        Calendar endDate = new GregorianCalendar(endDatePicker.getYear(),
+                endDatePicker.getMonth(), endDatePicker.getDayOfMonth());
+        if (startDate.after(endDate)) {
+            Toast.makeText(getActivity(),
+                    "Start date must be before end date.", Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+        ContentResolver cr = getActivity().getContentResolver();
+
+        SimpleDateFormat formatter = new SimpleDateFormat("hh:mmaa", Locale.US);
+        ArrayList<UTClass> classList = getArguments().getParcelableArrayList(
+                "classList");
+        SimpleDateFormat endDateFormatter = new SimpleDateFormat(
+                "yyyyMMdd'T000000Z'", Locale.US);
+        // roll forward one because RRULE will not place events
+        // on the specified end date
+        endDate.roll(Calendar.DATE, true);
+
+        String endDateString = endDateFormatter.format(endDate.getTime());
+        ArrayList<ContentValues> valuesList = new ArrayList<>();
+
+        // copying our original selected start date for
+        // comparison to each class
+        // start date later
+        Calendar selectedStartDate = (Calendar) startDate.clone();
+        for (UTClass clz : classList) {
+            for (Classtime clt : clz.getClassTimes()) {
+                Date classStartTime = null, classEndTime = null;
+
+                try {
+                    classStartTime = formatter.parse(clt.getStartTime());
+                    classEndTime = formatter.parse(clt.getEndTime());
+                } catch (ParseException e1) {
+                    Toast.makeText(getActivity(),
+                            "Error parsing " + clt.getCourseId()
+                                    + " start/end time. Export canceled.",
+                            Toast.LENGTH_LONG);
+                    e1.printStackTrace();
+                    DoubleDatePickerDialogFragment.this.dismiss();
+                    return;
+                }
+
+                // resetting startdate to the selected start
+                // date
+                startDate = (Calendar) selectedStartDate.clone();
+                startDate.clear(Calendar.DAY_OF_MONTH);
+                startDate.set(Calendar.DAY_OF_WEEK,
+                        getDayConstantFromChar(clt.getDay()));
+
+                // forces us to start the schedule when the user
+                // asked us to,
+                // and not just on the week of the day they
+                // selected
+                if (startDate.before(selectedStartDate)) {
+                    startDate.roll(Calendar.WEEK_OF_YEAR, true);
+                }
+
+                // if for some strange reason their end date is
+                // <1 week after start date
+                // don't add that class
+                if (startDate.after(endDate)) {
+                    continue;
+                }
+
+                startDate.set(Calendar.HOUR_OF_DAY, classStartTime.getHours());
+                startDate.set(Calendar.MINUTE, classStartTime.getMinutes());
+
+                ContentValues values = new ContentValues();
+                values.put(CalendarContract.Events.TITLE,
+                        clz.getId() + " - " + clz.getName());
+                values.put(CalendarContract.Events.EVENT_LOCATION, clt
+                        .getBuilding().getId() + " " + clt.getBuilding().getRoom());
+                values.put(CalendarContract.Events.EVENT_COLOR,
+                        Integer.parseInt(clt.getColor(), 16));
+                values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;UNTIL="
+                        + endDateString);
+                values.put(CalendarContract.Events.DURATION,
+                        startEndToDuration(classStartTime, classEndTime));
+                values.put(CalendarContract.Events.DTSTART,
+                        startDate.getTimeInMillis());
+                values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone
+                        .getTimeZone("US/Central").getID());
+                valuesList.add(values);
+            }
+        }
+
+        Cursor cur = null;
+        Uri uri = Calendars.CONTENT_URI;
+
+        // show them Google Calendars where they are either:
+        // owner, editor, contributor, or domain admin
+        // (700, 600, 500, 800 respectively)
+        cur = cr.query(uri, EVENT_PROJECTION, "((" + Calendars.ACCOUNT_TYPE
+                + " = ?) AND ((" + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR "
+                + "(" + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR " + "("
+                + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR " + "("
+                + Calendars.CALENDAR_ACCESS_LEVEL + " = ?)))", new String[] {
+                "com.google", "800", "700", "600", "500"
+        }, null);
+        ArrayList<String> calendars = new ArrayList<>();
+        ArrayList<Integer> indices = new ArrayList<>();
+
+        // If no calendars are available, let them know
+        if (cur == null) {
+            Toast.makeText(getActivity(),
+                    "There are no available calendars to export to.",
+                    Toast.LENGTH_LONG).show();
+            DoubleDatePickerDialogFragment.this.dismiss();
+            return;
+        }
+        while (cur.moveToNext()) {
+            long calID = 0;
+            String displayName = null;
+            String accountName = null;
+            calID = cur.getLong(PROJECTION_ID_INDEX);
+            displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX);
+            accountName = cur.getString(PROJECTION_ACCOUNT_NAME_INDEX);
+            calendars.add(displayName + " ^^ " + accountName);
+
+            // going to hope that they don't have so many
+            // calendars that I actually need a long
+            indices.add((int) calID);
+        }
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        PickCalendarDialogFragment pcdf = PickCalendarDialogFragment.newInstance(
+                indices, calendars, valuesList);
+        DoubleDatePickerDialogFragment.this.dismiss();
+        pcdf.show(fm, "fragment_pick_calendar");
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.double_date_picker_dialog_fragment_layout, container);
@@ -98,138 +234,7 @@ public class DoubleDatePickerDialogFragment extends DialogFragment {
 
                     @Override
                     public void onClick(View v) {
-                        Calendar startDate = new GregorianCalendar(startDatePicker.getYear(),
-                                startDatePicker.getMonth(), startDatePicker.getDayOfMonth());
-                        Calendar endDate = new GregorianCalendar(endDatePicker.getYear(),
-                                endDatePicker.getMonth(), endDatePicker.getDayOfMonth());
-                        if (startDate.after(endDate)) {
-                            Toast.makeText(getActivity(),
-                                    "Start date must be before end date.", Toast.LENGTH_SHORT)
-                                    .show();
-                            return;
-                        }
-                        ContentResolver cr = getActivity().getContentResolver();
-
-                        SimpleDateFormat formatter = new SimpleDateFormat("hh:mmaa", Locale.US);
-                        ArrayList<UTClass> classList = getArguments().getParcelableArrayList(
-                                "classList");
-                        SimpleDateFormat endDateFormatter = new SimpleDateFormat(
-                                "yyyyMMdd'T000000Z'", Locale.US);
-                        // roll forward one because RRULE will not place events
-                        // on the specified end date
-                        endDate.roll(Calendar.DATE, true);
-
-                        String endDateString = endDateFormatter.format(endDate.getTime());
-                        ArrayList<ContentValues> valuesList = new ArrayList<>();
-
-                        // copying our original selected start date for
-                        // comparison to each class
-                        // start date later
-                        Calendar selectedStartDate = (Calendar) startDate.clone();
-                        for (UTClass clz : classList) {
-                            for (Classtime clt : clz.getClassTimes()) {
-                                Date classStartTime = null, classEndTime = null;
-
-                                try {
-                                    classStartTime = formatter.parse(clt.getStartTime());
-                                    classEndTime = formatter.parse(clt.getEndTime());
-                                } catch (ParseException e1) {
-                                    Toast.makeText(getActivity(),
-                                            "Error parsing " + clt.getCourseId()
-                                                    + " start/end time. Export canceled.",
-                                            Toast.LENGTH_LONG);
-                                    e1.printStackTrace();
-                                    DoubleDatePickerDialogFragment.this.dismiss();
-                                    return;
-                                }
-
-                                // resetting startdate to the selected start
-                                // date
-                                startDate = (Calendar) selectedStartDate.clone();
-                                startDate.clear(Calendar.DAY_OF_MONTH);
-                                startDate.set(Calendar.DAY_OF_WEEK,
-                                        getDayConstantFromChar(clt.getDay()));
-
-                                // forces us to start the schedule when the user
-                                // asked us to,
-                                // and not just on the week of the day they
-                                // selected
-                                if (startDate.before(selectedStartDate)) {
-                                    startDate.roll(Calendar.WEEK_OF_YEAR, true);
-                                }
-
-                                // if for some strange reason their end date is
-                                // <1 week after start date
-                                // don't add that class
-                                if (startDate.after(endDate)) {
-                                    continue;
-                                }
-
-                                startDate.set(Calendar.HOUR_OF_DAY, classStartTime.getHours());
-                                startDate.set(Calendar.MINUTE, classStartTime.getMinutes());
-
-                                ContentValues values = new ContentValues();
-                                values.put(CalendarContract.Events.TITLE,
-                                        clz.getId() + " - " + clz.getName());
-                                values.put(CalendarContract.Events.EVENT_LOCATION, clt
-                                        .getBuilding().getId() + " " + clt.getBuilding().getRoom());
-                                values.put(CalendarContract.Events.EVENT_COLOR,
-                                        Integer.parseInt(clt.getColor(), 16));
-                                values.put(CalendarContract.Events.RRULE, "FREQ=WEEKLY;UNTIL="
-                                        + endDateString);
-                                values.put(CalendarContract.Events.DURATION,
-                                        startEndToDuration(classStartTime, classEndTime));
-                                values.put(CalendarContract.Events.DTSTART,
-                                        startDate.getTimeInMillis());
-                                values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone
-                                        .getTimeZone("US/Central").getID());
-                                valuesList.add(values);
-                            }
-                        }
-
-                        Cursor cur = null;
-                        Uri uri = Calendars.CONTENT_URI;
-
-                        // show them Google Calendars where they are either:
-                        // owner, editor, contributor, or domain admin
-                        // (700, 600, 500, 800 respectively)
-                        cur = cr.query(uri, EVENT_PROJECTION, "((" + Calendars.ACCOUNT_TYPE
-                                + " = ?) AND ((" + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR "
-                                + "(" + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR " + "("
-                                + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR " + "("
-                                + Calendars.CALENDAR_ACCESS_LEVEL + " = ?)))", new String[] {
-                                "com.google", "800", "700", "600", "500"
-                        }, null);
-                        ArrayList<String> calendars = new ArrayList<>();
-                        ArrayList<Integer> indices = new ArrayList<>();
-
-                        // If no calendars are available, let them know
-                        if (cur == null) {
-                            Toast.makeText(getActivity(),
-                                    "There are no available calendars to export to.",
-                                    Toast.LENGTH_LONG).show();
-                            DoubleDatePickerDialogFragment.this.dismiss();
-                            return;
-                        }
-                        while (cur.moveToNext()) {
-                            long calID = 0;
-                            String displayName = null;
-                            String accountName = null;
-                            calID = cur.getLong(PROJECTION_ID_INDEX);
-                            displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX);
-                            accountName = cur.getString(PROJECTION_ACCOUNT_NAME_INDEX);
-                            calendars.add(displayName + " ^^ " + accountName);
-
-                            // going to hope that they don't have so many
-                            // calendars that I actually need a long
-                            indices.add((int) calID);
-                        }
-                        FragmentManager fm = getActivity().getSupportFragmentManager();
-                        PickCalendarDialogFragment pcdf = PickCalendarDialogFragment.newInstance(
-                                indices, calendars, valuesList);
-                        DoubleDatePickerDialogFragment.this.dismiss();
-                        pcdf.show(fm, "fragment_pick_calendar");
-                        return;
+                        setupScheduleData();
                     }
                 });
         ((Button) view.findViewById(R.id.calendar_button_cancel))
