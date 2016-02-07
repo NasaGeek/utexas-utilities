@@ -60,6 +60,7 @@ public class UTilitiesActivity extends BaseActivity {
     private ProgressBar scheduleProgress, balanceProgress, dataProgress;
     private AlertDialog nologin;
 
+    private UTilitiesApplication app;
     private AuthCookie authCookies[];
     private List<AsyncTask> loginTasks;
     private UpdateUiTask updateUiTask;
@@ -76,9 +77,9 @@ public class UTilitiesActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        UTilitiesApplication mApp = (UTilitiesApplication) getApplication();
-        utdAuthCookie = mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY);
-        pnaAuthCookie = mApp.getAuthCookie(PNA_AUTH_COOKIE_KEY);
+        app = (UTilitiesApplication) getApplication();
+        utdAuthCookie = app.getAuthCookie(UTD_AUTH_COOKIE_KEY);
+        pnaAuthCookie = app.getAuthCookie(PNA_AUTH_COOKIE_KEY);
         authCookies = new AuthCookie[]{utdAuthCookie, pnaAuthCookie};
 
         loginTasks = (List<AsyncTask>) getLastCustomNonConfigurationInstance();
@@ -169,7 +170,7 @@ public class UTilitiesActivity extends BaseActivity {
 
         handleUnencryptedPassword();
         handleFirstLaunch();
-        if (settings.getBoolean("autologin", false) && !isLoggingIn() && !mApp.anyCookiesSet()) {
+        if (settings.getBoolean("autologin", false) && !isLoggingIn() && !app.anyCookiesSet()) {
             login();
         }
 
@@ -572,7 +573,7 @@ public class UTilitiesActivity extends BaseActivity {
      * Perform a login with the user's saved credentials.
      */
     private void login() {
-        SharedPreferences sp = ((UTilitiesApplication) getApplication()).getSecurePreferences();
+        SharedPreferences sp = app.getSecurePreferences();
         if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
             if (!settings.contains("eid") || !sp.contains("password")
                     || settings.getString("eid", "").equals("")
@@ -615,9 +616,7 @@ public class UTilitiesActivity extends BaseActivity {
      * Log the user out of all UT web services.
      */
     private void logout() {
-        for (AuthCookie cookie : authCookies) {
-            cookie.logout();
-        }
+        app.logoutAll();
         for (ImageView ib : featureButtons) {
             enableFeature(ib);
             if (((DashboardButtonData) ib.getTag()).loginProgress != null) {

@@ -24,6 +24,7 @@ import org.acra.annotation.ReportsCrashes;
 import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.net.CookieStore;
 import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -172,6 +173,8 @@ public class UTilitiesApplication extends Application {
         for (AuthCookie authCookie : authCookies.values()) {
             authCookie.logout();
         }
+        CookieStore cookies = ((CookieManager) CookieHandler.getDefault()).getCookieStore();
+        cookies.removeAll();
     }
 
     public OkHttpClient getHttpClient() {
