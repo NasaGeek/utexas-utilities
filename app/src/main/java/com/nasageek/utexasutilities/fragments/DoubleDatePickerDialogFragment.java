@@ -180,6 +180,12 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
                 valuesList.add(values);
             }
         }
+        if (valuesList.size() == 0) {
+            Toast.makeText(getActivity(),
+                    "You have no classes in this date range", Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
 
         Cursor cur = null;
         Uri uri = Calendars.CONTENT_URI;
