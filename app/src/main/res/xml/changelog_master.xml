@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
-    <release version="2.0" versioncode="43">
+    <release version="2.0" versioncode="44">
         <change>Updated UI to fit modern design standards</change>
         <change>Updated bus routes and arrival time API</change>
         <change>Updated Data Usage graph to be more attractive and functional</change>
