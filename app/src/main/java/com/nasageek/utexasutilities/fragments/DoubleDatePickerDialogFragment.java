@@ -106,8 +106,6 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
         SimpleDateFormat formatter = new SimpleDateFormat("hh:mmaa", Locale.US);
         ArrayList<UTClass> classList = getArguments().getParcelableArrayList("classList");
         SimpleDateFormat endDateFormatter = new SimpleDateFormat("yyyyMMdd'T000000Z'", Locale.US);
-        // roll forward one because RRULE will not place events on the specified end date
-        endDate.roll(Calendar.DATE, true);
 
         String endDateString = endDateFormatter.format(endDate.getTime());
         ArrayList<ContentValues> valuesList = new ArrayList<>();
