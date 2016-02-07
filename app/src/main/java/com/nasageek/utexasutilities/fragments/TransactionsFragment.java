@@ -12,22 +12,20 @@ import android.widget.Toast;
 
 import com.foound.widget.AmazingListView;
 import com.nasageek.utexasutilities.MyBus;
+import com.nasageek.utexasutilities.NotAuthenticatedException;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.TaggedAsyncTask;
+import com.nasageek.utexasutilities.UTLoginTask;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.adapters.TransactionAdapter;
 import com.nasageek.utexasutilities.model.LoadFailedEvent;
 import com.nasageek.utexasutilities.model.Transaction;
 import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
-import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.URI;
@@ -184,27 +182,22 @@ public class TransactionsFragment extends DataLoadFragment {
         ((ListView) transactionsListView).setSelectionFromTop(0, 0);
     }
 
-    static class FetchTransactionDataTask extends TaggedAsyncTask<Boolean, Void, Boolean> {
-        private String errorMsg;
+    static class FetchTransactionDataTask extends UTLoginTask<Boolean, Void, Boolean> {
         private String balance = "";
         private List<Transaction> transactions = new ArrayList<>();
         private TransactionType type;
-        private String url;
         private RequestBody form;
 
         public FetchTransactionDataTask(String tag, TransactionType type, String url,
                                         RequestBody form) {
-            super(tag);
+            super(tag, url);
             this.type = type;
-            this.url = url;
             this.form = form;
         }
 
         @Override
         protected Boolean doInBackground(Boolean... params) {
             Boolean recursing = params[0];
-            OkHttpClient client = UTilitiesApplication.getInstance().getHttpClient();
-            client.setCookieHandler(CookieHandler.getDefault());
 
             HttpCookie screenSizeCookie = new HttpCookie("webBrowserSize", "B");
             screenSizeCookie.setDomain(".utexas.edu");
@@ -212,52 +205,18 @@ public class TransactionsFragment extends DataLoadFragment {
                    .add(URI.create(".utexas.edu"), screenSizeCookie);
             Request request = new Request.Builder()
                     .post(form)
-                    .url(url)
+                    .url(reqUrl)
                     .build();
-            String pagedata = "";
-            transactions = new ArrayList<>();
+            String pagedata;
             try {
-                Response response = client.newCall(request).execute();
-                pagedata = response.body().string();
+                pagedata = fetchData(request);
             } catch (IOException e) {
                 errorMsg = "UTilities could not fetch your transactions. Try refreshing.";
                 e.printStackTrace();
                 cancel(true);
                 return null;
-            }
-
-            if (pagedata.contains("<title>UT EID Login</title>")) {
-                errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-                UTilitiesApplication mApp = UTilitiesApplication.getInstance();
-//                if (!recursing) {
-//                    try {
-//                        mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
-//                        mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
-//                    } catch (IOException e) {
-//                        errorMsg
-//                                = "UTilities could not fetch your transaction data.  Try refreshing.";
-//                        cancel(true);
-//                        e.printStackTrace();
-//                        return null;
-//                    } catch (TempLoginException tle) {
-//                        /*
-//                        ooooh boy is this lazy. I'd rather not init SharedPreferences here
-//                        to check if persistent login is on, so we'll just catch the exception
-//                         */
-//                        Intent login = new Intent(mApp, LoginActivity.class);
-//                        login.putExtra("activity", getActivity().getIntent().getComponent()
-//                                .getClassName());
-//                        login.putExtra("service", 'u');
-//                        mApp.startActivity(login);
-//                        getActivity().finish();
-//                        errorMsg = "Session expired, please log in again";
-//                        cancel(true);
-//                        return null;
-//                    }
-//                    return doInBackground(true);
-//                } else {
-                  mApp.logoutAll();
-//                }
+            } catch (NotAuthenticatedException e) {
+                e.printStackTrace();
                 cancel(true);
                 return null;
             }
@@ -321,12 +280,6 @@ public class TransactionsFragment extends DataLoadFragment {
         protected void onPostExecute(Boolean morePagesAvailable) {
             MyBus.getInstance().post(new LoadSucceededEvent(getTag(), transactions, balance,
                     morePagesAvailable, form));
-            UTilitiesApplication.getInstance().removeCachedTask(getTag());
-        }
-
-        @Override
-        protected void onCancelled(Boolean nullIfError) {
-            MyBus.getInstance().post(new LoadFailedEvent(getTag(), errorMsg));
             UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
     }

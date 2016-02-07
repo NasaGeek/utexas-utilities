@@ -23,14 +23,13 @@ import android.widget.Toast;
 
 import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.MyBus;
+import com.nasageek.utexasutilities.NotAuthenticatedException;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.TaggedAsyncTask;
+import com.nasageek.utexasutilities.UTLoginTask;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.activities.CampusMapActivity;
 import com.nasageek.utexasutilities.model.LoadFailedEvent;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
@@ -202,71 +201,35 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
     @Override
     public void onDestroyActionMode(ActionMode mode) { }
 
-    static class FetchExamDataTask extends TaggedAsyncTask<Boolean, Void, List<String>> {
-        private String errorMsg;
+    static class FetchExamDataTask extends UTLoginTask<Boolean, Void, List<String>> {
 
         public FetchExamDataTask(String tag) {
-            super(tag);
+            super(tag, "https://utdirect.utexas.edu/registrar/exam_schedule.WBX");
         }
 
         @Override
         protected List<String> doInBackground(Boolean... params) {
             Boolean recursing = params[0];
             List<String> examlist = new ArrayList<>();
-            OkHttpClient client = UTilitiesApplication.getInstance().getHttpClient();
 
-            String reqUrl = "https://utdirect.utexas.edu/registrar/exam_schedule.WBX";
             Request request = new Request.Builder()
                     .url(reqUrl)
                     .build();
-            String pagedata = "";
+            String pagedata;
 
             try {
-                Response response = client.newCall(request).execute();
-                pagedata = response.body().string();
+                pagedata = fetchData(request);
             } catch (IOException e) {
                 errorMsg = "UTilities could not fetch your exam schedule";
                 e.printStackTrace();
                 cancel(true);
                 return null;
+            } catch (NotAuthenticatedException e) {
+                e.printStackTrace();
+                cancel(true);
+                return null;
             }
 
-//            if (pagedata.contains("<title>UT EID Login</title>")) {
-//                errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-//                if (parentAct != null) {
-//                    UTilitiesApplication mApp = (UTilitiesApplication) parentAct.getApplication();
-//                    if (!recursing) {
-//                        try {
-//                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
-//                            mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
-//                        } catch (IOException e) {
-//                            errorMsg = "UTilities could not fetch your exam schedule";
-//                            cancel(true);
-//                            e.printStackTrace();
-//                            return null;
-//                        } catch (TempLoginException tle) {
-//                            /*
-//                            ooooh boy is this lazy. I'd rather not init SharedPreferences here
-//                            to check if persistent login is on, so we'll just catch the exception
-//                             */
-//                            Intent login = new Intent(parentAct, LoginActivity.class);
-//                            login.putExtra("activity", parentAct.getIntent().getComponent()
-//                                    .getClassName());
-//                            login.putExtra("service", 'u');
-//                            parentAct.startActivity(login);
-//                            parentAct.finish();
-//                            errorMsg = "Session expired, please log in again";
-//                            cancel(true);
-//                            return null;
-//                        }
-//                        return doInBackground(true);
-//                    } else {
-//                        mApp.logoutAll();
-//                    }
-//                }
-//                cancel(true);
-//                return null;
-//            }
             if (pagedata.contains("will be available approximately three weeks")) {
                 cancel(true);
                 errorMsg = "'Tis not the season for final exams.\nTry back later!" +
@@ -306,12 +269,6 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
         @Override
         protected void onPostExecute(List<String> result) {
             MyBus.getInstance().post(new LoadSucceededEvent(getTag(), result));
-            UTilitiesApplication.getInstance().removeCachedTask(getTag());
-        }
-
-        @Override
-        protected void onCancelled() {
-            MyBus.getInstance().post(new LoadFailedEvent(getTag(), errorMsg));
             UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
     }

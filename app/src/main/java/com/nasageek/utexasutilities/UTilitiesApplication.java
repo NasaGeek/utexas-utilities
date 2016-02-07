@@ -102,6 +102,7 @@ public class UTilitiesApplication extends Application {
 
         CookieManager cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
+        client.setCookieHandler(cookieManager);
 
         ACRA.init(this);
         initGoogleAnalytics();

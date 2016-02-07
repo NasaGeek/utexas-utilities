@@ -26,8 +26,9 @@ import android.widget.Toast;
 import com.commonsware.cwac.security.RuntimePermissionUtils;
 import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.MyBus;
+import com.nasageek.utexasutilities.NotAuthenticatedException;
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.TaggedAsyncTask;
+import com.nasageek.utexasutilities.UTLoginTask;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.Utility;
 import com.nasageek.utexasutilities.WrappingSlidingDrawer;
@@ -37,9 +38,7 @@ import com.nasageek.utexasutilities.adapters.ScheduleClassAdapter;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.LoadFailedEvent;
 import com.nasageek.utexasutilities.model.UTClass;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
@@ -359,10 +358,7 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
         }
     }
 
-    static class ParseTask extends TaggedAsyncTask<Boolean, String, List<UTClass>> {
-        private OkHttpClient client = UTilitiesApplication.getInstance().getHttpClient();
-        private String errorMsg;
-        private String reqUrl;
+    static class ParseTask extends UTLoginTask<Boolean, String, List<UTClass>> {
         private boolean classParseIssue = false;
         private boolean initialFragment;
         private final String[] colors = {
@@ -370,8 +366,7 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
         };
 
         public ParseTask(String tag, String reqUrl, boolean initialFragment) {
-            super(tag);
-            this.reqUrl = reqUrl;
+            super(tag, reqUrl);
             this.initialFragment = initialFragment;
         }
 
@@ -384,58 +379,24 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
         protected List<UTClass> doInBackground(Boolean... params) {
             Boolean recursing = params[0];
             List<UTClass> classes = new ArrayList<>();
+            String pagedata;
             Request request = new Request.Builder()
                     .url(reqUrl)
                     .build();
-            String pagedata = "";
-
             try {
-                Response response = client.newCall(request).execute();
-                pagedata = response.body().string();
+                pagedata = fetchData(request);
             } catch (IOException e) {
                 errorMsg = "UTilities could not fetch your class listing";
+                e.printStackTrace();
+                cancel(true);
+                return null;
+            } catch (NotAuthenticatedException e) {
                 e.printStackTrace();
                 cancel(true);
                 return null;
             }
 
             // now parse the Class Listing data
-//
-//            // did we hit the login screen?
-            if (pagedata.contains("<title>UT EID Login</title>")) {
-                errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-                UTilitiesApplication mApp = UTilitiesApplication.getInstance();
-//                if (!recursing) {
-//                    try {
-//                        mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
-//                        mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).login();
-//                    } catch (IOException e) {
-//                        errorMsg = "UTilities could not fetch your class listing";
-//                        cancel(true);
-//                        e.printStackTrace();
-//                        return null;
-//                    } catch (TempLoginException tle) {
-//                        /*
-//                        ooooh boy is this lazy. I'd rather not init SharedPreferences here
-//                        to check if persistent login is on, so we'll just catch the exception
-//                         */
-//                        Intent login = new Intent(mApp, LoginActivity.class);
-//                        login.putExtra("activity", parentAct.getIntent().getComponent()
-//                                .getClassName());
-//                        login.putExtra("service", 'u');
-//                        mApp.startActivity(login);
-//                        parentAct.finish();
-//                        errorMsg = "Session expired, please log in again";
-//                        cancel(true);
-//                        return null;
-//                    }
-//                    return doInBackground(true);
-//                } else {
-                    mApp.logoutAll();
-//                }
-                cancel(true);
-                return null;
-            }
             Pattern semSelectPattern = Pattern.compile("<select  name=\"sem\">.*</select>",
                     Pattern.DOTALL);
             Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
@@ -556,11 +517,6 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
             UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
 
-        @Override
-        protected void onCancelled() {
-            MyBus.getInstance().post(new LoadFailedEvent(getTag(), errorMsg));
-            UTilitiesApplication.getInstance().removeCachedTask(getTag());
-        }
     }
 
     private void prepareToLoad() {
