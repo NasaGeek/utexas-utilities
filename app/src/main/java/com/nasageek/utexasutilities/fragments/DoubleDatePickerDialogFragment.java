@@ -131,7 +131,7 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
                     Toast.makeText(getActivity(),
                             "Error parsing " + clt.getCourseId()
                                     + " start/end time. Export canceled.",
-                            Toast.LENGTH_LONG);
+                            Toast.LENGTH_LONG).show();
                     e1.printStackTrace();
                     DoubleDatePickerDialogFragment.this.dismiss();
                     return;
