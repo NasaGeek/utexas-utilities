@@ -120,6 +120,19 @@ public class TransactionsFragment extends DataLoadFragment {
         adapter = new TransactionAdapter(getActivity(), this, transactionlist);
     }
 
+    private RequestBody buildInitialRequestBody() {
+        FormEncodingBuilder postdata = new FormEncodingBuilder();
+        mType = (TransactionType) getArguments().getSerializable("type");
+        url = getArguments().getString("url");
+        TASK_TAG = getClass().getSimpleName() + mType.toString();
+        if (TransactionType.Bevo.equals(mType)) {
+            postdata.add("sRequestSw", "B");
+        } else if (TransactionType.Dinein.equals(mType)) {
+            postdata.add("rRequestSw", "B");
+        }
+        return postdata.build();
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -146,18 +159,8 @@ public class TransactionsFragment extends DataLoadFragment {
         loadStatus = LoadStatus.LOADING;
         if (adapter.page == 1 || refresh) {
             prepareToLoad();
+            form = buildInitialRequestBody();
         }
-        FormEncodingBuilder postdata = new FormEncodingBuilder();
-        mType = (TransactionType) getArguments().getSerializable("type");
-        url = getArguments().getString("url");
-        TASK_TAG = getClass().getSimpleName() + mType.toString();
-        if (TransactionType.Bevo.equals(mType)) {
-            postdata.add("sRequestSw", "B");
-        } else if (TransactionType.Dinein.equals(mType)) {
-            postdata.add("rRequestSw", "B");
-        }
-        form = postdata.build();
-
         fetch = new FetchTransactionDataTask(TASK_TAG, mType, url, form);
         Utility.parallelExecute(fetch, false);
     }
