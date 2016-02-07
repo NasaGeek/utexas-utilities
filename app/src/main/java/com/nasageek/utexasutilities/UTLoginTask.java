@@ -66,7 +66,6 @@ public abstract class UTLoginTask<Params, Progress, Result> extends
     @Override
     protected void onCancelled(Result result) {
         super.onCancelled(result);
-        UTilitiesApplication.getInstance().removeCachedTask(getTag());
         MyBus.getInstance().post(new LoadFailedEvent(getTag(), errorMsg));
     }
 }

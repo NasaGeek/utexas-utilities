@@ -98,7 +98,6 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
             loadStatus = LoadStatus.LOADING;
             prepareToLoad();
             FetchExamDataTask task = new FetchExamDataTask(TASK_TAG);
-            mApp.cacheTask(task.getTag(), task);
             task.execute(false);
         } else {
             setupAdapter();
@@ -268,8 +267,8 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
 
         @Override
         protected void onPostExecute(List<String> result) {
+            super.onPostExecute(result);
             MyBus.getInstance().post(new LoadSucceededEvent(getTag(), result));
-            UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
     }
 

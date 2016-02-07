@@ -159,7 +159,6 @@ public class TransactionsFragment extends DataLoadFragment {
         form = postdata.build();
 
         fetch = new FetchTransactionDataTask(TASK_TAG, mType, url, form);
-        mApp.cacheTask(fetch.getTag(), fetch);
         Utility.parallelExecute(fetch, false);
     }
 
@@ -278,9 +277,9 @@ public class TransactionsFragment extends DataLoadFragment {
 
         @Override
         protected void onPostExecute(Boolean morePagesAvailable) {
+            super.onPostExecute(morePagesAvailable);
             MyBus.getInstance().post(new LoadSucceededEvent(getTag(), transactions, balance,
                     morePagesAvailable, form));
-            UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
     }
 

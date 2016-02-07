@@ -95,7 +95,6 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         if (listOfLists.size() == 0 || update) {
             if (mApp.getCachedTask(TASK_TAG) == null) {
                 FetchMenuTask fetchMTask = new FetchMenuTask(TASK_TAG);
-                mApp.cacheTask(fetchMTask.getTag(), fetchMTask);
                 prepareToLoad();
                 Utility.parallelExecute(fetchMTask, restId, title);
             }
@@ -236,14 +235,14 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
 
         @Override
         protected void onPostExecute(List<MyPair<String, List<Food>>> listOfLists) {
+            super.onPostExecute(listOfLists);
             MyBus.getInstance().post(new LoadSucceededEvent(getTag(), listOfLists));
-            UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
 
         @Override
         protected void onCancelled() {
+            super.onCancelled();
             MyBus.getInstance().post(new LoadFailedEvent(getTag(), errorMsg));
-            UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
     }
 

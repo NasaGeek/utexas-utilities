@@ -12,4 +12,22 @@ public abstract class TaggedAsyncTask<Params, Progress, Result> extends
     public String getTag() {
         return tag;
     }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        UTilitiesApplication.getInstance().cacheTask(tag, this);
+    }
+
+    @Override
+    protected void onPostExecute(Result result) {
+        super.onPostExecute(result);
+        UTilitiesApplication.getInstance().removeCachedTask(tag);
+    }
+
+    @Override
+    protected void onCancelled(Result result) {
+        super.onCancelled(result);
+        UTilitiesApplication.getInstance().removeCachedTask(tag);
+    }
 }

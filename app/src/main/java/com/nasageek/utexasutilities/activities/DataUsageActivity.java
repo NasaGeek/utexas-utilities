@@ -109,7 +109,6 @@ public class DataUsageActivity extends BaseActivity {
         if (percentLoadStatus == LoadStatus.NOT_STARTED &&
                 mApp.getCachedTask(percentTask.getTag()) == null) {
             percentLoadStatus = LoadStatus.LOADING;
-            mApp.cacheTask(percentTask.getTag(), percentTask);
             percentTask.execute();
         }
     }
@@ -126,7 +125,6 @@ public class DataUsageActivity extends BaseActivity {
                 mApp.getCachedTask(dataTask.getTag()) == null) || forceReload) {
             prepareToLoad();
             dataLoadStatus = LoadStatus.LOADING;
-            mApp.cacheTask(dataTask.getTag(), dataTask);
             dataTask.execute(url);
         }
     }
@@ -291,14 +289,14 @@ public class DataUsageActivity extends BaseActivity {
 
         @Override
         protected void onPostExecute(Void v) {
+            super.onPostExecute(v);
             MyBus.getInstance().post(new PercentLoadSucceededEvent(percentUsed, totalUsed));
-            UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
 
         @Override
         protected void onCancelled() {
+            super.onCancelled();
             MyBus.getInstance().post(new PercentLoadFailedEvent(getTag(), errorMsg));
-            UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
     }
 
@@ -391,14 +389,14 @@ public class DataUsageActivity extends BaseActivity {
 
         @Override
         protected void onPostExecute(Character result) {
+            super.onPostExecute(result);
             MyBus.getInstance().post(new DataLoadSucceededEvent(labels, downdata, totaldata));
-            UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
 
         @Override
         protected void onCancelled() {
+            super.onCancelled();
             MyBus.getInstance().post(new DataLoadFailedEvent(getTag(), errorMsg));
-            UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
     }
 

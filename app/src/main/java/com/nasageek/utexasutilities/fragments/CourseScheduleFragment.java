@@ -221,7 +221,6 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
         loadStatus = LoadStatus.LOADING;
         prepareToLoad();
         fetch = new ParseTask(TASK_TAG, reqUrl, initialFragment);
-        mApp.cacheTask(TASK_TAG, fetch);
         Utility.parallelExecute(fetch, false);
     }
 
@@ -513,8 +512,8 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
 
         @Override
         protected void onPostExecute(List<UTClass> classes) {
+            super.onPostExecute(classes);
             MyBus.getInstance().post(new LoadSucceededEvent(getTag(), classes, classParseIssue));
-            UTilitiesApplication.getInstance().removeCachedTask(getTag());
         }
 
     }
