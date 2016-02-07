@@ -470,7 +470,11 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                 }
             });
         }
-        moveToInitialLoc(locationEnabled);
+        // If location is enabled, then we want the GoogleApiClient to handle moving to the
+        // initial location. Otherwise, we might not have a location by the time this is called
+        if (!locationEnabled) {
+            moveToInitialLoc(locationEnabled);
+        }
         handleIntent(getIntent());
 
     }
