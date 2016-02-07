@@ -225,10 +225,10 @@ public class TransactionsFragment extends DataLoadFragment {
                 cancel(true);
                 return null;
             }
-//
-//            if (pagedata.contains("<title>UT EID Login</title>")) {
-//                errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-//                UTilitiesApplication mApp = UTilitiesApplication.getInstance();
+
+            if (pagedata.contains("<title>UT EID Login</title>")) {
+                errorMsg = "You've been logged out of UTDirect, back out and log in again.";
+                UTilitiesApplication mApp = UTilitiesApplication.getInstance();
 //                if (!recursing) {
 //                    try {
 //                        mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
@@ -256,11 +256,11 @@ public class TransactionsFragment extends DataLoadFragment {
 //                    }
 //                    return doInBackground(true);
 //                } else {
-//                  mApp.logoutAll();
+                  mApp.logoutAll();
 //                }
-//                cancel(true);
-//                return null;
-//            }
+                cancel(true);
+                return null;
+            }
 
             Pattern reasonPattern = Pattern.compile("\"center\">\\s+(.*?)\\s*<");
             Matcher reasonMatcher = reasonPattern.matcher(pagedata);

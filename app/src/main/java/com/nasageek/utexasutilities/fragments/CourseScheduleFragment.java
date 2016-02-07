@@ -402,9 +402,9 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
             // now parse the Class Listing data
 //
 //            // did we hit the login screen?
-//            if (pagedata.contains("<title>UT EID Login</title>")) {
-//                errorMsg = "You've been logged out of UTDirect, back out and log in again.";
-//                UTilitiesApplication mApp = UTilitiesApplication.getInstance();
+            if (pagedata.contains("<title>UT EID Login</title>")) {
+                errorMsg = "You've been logged out of UTDirect, back out and log in again.";
+                UTilitiesApplication mApp = UTilitiesApplication.getInstance();
 //                if (!recursing) {
 //                    try {
 //                        mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).logout();
@@ -431,11 +431,11 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
 //                    }
 //                    return doInBackground(true);
 //                } else {
-//                    mApp.logoutAll();
+                    mApp.logoutAll();
 //                }
-//                cancel(true);
-//                return null;
-//            }
+                cancel(true);
+                return null;
+            }
             Pattern semSelectPattern = Pattern.compile("<select  name=\"sem\">.*</select>",
                     Pattern.DOTALL);
             Matcher semSelectMatcher = semSelectPattern.matcher(pagedata);
