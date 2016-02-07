@@ -4,6 +4,7 @@ package com.nasageek.utexasutilities;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.UserManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.widget.Toast;
@@ -66,6 +67,14 @@ public class UTilitiesApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sInstance = this;
+        try {
+            // Attempt to remedy a system memory leak
+            UserManager.class.getMethod("get", Context.class).invoke(null, this);
+        } catch (Exception e) {
+            // Catch Exception because we need API 19 to do multi-catch for the necessary
+            // exceptions.
+            // Do nothing on failure.
+        }
         LeakCanary.install(this);
         try {
             AesCbcWithIntegrity.SecretKeys myKey = AesCbcWithIntegrity.generateKeyFromPassword(
