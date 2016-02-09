@@ -193,7 +193,12 @@ public class DataUsageActivity extends BaseActivity {
         percentDataUsedView.setProgress(700);
         dataUsedText.setText("70% of your data's been used");
         chart.clear();
-        loadData(event.url, true);
+        if (event.url != null) {
+            loadData(event.url, true);
+        } else {
+            dataLoadFailed(new DataLoadFailedEvent("",
+                    "UTilities could not fetch your data usage"));
+        }
     }
 
     private void setupChart(List<String> labels, List<Entry> downData, List<Entry> totalData) {
