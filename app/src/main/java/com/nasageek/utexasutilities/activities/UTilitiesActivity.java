@@ -76,6 +76,11 @@ public class UTilitiesActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MyBus.getInstance().register(this);
+        if (!isTaskRoot()) {
+            finish();
+            return;
+        }
 
         app = (UTilitiesApplication) getApplication();
         utdAuthCookie = app.getAuthCookie(UTD_AUTH_COOKIE_KEY);
@@ -173,8 +178,6 @@ public class UTilitiesActivity extends BaseActivity {
         if (settings.getBoolean("autologin", false) && !isLoggingIn() && !app.anyCookiesSet()) {
             login();
         }
-
-        MyBus.getInstance().register(this);
     }
 
     // simple struct-like class to help handle related data
@@ -328,6 +331,10 @@ public class UTilitiesActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (isFinishing()) {
+            // otherwise we crash if we try to finish() in onCreate
+            return false;
+        }
         MenuInflater inflater = this.getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         boolean anyLoggedIn = false;
