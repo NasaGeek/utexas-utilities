@@ -57,35 +57,25 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
             passwordfield = findPreference("password");
 
 
-            // bypass the default SharedPreferences and save the password to the
-            // encrypted SP instead
-            passwordfield.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                // bypass the default SharedPreferences and save the password to the
+                // encrypted SP instead
+                passwordfield.setOnPreferenceChangeListener((preference, newValue) -> {
                     UTilitiesApplication.getInstance(getActivity()).getSecurePreferences().edit()
                             .putString(preference.getKey(), (String) newValue).apply();
                     return false;
-                }
-            });
+                });
 
-            final Preference logincheckbox = findPreference(getString(R.string.pref_logintype_key));
+                final Preference logincheckbox = findPreference(getString(R.string.pref_logintype_key));
 
-            // Disable autologin when user switches to temp login
-            logincheckbox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if ((Boolean) newValue == false) {
+                // Disable autologin when user switches to temp login
+                logincheckbox.setOnPreferenceChangeListener((preference, newValue) -> {
+                    if (!((Boolean) newValue)) {
                         autologin.setChecked(false);
                     }
                     return true;
-                }
-            });
+                });
 
-            logincheckbox.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(final Preference preference) {
+                logincheckbox.setOnPreferenceClickListener(preference -> {
                     UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();
                     if (((CheckBoxPreference) preference).isChecked()) {
                         new AutoLoginWarningDialog().show(getChildFragmentManager(),
@@ -101,37 +91,27 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
                     // whenever they switch between temp and persistent, log them out
                     mApp.logoutAll();
                     return true;
-                }
-            });
+                });
 
-            setupLoginFields();
+                setupLoginFields();
 
-            final CheckBoxPreference analytics =
-                    (CheckBoxPreference) findPreference(getString(R.string.pref_analytics_key));
-            analytics.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                final CheckBoxPreference analytics =
+                        (CheckBoxPreference) findPreference(getString(R.string.pref_analytics_key));
+                analytics.setOnPreferenceChangeListener((preference, newValue) -> {
                     GoogleAnalytics.getInstance(getActivity()).setAppOptOut(!((Boolean) newValue));
                     return true;
-                }
-            });
+                });
 
-            final Preference about = findPreference("about");
-            about.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
+                final Preference about = findPreference("about");
+                about.setOnPreferenceClickListener(preference -> {
                     final Intent about_intent = new Intent(getActivity(), AboutMeActivity.class);
                     startActivity(about_intent);
                     return true;
                 }
             });
         } else if (preferenceScreenKey.equals("experimental")) {
-            final Preference updateBusStops = findPreference("update_stops");
-            updateBusStops.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
+                final Preference updateBusStops = findPreference("update_stops");
+                updateBusStops.setOnPreferenceClickListener(preference -> {
                     try {
                         Utility.updateBusStops(getActivity());
                     } catch (IOException e) {
@@ -200,9 +180,7 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
                                     "the buttons on the main screen to log in. See the Privacy " +
                                     "Policy on the About page for more information.")
                     .setCancelable(true)
-                    .setPositiveButton("Okay", (dialog, id) -> {
-                        dialog.cancel();
-                    })
+                    .setPositiveButton("Okay", (dialog, id) -> { dialog.cancel(); })
                     .create();
         }
     }

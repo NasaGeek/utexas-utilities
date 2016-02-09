@@ -7,8 +7,6 @@ import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
@@ -50,21 +48,17 @@ public class PickCalendarDialogFragment extends ExportScheduleDialogFragment {
         AlertDialog.Builder build = new AlertDialog.Builder(getActivity());
         ArrayList<String> calendars = getArguments().getStringArrayList("calendars");
         parentAct = getActivity();
-        build.setAdapter(new CalendarAdapter(getActivity(), calendars), new OnClickListener() {
+        build.setAdapter(new CalendarAdapter(getActivity(), calendars), (dialog, which) -> {
+            CalendarInsertHandler cih = new CalendarInsertHandler(getActivity()
+                    .getContentResolver());
+            ArrayList<ContentValues> cvList = getArguments().getParcelableArrayList(
+                    "valuesList");
+            ArrayList<Integer> indices = getArguments().getIntegerArrayList("indices");
+            int selection = indices.get(which);
 
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                CalendarInsertHandler cih = new CalendarInsertHandler(getActivity()
-                        .getContentResolver());
-                ArrayList<ContentValues> cvList = getArguments().getParcelableArrayList(
-                        "valuesList");
-                ArrayList<Integer> indices = getArguments().getIntegerArrayList("indices");
-                int selection = indices.get(which);
-
-                for (int i = 0; i < cvList.size(); i++) {
-                    cvList.get(i).put(CalendarContract.Events.CALENDAR_ID, selection);
-                    cih.startInsert(i, null, CalendarContract.Events.CONTENT_URI, cvList.get(i));
-                }
+            for (int i = 0; i < cvList.size(); i++) {
+                cvList.get(i).put(CalendarContract.Events.CALENDAR_ID, selection);
+                cih.startInsert(i, null, CalendarContract.Events.CONTENT_URI, cvList.get(i));
             }
         }).setTitle("Select calendar");
         AlertDialog dlg = build.create();

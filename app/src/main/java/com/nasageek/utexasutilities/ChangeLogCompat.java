@@ -1,7 +1,6 @@
 package com.nasageek.utexasutilities;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.webkit.WebView;
 
@@ -49,24 +48,15 @@ public class ChangeLogCompat extends ChangeLog {
                         // OK button
                 .setPositiveButton(
                         mContext.getResources().getString(R.string.changelog_ok_button),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // The user clicked "OK" so save the current version code as
-                                // "last version code".
-                                updateVersionInPreferences();
-                            }
+                        (dialog, which) -> {
+                            // The user clicked "OK" so save the current version code as
+                            // "last version code".
+                            updateVersionInPreferences();
                         });
 
         if (!full) {
             // Show "More…" button if we're only displaying a partial change log.
-            builder.setNegativeButton(R.string.changelog_show_full,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            getFullLogDialog().show();
-                        }
-                    });
+            builder.setNegativeButton(R.string.changelog_show_full, (dialog, id) -> { getFullLogDialog().show(); });
         }
 
         return builder.create();

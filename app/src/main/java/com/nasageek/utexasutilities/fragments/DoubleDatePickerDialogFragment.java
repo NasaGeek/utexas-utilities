@@ -215,21 +215,8 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.double_date_picker_dialog_fragment_layout, container);
         initialisePaging(view);
-        ((Button) view.findViewById(R.id.calendar_button_ok))
-                .setOnClickListener(new OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        setupScheduleData();
-                    }
-                });
-        ((Button) view.findViewById(R.id.calendar_button_cancel))
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        getDialog().dismiss();
-                    }
-                });
+        view.findViewById(R.id.calendar_button_ok).setOnClickListener(v -> setupScheduleData());
+        view.findViewById(R.id.calendar_button_cancel).setOnClickListener(v -> getDialog().dismiss());
         return view;
     }
 

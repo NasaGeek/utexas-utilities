@@ -10,8 +10,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -31,14 +29,10 @@ public class AboutMeActivity extends BaseActivity {
                 getString(R.string.library_license_link));
         underlinedLicenseLink.setSpan(new UnderlineSpan(), 0, underlinedLicenseLink.length(), 0);
         licenseView.setText(underlinedLicenseLink);
-        licenseView.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                FragmentManager fm = getSupportFragmentManager();
-                LibraryLicenseDialog libraryLicenseDlg = new LibraryLicenseDialog();
-                libraryLicenseDlg.show(fm, "fragment_license");
-            }
+        licenseView.setOnClickListener(v -> {
+            FragmentManager fm = getSupportFragmentManager();
+            LibraryLicenseDialog libraryLicenseDlg = new LibraryLicenseDialog();
+            libraryLicenseDlg.show(fm, "fragment_license");
         });
         // do the same thing with the Privacy Policy link
         TextView policyView = (TextView) findViewById(R.id.privacy_policy_link);
@@ -46,14 +40,10 @@ public class AboutMeActivity extends BaseActivity {
                 getString(R.string.privacy_policy_link));
         underlinedPolicyLink.setSpan(new UnderlineSpan(), 0, underlinedPolicyLink.length(), 0);
         policyView.setText(underlinedPolicyLink);
-        policyView.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                FragmentManager fm = getSupportFragmentManager();
-                PrivacyPolicyDialog privacyPolicyDlg = new PrivacyPolicyDialog();
-                privacyPolicyDlg.show(fm, "fragment_privacy_policy");
-            }
+        policyView.setOnClickListener(v -> {
+            FragmentManager fm = getSupportFragmentManager();
+            PrivacyPolicyDialog privacyPolicyDlg = new PrivacyPolicyDialog();
+            privacyPolicyDlg.show(fm, "fragment_privacy_policy");
         });
 
         TextView versionNumberView = (TextView) findViewById(R.id.version);

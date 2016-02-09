@@ -436,15 +436,12 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         }
 
         CheckBox showGaragesCheck = (CheckBox) findViewById(R.id.chkbox_show_garages);
-        showGaragesCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (checkReady()) {
-                    if (!isChecked) {
-                        shownGarages.clear();
-                    } else {
-                        showAllGarageMarkers();
-                    }
+        showGaragesCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (checkReady()) {
+                if (!isChecked) {
+                    shownGarages.clear();
+                } else {
+                    showAllGarageMarkers();
                 }
             }
         });
@@ -528,12 +525,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         final ArrayAdapter<Route> adapter = new ThemedArrayAdapter<>(actionBar.getThemedContext(),
                 android.R.layout.simple_spinner_item, Route.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        actionBar.setListNavigationCallbacks(adapter, new ActionBar.OnNavigationListener() {
-            @Override
-            public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-                loadRoute(adapter.getItem(itemPosition).getCode());
-                return true;
-            }
+        actionBar.setListNavigationCallbacks(adapter, (itemPosition, itemId) -> {
+            loadRoute(adapter.getItem(itemPosition).getCode());
+            return true;
         });
 
         // use a simple versioning scheme to ensure that I can trigger a wipe
@@ -644,12 +638,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                     Snackbar.make(findViewById(R.id.map),
                             "User location unavailable",
                             Snackbar.LENGTH_LONG)
-                            .setAction("Enable location", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                    startActivity(intent);
-                                }
+                            .setAction("Enable location", v -> {
+                                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(intent);
                             })
                             .show();
                     initialLocation = UT_TOWER_LOC;
@@ -979,13 +970,9 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         numberSpan.setSpan(new AbsoluteSizeSpan(25, true), 0, number.length(), 0);
         SpannableString spotsSpan = new SpannableString("open\nspots");
         spotsSpan.setSpan(new AbsoluteSizeSpan(12, true), 0, spotsSpan.length(), 0);
-        numberSpan.setSpan(new LineHeightSpan() {
-            @Override
-            public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v,
-                                     Paint.FontMetricsInt fm) {
-                fm.bottom -= 6;
-                fm.descent -= 6;
-            }
+        numberSpan.setSpan((LineHeightSpan) (text, start, end, spanstartv, v, fm) -> {
+            fm.bottom -= 6;
+            fm.descent -= 6;
         }, 0, numberSpan.length(), 0);
         return TextUtils.concat(numberSpan, "\n", spotsSpan);
     }
@@ -1067,22 +1054,15 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                     edit.putInt(pm.getTitle() + "spots", openSpots).apply();
                 }
 
-                new Handler(CampusMapActivity.this.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        int backgroundColor = stylesMap.floorEntry(openSpots).getValue();
-                        setGarageIcon(ig, pm, marker, openSpots + "", backgroundColor);
-                    }
+                new Handler(CampusMapActivity.this.getMainLooper()).post(() -> {
+                    int backgroundColor = stylesMap.floorEntry(openSpots).getValue();
+                    setGarageIcon(ig, pm, marker, openSpots + "", backgroundColor);
                 });
             }
 
             private void showErrorGarageMarker() {
-                new Handler(CampusMapActivity.this.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        setGarageIcon(ig, pm, marker, "X", STYLE_GRAY);
-                    }
-                });
+                new Handler(CampusMapActivity.this.getMainLooper()).post(
+                        () -> setGarageIcon(ig, pm, marker, "X", STYLE_GRAY));
             }
         });
     }
@@ -1283,33 +1263,26 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                                     + markerType + "?"
                     ).setCancelable(true)
                     .setTitle("Get directions")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        // people tend to drive to garages
+                        boolean walkingDirections = !markerType.equals("garage");
+                        double dstLat = marker.getPosition().latitude;
+                        double dstLng = marker.getPosition().longitude;
 
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // people tend to drive to garages
-                            boolean walkingDirections = !markerType.equals("garage");
-                            double dstLat = marker.getPosition().latitude;
-                            double dstLng = marker.getPosition().longitude;
-
-                            AnalyticsHandler.trackGetDirectionsEvent();
-                            Uri dirUri = Uri.parse("google.navigation:q="+dstLat+","+dstLng+"&mode="+(walkingDirections ? "w" : "d"));
-                            Intent intent = new Intent(android.content.Intent.ACTION_VIEW, dirUri);
-                            if (intent.resolveActivity(CampusMapActivity.this.getPackageManager()) != null) {
-                                startActivity(intent);
-                            } else {
-                                Snackbar.make(findViewById(R.id.map),
-                                        "No apps available to handle directions",
-                                        Snackbar.LENGTH_LONG)
-                                        .show();
-                            }
+                        AnalyticsHandler.trackGetDirectionsEvent();
+                        Uri dirUri = Uri.parse("google.navigation:q="+dstLat+","+dstLng+"&mode="+(walkingDirections ? "w" : "d"));
+                        Intent intent = new Intent(Intent.ACTION_VIEW, dirUri);
+                        if (intent.resolveActivity(CampusMapActivity.this.getPackageManager()) != null) {
+                            startActivity(intent);
+                        } else {
+                            Snackbar.make(findViewById(R.id.map),
+                                    "No apps available to handle directions",
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
                         }
-                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
-                }
-            });
+                    }).setNegativeButton("No", (dialog, id) -> {
+                        dialog.cancel();
+                    });
             AlertDialog opendirections = opendirections_builder.create();
             opendirections.show();
         }

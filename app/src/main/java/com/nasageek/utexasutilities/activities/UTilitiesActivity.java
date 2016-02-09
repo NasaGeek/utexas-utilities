@@ -2,7 +2,6 @@
 package com.nasageek.utexasutilities.activities;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.ColorMatrix;
@@ -104,68 +103,59 @@ public class UTilitiesActivity extends BaseActivity {
 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
         setContentView(R.layout.main);
-        enabledFeatureButtonListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DashboardButtonData data = (DashboardButtonData) v.getTag();
-                // null cookie means the service doesn't need an EID
-                if (data.authCookie == null) {
-                    startActivity(data.intent);
-                } else {
-                    if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
-                        // persistent login
-                        if ((!data.authCookie.hasCookieBeenSet() || isLoggingIn())
-                                && isLoginRequired()) {
-                            showLoginFirstToast();
-                        } else {
-                            startActivity(data.intent);
-                        }
+        enabledFeatureButtonListener = v -> {
+            DashboardButtonData data = (DashboardButtonData) v.getTag();
+            // null cookie means the service doesn't need an EID
+            if (data.authCookie == null) {
+                startActivity(data.intent);
+            } else {
+                if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
+                    // persistent login
+                    if ((!data.authCookie.hasCookieBeenSet() || isLoggingIn())
+                            && isLoginRequired()) {
+                        showLoginFirstToast();
                     } else {
-                        // temp login
-                        if (!data.authCookie.hasCookieBeenSet()) {
-                            Intent login = new Intent(UTilitiesActivity.this,
-                                    LoginActivity.class);
-                            login.putExtra("activity", data.intent.getComponent()
-                                    .getClassName());
-                            login.putExtra("service", data.serviceChar);
-                            startActivity(login);
-                        } else {
-                            startActivity(data.intent);
-                        }
+                        startActivity(data.intent);
+                    }
+                } else {
+                    // temp login
+                    if (!data.authCookie.hasCookieBeenSet()) {
+                        Intent login = new Intent(UTilitiesActivity.this,
+                                LoginActivity.class);
+                        login.putExtra("activity", data.intent.getComponent()
+                                .getClassName());
+                        login.putExtra("service", data.serviceChar);
+                        startActivity(login);
+                    } else {
+                        startActivity(data.intent);
                     }
                 }
             }
         };
-        disabledFeatureButtonListener = new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                AlertDialog.Builder featureDisabledBuilder =
-                        new AlertDialog.Builder(UTilitiesActivity.this);
-                featureDisabledBuilder
-                        .setMessage("This feature has been disabled due to a failed login, would " +
-                                "you like to try logging in again?")
-                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                ((DashboardButtonData) v.getTag()).loginProgress
-                                        .setVisibility(View.VISIBLE);
-                                loginTasks = new ArrayList<>();
-                                CountDownLatch loginLatch = new CountDownLatch(1);
-                                updateUiTask = new UpdateUiTask(UTilitiesActivity.this);
-                                Utility.parallelExecute(updateUiTask, loginLatch);
-                                loginTasks.add(updateUiTask);
+        disabledFeatureButtonListener = v -> {
+            AlertDialog.Builder featureDisabledBuilder =
+                    new AlertDialog.Builder(UTilitiesActivity.this);
+            featureDisabledBuilder
+                    .setMessage("This feature has been disabled due to a failed login, would " +
+                            "you like to try logging in again?")
+                    .setPositiveButton("Retry", (dialog, id) -> {
+                        ((DashboardButtonData) v.getTag()).loginProgress
+                                .setVisibility(View.VISIBLE);
+                        loginTasks = new ArrayList<>();
+                        CountDownLatch loginLatch = new CountDownLatch(1);
+                        updateUiTask = new UpdateUiTask(UTilitiesActivity.this);
+                        Utility.parallelExecute(updateUiTask, loginLatch);
+                        loginTasks.add(updateUiTask);
 
-                                AuthCookie cookie =
-                                        ((DashboardButtonData) v.getTag()).authCookie;
-                                LoginTask loginTask = new LoginTask(loginLatch);
-                                Utility.parallelExecute(loginTask, cookie);
-                                loginTasks.add(loginTask);
-                            }
-                        })
-                        .setNegativeButton("Cancel", null);
-                AlertDialog featureDisabled = featureDisabledBuilder.create();
-                featureDisabled.show();
-            }
+                        AuthCookie cookie =
+                                ((DashboardButtonData) v.getTag()).authCookie;
+                        LoginTask loginTask = new LoginTask(loginLatch);
+                        Utility.parallelExecute(loginTask, cookie);
+                        loginTasks.add(loginTask);
+                    })
+                    .setNegativeButton("Cancel", null);
+            AlertDialog featureDisabled = featureDisabledBuilder.create();
+            featureDisabled.show();
         };
         setupDashBoardButtons();
         setLoginProgressBarVisiblity(isLoggingIn());
@@ -423,12 +413,7 @@ public class UTilitiesActivity extends BaseActivity {
                             "This is your first time running UTilities; why don't you try" +
                                     " logging in to get the most use out of the app?")
                     .setCancelable(false)
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            loadSettings();
-                        }
-                    })
+                    .setPositiveButton("Ok", (dialog, id) -> { loadSettings(); })
                     .setNegativeButton("No thanks", null);
             nologin = nologin_builder.create();
             nologin.show();
