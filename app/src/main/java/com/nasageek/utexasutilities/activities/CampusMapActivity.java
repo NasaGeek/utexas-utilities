@@ -345,7 +345,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         if (mResolvingError) {
             // Already attempting to resolve an error.
             return;
