@@ -5,5 +5,5 @@ import android.content.Context;
 
 public interface ChangeableContextTask {
 
-    public void setContext(Context con);
+    void setContext(Context con);
 }

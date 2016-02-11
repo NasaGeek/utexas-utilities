@@ -189,12 +189,12 @@ public class MenuActivity extends BaseActivity implements ActionBar.OnNavigation
         private String[][] times;
         private boolean allDay;
 
-        private Restaurant(String c, String fullName) {
+        Restaurant(String c, String fullName) {
             code = c;
             this.fullName = fullName;
         }
 
-        private Restaurant(String c, String fullName, String[][] times, boolean allDay) {
+        Restaurant(String c, String fullName, String[][] times, boolean allDay) {
             code = c;
             this.fullName = fullName;
             this.times = times;

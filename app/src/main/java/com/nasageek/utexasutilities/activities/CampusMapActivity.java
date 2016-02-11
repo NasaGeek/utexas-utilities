@@ -217,7 +217,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         private final int code;
         private final String fullName;
 
-        private Route(int c, String fullName) {
+        Route(int c, String fullName) {
             code = c;
             this.fullName = fullName;
         }
