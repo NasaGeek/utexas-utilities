@@ -431,7 +431,7 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
             while (classMatcher.find()) {
                 String classContent = classMatcher.group();
 
-                String uniqueid = "", classid = "", classname = "";
+                String uniqueid, classid, classname;
                 String[] buildings, rooms, days, times;
                 boolean dropped = false;
 

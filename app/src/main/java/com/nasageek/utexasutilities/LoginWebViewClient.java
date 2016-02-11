@@ -37,7 +37,7 @@ public class LoginWebViewClient extends WebViewClient {
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
         String authCookie = "";
-        String cookies = "";
+        String cookies;
         switch (service) {
             case 'p':
                 if (url.contains("pna.utexas.edu")) {
@@ -95,7 +95,7 @@ public class LoginWebViewClient extends WebViewClient {
     }
 
     private void continueToActivity(String service) {
-        Intent intent = null;
+        Intent intent;
         try {
             intent = new Intent(activity, Class.forName(nextActivity));
             Toast.makeText(activity, "You're now logged in to " + service, Toast.LENGTH_SHORT)

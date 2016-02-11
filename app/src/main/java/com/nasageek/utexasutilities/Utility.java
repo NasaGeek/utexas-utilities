@@ -96,7 +96,7 @@ public class Utility {
                 Request request = new Request.Builder()
                         .url(reqUrl)
                         .build();
-                String pagedata = "";
+                String pagedata;
 
                 try {
                     Response response = client.newCall(request).execute();
@@ -109,7 +109,7 @@ public class Utility {
                 }
 
                 File stopsfile = new File(folder, route + "_stops.txt");
-                BufferedOutputStream bos = null;
+                BufferedOutputStream bos;
 
                 try {
                     bos = new BufferedOutputStream(new FileOutputStream(stopsfile));

@@ -118,7 +118,7 @@ public class BuildingDatabase extends SQLiteOpenHelper {
             checkDB.close();
         }
 
-        return checkDB != null ? true : false;
+        return checkDB != null;
     }
 
     @Override

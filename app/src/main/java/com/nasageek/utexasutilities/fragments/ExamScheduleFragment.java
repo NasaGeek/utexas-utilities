@@ -347,7 +347,7 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
             } catch (ArrayIndexOutOfBoundsException ex) {
                 ex.printStackTrace();
             }
-            String course = "";
+            String course;
 
             View vg = convertView;
             if (vg == null) {

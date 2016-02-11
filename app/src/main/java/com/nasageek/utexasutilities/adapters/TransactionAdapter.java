@@ -20,7 +20,6 @@ public class TransactionAdapter extends AmazingAdapter {
     private ArrayList<Transaction> transactions;
     private LayoutInflater li;
     private String currentDate;
-    boolean isSectionHeader;
     private TransactionsFragment frag;
 
     public TransactionAdapter(Context c, TransactionsFragment frag,

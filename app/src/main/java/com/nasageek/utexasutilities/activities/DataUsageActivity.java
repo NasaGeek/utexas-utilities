@@ -259,7 +259,7 @@ public class DataUsageActivity extends BaseActivity {
             Request request = new Request.Builder()
                     .url(reqUrl)
                     .build();
-            String pagedata = "";
+            String pagedata;
             OkHttpClient client = UTilitiesApplication.getInstance().getHttpClient();
 
             try {
@@ -352,7 +352,7 @@ public class DataUsageActivity extends BaseActivity {
             Request request = new Request.Builder()
                     .url(reqUrl)
                     .build();
-            String pagedata = "";
+            String pagedata;
 
             try {
                 Response response = client.newCall(request).execute();

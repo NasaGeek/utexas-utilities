@@ -172,11 +172,10 @@ public class AuthCookie {
                 .add(userNameKey, user)
                 .add(passwordKey, pw)
                 .build();
-        Request request = new Request.Builder()
+        return new Request.Builder()
                 .url(url)
                 .post(requestBody)
                 .build();
-        return request;
     }
 
     public void logout() {

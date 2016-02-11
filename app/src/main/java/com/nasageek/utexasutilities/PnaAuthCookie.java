@@ -42,10 +42,9 @@ public class PnaAuthCookie extends AuthCookie {
                         Headers.of("Content-Disposition", "form-data; name=\"PNACLOGINLoginEID\""),
                         RequestBody.create(null, "Log In "))
                 .build();
-        Request request = new Request.Builder()
+        return new Request.Builder()
                 .url(url)
                 .post(requestBody)
                 .build();
-        return request;
     }
 }

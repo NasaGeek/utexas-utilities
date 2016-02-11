@@ -14,18 +14,14 @@ import android.support.v4.app.FragmentManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.commonsware.cwac.security.RuntimePermissionUtils;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.WrappedViewPager;
-import com.nasageek.utexasutilities.activities.ScheduleActivity;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
 
@@ -114,7 +110,7 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
         Calendar selectedStartDate = (Calendar) startDate.clone();
         for (UTClass clz : classList) {
             for (Classtime clt : clz.getClassTimes()) {
-                Date classStartTime = null, classEndTime = null;
+                Date classStartTime, classEndTime;
 
                 try {
                     classStartTime = formatter.parse(clt.getStartTime());
@@ -170,12 +166,11 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
             return;
         }
 
-        Cursor cur = null;
         Uri uri = Calendars.CONTENT_URI;
 
         // show them Google Calendars where they are either:
         // owner, editor, contributor, or domain admin (700, 600, 500, 800 respectively)
-        cur = cr.query(uri, EVENT_PROJECTION, "((" + Calendars.ACCOUNT_TYPE
+        Cursor cur = cr.query(uri, EVENT_PROJECTION, "((" + Calendars.ACCOUNT_TYPE
                 + " = ?) AND ((" + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR "
                 + "(" + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR " + "("
                 + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR " + "("
@@ -193,12 +188,9 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
             return;
         }
         while (cur.moveToNext()) {
-            long calID = 0;
-            String displayName = null;
-            String accountName = null;
-            calID = cur.getLong(PROJECTION_ID_INDEX);
-            displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX);
-            accountName = cur.getString(PROJECTION_ACCOUNT_NAME_INDEX);
+            long calID = cur.getLong(PROJECTION_ID_INDEX);
+            String displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX);
+            String accountName = cur.getString(PROJECTION_ACCOUNT_NAME_INDEX);
             calendars.add(displayName + " ^^ " + accountName);
 
             // going to hope that they don't have so many calendars that I actually need a long
@@ -271,10 +263,8 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
      * Converts a start and end time to a duration in the RFC2445 format
      */
     private String startEndToDuration(Date startTime, Date endTime) {
-        int minutesDur = 0;
-        minutesDur = (int) ((endTime.getTime() - startTime.getTime()) / (1000 * 60));
-        String duration = minutesDur + "M";
-        return "P" + duration;
+        int minutesDur = (int) ((endTime.getTime() - startTime.getTime()) / (1000 * 60));
+        return "P" + minutesDur + "M";
     }
 }
 

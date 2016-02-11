@@ -4,7 +4,6 @@ package com.nasageek.utexasutilities;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 
@@ -65,9 +64,7 @@ public class BuildingProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
-        SQLiteCursor sqlc = (SQLiteCursor) bdb.query("buildings", projection, selectionArgs[0],
-                null, null, null, sortOrder);
-        return sqlc;
+        return bdb.query("buildings", projection, selectionArgs[0], null, null, null, sortOrder);
 
     }
 

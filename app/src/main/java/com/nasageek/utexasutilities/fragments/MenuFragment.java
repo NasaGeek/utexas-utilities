@@ -175,7 +175,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
             Request request = new Request.Builder()
                     .url(location)
                     .build();
-            String pagedata = "";
+            String pagedata;
 
             try {
                 Response response = client.newCall(request).execute();

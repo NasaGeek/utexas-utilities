@@ -45,24 +45,24 @@ public class PickCalendarDialogFragment extends ExportScheduleDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder build = new AlertDialog.Builder(getActivity());
-        ArrayList<String> calendars = getArguments().getStringArrayList("calendars");
         parentAct = getActivity();
-        build.setAdapter(new CalendarAdapter(getActivity(), calendars), (dialog, which) -> {
-            CalendarInsertHandler cih = new CalendarInsertHandler(getActivity()
-                    .getContentResolver());
-            ArrayList<ContentValues> cvList = getArguments().getParcelableArrayList(
-                    "valuesList");
-            ArrayList<Integer> indices = getArguments().getIntegerArrayList("indices");
-            int selection = indices.get(which);
+        ArrayList<String> calendars = getArguments().getStringArrayList("calendars");
+        return new AlertDialog.Builder(getActivity())
+                .setAdapter(new CalendarAdapter(getActivity(), calendars), (dialog, which) -> {
+                    CalendarInsertHandler cih = new CalendarInsertHandler(getActivity()
+                            .getContentResolver());
+                    ArrayList<ContentValues> cvList = getArguments().getParcelableArrayList(
+                            "valuesList");
+                    ArrayList<Integer> indices = getArguments().getIntegerArrayList("indices");
+                    int selection = indices.get(which);
 
-            for (int i = 0; i < cvList.size(); i++) {
-                cvList.get(i).put(CalendarContract.Events.CALENDAR_ID, selection);
-                cih.startInsert(i, null, CalendarContract.Events.CONTENT_URI, cvList.get(i));
-            }
-        }).setTitle("Select calendar");
-        AlertDialog dlg = build.create();
-        return dlg;
+                    for (int i = 0; i < cvList.size(); i++) {
+                        cvList.get(i).put(CalendarContract.Events.CALENDAR_ID, selection);
+                        cih.startInsert(i, null, CalendarContract.Events.CONTENT_URI, cvList.get(i));
+                    }
+                })
+                .setTitle("Select calendar")
+                .create();
     }
 
     // Suppress because handler is very shortlived
