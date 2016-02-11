@@ -191,7 +191,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         stylesMap.put(50, STYLE_GREEN);
     }
 
-    private static String GARAGE_CACHE_NAME = "garage_cache";
+    private static final String GARAGE_CACHE_NAME = "garage_cache";
     private boolean mockGarageData = false;
 
     //@formatter:off

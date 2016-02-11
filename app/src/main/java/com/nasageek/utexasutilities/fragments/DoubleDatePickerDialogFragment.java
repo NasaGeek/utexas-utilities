@@ -173,9 +173,9 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
                 + " = ?) AND ((" + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR "
                 + "(" + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR " + "("
                 + Calendars.CALENDAR_ACCESS_LEVEL + " = ?) OR " + "("
-                + Calendars.CALENDAR_ACCESS_LEVEL + " = ?)))", new String[] {
-                "com.google", "800", "700", "600", "500"
-        }, null);
+                + Calendars.CALENDAR_ACCESS_LEVEL + " = ?)))",
+                new String[] {"com.google", "800", "700", "600", "500"},
+                null);
         ArrayList<String> calendars = new ArrayList<>();
         ArrayList<Integer> indices = new ArrayList<>();
 
