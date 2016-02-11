@@ -102,18 +102,21 @@
             <LinearLayout
                 android:id="@+id/llsd"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical" >
 
                 <ImageView
                     android:id="@+id/class_info_color"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="5dp" />
 
                 <TextView
                     android:id="@+id/class_info_text"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@color/translucent_gray"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black" />
             </LinearLayout>
         </ScrollView>
     </com.nasageek.utexasutilities.WrappingSlidingDrawer>

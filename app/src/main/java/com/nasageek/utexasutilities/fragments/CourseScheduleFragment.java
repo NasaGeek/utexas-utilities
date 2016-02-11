@@ -52,8 +52,6 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
         SlidingDrawer.OnDrawerCloseListener, SlidingDrawer.OnDrawerOpenListener,
         AdapterView.OnItemClickListener, ActionMode.Callback {
 
-    public static final int TRANSLUCENT_GRAY = 0x99F0F0F0;
-
     private static final int REQUEST_CALENDAR_PERMISSION = 1;
     private RuntimePermissionUtils runtimePermissions;
 
@@ -336,12 +334,6 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
             text += "\tUnique: " + unique + "\n";
 
             classInfoImageView.setBackgroundColor(Color.parseColor("#" + currentClasstime.getColor()));
-            classInfoImageView.setMinimumHeight(10);
-            classInfoImageView.setMinimumWidth(10);
-
-            classInfoTextView.setTextColor(Color.BLACK);
-            classInfoTextView.setTextSize(14f);
-            classInfoTextView.setBackgroundColor(TRANSLUCENT_GRAY);
             classInfoTextView.setText(text);
 
             slidingDrawer.setVisibility(View.VISIBLE);

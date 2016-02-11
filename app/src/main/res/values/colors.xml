@@ -5,6 +5,7 @@
     <color name = "data_usage_chart_download">@color/blue_accent</color>
     <color name = "data_usage_chart_upload">#FF42D692</color>
     <color name = "blue_accent">#ff005F86</color>
+    <color name = "translucent_gray">#99f0f0f0</color>
     <!-- Properly set accent color for Preferences, default is an unsightly bright blue -->
     <color name="preference_fallback_accent_color">@color/blue_accent</color>
 </resources>
