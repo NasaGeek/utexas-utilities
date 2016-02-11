@@ -206,28 +206,29 @@ public class ScheduleClassAdapter extends BaseAdapter {
     }
 
     private int getEmptyCellColor(int position) {
-        if (emptyCellBackgroundPref.equals("checkhour")) {
-            if ((position / 10) % 2 == 0) {
-                if ((position / 5) % 2 == 0) {
-                    return position % 2 == 0 ? LIGHTGRAY : DARKGRAY;
+        switch (emptyCellBackgroundPref) {
+            case "checkhour":
+                if ((position / 10) % 2 == 0) {
+                    if ((position / 5) % 2 == 0) {
+                        return position % 2 == 0 ? LIGHTGRAY : DARKGRAY;
+                    } else {
+                        return position % 2 == 0 ? DARKGRAY : LIGHTGRAY;
+                    }
                 } else {
-                    return position % 2 == 0 ? DARKGRAY : LIGHTGRAY;
+                    if ((position / 5) % 2 == 0) {
+                        return position % 2 == 0 ? DARKGRAY : LIGHTGRAY;
+                    } else {
+                        return position % 2 == 0 ? LIGHTGRAY : DARKGRAY;
+                    }
                 }
-            } else {
-                if ((position / 5) % 2 == 0) {
-                    return position % 2 == 0 ? DARKGRAY : LIGHTGRAY;
-                } else {
-                    return position % 2 == 0 ? LIGHTGRAY : DARKGRAY;
-                }
-            }
-        } else if (emptyCellBackgroundPref.equals("checkhalf")) {
-            return position % 2 == 0 && (position % 10) % 2 == 0 ? LIGHTGRAY : DARKGRAY;
-        } else if (emptyCellBackgroundPref.equals("stripehour")) {
-            return position / 10 % 2 == 0 ? LIGHTGRAY : DARKGRAY;
-        } else if (emptyCellBackgroundPref.equals("stripehalf")) {
-            return position / 5 % 2 == 0 ? LIGHTGRAY : DARKGRAY;
-        } else {
-            return Color.BLACK;
+            case "checkhalf":
+                return position % 2 == 0 && (position % 10) % 2 == 0 ? LIGHTGRAY : DARKGRAY;
+            case "stripehour":
+                return position / 10 % 2 == 0 ? LIGHTGRAY : DARKGRAY;
+            case "stripehalf":
+                return position / 5 % 2 == 0 ? LIGHTGRAY : DARKGRAY;
+            default:
+                return Color.BLACK;
         }
     }
 }

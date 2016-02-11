@@ -51,10 +51,11 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
         preferenceScreenKey = args.getString("preferenceScreenKey");
         super.onCreate(savedInstanceState);
 
-        if (preferenceScreenKey.equals("root")) {
-            autologin = (CheckBoxPreference) findPreference("autologin");
-            loginfield = findPreference("eid");
-            passwordfield = findPreference("password");
+        switch (preferenceScreenKey) {
+            case "root":
+                autologin = (CheckBoxPreference) findPreference("autologin");
+                loginfield = findPreference("eid");
+                passwordfield = findPreference("password");
 
 
                 // bypass the default SharedPreferences and save the password to the
@@ -81,10 +82,10 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
                         new AutoLoginWarningDialog().show(getChildFragmentManager(),
                                 AutoLoginWarningDialog.class.getSimpleName());
                     } else {
-                    /*
-                     * if they switch to temp login we'll save their EID, but
-                     * clear their password for security purposes
-                     */
+                        /*
+                         * if they switch to temp login we'll save their EID, but
+                         * clear their password for security purposes
+                         */
                         mApp.getSecurePreferences().edit().remove("password").apply();
                         ba.notifyDataSetChanged();
                     }
@@ -107,9 +108,9 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
                     final Intent about_intent = new Intent(getActivity(), AboutMeActivity.class);
                     startActivity(about_intent);
                     return true;
-                }
-            });
-        } else if (preferenceScreenKey.equals("experimental")) {
+                });
+                break;
+            case "experimental":
                 final Preference updateBusStops = findPreference("update_stops");
                 updateBusStops.setOnPreferenceClickListener(preference -> {
                     try {
@@ -120,10 +121,10 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
                                 Toast.LENGTH_SHORT).show();
                     }
                     return true;
-                }
-            });
-        } else {
-            throw new IllegalStateException("Unimplemented PreferenceScreen: " + preferenceScreenKey);
+                });
+                break;
+            default:
+                throw new IllegalStateException("Unimplemented PreferenceScreen: " + preferenceScreenKey);
         }
     }
 
