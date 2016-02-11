@@ -17,8 +17,8 @@ public class WrappedViewPager extends ViewPager {
     }
 
     @Override
-    public void onMeasure(int heightMeasureSpec, int widthMeasureSpec) {
-        super.onMeasure(heightMeasureSpec, widthMeasureSpec);
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         if (getChildCount() != 0 && getChildAt(0) instanceof ViewGroup) {
             setMeasuredDimension(getMeasuredWidth(), ((ViewGroup) getChildAt(0)).getChildAt(0)
