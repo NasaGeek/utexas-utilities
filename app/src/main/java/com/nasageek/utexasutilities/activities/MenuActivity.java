@@ -205,10 +205,6 @@ public class MenuActivity extends BaseActivity implements ActionBar.OnNavigation
             return code;
         }
 
-        public String fullName() {
-            return fullName;
-        }
-
         @Override
         public String toString() {
             return fullName;

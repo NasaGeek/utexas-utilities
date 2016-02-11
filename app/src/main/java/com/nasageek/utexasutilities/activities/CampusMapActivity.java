@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.net.Uri;
@@ -41,7 +40,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -181,7 +179,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private static final int STYLE_GREEN_FADED = 0xFF81C784;
     private static final int STYLE_RED_FADED = 0xFFEF9A9A;
 
-    private static final int styles[] = {STYLE_GRAY, STYLE_GREEN_FADED, STYLE_GREEN};
     private static final int styles2[] =
             {STYLE_RED, STYLE_RED_FADED, STYLE_GREEN_FADED, STYLE_GREEN};
 
