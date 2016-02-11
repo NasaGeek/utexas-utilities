@@ -66,7 +66,7 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
     private ImageView classInfoImageView;
     private TextView classInfoTextView;
     private TextView errorTextView;
-    private LinearLayout errorLayout;
+    private View errorLayout;
     private LinearLayout scheduleLayout;
 
     private ArrayList<UTClass> classList = new ArrayList<>();
@@ -99,7 +99,7 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
         slidingDrawer = (WrappingSlidingDrawer) vg.findViewById(R.id.drawer);
         classInfoImageView = (ImageView) vg.findViewById(R.id.class_info_color);
         classInfoTextView = (TextView) vg.findViewById(R.id.class_info_text);
-        errorLayout = (LinearLayout) vg.findViewById(R.id.schedule_error);
+        errorLayout = vg.findViewById(R.id.schedule_error);
         errorTextView = (TextView) vg.findViewById(R.id.tv_failure);
         progressLayout = (LinearLayout) vg.findViewById(R.id.schedule_progressbar_ll);
         scheduleLayout = (LinearLayout) vg.findViewById(R.id.schedule_ll);

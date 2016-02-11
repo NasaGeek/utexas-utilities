@@ -42,7 +42,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
     private AmazingListView foodListView;
     private LinearLayout progressLayout;
     private TextView errorTextView;
-    private LinearLayout errorLayout;
+    private View errorLayout;
     private String restId;
     private String title;
     private String TASK_TAG;
@@ -65,7 +65,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         progressLayout = (LinearLayout) vg.findViewById(R.id.menu_progressbar_ll);
         foodListView = (AmazingListView) vg.findViewById(R.id.menu_listview);
         errorTextView = (TextView) vg.findViewById(R.id.tv_failure);
-        errorLayout = (LinearLayout) vg.findViewById(R.id.menu_error);
+        errorLayout = vg.findViewById(R.id.menu_error);
 
         if (restId.equals("0")) {
             return vg;

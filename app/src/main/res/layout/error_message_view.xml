@@ -1,39 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
     android:visibility="gone"
-    tools:visibility="visible"
-    android:clickable="true" >
+    tools:visibility="visible">
+    <TextView
+        android:id="@+id/tv_failure"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:textSize="20sp"
+        android:freezesText="true"
+        tools:text="A very verbose error with a lot of text occurred." />
 
-	<RelativeLayout 
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent">	   
-    	<TextView
-	        android:id="@+id/tv_failure"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_centerInParent="true"
-	        android:gravity="center"
-	        android:paddingLeft="10dp"
-	        android:paddingRight="10dp"
-	        android:textSize="20sp"
-	        android:freezesText="true"
-	        tools:text="A very verbose error with a lot of text occurred." />
-	
-	    <Button
-	        android:id="@+id/button_send_data"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_below="@id/tv_failure"
-	        android:gravity="center"
-	        android:layout_margin="40dp"
-	        android:layout_centerHorizontal="true"
-	        android:text="@string/button_send_data"
-	        android:visibility="gone"
-            tools:visibility="visible"/>
-	</RelativeLayout>
-</LinearLayout>
+    <Button
+        android:id="@+id/button_send_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_failure"
+        android:gravity="center"
+        android:layout_margin="40dp"
+        android:layout_centerHorizontal="true"
+        android:text="@string/button_send_data"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+</RelativeLayout>

@@ -41,7 +41,7 @@ public class TransactionsFragment extends DataLoadFragment {
     private LinearLayout transactionsLayout;
     private AmazingListView transactionsListView;
     private TextView balanceView;
-    private LinearLayout errorLayout;
+    private View errorLayout;
     private TextView errorTextView;
     private TransactionAdapter adapter;
 
@@ -77,7 +77,7 @@ public class TransactionsFragment extends DataLoadFragment {
         progressLayout = (LinearLayout) vg.findViewById(R.id.trans_progressbar_ll);
         transactionsLayout = (LinearLayout) vg.findViewById(R.id.transactions_layout);
         errorTextView = (TextView) vg.findViewById(R.id.tv_failure);
-        errorLayout = (LinearLayout) vg.findViewById(R.id.trans_error);
+        errorLayout = vg.findViewById(R.id.trans_error);
         balanceView = (TextView) vg.findViewById(R.id.balance_tv);
         if (savedInstanceState != null) {
             balanceView.setText(savedInstanceState.getString("balance"));

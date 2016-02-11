@@ -47,7 +47,7 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
     private ListView examListview;
     private LinearLayout progressLayout;
     private TextView errorTextView;
-    private LinearLayout errorLayout;
+    private View errorLayout;
     private ActionMode mode;
     private AuthCookie utdAuthCookie;
     private String TASK_TAG;
@@ -64,7 +64,7 @@ public class ExamScheduleFragment extends ScheduleFragment implements ActionMode
         View vg = inflater.inflate(R.layout.exam_schedule_fragment_layout, container, false);
         progressLayout = (LinearLayout) vg.findViewById(R.id.examschedule_progressbar_ll);
         examListview = (ListView) vg.findViewById(R.id.examschedule_listview);
-        errorLayout = (LinearLayout) vg.findViewById(R.id.examschedule_error);
+        errorLayout = vg.findViewById(R.id.examschedule_error);
         errorTextView = (TextView) vg.findViewById(R.id.tv_failure);
 
         if (savedInstanceState != null) {

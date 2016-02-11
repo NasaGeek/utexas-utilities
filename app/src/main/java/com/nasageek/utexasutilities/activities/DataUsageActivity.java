@@ -53,7 +53,7 @@ public class DataUsageActivity extends BaseActivity {
     private ProgressBar percentDataUsedView;
     private TextView dataUsedText;
     private TextView errorTextView;
-    private LinearLayout errorLayout;
+    private View errorLayout;
     private LinearLayout progressLayout;
 
     private String TASK_TAG;
@@ -71,7 +71,7 @@ public class DataUsageActivity extends BaseActivity {
         progressLayout = (LinearLayout) findViewById(R.id.data_progressbar_ll);
         dataUsedText = (TextView) findViewById(R.id.dataUsedText);
         percentDataUsedView = (ProgressBar) findViewById(R.id.percentDataUsed);
-        errorLayout = (LinearLayout) findViewById(R.id.data_error);
+        errorLayout = findViewById(R.id.data_error);
         errorTextView = (TextView) findViewById(R.id.tv_failure);
         chart = (LineChart) findViewById(R.id.mp_usage_chart);
 
