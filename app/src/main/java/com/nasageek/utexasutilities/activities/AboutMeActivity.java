@@ -12,7 +12,7 @@ import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.widget.TextView;
 
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.nasageek.utexasutilities.R;
 
 public class AboutMeActivity extends BaseActivity {
@@ -78,7 +78,7 @@ public class AboutMeActivity extends BaseActivity {
             return new AlertDialog.Builder(getActivity())
                     .setTitle("Licenses and Legal Notices")
                     .setMessage(getString(R.string.licenses) + "\n\n" + "Legal Notices:" + "\n\n"
-                        + GooglePlayServicesUtil.getOpenSourceSoftwareLicenseInfo(getActivity()))
+                        + GoogleApiAvailability.getInstance().getOpenSourceSoftwareLicenseInfo(getActivity()))
                     .setNeutralButton("Okay", null)
                     .create();
         }

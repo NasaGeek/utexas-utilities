@@ -3,6 +3,7 @@ package com.nasageek.utexasutilities.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -208,8 +209,8 @@ public class DataUsageActivity extends BaseActivity {
         totalLineDataSet.setDrawCubic(true);
         totalLineDataSet.setDrawFilled(true);
         totalLineDataSet.setDrawValues(false);
-        totalLineDataSet.setColor(getResources().getColor(R.color.data_usage_chart_upload));
-        totalLineDataSet.setFillColor(getResources().getColor(R.color.data_usage_chart_upload));
+        totalLineDataSet.setColor(ContextCompat.getColor(this, R.color.data_usage_chart_upload));
+        totalLineDataSet.setFillColor(ContextCompat.getColor(this, R.color.data_usage_chart_upload));
         totalLineDataSet.setFillAlpha(255);
 
         LineDataSet downLineDataSet = new LineDataSet(downData, "Downloaded");
@@ -218,8 +219,8 @@ public class DataUsageActivity extends BaseActivity {
         downLineDataSet.setDrawCubic(true);
         downLineDataSet.setDrawFilled(true);
         downLineDataSet.setDrawValues(false);
-        downLineDataSet.setColor(getResources().getColor(R.color.data_usage_chart_download));
-        downLineDataSet.setFillColor(getResources().getColor(R.color.data_usage_chart_download));
+        downLineDataSet.setColor(ContextCompat.getColor(this, R.color.data_usage_chart_download));
+        downLineDataSet.setFillColor(ContextCompat.getColor(this, R.color.data_usage_chart_download));
         downLineDataSet.setFillAlpha(255);
 
         List<LineDataSet> downAndUp = new ArrayList<>();
