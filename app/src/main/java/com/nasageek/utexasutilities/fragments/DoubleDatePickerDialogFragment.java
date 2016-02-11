@@ -38,7 +38,6 @@ import java.util.Vector;
 
 public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment {
 
-    private List<View> datePickers;
     private DatePicker startDatePicker, endDatePicker;
 
     public static final String[] EVENT_PROJECTION = new String[] {
@@ -230,7 +229,7 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
     }
 
     private void initialisePaging(View view) {
-        datePickers = new Vector<>();
+        List<View> datePickers = new Vector<>();
         FrameLayout fl1 = new FrameLayout(getActivity());
         FrameLayout fl2 = new FrameLayout(getActivity());
         startDatePicker = new DatePicker(getActivity());

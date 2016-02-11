@@ -56,7 +56,6 @@ public class UTilitiesActivity extends BaseActivity {
     private SharedPreferences settings;
     private Toast message;
     private ImageView scheduleCheck, balanceCheck, dataCheck;
-    private ProgressBar scheduleProgress, balanceProgress, dataProgress;
     private AlertDialog nologin;
 
     private UTilitiesApplication app;
@@ -209,9 +208,9 @@ public class UTilitiesActivity extends BaseActivity {
         balanceCheck = (ImageView) findViewById(R.id.balanceCheck);
         dataCheck = (ImageView) findViewById(R.id.dataCheck);
 
-        scheduleProgress = (ProgressBar) findViewById(R.id.scheduleProgress);
-        balanceProgress = (ProgressBar) findViewById(R.id.balanceProgress);
-        dataProgress = (ProgressBar) findViewById(R.id.dataProgress);
+        ProgressBar scheduleProgress = (ProgressBar) findViewById(R.id.scheduleProgress);
+        ProgressBar balanceProgress = (ProgressBar) findViewById(R.id.balanceProgress);
+        ProgressBar dataProgress = (ProgressBar) findViewById(R.id.dataProgress);
 
         final Intent schedule = new Intent(this, ScheduleActivity.class);
         final Intent balance = new Intent(this, BalanceActivity.class);

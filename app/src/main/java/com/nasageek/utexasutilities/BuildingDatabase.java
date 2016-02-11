@@ -20,7 +20,6 @@ import java.io.OutputStream;
 public class BuildingDatabase extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "buildings";
-    private String dbPath;
     private Context mContext;
     private SQLiteDatabase sqldb;
     private static final String KEY_SUGGEST_COLUMN_TEXT_1 = SearchManager.SUGGEST_COLUMN_TEXT_1;
@@ -89,7 +88,7 @@ public class BuildingDatabase extends SQLiteOpenHelper {
 
     public void openDataBase() throws SQLException {
 
-        dbPath = mContext.getDatabasePath(DB_NAME).getPath();
+        String dbPath = mContext.getDatabasePath(DB_NAME).getPath();
         sqldb = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
 
     }

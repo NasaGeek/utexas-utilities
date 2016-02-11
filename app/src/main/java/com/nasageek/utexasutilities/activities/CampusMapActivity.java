@@ -152,7 +152,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private List<String> buildingIdList = new ArrayList<>();
     private static final String STATE_BUILDING_LIST = "building_id_list";
 
-    private MarkerManager markerManager;
     private MarkerManager.Collection shownBuildings;
     private MarkerManager.Collection shownGarages;
     private MarkerManager.Collection shownStops;
@@ -407,7 +406,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMyLocationEnabled(locationEnabled);
-        markerManager = new MarkerManager(mMap);
+        MarkerManager markerManager = new MarkerManager(mMap);
         shownGarages = markerManager.newCollection();
         shownBuildings = markerManager.newCollection();
         shownStops = markerManager.newCollection();
