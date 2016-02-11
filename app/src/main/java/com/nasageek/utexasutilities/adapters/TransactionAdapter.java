@@ -15,12 +15,16 @@ import com.nasageek.utexasutilities.model.Transaction;
 import java.util.ArrayList;
 
 public class TransactionAdapter extends AmazingAdapter {
+    private final int VIEW_TYPE_HEADER = 0;
+    private final int VIEW_TYPE_TRANSACTION = 1;
+
     private Context con;
     private ArrayList<Boolean> areHeaders;
     private ArrayList<Transaction> transactions;
     private LayoutInflater li;
     private String currentDate;
     private TransactionsFragment frag;
+    private boolean drawLoadingView = false;
 
     public TransactionAdapter(Context c, TransactionsFragment frag,
             ArrayList<Transaction> transactions) {
@@ -51,6 +55,11 @@ public class TransactionAdapter extends AmazingAdapter {
     }
 
     @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
     public Object getItem(int position) {
         return transactions.get(position);
     }
@@ -73,32 +82,42 @@ public class TransactionAdapter extends AmazingAdapter {
     // TODO: fix crash on refresh when in the middle of a scroll
     @Override
     public View getAmazingView(int position, View convertView, ViewGroup parent) {
-
-        /*
-         * if(position == transactions.size() - 1) return new View(con);
-         */
         Transaction trans = transactions.get(position);
 
         String date = trans.getDate();
         String reason = "\t" + trans.getReason();
         String cost = trans.getCost();
 
-        ViewGroup lin = (ViewGroup) convertView;
-
-        if (areHeaders.size() == transactions.size() && areHeaders.get(position)) {
-            lin = (ViewGroup) li.inflate(R.layout.trans_item_header_view, parent, false);
-            TextView dateview = (TextView) lin.findViewById(R.id.list_item_section_text);
-            dateview.setText(date);
-        } else {
-            lin = (ViewGroup) li.inflate(R.layout.trans_item_view, parent, false);
+        View view = convertView;
+        switch (getItemViewType(position)) {
+            case VIEW_TYPE_HEADER:
+                if (view == null) {
+                    view = li.inflate(R.layout.trans_item_header_view, parent, false);
+                }
+                ((TextView) view.findViewById(R.id.list_item_section_text)).setText(date);
+                // intentional fall-through so that the item and cost get set for headers too
+            case VIEW_TYPE_TRANSACTION:
+                if (view == null) {
+                    view = li.inflate(R.layout.trans_item_view, parent, false);
+                }
+                ((TextView) view.findViewById(R.id.itemview)).setText(reason);
+                ((TextView) view.findViewById(R.id.costview)).setText(cost);
+                break;
         }
+        return view;
+    }
 
-        TextView left = (TextView) lin.findViewById(R.id.itemview);
-        left.setText(reason);
-        TextView right = (TextView) lin.findViewById(R.id.costview);
-        right.setText(cost);
 
-        return lin;
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == getCount() - 1 && drawLoadingView) {
+            return IGNORE_ITEM_VIEW_TYPE;
+        } else if (areHeaders.size() == transactions.size() && areHeaders.get(position)) {
+            return VIEW_TYPE_HEADER;
+        } else {
+            return VIEW_TYPE_TRANSACTION;
+        }
     }
 
     public void updateHeaders() {
@@ -130,24 +149,18 @@ public class TransactionAdapter extends AmazingAdapter {
 
     @Override
     protected void onNextPageRequested(int page) {
-
         if (super.automaticNextPageLoading) {
             nextPage();
-            // Log.d("TransactionAdapter","Page requested!");
             frag.loadData(false);
         }
         super.automaticNextPageLoading = false;
     }
 
     @Override
-    protected void bindSectionHeader(View view, int position, boolean displaySectionHeader) {
-        return;
-    }
+    protected void bindSectionHeader(View view, int position, boolean displaySectionHeader) { }
 
     @Override
-    public void configurePinnedHeader(View header, int position, int alpha) {
-        return;
-    }
+    public void configurePinnedHeader(View header, int position, int alpha) { }
 
     @Override
     public int getPositionForSection(int section) {
@@ -164,4 +177,15 @@ public class TransactionAdapter extends AmazingAdapter {
         return null;
     }
 
+    @Override
+    public void notifyNoMorePages() {
+        drawLoadingView = false;
+        super.notifyNoMorePages();
+    }
+
+    @Override
+    public void notifyMayHaveMorePages() {
+        drawLoadingView = true;
+        super.notifyMayHaveMorePages();
+    }
 }
