@@ -655,11 +655,13 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         savedInstanceState.putBoolean(STATE_RESOLVING_ERROR, mResolvingError);
         savedInstanceState.putBoolean(STATE_SET_INITIAL_LOCATION, setInitialLocation);
         Set<String> savedBuildings = new HashSet<>();
-        for (Marker m : shownBuildings.getMarkers()) {
-            savedBuildings.add(m.getTitle());
-        }
-        for (Marker m : shownGarages.getMarkers()) {
-            savedBuildings.add(m.getTitle());
+        if (shownBuildings != null && shownGarages != null) {
+            for (Marker m : shownBuildings.getMarkers()) {
+                savedBuildings.add(m.getTitle());
+            }
+            for (Marker m : shownGarages.getMarkers()) {
+                savedBuildings.add(m.getTitle());
+            }
         }
         savedInstanceState.putStringArrayList(STATE_BUILDING_LIST, new ArrayList<>(savedBuildings));
         savedInstanceState.putBoolean(STATE_SHOW_ALL_BUILDINGS, showAllBuildings);
