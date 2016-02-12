@@ -176,7 +176,7 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
         ArrayList<Integer> indices = new ArrayList<>();
 
         // If no calendars are available, let them know
-        if (cur == null) {
+        if (cur == null || cur.getCount() == 0) {
             Toast.makeText(getActivity(),
                     "There are no available calendars to export to.", Toast.LENGTH_LONG).show();
             DoubleDatePickerDialogFragment.this.dismiss();
