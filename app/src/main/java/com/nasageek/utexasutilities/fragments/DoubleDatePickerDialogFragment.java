@@ -11,17 +11,14 @@ import android.provider.CalendarContract.Calendars;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.view.Gravity;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.DatePicker;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.nasageek.utexasutilities.R;
-import com.nasageek.utexasutilities.WrappedViewPager;
 import com.nasageek.utexasutilities.model.Classtime;
 import com.nasageek.utexasutilities.model.UTClass;
 
@@ -34,7 +31,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.Vector;
 
 public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment {
 
@@ -205,7 +201,7 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.double_date_picker_dialog_fragment_layout, container);
-        initialisePaging(view);
+        initialisePaging(view, inflater);
         view.findViewById(R.id.calendar_button_ok).setOnClickListener(v -> setupScheduleData());
         view.findViewById(R.id.calendar_button_cancel).setOnClickListener(v -> getDialog().dismiss());
         return view;
@@ -228,33 +224,21 @@ public class DoubleDatePickerDialogFragment extends ExportScheduleDialogFragment
         }
     }
 
-    private void initialisePaging(View view) {
-        List<View> datePickers = new Vector<>();
-        FrameLayout fl1 = new FrameLayout(getActivity());
-        FrameLayout fl2 = new FrameLayout(getActivity());
-        startDatePicker = new DatePicker(getActivity());
-        startDatePicker.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT, Gravity.CENTER));
-        endDatePicker = new DatePicker(getActivity());
-        endDatePicker.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+    private void initialisePaging(View view, LayoutInflater inflater) {
+        List<View> datePickers = new ArrayList<>();
+        ViewPager pager = (ViewPager) view.findViewById(R.id.wrappedviewpager);
+        startDatePicker = (DatePicker) inflater.inflate(R.layout.datepicker_export_schedule, pager, false);
+        endDatePicker = (DatePicker) inflater.inflate(R.layout.datepicker_export_schedule, pager, false);
 
-        startDatePicker.setCalendarViewShown(false);
-        endDatePicker.setCalendarViewShown(false);
-        fl1.addView(startDatePicker);
-        fl1.setTag("Start Date");
-        fl2.addView(endDatePicker);
-        fl2.setTag("End Date");
+        startDatePicker.setTag("Start Date");
+        endDatePicker.setTag("End Date");
 
-        datePickers.add(fl1);
-        datePickers.add(fl2);
+        datePickers.add(startDatePicker);
+        datePickers.add(endDatePicker);
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(datePickers);
-
-        WrappedViewPager pager = (WrappedViewPager) view.findViewById(R.id.wrappedviewpager);
         pager.setPageMargin(2);
         pager.setAdapter(adapter);
-
         ((TabLayout) view.findViewById(R.id.tabs)).setupWithViewPager(pager);
     }
 
