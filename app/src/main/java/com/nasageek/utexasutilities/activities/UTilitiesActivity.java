@@ -640,6 +640,9 @@ public class UTilitiesActivity extends BaseActivity {
 
     @Subscribe
     public void loginFinished(final LoginFinishedEvent lfe) {
+        if (isFinishing()) {
+            return;
+        }
         boolean successful = lfe.loginSuccessful() || !isLoginRequired();
         serviceLoggedIn.put(lfe.getService(), successful);
         for (ImageView iv : cookiesToFeatures.get(lfe.getService())) {
