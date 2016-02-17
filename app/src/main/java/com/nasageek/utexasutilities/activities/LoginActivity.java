@@ -16,6 +16,7 @@ public class LoginActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
+        webView = new WebView(this);
         if (!getIntent().hasExtra("service")) {
             finish();
             return;
@@ -26,7 +27,6 @@ public class LoginActivity extends BaseActivity {
 
         LoginWebViewClient wvlc = new LoginWebViewClient(this, getIntent().getStringExtra(
                 "activity"), service);
-        webView = new WebView(this);
         webView.setWebViewClient(wvlc);
         if (savedInstanceState != null) {
             webView.restoreState(savedInstanceState);
