@@ -78,12 +78,12 @@
     <PreferenceCategory android:title="Privacy" >
 
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="@bool/release"
             android:key="acra.enable"
             android:title="Auto-send crash reports" />
 
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="@bool/release"
             android:key="@string/pref_analytics_key"
             android:title="Google Analytics" />
     </PreferenceCategory>
