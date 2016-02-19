@@ -85,7 +85,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
             restId = getArguments().getString("restId");
         }
         title = getArguments().getString("title");
-        TASK_TAG = getClass().getSimpleName() + restId + title;
+        TASK_TAG = getClass().getSimpleName() + title;
         menuAdapter = new MenuAdapter(getActivity(), listOfLists);
     }
 
