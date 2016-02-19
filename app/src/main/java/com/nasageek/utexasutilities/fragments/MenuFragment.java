@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 
 public class MenuFragment extends Fragment implements AdapterView.OnItemClickListener {
     private List<MyPair<String, List<Food>>> listOfLists = new ArrayList<>();
+    private MenuAdapter menuAdapter;
     private AmazingListView foodListView;
     private LinearLayout progressLayout;
     private TextView errorTextView;
@@ -66,10 +67,10 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         foodListView = (AmazingListView) vg.findViewById(R.id.menu_listview);
         errorTextView = (TextView) vg.findViewById(R.id.tv_failure);
         errorLayout = vg.findViewById(R.id.menu_error);
-
-        if (restId.equals("0")) {
-            return vg;
-        }
+        foodListView.setPinnedHeaderView(getActivity().getLayoutInflater().inflate(
+                R.layout.menu_header_item_view, foodListView, false));
+        foodListView.setOnItemClickListener(this);
+        foodListView.setAdapter(menuAdapter);
         updateView(restId, false);
         return vg;
     }
@@ -85,27 +86,18 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         }
         title = getArguments().getString("title");
         TASK_TAG = getClass().getSimpleName() + restId + title;
+        menuAdapter = new MenuAdapter(getActivity(), listOfLists);
     }
 
     public void updateView(String restId, Boolean update) {
         this.restId = restId;
-        foodListView.setPinnedHeaderView(getActivity().getLayoutInflater().inflate(
-                R.layout.menu_header_item_view, foodListView, false));
-        foodListView.setOnItemClickListener(this);
-        if (listOfLists.size() == 0 || update) {
+        if (!restId.equals("0") && (listOfLists.size() == 0 || update)) {
             if (mApp.getCachedTask(TASK_TAG) == null) {
                 FetchMenuTask fetchMTask = new FetchMenuTask(TASK_TAG);
                 prepareToLoad();
                 Utility.parallelExecute(fetchMTask, restId, title);
             }
-        } else {
-            setupAdapter();
         }
-    }
-
-    private void setupAdapter() {
-        MenuAdapter mAdapter = new MenuAdapter(getActivity(), listOfLists);
-        foodListView.setAdapter(mAdapter);
     }
 
     @Override
@@ -261,7 +253,7 @@ public class MenuFragment extends Fragment implements AdapterView.OnItemClickLis
         if (TASK_TAG.equals(event.tag)) {
             listOfLists.clear();
             listOfLists.addAll(event.listOfLists);
-            setupAdapter();
+            menuAdapter.notifyDataSetChanged();
             foodListView.setVisibility(View.VISIBLE);
             progressLayout.setVisibility(View.GONE);
             errorLayout.setVisibility(View.GONE);
