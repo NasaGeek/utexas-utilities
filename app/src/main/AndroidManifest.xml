@@ -3,12 +3,6 @@
     package="com.nasageek.utexasutilities"
     android:installLocation="auto" >
 
-    <permission
-        android:name="com.nasageek.utexasutilities.permission.MAPS_RECEIVE"
-        android:protectionLevel="signature" />
-
-    <uses-permission android:name="com.nasageek.utexasutilities.permission.MAPS_RECEIVE" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
