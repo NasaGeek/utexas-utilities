@@ -33,20 +33,7 @@ public class TransactionAdapter extends AmazingAdapter {
         this.frag = frag;
         areHeaders = new ArrayList<>();
         li = (LayoutInflater) con.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        // just call updateHeaders() here? Did I duplicate this for a reason?
-        for (int i = 0; i < transactions.size(); i++) {
-            String date = transactions.get(i).getDate();
-            if (i == 0) {
-                currentDate = date;
-                areHeaders.add(true);
-            } else if (currentDate.equals(date)) {
-                areHeaders.add(false);
-            } else {
-                areHeaders.add(true);
-                currentDate = date;
-            }
-        }
+        updateHeaders();
     }
 
     @Override
