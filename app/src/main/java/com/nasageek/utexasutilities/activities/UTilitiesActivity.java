@@ -586,9 +586,6 @@ public class UTilitiesActivity extends BaseActivity {
                     loginTasks.add(loginTask);
                 }
             }
-        } else {
-            Intent loginIntent = new Intent(this, LoginActivity.class);
-            startActivity(loginIntent);
         }
     }
 
