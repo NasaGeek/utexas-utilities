@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="2.0.1" versioncode="46">
+        <change>Fix some bugs</change>
+        <change>Remove garage support, no longer supported by PTS</change>
+    </release>
     <release version="2.0" versioncode="45">
         <change>Updated UI to fit modern design standards</change>
         <change>Updated bus routes and arrival time API</change>
