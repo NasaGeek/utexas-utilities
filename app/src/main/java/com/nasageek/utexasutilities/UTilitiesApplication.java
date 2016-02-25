@@ -80,6 +80,7 @@ public class UTilitiesApplication extends Application {
             }
         }
         LeakCanary.install(this);
+        ACRA.init(this);
         try {
             AesCbcWithIntegrity.SecretKeys myKey = AesCbcWithIntegrity.generateKeyFromPassword(
                     Utility.id(this), Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID).getBytes(), 10);
@@ -87,6 +88,7 @@ public class UTilitiesApplication extends Application {
         } catch (GeneralSecurityException gse) {
             // no clue what to do here
             gse.printStackTrace();
+            ACRA.getErrorReporter().handleException(gse, false);
         }
         upgradePasswordEncryption();
 
@@ -107,7 +109,6 @@ public class UTilitiesApplication extends Application {
         CookieHandler.setDefault(cookieManager);
         client.setCookieHandler(cookieManager);
 
-        ACRA.init(this);
         initGoogleAnalytics();
         AnalyticsHandler.initTrackerIfNeeded(this);
     }
@@ -121,6 +122,7 @@ public class UTilitiesApplication extends Application {
                 securePreferences.edit().putString("password", password).apply();
             } catch (LegacySecurePreferences.SecurePreferencesException spe) {
                 spe.printStackTrace();
+                ACRA.getErrorReporter().handleException(spe, false);
                 Toast.makeText(this, "Your saved password has been wiped for security purposes" +
                         " and will need to be re-entered just this once", Toast.LENGTH_LONG).show();
             } finally {

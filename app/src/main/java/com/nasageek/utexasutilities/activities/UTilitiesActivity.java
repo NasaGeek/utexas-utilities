@@ -35,6 +35,8 @@ import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.Utility;
 import com.squareup.otto.Subscribe;
 
+import org.acra.ACRA;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -565,6 +567,14 @@ public class UTilitiesActivity extends BaseActivity {
      */
     private void login() {
         SharedPreferences sp = app.getSecurePreferences();
+        if (sp.getString("password", "") == null) {
+            // :( encryption broken in some way
+            // Disable persistent login and let the user know something's up
+            settings.edit().putBoolean(getString(R.string.pref_logintype_key), false).apply();
+            Toast.makeText(this, "Uh oh, password encryption is broken on your device! " +
+                    "Persistent login has been temporarily disabled.", Toast.LENGTH_LONG).show();
+            ACRA.getErrorReporter().handleException(new Exception("Password decryption failure"));
+        }
         if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
             if (!settings.contains("eid") || !sp.contains("password")
                     || settings.getString("eid", "").equals("")
