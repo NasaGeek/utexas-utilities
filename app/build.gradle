@@ -11,6 +11,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
+        applicationId "com.nasageek.utexasutilities"
         minSdkVersion 14
         targetSdkVersion 23
         versionCode 45
