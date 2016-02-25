@@ -106,7 +106,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.google.gms:google-services:2.0.0-alpha9'
+        classpath 'com.google.gms:google-services:2.0.0-beta5'
         classpath 'me.tatarka:gradle-retrolambda:3.2.3'
     }
 }
