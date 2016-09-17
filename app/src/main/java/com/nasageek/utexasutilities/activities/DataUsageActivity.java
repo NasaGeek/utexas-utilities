@@ -16,6 +16,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.BuildConfig;
 import com.nasageek.utexasutilities.MyBus;
@@ -223,7 +224,7 @@ public class DataUsageActivity extends BaseActivity {
         downLineDataSet.setFillColor(ContextCompat.getColor(this, R.color.data_usage_chart_download));
         downLineDataSet.setFillAlpha(255);
 
-        List<LineDataSet> downAndUp = new ArrayList<>();
+        List<ILineDataSet> downAndUp = new ArrayList<>();
         downAndUp.add(totalLineDataSet);
         downAndUp.add(downLineDataSet);
 
