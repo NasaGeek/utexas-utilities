@@ -10,7 +10,6 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.widget.Toast;
 
-import com.commonsware.cwac.security.trust.TrustManagerBuilder;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.nasageek.utexasutilities.fragments.UTilitiesPreferenceFragment;
 import com.securepreferences.SecurePreferences;
@@ -22,20 +21,13 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.annotation.ReportsCrashes;
 
-import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookieStore;
 import java.security.GeneralSecurityException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.Security;
-import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.net.ssl.SSLContext;
 
 @ReportsCrashes(
 customReportContent = {
@@ -54,7 +46,6 @@ public class UTilitiesApplication extends Application {
     private static UTilitiesApplication sInstance;
 
     public static final String UTD_AUTH_COOKIE_KEY = "utd_auth_cookie";
-    public static final String PNA_AUTH_COOKIE_KEY = "pna_auth_cookie";
 
     private Map<String, AuthCookie> authCookies = new HashMap<>();
     private OkHttpClient client = new OkHttpClient();
@@ -92,18 +83,7 @@ public class UTilitiesApplication extends Application {
         }
         upgradePasswordEncryption();
 
-        try {
-            TrustManagerBuilder trustManagerBuilder = new TrustManagerBuilder(this);
-            trustManagerBuilder.allowCA(R.raw.pna_cert).or().useDefault();
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, trustManagerBuilder.buildArray(), null);
-            client.setSslSocketFactory(sslContext.getSocketFactory());
-        } catch (NoSuchAlgorithmException|KeyManagementException|IOException|CertificateException|
-                KeyStoreException nsae) {
-            nsae.printStackTrace();
-        }
         authCookies.put(UTD_AUTH_COOKIE_KEY, new UtdAuthCookie(this));
-        authCookies.put(PNA_AUTH_COOKIE_KEY, new PnaAuthCookie(this));
 
         CookieManager cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
@@ -169,10 +149,6 @@ public class UTilitiesApplication extends Application {
 
     public String getUtdAuthCookieVal() {
         return authCookies.get(UTD_AUTH_COOKIE_KEY).getAuthCookieVal();
-    }
-
-    public String getPnaAuthCookieVal() {
-        return authCookies.get(PNA_AUTH_COOKIE_KEY).getAuthCookieVal();
     }
 
     public void logoutAll() {

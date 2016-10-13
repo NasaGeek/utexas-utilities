@@ -21,7 +21,6 @@ import com.nasageek.utexasutilities.activities.AboutMeActivity;
 
 import java.io.IOException;
 
-import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
 import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 /**
@@ -152,8 +151,7 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
 
     private boolean isUserLoggedIn() {
         UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();
-        return mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).hasCookieBeenSet() &&
-                mApp.getAuthCookie(PNA_AUTH_COOKIE_KEY).hasCookieBeenSet();
+        return mApp.getAuthCookie(UTD_AUTH_COOKIE_KEY).hasCookieBeenSet();
     }
 
     @Override

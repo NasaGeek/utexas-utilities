@@ -133,17 +133,7 @@ public class DataUsageActivity extends BaseActivity {
 
     @Nullable
     private String createDataUrl() {
-        AuthCookie pnaCookie = UTilitiesApplication.getInstance()
-                .getAuthCookie(PNA_AUTH_COOKIE_KEY);
-        Pattern authidpattern = Pattern.compile("(?<=%20)\\d+");
-        String cookie = pnaCookie.getAuthCookieVal();
-        Matcher authidmatcher = authidpattern.matcher(cookie != null ? cookie : "");
-        if (authidmatcher.find()) {
-            return "https://management.pna.utexas.edu/server/get-bw-graph-data.cgi?authid="
-                    + authidmatcher.group();
-        } else {
-            return null;
-        }
+        return "https://management.pna.utexas.edu/restricted/cgi/bwdetails.cgi";
     }
 
     @Override

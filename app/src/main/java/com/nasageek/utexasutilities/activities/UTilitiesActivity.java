@@ -39,11 +39,9 @@ import org.acra.ACRA;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
 import static com.nasageek.utexasutilities.UTilitiesApplication.UTD_AUTH_COOKIE_KEY;
 
 /**
@@ -61,14 +59,11 @@ public class UTilitiesActivity extends BaseActivity {
     private AlertDialog nologin;
 
     private UTilitiesApplication app;
-    private AuthCookie authCookies[];
     private List<AsyncTask> loginTasks;
     private UpdateUiTask updateUiTask;
-    private AuthCookie utdAuthCookie;
-    private AuthCookie pnaAuthCookie;
+    private AuthCookie authCookie;
+    private boolean loggedIn;
 
-    private HashMap<String, ImageView[]> cookiesToFeatures;
-    private HashMap<String, Boolean> serviceLoggedIn;
     private ImageView[] featureButtons;
     private View.OnClickListener enabledFeatureButtonListener;
     private View.OnClickListener disabledFeatureButtonListener;
@@ -83,9 +78,7 @@ public class UTilitiesActivity extends BaseActivity {
         }
 
         app = (UTilitiesApplication) getApplication();
-        utdAuthCookie = app.getAuthCookie(UTD_AUTH_COOKIE_KEY);
-        pnaAuthCookie = app.getAuthCookie(PNA_AUTH_COOKIE_KEY);
-        authCookies = new AuthCookie[]{utdAuthCookie, pnaAuthCookie};
+        authCookie = app.getAuthCookie(UTD_AUTH_COOKIE_KEY);
 
         loginTasks = (List<AsyncTask>) getLastCustomNonConfigurationInstance();
         if (loginTasks != null) {
@@ -95,11 +88,9 @@ public class UTilitiesActivity extends BaseActivity {
             }
         }
         if (savedInstanceState != null) {
-            serviceLoggedIn = (HashMap) savedInstanceState.getSerializable("serviceLoggedIn");
+            loggedIn = savedInstanceState.getBoolean("loggedIn");
         } else {
-            serviceLoggedIn = new HashMap<>();
-            serviceLoggedIn.put(UTD_AUTH_COOKIE_KEY, true);
-            serviceLoggedIn.put(PNA_AUTH_COOKIE_KEY, true);
+            loggedIn = true;
         }
 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
@@ -125,7 +116,6 @@ public class UTilitiesActivity extends BaseActivity {
                                 LoginActivity.class);
                         login.putExtra("activity", data.intent.getComponent()
                                 .getClassName());
-                        login.putExtra("service", data.serviceChar);
                         startActivity(login);
                     } else {
                         startActivity(data.intent);
@@ -176,19 +166,17 @@ public class UTilitiesActivity extends BaseActivity {
         public Intent intent;
         public int imageButtonId;
         public AuthCookie authCookie;
-        public Character serviceChar;
         public ImageView checkOverlay;
         public ProgressBar loginProgress;
         public boolean loggedIn;
 
         // for authenticated services
         public DashboardButtonData(Intent intent, int id, AuthCookie authCookie,
-                                   Character service, ImageView check, ProgressBar progress,
+                                   ImageView check, ProgressBar progress,
                                    boolean loggedIn) {
             this.intent = intent;
             this.imageButtonId = id;
             this.authCookie = authCookie;
-            this.serviceChar = service;
             this.checkOverlay = check;
             this.loginProgress = progress;
             this.loggedIn = loggedIn;
@@ -196,7 +184,7 @@ public class UTilitiesActivity extends BaseActivity {
 
         // for unauthenticated services
         public DashboardButtonData(Intent intent, int id) {
-            this(intent, id, null, null, null, null, true);
+            this(intent, id, null, null, null, true);
         }
     }
 
@@ -223,12 +211,12 @@ public class UTilitiesActivity extends BaseActivity {
 
 
         DashboardButtonData buttonData[] = new DashboardButtonData[6];
-        buttonData[0] = new DashboardButtonData(schedule, R.id.schedule_button, utdAuthCookie, 'u',
-                scheduleCheck, scheduleProgress, serviceLoggedIn.get(UTD_AUTH_COOKIE_KEY));
-        buttonData[1] = new DashboardButtonData(balance, R.id.balance_button, utdAuthCookie, 'u',
-                balanceCheck, balanceProgress, serviceLoggedIn.get(UTD_AUTH_COOKIE_KEY));
-        buttonData[2] = new DashboardButtonData(data, R.id.data_button, pnaAuthCookie, 'p',
-                dataCheck, dataProgress, serviceLoggedIn.get(PNA_AUTH_COOKIE_KEY));
+        buttonData[0] = new DashboardButtonData(schedule, R.id.schedule_button, authCookie,
+                scheduleCheck, scheduleProgress, loggedIn);
+        buttonData[1] = new DashboardButtonData(balance, R.id.balance_button, authCookie,
+                balanceCheck, balanceProgress, loggedIn);
+        buttonData[2] = new DashboardButtonData(data, R.id.data_button, authCookie,
+                dataCheck, dataProgress, loggedIn);
         buttonData[3] = new DashboardButtonData(map, R.id.map_button);
         buttonData[4] = new DashboardButtonData(menu, R.id.menu_button);
 
@@ -246,10 +234,6 @@ public class UTilitiesActivity extends BaseActivity {
             }
             featureButtons[i] = ib;
         }
-        cookiesToFeatures = new HashMap<>();
-        cookiesToFeatures.put(UTD_AUTH_COOKIE_KEY,
-                new ImageView[]{featureButtons[0], featureButtons[1]});
-        cookiesToFeatures.put(PNA_AUTH_COOKIE_KEY, new ImageView[]{featureButtons[2]});
     }
 
     /**
@@ -328,18 +312,11 @@ public class UTilitiesActivity extends BaseActivity {
         }
         MenuInflater inflater = this.getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
-        boolean anyLoggedIn = false;
-        for (AuthCookie cookie : authCookies) {
-            if (cookie.hasCookieBeenSet()) {
-                anyLoggedIn = true;
-                break;
-            }
-        }
 
         // update the displayed login state
         if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
             if (!isLoggingIn()) {
-                if (anyLoggedIn) {
+                if (loggedIn) {
                     replaceLoginButton(menu, R.id.logout_button, "Log out");
                 } else {
                     replaceLoginButton(menu, R.id.login_button, "Log in");
@@ -348,7 +325,7 @@ public class UTilitiesActivity extends BaseActivity {
                 replaceLoginButton(menu, R.id.cancel_button, "Cancel");
             }
         } else {
-            if (anyLoggedIn) {
+            if (loggedIn) {
                 replaceLoginButton(menu, R.id.logout_button, "Log out");
             } else {
                 menu.removeGroup(R.id.login_menu_group);
@@ -541,11 +518,8 @@ public class UTilitiesActivity extends BaseActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            for (AuthCookie cookie : mActivity.authCookies) {
-                if (!cookie.hasCookieBeenSet()) {
-                    Toast.makeText(mActivity, "One or more services could not log in and have been disabled", Toast.LENGTH_SHORT).show();
-                    break;
-                }
+            if (!mActivity.authCookie.hasCookieBeenSet()) {
+                Toast.makeText(mActivity, "One or more services could not log in and have been disabled", Toast.LENGTH_SHORT).show();
             }
             /*
              trick to make sure that the login is seen as "done" before onCreateOptionsMenu()
@@ -584,17 +558,15 @@ public class UTilitiesActivity extends BaseActivity {
                 message.show();
             } else {
                 setLoginProgressBarVisiblity(true);
-                loginTasks = new ArrayList<>();
-                CountDownLatch loginLatch = new CountDownLatch(authCookies.length);
+                CountDownLatch loginLatch = new CountDownLatch(1);
                 updateUiTask = new UpdateUiTask(this);
                 Utility.parallelExecute(updateUiTask, loginLatch);
+                loginTasks = new ArrayList<>();
                 loginTasks.add(updateUiTask);
 
-                for (AuthCookie cookie : authCookies) {
-                    LoginTask loginTask = new LoginTask(loginLatch);
-                    Utility.parallelExecute(loginTask, cookie);
-                    loginTasks.add(loginTask);
-                }
+                LoginTask loginTask = new LoginTask(loginLatch);
+                Utility.parallelExecute(loginTask, authCookie);
+                loginTasks.add(loginTask);
             }
         }
     }
@@ -621,6 +593,7 @@ public class UTilitiesActivity extends BaseActivity {
                 ((DashboardButtonData) ib.getTag()).loginProgress.setVisibility(View.GONE);
             }
         }
+        loggedIn = false;
         resetChecks();
     }
 
@@ -651,15 +624,18 @@ public class UTilitiesActivity extends BaseActivity {
             return;
         }
         boolean successful = lfe.loginSuccessful() || !isLoginRequired();
-        serviceLoggedIn.put(lfe.getService(), successful);
-        for (ImageView iv : cookiesToFeatures.get(lfe.getService())) {
-            if (successful) {
-                enableFeature(iv);
-            } else {
-                disableFeature(iv);
+        loggedIn = successful;
+        for (ImageView iv : featureButtons) {
+            DashboardButtonData buttonData = (DashboardButtonData) iv.getTag();
+            if (buttonData.authCookie != null) {
+                if (successful) {
+                    enableFeature(iv);
+                } else {
+                    disableFeature(iv);
+                }
+                buttonData.loggedIn = successful;
+                buttonData.loginProgress.setVisibility(View.GONE);
             }
-            ((DashboardButtonData) iv.getTag()).loggedIn = successful;
-            ((DashboardButtonData) iv.getTag()).loginProgress.setVisibility(View.GONE);
         }
     }
 
@@ -698,7 +674,7 @@ public class UTilitiesActivity extends BaseActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("serviceLoggedIn", serviceLoggedIn);
+        outState.putBoolean("loggedIn", loggedIn);
     }
 
     @Override

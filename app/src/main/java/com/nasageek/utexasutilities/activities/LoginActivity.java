@@ -17,31 +17,16 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setupActionBar();
         webView = new WebView(this);
-        if (!getIntent().hasExtra("service")) {
-            finish();
-            return;
-        }
-        char service = getIntent().getCharExtra("service", 'p');
-        CookieSyncManager.createInstance(this);
-        CookieManager.getInstance().removeAllCookie();
 
         LoginWebViewClient wvlc = new LoginWebViewClient(this, getIntent().getStringExtra(
-                "activity"), service);
+                "activity"));
         webView.setWebViewClient(wvlc);
         if (savedInstanceState != null) {
             webView.restoreState(savedInstanceState);
         } else {
-            switch (service) {
-                case 'u':
-                    webView.getSettings().setJavaScriptEnabled(true);
-                    webView.loadUrl("https://login.utexas.edu/login/UI/Login");
-                    actionBar.setSubtitle("UTLogin");
-                    break;
-                case 'p':
-                    webView.loadUrl("https://management.pna.utexas.edu/server/graph.cgi");
-                    actionBar.setSubtitle("UT PNA");
-                    break;
-            }
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.loadUrl("https://login.utexas.edu/login/UI/Login");
+            actionBar.setSubtitle("UTLogin");
         }
         setContentView(webView);
     }

@@ -101,6 +101,10 @@ public class AuthCookie {
     }
 
     public void setAuthCookieVal(String authCookie) {
+        setAuthCookieVal(authCookie, url.getHost());
+    }
+
+    protected void setAuthCookieVal(String authCookie, String domain) {
         this.authCookie = authCookie;
         settings.edit().putString(prefKey, authCookie).apply();
 
@@ -110,12 +114,10 @@ public class AuthCookie {
         just to re-add the cookies, though
          */
         HttpCookie httpCookie = new HttpCookie(authCookieKey, authCookie);
-        httpCookie.setDomain(url.getHost());
-        // this is required for PNA login and does not appear to affect other services
-        httpCookie.setVersion(0);
+        httpCookie.setDomain(domain);
         try {
             CookieStore cookies = ((CookieManager) CookieHandler.getDefault()).getCookieStore();
-            cookies.add(URI.create(url.getHost()), httpCookie);
+            cookies.add(URI.create(domain), httpCookie);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
@@ -153,9 +155,8 @@ public class AuthCookie {
         CookieManager cm = (CookieManager) CookieHandler.getDefault();
         List<HttpCookie> cookies = cm.getCookieStore().getCookies();
         for (HttpCookie cookie : cookies) {
-            // special case for UTD login since I'm too lazy to subclass it
             String cookieVal = cookie.getValue();
-            if (cookie.getName().equals(authCookieKey) && !cookieVal.equals("NONE")) {
+            if (cookie.getName().equals(authCookieKey)) {
                 setAuthCookieVal(cookieVal);
                 return true;
             }
