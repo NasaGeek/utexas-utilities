@@ -1,12 +1,18 @@
 
 package com.nasageek.utexasutilities.activities;
 
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.CookieSyncManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -17,7 +23,6 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.nasageek.utexasutilities.AuthCookie;
 import com.nasageek.utexasutilities.BuildConfig;
 import com.nasageek.utexasutilities.MyBus;
 import com.nasageek.utexasutilities.R;
@@ -33,16 +38,13 @@ import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.nasageek.utexasutilities.UTilitiesApplication.PNA_AUTH_COOKIE_KEY;
 
 public class DataUsageActivity extends BaseActivity {
 
@@ -99,20 +101,7 @@ public class DataUsageActivity extends BaseActivity {
                     break;
             }
         }
-        String reqUrl = createDataUrl();
-        if (reqUrl != null) {
-            loadData(reqUrl, false);
-        } else if (dataLoadStatus != LoadStatus.SUCCEEDED) {
-            dataLoadFailed(new DataLoadFailedEvent("",
-                    "UTilities could not fetch your data usage"));
-        }
-        FetchPercentTask percentTask =
-                new FetchPercentTask(TASK_TAG + FetchPercentTask.class.getSimpleName());
-        if (percentLoadStatus == LoadStatus.NOT_STARTED &&
-                mApp.getCachedTask(percentTask.getTag()) == null) {
-            percentLoadStatus = LoadStatus.LOADING;
-            percentTask.execute();
-        }
+        loadData(DataUsageActivity.getDataUrl(), false);
     }
 
     private void prepareToLoad() {
@@ -131,8 +120,51 @@ public class DataUsageActivity extends BaseActivity {
         }
     }
 
-    @Nullable
-    private String createDataUrl() {
+    @Subscribe
+    public void openWebView(OpenWebViewEvent ev) {
+        WebView wv = new WebView(this);
+        wv.getSettings().setJavaScriptEnabled(true);
+        wv.setWebViewClient(new DataUsageWebViewClient());
+        wv.addJavascriptInterface(this, "ututilities");
+        wv.loadData(ev.html, "text/html; charset=UTF-8", null);
+    }
+
+    class DataUsageWebViewClient extends WebViewClient {
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            String jsScript = "window.ututilities.setUsageData(data.bytes_in, data.bytes_total, data.timestamp)";
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                view.evaluateJavascript(jsScript, null);
+            } else {
+                // exec js
+                if (!url.contains("javascript:")) {
+                    view.loadUrl("javascript:" + jsScript);
+                }
+            }
+        }
+    }
+
+    @JavascriptInterface
+    public void setUsageData(long[] bytes_in, long[] bytes_total, long[] timestamps) {
+        ArrayList<Entry> downdata = new ArrayList<>(DATA_POINTS);
+        ArrayList<Entry> totaldata = new ArrayList<>(DATA_POINTS);
+        ArrayList<String> labels = new ArrayList<>(DATA_POINTS);
+
+        DateFormat outFormat = new SimpleDateFormat("E - hh:mm a", Locale.US);
+
+        // if there's more than a week of data, show just the last week, otherwise show it all
+        for (int i = Math.max(timestamps.length - DATA_POINTS, 0), x = 0; i < timestamps.length; i++, x++) {
+            labels.add(outFormat.format(new Date(timestamps[i])));
+            downdata.add(new Entry(bytes_in[i] / 1024 / 1024, x));
+            totaldata.add(new Entry(bytes_total[i] / 1024 / 1024, x));
+        }
+        new Handler(getMainLooper()).post(
+                () -> MyBus.getInstance().post(new DataLoadSucceededEvent(labels, downdata, totaldata)));
+    }
+
+    @NonNull
+    private static String getDataUrl() {
         return "https://management.pna.utexas.edu/restricted/cgi/bwdetails.cgi";
     }
 
@@ -140,6 +172,18 @@ public class DataUsageActivity extends BaseActivity {
     public void onStart() {
         super.onStart();
         MyBus.getInstance().register(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        CookieSyncManager.getInstance().startSync();
+    }
+
+    @Override
+    public void onPause() {
+        CookieSyncManager.getInstance().stopSync();
+        super.onPause();
     }
 
     @Override
@@ -171,7 +215,7 @@ public class DataUsageActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.data_sources:
-                DataSourceSelectionFragment.newInstance("test_data/datausage", createDataUrl())
+                DataSourceSelectionFragment.newInstance("test_html/datausage", getDataUrl())
                         .show(getSupportFragmentManager(),
                                 DataSourceSelectionFragment.class.getSimpleName());
                 break;
@@ -182,8 +226,6 @@ public class DataUsageActivity extends BaseActivity {
 
     @Subscribe
     public void onDataSourceSelected(DataSourceSelectionFragment.DataSourceSelectedEvent event) {
-        percentDataUsedView.setProgress(700);
-        dataUsedText.setText("70% of your data's been used");
         chart.clear();
         if (event.url != null) {
             loadData(event.url, true);
@@ -197,7 +239,8 @@ public class DataUsageActivity extends BaseActivity {
         LineDataSet totalLineDataSet = new LineDataSet(totalData, "Uploaded");
         totalLineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
         totalLineDataSet.setDrawCircles(false);
-        totalLineDataSet.setDrawCubic(true);
+        totalLineDataSet.setCubicIntensity(0.1f);
+        totalLineDataSet.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
         totalLineDataSet.setDrawFilled(true);
         totalLineDataSet.setDrawValues(false);
         totalLineDataSet.setColor(ContextCompat.getColor(this, R.color.data_usage_chart_upload));
@@ -207,7 +250,8 @@ public class DataUsageActivity extends BaseActivity {
         LineDataSet downLineDataSet = new LineDataSet(downData, "Downloaded");
         downLineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
         downLineDataSet.setDrawCircles(false);
-        downLineDataSet.setDrawCubic(true);
+        downLineDataSet.setCubicIntensity(0.1f);
+        downLineDataSet.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
         downLineDataSet.setDrawFilled(true);
         downLineDataSet.setDrawValues(false);
         downLineDataSet.setColor(ContextCompat.getColor(this, R.color.data_usage_chart_download));
@@ -219,6 +263,11 @@ public class DataUsageActivity extends BaseActivity {
         downAndUp.add(downLineDataSet);
 
         LineData dataUsageLineData = new LineData(labels, downAndUp);
+        chart.getAxisRight().setEnabled(true);
+        chart.getAxisRight().setDrawAxisLine(true);
+        chart.getAxisRight().setDrawGridLines(false);
+        chart.getAxisRight().setDrawLabels(false);
+        chart.getAxisLeft().setStartAtZero(true);
         chart.setData(dataUsageLineData);
         chart.setDescription("");
         chart.setScaleXEnabled(true);
@@ -226,8 +275,7 @@ public class DataUsageActivity extends BaseActivity {
         chart.setPinchZoom(true);
         chart.setDoubleTapToZoomEnabled(true);
         chart.getData().setHighlightEnabled(false);
-        chart.getAxisRight().setDrawLabels(false);
-        chart.getAxisLeft().setValueFormatter((value, yAxis) -> value + " MB");
+        chart.getAxisLeft().setValueFormatter((value, axis) -> value + " MB");
         // maximum viewable area is one day
         chart.setScaleMinima(downData.size() / 288f, 1f);
         // initially show the most recent 24 hours
@@ -236,18 +284,18 @@ public class DataUsageActivity extends BaseActivity {
         progressLayout.setVisibility(View.GONE);
     }
 
-    static class FetchPercentTask extends TaggedAsyncTask<Object, Void, Void> {
+    static class FetchDataTask extends TaggedAsyncTask<String, String, Void> {
         private String errorMsg;
         private double percentUsed;
         private String totalUsed;
 
-        public FetchPercentTask(String tag) {
+        public FetchDataTask(String tag) {
             super(tag);
         }
 
         @Override
-        protected Void doInBackground(Object... params) {
-            String reqUrl = "https://management.pna.utexas.edu/server/graph.cgi";
+        protected Void doInBackground(String... params) {
+            String reqUrl = params[0];
             Request request = new Request.Builder()
                     .url(reqUrl)
                     .build();
@@ -263,25 +311,29 @@ public class DataUsageActivity extends BaseActivity {
                 cancel(true);
                 return null;
             }
+            publishProgress(pagedata);
 
-            Pattern percentpattern = Pattern.compile("\\((.+?)%\\)");
-            Matcher percentmatcher = percentpattern.matcher(pagedata);
-            String found = "0.00";
-            if (percentmatcher.find()) {
-                found = percentmatcher.group(1);
-            }
-            percentUsed = Double.parseDouble(found);
-
-            Pattern usedpattern = Pattern.compile("<b>(.*?)</b>");
-            Matcher usedmatcher = usedpattern.matcher(pagedata);
-            if (usedmatcher.find()) {
-                totalUsed = usedmatcher.group(1);
+            String regex = "<td>Total / Remaining </td>\\s+<td class=\"qty\">([0-9]+) MB</td>\\s+<td class=\"qty.*?\">([0-9]+) MB</td>";
+            Pattern dataUsedPattern = Pattern.compile(regex, Pattern.MULTILINE);
+            Matcher dataUsedMatcher = dataUsedPattern.matcher(pagedata);
+            int total, remaining;
+            if (dataUsedMatcher.find()) {
+                total = Integer.parseInt(dataUsedMatcher.group(1));
+                remaining = Integer.parseInt(dataUsedMatcher.group(2));
+                totalUsed = Integer.toString(total - remaining);
+                percentUsed = (total - remaining) / (double) total;
+                return null;
             } else {
                 errorMsg = "UTilities could not find your % data usage";
                 cancel(true);
                 return null;
             }
-            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            MyBus.getInstance().post(new OpenWebViewEvent(values[0]));
         }
 
         @Override
@@ -294,13 +346,14 @@ public class DataUsageActivity extends BaseActivity {
         protected void onCancelled() {
             super.onCancelled();
             MyBus.getInstance().post(new PercentLoadFailedEvent(getTag(), errorMsg));
+//            MyBus.getInstance().post(new DataLoadFailedEvent(getTag(), errorMsg));
         }
     }
 
     @Subscribe
     public void percentLoadSucceeded(PercentLoadSucceededEvent event) {
         percentLoadStatus = LoadStatus.SUCCEEDED;
-        dataUsedText.setText(event.totalDataUsed);
+        dataUsedText.setText("You've used " + event.totalDataUsed + "MB of data this week");
         percentDataUsedView.setProgress((int) (event.percentDataUsed * 10));
     }
 
@@ -309,6 +362,14 @@ public class DataUsageActivity extends BaseActivity {
         percentLoadStatus = LoadStatus.FAILED;
         dataUsedText.setText(event.errorMessage);
         percentDataUsedView.setProgress(0);
+    }
+
+    static class OpenWebViewEvent {
+        public String html;
+
+        public OpenWebViewEvent(String html) {
+            this.html = html;
+        }
     }
 
     static class PercentLoadFailedEvent extends LoadFailedEvent {
@@ -324,76 +385,6 @@ public class DataUsageActivity extends BaseActivity {
         public PercentLoadSucceededEvent(double percentDataUsed, String totalDataUsed) {
             this.totalDataUsed = totalDataUsed;
             this.percentDataUsed = percentDataUsed;
-        }
-    }
-
-    static class FetchDataTask extends TaggedAsyncTask<String, Void, Character> {
-        private String errorMsg;
-        private ArrayList<String> labels = new ArrayList<>(DATA_POINTS);
-        private ArrayList<Entry> downdata = new ArrayList<>(DATA_POINTS);
-        private ArrayList<Entry> totaldata = new ArrayList<>(DATA_POINTS);
-
-        public FetchDataTask(String tag) {
-            super(tag);
-        }
-
-        @Override
-        protected Character doInBackground(String... params) {
-            OkHttpClient client = UTilitiesApplication.getInstance().getHttpClient();
-            String reqUrl = params[0];
-            Request request = new Request.Builder()
-                    .url(reqUrl)
-                    .build();
-            String pagedata;
-
-            try {
-                Response response = client.newCall(request).execute();
-                pagedata = response.body().string();
-            } catch (IOException e) {
-                errorMsg = "UTilities could not fetch your data usage";
-                e.printStackTrace();
-                cancel(true);
-                return null;
-            }
-
-            String[] lines = pagedata.split("\n");
-            if (!lines[0].equals("Date,MB In,MB Out,MB Total")) {
-                cancel(true);
-                errorMsg = "UTilities could not fetch your data usage";
-                return null;
-            }
-            Calendar date = Calendar.getInstance();
-
-            DateFormat inFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.US);
-            DateFormat outFormat = new SimpleDateFormat("E - hh:mm a", Locale.US);
-            // if there's more than a week of data, show just the last week, otherwise show it all
-            for (int i = Math.max(lines.length - DATA_POINTS, 0), x = 0; i < lines.length; i++, x++) {
-                String[] entry = lines[i].split(",");
-                date.clear();
-                try {
-                    labels.add(outFormat.format(inFormat.parse(entry[0])));
-                } catch (ParseException e) {
-                    errorMsg = "UTilities could not parse your data usage";
-                    e.printStackTrace();
-                    cancel(true);
-                    return null;
-                }
-                downdata.add(new Entry(Float.parseFloat(entry[1]), x));
-                totaldata.add(new Entry(Float.parseFloat(entry[3]), x));
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Character result) {
-            super.onPostExecute(result);
-            MyBus.getInstance().post(new DataLoadSucceededEvent(labels, downdata, totaldata));
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            MyBus.getInstance().post(new DataLoadFailedEvent(getTag(), errorMsg));
         }
     }
 

@@ -2,7 +2,6 @@
 package com.nasageek.utexasutilities.activities;
 
 import android.os.Bundle;
-import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 
@@ -29,6 +28,19 @@ public class LoginActivity extends BaseActivity {
             actionBar.setSubtitle("UTLogin");
         }
         setContentView(webView);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        CookieSyncManager.getInstance().startSync();
+    }
+
+    @Override
+    public void onPause() {
+        CookieSyncManager.getInstance().stopSync();
+        super.onPause();
+
     }
 
     @Override

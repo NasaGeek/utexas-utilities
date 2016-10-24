@@ -67,6 +67,12 @@ public class DataSourceSelectionFragment extends DialogFragment {
                                     .open(filePath + "/" + files[which - 1])));
                             new Thread(() -> {
                                 mockServer.enqueue(new MockResponse().setBody(htmlBuffer));
+                                // Anything else the client tries to load from us should just fail.
+                                // 20 chosen arbitrarily.
+                                MockResponse badResponse = new MockResponse().setResponseCode(404);
+                                for (int i = 0; i < 20; i++) {
+                                    mockServer.enqueue(badResponse);
+                                }
                                 try {
                                     mockServer.start();
                                 } catch (IOException e) {

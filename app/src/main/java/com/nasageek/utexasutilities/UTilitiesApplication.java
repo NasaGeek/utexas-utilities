@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.UserManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.webkit.CookieSyncManager;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -88,6 +89,7 @@ public class UTilitiesApplication extends Application {
         CookieManager cookieManager = new CookieManager();
         CookieHandler.setDefault(cookieManager);
         client.setCookieHandler(cookieManager);
+        CookieSyncManager.createInstance(this);
 
         initGoogleAnalytics();
         AnalyticsHandler.initTrackerIfNeeded(this);

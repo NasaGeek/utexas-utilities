@@ -2,8 +2,10 @@ package com.nasageek.utexasutilities;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.webkit.CookieSyncManager;
 
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
@@ -122,6 +124,12 @@ public class AuthCookie {
             e.printStackTrace();
         }
         cookieHasBeenSet = true;
+        android.webkit.CookieManager.getInstance().setCookie(domain, httpCookie.getName() + "=" + httpCookie.getValue());
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            android.webkit.CookieManager.getInstance().flush();
+        } else {
+            CookieSyncManager.getInstance().sync();
+        }
     }
 
     /**
