@@ -160,6 +160,7 @@ public class AuthCookie {
         if (!response.isSuccessful()) {
             throw new IOException("Bad response code: " + response + " during login.");
         }
+        response.body().close();
         CookieManager cm = (CookieManager) CookieHandler.getDefault();
         List<HttpCookie> cookies = cm.getCookieStore().getCookies();
         for (HttpCookie cookie : cookies) {
