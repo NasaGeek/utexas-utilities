@@ -688,26 +688,17 @@ public class UTilitiesActivity extends BaseActivity {
      * ensure they show the correct login status.
      */
     private void resetChecks() {
-        if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
-            scheduleCheck.setVisibility(View.GONE);
-            balanceCheck.setVisibility(View.GONE);
-            dataCheck.setVisibility(View.GONE);
-        } else {
-            if (!utdAuthCookie.hasCookieBeenSet()) {
-                scheduleCheck.setAlpha(CHECK_TRANSLUCENT_OPACITY);
-                balanceCheck.setAlpha(CHECK_TRANSLUCENT_OPACITY);
-            } else {
-                scheduleCheck.setAlpha(1f);
-                balanceCheck.setAlpha(1f);
+        boolean persistentLoginEnabled = settings.getBoolean(getString(R.string.pref_logintype_key), false);
+        for (ImageView featureButton : featureButtons) {
+            DashboardButtonData button = (DashboardButtonData) featureButton.getTag();
+            if (button.authCookie != null) {
+                button.checkOverlay.setVisibility(persistentLoginEnabled ? View.GONE : View.VISIBLE);
+                if (button.authCookie.hasCookieBeenSet()) {
+                    button.checkOverlay.setAlpha(1f);
+                } else {
+                    button.checkOverlay.setAlpha(CHECK_TRANSLUCENT_OPACITY);
+                }
             }
-            if (!pnaAuthCookie.hasCookieBeenSet()) {
-                dataCheck.setAlpha(CHECK_TRANSLUCENT_OPACITY);
-            } else {
-                dataCheck.setAlpha(1f);
-            }
-            scheduleCheck.setVisibility(View.VISIBLE);
-            balanceCheck.setVisibility(View.VISIBLE);
-            dataCheck.setVisibility(View.VISIBLE);
         }
     }
 
