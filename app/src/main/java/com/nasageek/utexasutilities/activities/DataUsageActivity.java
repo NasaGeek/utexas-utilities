@@ -125,7 +125,7 @@ public class DataUsageActivity extends BaseActivity {
         WebView wv = new WebView(this);
         wv.getSettings().setJavaScriptEnabled(true);
         wv.setWebViewClient(new DataUsageWebViewClient());
-        wv.addJavascriptInterface(this, "ututilities");
+        wv.addJavascriptInterface(new JsInterface(), "ututilities");
         wv.loadData(ev.html, "text/html; charset=UTF-8", null);
     }
 
@@ -145,22 +145,24 @@ public class DataUsageActivity extends BaseActivity {
         }
     }
 
-    @JavascriptInterface
-    public void setUsageData(long[] bytes_in, long[] bytes_total, long[] timestamps) {
-        ArrayList<Entry> downdata = new ArrayList<>(DATA_POINTS);
-        ArrayList<Entry> totaldata = new ArrayList<>(DATA_POINTS);
-        ArrayList<String> labels = new ArrayList<>(DATA_POINTS);
+    class JsInterface {
+        @JavascriptInterface
+        public void setUsageData(long[] bytes_in, long[] bytes_total, long[] timestamps) {
+            ArrayList<Entry> downdata = new ArrayList<>(DATA_POINTS);
+            ArrayList<Entry> totaldata = new ArrayList<>(DATA_POINTS);
+            ArrayList<String> labels = new ArrayList<>(DATA_POINTS);
 
-        DateFormat outFormat = new SimpleDateFormat("E - hh:mm a", Locale.US);
+            DateFormat outFormat = new SimpleDateFormat("E - hh:mm a", Locale.US);
 
-        // if there's more than a week of data, show just the last week, otherwise show it all
-        for (int i = Math.max(timestamps.length - DATA_POINTS, 0), x = 0; i < timestamps.length; i++, x++) {
-            labels.add(outFormat.format(new Date(timestamps[i])));
-            downdata.add(new Entry(bytes_in[i] / 1024 / 1024, x));
-            totaldata.add(new Entry(bytes_total[i] / 1024 / 1024, x));
+            // if there's more than a week of data, show just the last week, otherwise show it all
+            for (int i = Math.max(timestamps.length - DATA_POINTS, 0), x = 0; i < timestamps.length; i++, x++) {
+                labels.add(outFormat.format(new Date(timestamps[i])));
+                downdata.add(new Entry(bytes_in[i] / 1024 / 1024, x));
+                totaldata.add(new Entry(bytes_total[i] / 1024 / 1024, x));
+            }
+            new Handler(DataUsageActivity.this.getMainLooper()).post(
+                    () -> MyBus.getInstance().post(new DataLoadSucceededEvent(labels, downdata, totaldata)));
         }
-        new Handler(getMainLooper()).post(
-                () -> MyBus.getInstance().post(new DataLoadSucceededEvent(labels, downdata, totaldata)));
     }
 
     @NonNull
