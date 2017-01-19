@@ -26,9 +26,13 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookieStore;
 import java.security.GeneralSecurityException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.net.ssl.SSLContext;
 
 @ReportsCrashes(
 customReportContent = {
@@ -83,6 +87,19 @@ public class UTilitiesApplication extends Application {
             ACRA.getErrorReporter().handleException(gse, false);
         }
         upgradePasswordEncryption();
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            // UT's servers only support TLS 1.2 now. TLS 1.2 is supported but not enabled by
+            // default in Android 4.1 to 5.0. Here we enable it. Unfortunately, this means we have
+            // jto drop support for 4.0.
+            try {
+                SSLContext sc = SSLContext.getInstance("TLSv1.2");
+                sc.init(null, null, null);
+                client.setSslSocketFactory(new Tls12SocketFactory(sc.getSocketFactory()));
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                e.printStackTrace();
+            }
+        }
 
         authCookies.put(UTD_AUTH_COOKIE_KEY, new UtdAuthCookie(this));
 

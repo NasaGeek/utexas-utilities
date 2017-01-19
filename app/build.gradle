@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "com.nasageek.utexasutilities"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 46
         versionName "2.0.1"
