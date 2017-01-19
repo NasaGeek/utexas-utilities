@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <bool name="showCalendarFull">false</bool>
+    <bool name="showCalendarSpinners">true</bool>
     <bool name="debug">false</bool>
     <bool name="release">true</bool>
 </resources>

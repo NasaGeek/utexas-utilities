@@ -2,7 +2,7 @@
 <DatePicker xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:calendarViewShown="true"
-              android:spinnersShown="false"
-              android:datePickerMode="calendar">
+              android:calendarViewShown="@bool/showCalendarFull"
+              android:spinnersShown="@bool/showCalendarSpinners"
+              android:datePickerMode="@integer/datePickerMode">
 </DatePicker>

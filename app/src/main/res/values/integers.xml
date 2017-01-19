@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="balance_num_visible_pages">1</integer>
-    <integer name="menu_num_visible_pages">1</integer>   
+    <integer name="menu_num_visible_pages">1</integer>
+    <integer name="spinner">1</integer>
+    <integer name="calendar">2</integer>
+    <integer name="datePickerMode">@integer/spinner</integer>
 </resources>
