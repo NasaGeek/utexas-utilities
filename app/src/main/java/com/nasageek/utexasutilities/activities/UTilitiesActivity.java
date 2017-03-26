@@ -356,16 +356,16 @@ public class UTilitiesActivity extends BaseActivity {
                 return true;
             case R.id.login_button:
                 login();
-                invalidateOptionsMenu();
+                supportInvalidateOptionsMenu();
                 return true;
             case R.id.logout_button:
                 AnalyticsHandler.trackLogoutEvent();
                 logout();
-                invalidateOptionsMenu();
+                supportInvalidateOptionsMenu();
                 return true;
             case R.id.cancel_button:
                 cancelLogin();
-                invalidateOptionsMenu();
+                supportInvalidateOptionsMenu();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -526,7 +526,7 @@ public class UTilitiesActivity extends BaseActivity {
              is called.
               */
             cancel(false);
-            mActivity.invalidateOptionsMenu();
+            mActivity.supportInvalidateOptionsMenu();
             mActivity.setLoginProgressBarVisiblity(false);
         }
 
@@ -652,7 +652,7 @@ public class UTilitiesActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        invalidateOptionsMenu();
+        supportInvalidateOptionsMenu();
         if (!settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
             for (ImageView iv : featureButtons) {
                 enableFeature(iv);
