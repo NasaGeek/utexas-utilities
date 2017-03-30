@@ -62,7 +62,7 @@ public class UTilitiesActivity extends BaseActivity {
     private List<AsyncTask> loginTasks;
     private UpdateUiTask updateUiTask;
     private AuthCookie authCookie;
-    private boolean loggedIn;
+    private boolean loginFailed;
 
     private ImageView[] featureButtons;
     private View.OnClickListener enabledFeatureButtonListener;
@@ -88,9 +88,9 @@ public class UTilitiesActivity extends BaseActivity {
             }
         }
         if (savedInstanceState != null) {
-            loggedIn = savedInstanceState.getBoolean("loggedIn");
+            loginFailed = savedInstanceState.getBoolean("loginFailed");
         } else {
-            loggedIn = true;
+            loginFailed = false;
         }
 
         settings = PreferenceManager.getDefaultSharedPreferences(this.getBaseContext());
@@ -168,18 +168,18 @@ public class UTilitiesActivity extends BaseActivity {
         public AuthCookie authCookie;
         public ImageView checkOverlay;
         public ProgressBar loginProgress;
-        public boolean loggedIn;
+        public boolean enabled;
 
         // for authenticated services
         public DashboardButtonData(Intent intent, int id, AuthCookie authCookie,
                                    ImageView check, ProgressBar progress,
-                                   boolean loggedIn) {
+                                   boolean enabled) {
             this.intent = intent;
             this.imageButtonId = id;
             this.authCookie = authCookie;
             this.checkOverlay = check;
             this.loginProgress = progress;
-            this.loggedIn = loggedIn;
+            this.enabled = enabled;
         }
 
         // for unauthenticated services
@@ -212,11 +212,11 @@ public class UTilitiesActivity extends BaseActivity {
 
         DashboardButtonData buttonData[] = new DashboardButtonData[6];
         buttonData[0] = new DashboardButtonData(schedule, R.id.schedule_button, authCookie,
-                scheduleCheck, scheduleProgress, loggedIn);
+                scheduleCheck, scheduleProgress, !loginFailed);
         buttonData[1] = new DashboardButtonData(balance, R.id.balance_button, authCookie,
-                balanceCheck, balanceProgress, loggedIn);
+                balanceCheck, balanceProgress, !loginFailed);
         buttonData[2] = new DashboardButtonData(data, R.id.data_button, authCookie,
-                dataCheck, dataProgress, loggedIn);
+                dataCheck, dataProgress, !loginFailed);
         buttonData[3] = new DashboardButtonData(map, R.id.map_button);
         buttonData[4] = new DashboardButtonData(menu, R.id.menu_button);
 
@@ -227,7 +227,7 @@ public class UTilitiesActivity extends BaseActivity {
                     (TransitionDrawable) ib.getDrawable()));
             ib.setOnFocusChangeListener(new ImageButtonFocusListener());
             ib.setTag(buttonData[i]);
-            if (buttonData[i].loggedIn) {
+            if (buttonData[i].enabled) {
                 enableFeature(ib);
             } else {
                 disableFeature(ib);
@@ -316,7 +316,7 @@ public class UTilitiesActivity extends BaseActivity {
         // update the displayed login state
         if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
             if (!isLoggingIn()) {
-                if (loggedIn) {
+                if (authCookie.hasCookieBeenSet()) {
                     replaceLoginButton(menu, R.id.logout_button, "Log out");
                 } else {
                     replaceLoginButton(menu, R.id.login_button, "Log in");
@@ -325,7 +325,7 @@ public class UTilitiesActivity extends BaseActivity {
                 replaceLoginButton(menu, R.id.cancel_button, "Cancel");
             }
         } else {
-            if (loggedIn) {
+            if (authCookie.hasCookieBeenSet()) {
                 replaceLoginButton(menu, R.id.logout_button, "Log out");
             } else {
                 menu.removeGroup(R.id.login_menu_group);
@@ -593,7 +593,7 @@ public class UTilitiesActivity extends BaseActivity {
                 ((DashboardButtonData) ib.getTag()).loginProgress.setVisibility(View.GONE);
             }
         }
-        loggedIn = false;
+        loginFailed = false;
         resetChecks();
     }
 
@@ -624,7 +624,7 @@ public class UTilitiesActivity extends BaseActivity {
             return;
         }
         boolean successful = lfe.loginSuccessful() || !isLoginRequired();
-        loggedIn = successful;
+        loginFailed = !successful;
         for (ImageView iv : featureButtons) {
             DashboardButtonData buttonData = (DashboardButtonData) iv.getTag();
             if (buttonData.authCookie != null) {
@@ -633,7 +633,7 @@ public class UTilitiesActivity extends BaseActivity {
                 } else {
                     disableFeature(iv);
                 }
-                buttonData.loggedIn = successful;
+                buttonData.enabled = successful;
                 buttonData.loginProgress.setVisibility(View.GONE);
             }
         }
@@ -674,7 +674,7 @@ public class UTilitiesActivity extends BaseActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("loggedIn", loggedIn);
+        outState.putBoolean("loginFailed", loginFailed);
     }
 
     @Override
