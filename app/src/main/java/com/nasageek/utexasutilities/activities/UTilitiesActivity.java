@@ -545,6 +545,7 @@ public class UTilitiesActivity extends BaseActivity {
             // :( encryption broken in some way
             // Disable persistent login and let the user know something's up
             settings.edit().putBoolean(getString(R.string.pref_logintype_key), false).apply();
+            resetChecks();
             Toast.makeText(this, "Uh oh, password encryption is broken on your device! " +
                     "Persistent login has been temporarily disabled.", Toast.LENGTH_LONG).show();
             ACRA.getErrorReporter().handleException(new Exception("Password decryption failure"));
