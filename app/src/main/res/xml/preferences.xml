@@ -79,7 +79,7 @@
 
         <CheckBoxPreference
             android:defaultValue="@bool/release"
-            android:key="acra.enable"
+            android:key="sendcrashes"
             android:title="Auto-send crash reports" />
 
         <CheckBoxPreference

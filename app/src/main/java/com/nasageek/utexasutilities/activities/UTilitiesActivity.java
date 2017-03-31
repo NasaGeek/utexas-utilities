@@ -19,11 +19,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.AuthCookie;
@@ -34,8 +34,6 @@ import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.Utility;
 import com.squareup.otto.Subscribe;
-
-import org.acra.ACRA;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -244,10 +242,10 @@ public class UTilitiesActivity extends BaseActivity {
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
             if (hasFocus) {
-                ((TransitionDrawable) ((ImageButton) v).getDrawable())
+                ((TransitionDrawable) ((ImageView) v).getDrawable())
                         .startTransition(BUTTON_ANIMATION_DURATION);
             } else {
-                ((TransitionDrawable) ((ImageButton) v).getDrawable())
+                ((TransitionDrawable) ((ImageView) v).getDrawable())
                         .reverseTransition(BUTTON_ANIMATION_DURATION);
             }
 
@@ -548,7 +546,7 @@ public class UTilitiesActivity extends BaseActivity {
             resetChecks();
             Toast.makeText(this, "Uh oh, password encryption is broken on your device! " +
                     "Persistent login has been temporarily disabled.", Toast.LENGTH_LONG).show();
-            ACRA.getErrorReporter().handleException(new Exception("Password decryption failure"));
+            Crashlytics.logException(new Exception("Password decryption failure"));
         }
         if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
             if (!settings.contains("eid") || !sp.contains("password")

@@ -1,19 +1,19 @@
 
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'io.fabric'
 
 // Some constant information you could use in builds, accessible via BuildConfig.<field-name>
 //def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
 def buildTime = new Date().format("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"))
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.2'
 
     defaultConfig {
         applicationId "com.nasageek.utexasutilities"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 46
         versionName "2.0.1"
 
@@ -47,6 +47,7 @@ android {
         debug {
             // Can add package and versionName suffixes, makes it easier to differentiate if you have play store and debug builds installed
             minifyEnabled true
+            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.cfg'
             versionNameSuffix "-debug"
             applicationIdSuffix ".debug"
@@ -57,6 +58,7 @@ android {
             minifyEnabled true
             shrinkResources true
             zipAlignEnabled true
+            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.cfg'
             signingConfig signingConfigs.release
         }
@@ -64,49 +66,52 @@ android {
 }
 
 dependencies {
-    debugCompile 'com.squareup.okhttp:mockwebserver:2.7.5'
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
-    compile 'com.google.maps.android:android-maps-utils:0.4.4'
-    compile 'com.android.support:support-v4:25.1.0'
-    compile 'com.android.support:preference-v14:25.1.0'
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:design:25.1.0'
-    compile 'com.commonsware.cwac:pager:0.2.5'
-    compile 'com.google.android.gms:play-services-analytics:10.0.1'
-    compile 'com.google.android.gms:play-services-base:10.0.1'
-    compile 'com.google.android.gms:play-services-maps:10.0.1'
-    compile 'com.google.android.gms:play-services-location:10.0.1'
-    compile 'com.madgag.spongycastle:core:1.54.0.0'
-    compile 'com.madgag.spongycastle:prov:1.54.0.0'
-    compile 'com.madgag.spongycastle:pkix:1.54.0.0'
-    compile 'com.commonsware.cwac:security:0.8.0'
-    compile 'com.scottyab:secure-preferences-lib:0.1.4'
-    compile 'de.cketti.library.changelog:ckchangelog:1.2.2'
-    compile 'me.zhanghai.android.materialprogressbar:library:1.3.0'
-    compile 'com.github.PhilJay:MPAndroidChart:v2.2.5'
-    compile 'com.squareup.okhttp:okhttp:2.7.5'
-    compile 'com.squareup:otto:1.3.8'
-    compile('ch.acra:acra:4.9.2') {
-        exclude group: 'org.json'
+    debugImplementation 'com.squareup.okhttp:mockwebserver:2.7.5'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+    implementation 'com.google.maps.android:android-maps-utils:0.5'
+    implementation 'com.android.support:support-v4:27.0.2'
+    implementation 'com.android.support:preference-v14:27.0.2'
+    implementation 'com.android.support:appcompat-v7:27.0.2'
+    implementation 'com.android.support:design:27.0.2'
+    implementation 'com.commonsware.cwac:pager:0.2.6'
+    implementation 'com.google.android.gms:play-services-analytics:11.8.0'
+    implementation 'com.google.android.gms:play-services-base:11.8.0'
+    implementation 'com.google.android.gms:play-services-maps:11.8.0'
+    implementation 'com.google.android.gms:play-services-location:11.8.0'
+    implementation 'com.madgag.spongycastle:core:1.58.0.0'
+    implementation 'com.madgag.spongycastle:prov:1.58.0.0'
+    implementation 'com.madgag.spongycastle:pkix:1.54.0.0'
+    implementation 'com.commonsware.cwac:security:0.8.0'
+    implementation 'com.scottyab:secure-preferences-lib:0.1.4'
+    implementation 'de.cketti.library.changelog:ckchangelog:1.2.2'
+    implementation 'me.zhanghai.android.materialprogressbar:library:1.4.2'
+    implementation 'com.github.PhilJay:MPAndroidChart:v2.2.5'
+    implementation 'com.squareup.okhttp:okhttp:2.7.5'
+    implementation 'com.squareup:otto:1.3.8'
+    implementation files('src/main/libs/amazinglistview.jar')
+    implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+        transitive = true
     }
-    compile files('src/main/libs/amazinglistview.jar')
+    implementation 'com.google.firebase:firebase-core:11.8.0'
 }
 
 repositories {
     maven { url 'http://dl.bintray.com/populov/maven' }
     maven { url 'https://s3.amazonaws.com/repo.commonsware.com' }
     maven { url "https://jitpack.io" }
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.google.gms:google-services:3.0.0'
-        classpath 'me.tatarka:gradle-retrolambda:3.4.0'
+        classpath 'com.google.gms:google-services:3.1.1'
+        classpath 'io.fabric.tools:gradle:1.24.4'
     }
 }
 
