@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nasageek.utexasutilities.PasswordEditTextPreferenceDialogFragmentCompat;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.UTilitiesApplication;
@@ -49,6 +50,7 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
         Bundle args = getArguments();
         preferenceScreenKey = args.getString("preferenceScreenKey");
         super.onCreate(savedInstanceState);
+        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
 
         switch (preferenceScreenKey) {
             case "root":
@@ -77,7 +79,8 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
 
                 logincheckbox.setOnPreferenceClickListener(preference -> {
                     UTilitiesApplication mApp = (UTilitiesApplication) getActivity().getApplication();
-                    if (((CheckBoxPreference) preference).isChecked()) {
+                    boolean checked = ((CheckBoxPreference) preference).isChecked();
+                    if (checked) {
                         new AutoLoginWarningDialog().show(getChildFragmentManager(),
                                 AutoLoginWarningDialog.class.getSimpleName());
                     } else {
@@ -90,6 +93,7 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
                     }
                     // whenever they switch between temp and persistent, log them out
                     mApp.logoutAll();
+                    firebaseAnalytics.setUserProperty("persistent_login", Boolean.toString(checked));
                     return true;
                 });
 
@@ -99,6 +103,7 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
                         (CheckBoxPreference) findPreference(getString(R.string.pref_analytics_key));
                 analytics.setOnPreferenceChangeListener((preference, newValue) -> {
                     GoogleAnalytics.getInstance(getActivity()).setAppOptOut(!((Boolean) newValue));
+                    firebaseAnalytics.setAnalyticsCollectionEnabled((Boolean) newValue);
                     return true;
                 });
 

@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nasageek.utexasutilities.fragments.UTilitiesPreferenceFragment;
 import com.securepreferences.SecurePreferences;
 import com.squareup.leakcanary.LeakCanary;
@@ -43,6 +44,7 @@ public class UTilitiesApplication extends Application {
     private OkHttpClient client = new OkHttpClient();
     private Map<String, AsyncTask> asyncTaskCache = new HashMap<>();
     private SharedPreferences securePreferences;
+    private SharedPreferences sharedPreferences;
 
     static {
         Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
@@ -51,12 +53,12 @@ public class UTilitiesApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        boolean sendCrashes = PreferenceManager.getDefaultSharedPreferences(this)
-                .getBoolean("sendcrashes", false);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean sendCrashes = sharedPreferences.getBoolean("sendcrashes", false);
         Crashlytics crashlytics = new Crashlytics.Builder()
                 .core(new CrashlyticsCore.Builder().disabled(!sendCrashes).build())
                 .build();
-        Fabric.with(this, crashlytics, new Crashlytics());
+        Fabric.with(this, crashlytics);
         sInstance = this;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             try {
@@ -101,6 +103,7 @@ public class UTilitiesApplication extends Application {
         CookieSyncManager.createInstance(this);
 
         initGoogleAnalytics();
+        initFirebaseAnalytics();
         AnalyticsHandler.initTrackerIfNeeded(this);
     }
 
@@ -128,8 +131,14 @@ public class UTilitiesApplication extends Application {
         analytics.setLocalDispatchPeriod(300);
         analytics.enableAutoActivityReports(this);
         // note the negation
-        analytics.setAppOptOut(!PreferenceManager.getDefaultSharedPreferences(this)
-                .getBoolean(getString(R.string.pref_analytics_key), false));
+        analytics.setAppOptOut(
+                !sharedPreferences.getBoolean(getString(R.string.pref_analytics_key), false));
+    }
+
+    private void initFirebaseAnalytics() {
+        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        firebaseAnalytics.setAnalyticsCollectionEnabled(
+                sharedPreferences.getBoolean(getString(R.string.pref_analytics_key), false));
     }
 
     public AuthCookie getAuthCookie(String key) {
