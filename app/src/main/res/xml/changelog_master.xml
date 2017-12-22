@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="2.0.2" versioncode="47">
+        <change>Fix Bandwidth login</change>
+        <change>Update dining location hours</change>
+    </release>
     <release version="2.0.1" versioncode="46">
         <change>Fix some bugs</change>
         <change>Remove garage support, no longer supported by PTS</change>
