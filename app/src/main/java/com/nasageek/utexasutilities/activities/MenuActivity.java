@@ -48,10 +48,10 @@ public class MenuActivity extends BaseActivity implements ActionBar.OnNavigation
                 }, {
                     "9am - 8pm"
                 }
-            }, true), 
+            }),
         JesterCityMarket("05", "Jester City Market", new String[][] {
                 {
-                    "2pm - 11pm"
+                    "2pm - 12am"
                 }, {
                     "7am - 12am"
                 }, {
@@ -67,45 +67,45 @@ public class MenuActivity extends BaseActivity implements ActionBar.OnNavigation
                 }, {
                     "2pm - 8pm"
                 }
-            }, true), 
+            }),
         J2("12", "Jester 2nd Floor Dining", new String[][] {
                 {
-                        "", "", ""
+                        ""
                 }, {
-                        "", "11am - 2pm", "5pm - 8pm"
+                        "10:30am - 8pm"
                 }, {
-                        "", "11am - 2pm", "5pm - 8pm"
+                        "10:30am - 8pm"
                 }, {
-                        "", "11am - 2pm", "5pm - 8pm"
+                        "10:30am - 8pm"
                 }, {
-                        "", "11am - 2pm", "5pm - 8pm"
+                        "10:30am - 8pm"
                 }, {
-                        "", "11am - 2pm", "5pm - 8pm"
+                        "10:30am - 8pm"
                 }, {
-                        "", "11am - 2pm", "5pm - 8pm"
+                        "10:30am - 8pm"
                 }, {
-                        "", "", ""
+                        ""
                 }
-            }, false), 
+            }),
         Kinsolving("03", "Kinsolving Dining Hall", new String[][] {
                 {
-                        "", "11am - 2pm", ""
+                        "11am - 2pm"
                 }, {
-                        "7am - 9:30am", "10:30am - 2pm", "4:30pm - 7pm"
+                        "10:30am - 8pm"
                 }, {
-                        "7am - 9:30am", "10:30am - 2pm", "4:30pm - 7pm"
+                        "10:30am - 8pm"
                 }, {
-                        "7am - 9:30am", "10:30am - 2pm", "4:30pm - 7pm"
+                        "10:30am - 8pm"
                 }, {
-                        "7am - 9:30am", "10:30am - 2pm", "4:30pm - 7pm"
+                        "10:30am - 8pm"
                 }, {
-                        "7am - 9:30am", "10:30am - 2pm", "4:30pm - 7pm"
+                        "10:30am - 8pm"
                 }, {
-                        "7am - 9:30am", "10:30am - 2pm", "4:30pm - 7pm"
+                        "10:30am - 8pm"
                 }, {
                         "", "11am - 2pm", "4:30pm - 7pm"
                 }
-            }, false), 
+            }),
         KinsMarket("14", "Kin's Market", new String[][] {
                 {
                     "4pm - 11pm"
@@ -124,7 +124,7 @@ public class MenuActivity extends BaseActivity implements ActionBar.OnNavigation
                 }, {
                     "3pm - 7pm"
                 }
-            }, true), 
+            }),
         CypressBend("08", "Cypress Bend", new String[][] {
                 {
                     "12pm - 7pm"
@@ -143,7 +143,7 @@ public class MenuActivity extends BaseActivity implements ActionBar.OnNavigation
                 }, {
                     "12pm - 7pm"
                 }
-            }, true), 
+            }),
         Littlefield("19", "Littlefield Patio Cafe", new String[][] {
                 {
                     "2pm - 8pm"
@@ -162,7 +162,7 @@ public class MenuActivity extends BaseActivity implements ActionBar.OnNavigation
                 }, {
                     ""
                 }
-            }, true), 
+            }),
         JestAPizza("26", "Jest A' Pizza", new String[][] {
                 {
                     "5pm - 12am"
@@ -181,24 +181,22 @@ public class MenuActivity extends BaseActivity implements ActionBar.OnNavigation
                 }, {
                     ""
                 }
-            }, true);
+            });
         //@formatter:on
 
         private String code;
         private String fullName;
         private String[][] times;
-        private boolean allDay;
 
         Restaurant(String c, String fullName) {
             code = c;
             this.fullName = fullName;
         }
 
-        Restaurant(String c, String fullName, String[][] times, boolean allDay) {
+        Restaurant(String c, String fullName, String[][] times) {
             code = c;
             this.fullName = fullName;
             this.times = times;
-            this.allDay = allDay;
         }
 
         public String getCode() {
@@ -278,7 +276,7 @@ public class MenuActivity extends BaseActivity implements ActionBar.OnNavigation
         String restId = r.getCode();
         if (!"0".equals(restId)) {
             String[] times = r.getTimes();
-            if (!r.allDay) {
+            if (times.length == 3) {
                 ((TextView) findViewById(R.id.breakfast_times)).setText(times[0]);
                 ((TextView) findViewById(R.id.lunch_times)).setText(times[1]);
                 ((TextView) findViewById(R.id.dinner_times)).setText(times[2]);
