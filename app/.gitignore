@@ -4,3 +4,8 @@
 
 # private test data
 /src/debug/assets/test_html/*/*_private.html
+
+# other private data (API keys and the such)
+/fabric.properties
+google-services.json
+private.xml
