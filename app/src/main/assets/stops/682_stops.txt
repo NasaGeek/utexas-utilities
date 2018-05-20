@@ -1,4 +1,14 @@
+30.285324,-97.733028	23rd & Trinity NW Corner	5174
 30.285363,-97.733504	400 23rd & San Jacinto	3750
+30.288774,-97.734397	2525 San Jacinto & Dean Keeton	1256
+30.285198,-97.722902	Dean Keeton & Dancy	1577
+30.283899,-97.722232	Lafayette & Manor	2019
+30.282688,-97.72603	Comal & Manor	4182
+30.280778,-97.72562	Comal & 21st	4184
+30.280669,-97.726902	Disch-Falk & Comal	4185
+30.279194,-97.727257	Disch-Falk Field	3529
+30.2794,-97.731053	1915 Red River & Martin Luther King	4021
+30.283458,-97.72875	800 Clyde Littlefield & Red River	4989
 30.28336,-97.73417	2100 San Jacinto & 21st	1180
 30.280526,-97.737326	ML King & Congress (Blanton Museum)	5992
 30.283593,-97.739574	University & 21st	6159
