@@ -11,6 +11,7 @@
 # generated files
 bin/
 gen/
+build/
 
 # other
 future_feature_list.txt
