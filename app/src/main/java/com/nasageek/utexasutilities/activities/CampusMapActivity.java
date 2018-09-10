@@ -84,10 +84,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -892,7 +895,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         public static final String ERROR_COULD_NOT_REACH_CAPMETRO =
                 "CapMetro.org could not be reached;\ntry checking your internet connection";
         public static final String CAPMETRO_STOP_URL =
-                "http://www.capmetro.org/planner/s_nextbus2.asp?opt=2&route=%s&stopid=%d";
+                "http://capmetro.hafas.cloud/bin/mgate.exe";
 
         Marker stopMarker;
         TextView snippet;
@@ -904,17 +907,45 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
         @Override
         protected String doInBackground(Object... params) {
-            int stopid = (Integer) params[0];
+            String stopid = Integer.toString((Integer) params[0]);
             stopMarker = (Marker) params[1];
             String times = "";
             OkHttpClient httpclient = UTilitiesApplication.getInstance(CampusMapActivity.this)
                     .getHttpClient();
-            JSONObject data;
-            String reqUrl = String.format(CAPMETRO_STOP_URL, routeid, stopid);
+            JSONObject post_data, data;
+            try {
+                post_data = new JSONObject(String.format("{" +
+                        "    'client': {}," +
+                        "    'formatted': false," +
+                        "    'lang': 'eng'," +
+                        "    'svcReqL': [" +
+                        "        {" +
+                        "            'id': '1|1'," +
+                        "            'meth': 'StationBoard'," +
+                        "            'req': {" +
+                        "                'jnyFltrL': [{" +
+                        "                    'mode': 'INC'," +
+                        "                    'type': 'PROD'," +
+                        "                    'value': 32" +
+                        "                }]," +
+                        "                'getPasslist': false," +
+                        "                'maxJny': 20," +
+                        "                'stbLoc': {'extId': '%s'}" +
+                        "            }" +
+                        "        }" +
+                        "    ]," +
+                        "    'ver': '1.13'" +
+                        "}", stopid));
+            } catch (JSONException e) {
+                failed = true;
+                throw new RuntimeException(e);
+            }
 
             try {
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), post_data.toString());
                 Request get = new Request.Builder()
-                        .url(reqUrl)
+                        .url(CAPMETRO_STOP_URL)
+                        .post(body)
                         .build();
                 Response response = httpclient.newCall(get).execute();
                 if (!response.isSuccessful()) {
@@ -928,28 +959,52 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
             }
 
             try {
-                if (!data.getString("status").equals("OK")) {
+                JSONObject svcRes = data.getJSONArray("svcResL").getJSONObject(0);
+                if (!svcRes.getString("err").equals("OK")) {
                     failed = true;
                     return ERROR_NO_STOP_TIMES;
                 } else {
-                    JSONArray buses = data.getJSONArray("list");
-                    if (buses.length() == 0) {
+                    JSONArray products = svcRes.getJSONObject("res").getJSONObject("common").getJSONArray("prodL");
+                    JSONArray journies = svcRes.getJSONObject("res").optJSONArray("jnyL");
+                    int foundTimes = 0;
+                    for (int i = 0; i < (journies == null ? 0 : journies.length()); i++) {
+                        JSONObject journey = journies.getJSONObject(i);
+                        int productIdx = journey.getInt("prodX");
+                        JSONObject product = products.getJSONObject(productIdx);
+                        String journeyRoute = product.optString("number").equals(routeid)
+                                ? product.getString("number")
+                                : product.optString("nameS");
+                        if (!journeyRoute.equals(routeid)) {
+                            continue;
+                        }
+                        if (foundTimes++ >= 4) {
+                            break;
+                        }
+                        String arriveTime = journey.getJSONObject("stbStop").getString("dTimeS");
+                        // arriveTime sometimes contains 2 extra (seemingly unnecessary) leading 0s
+                        if (arriveTime.length() == 8) {
+                            arriveTime = arriveTime.substring(2);
+                        }
+                        SimpleDateFormat parser = new SimpleDateFormat("kkmmss");
+                        SimpleDateFormat formatter = new SimpleDateFormat("h:mm aa");
+                        try {
+                            Date date = parser.parse(arriveTime);
+                            times += formatter.format(date).toLowerCase() + '\n';
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    if (foundTimes == 0) {
                         failed = true;
                         return ERROR_NO_STOP_TIMES;
                     }
-                    for (int i = 0; i < buses.length(); i++) {
-                        JSONObject bus = buses.getJSONObject(i);
-                        times += bus.getString("est") + "\n";
-                    }
                     // trim off that trailing \n
                     times = times.trim();
-
                 }
             } catch (JSONException je) {
                 failed = true;
                 return ERROR_COULD_NOT_REACH_CAPMETRO;
             }
-
             return times;
         }
 
