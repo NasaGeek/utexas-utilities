@@ -15,7 +15,7 @@ public class BuildingProvider extends ContentProvider {
     private BuildingDatabase bdb;
 
     public static final Uri CONTENT_URI = Uri
-            .parse("content://com.nasageek.utexasutilities.buildingprovider");
+            .parse("content://" + BuildConfig.APPLICATION_ID + ".buildingprovider");
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {

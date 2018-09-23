@@ -51,6 +51,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.cfg'
             versionNameSuffix "-debug"
             applicationIdSuffix ".debug"
+            resValue 'string', 'application_id', android.defaultConfig.applicationId + applicationIdSuffix
+            resValue 'string', 'provider_authority', android.defaultConfig.applicationId + applicationIdSuffix + '.buildingprovider'
         }
         // Release build task. Uses the release signing config above for signing it
         // To run from command line, use './gradlew.bat assembleRelease' from project root
@@ -61,6 +63,8 @@ android {
             useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.cfg'
             signingConfig signingConfigs.release
+            resValue 'string', 'application_id', android.defaultConfig.applicationId
+            resValue 'string', 'provider_authority', android.defaultConfig.applicationId + '.buildingprovider'
         }
     }
 }
