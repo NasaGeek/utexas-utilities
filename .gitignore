@@ -77,3 +77,7 @@ proguard/
 /incoming-distributions
 .idea
 *.sublime-*
+
+# Python
+*.pyc
+__pycache__/

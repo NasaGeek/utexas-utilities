@@ -29,13 +29,11 @@ public class BuildingProvider extends ContentProvider {
 
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        bdb.addBuilding(values);
         return null;
     }
 
     @Override
     public boolean onCreate() {
-
         // V1 Initial building list
         // V2 Added all garages, Belo, a few dorms I missed. Should be the
         // entire official building list now
@@ -43,29 +41,32 @@ public class BuildingProvider extends ContentProvider {
         // V4 POB, GDC - POB is ACES but renamed, leave them both in there
         // V5 Add INT, ESS, CTR, CS3, CS4, CRB, CCF; remove ESB, RAS, RRN;
         //      rename GIA to GIAC
+        // V6 Re-scrape UT buildings off of maps.utexas.edu (see scripts/ dir for more info)
+        //      building location info is also stored in database now instead of kml
 
         if (PreferenceManager.getDefaultSharedPreferences(this.getContext()).getInt(
-                "buildingdbversion", 1) < 5) {
-            if (this.getContext().deleteDatabase("buildings")) {
-               PreferenceManager.getDefaultSharedPreferences(this.getContext())
-                        .edit().putInt("buildingdbversion", 5).apply();
-            }
+                "buildingdbversion", 1) < 6) {
+            this.getContext().deleteDatabase(BuildingDatabase.DB_NAME);
         }
         bdb = new BuildingDatabase(this.getContext());
         try {
-            bdb.createDataBase(false);
+            bdb.createDataBase();
         } catch (IOException e) {
-
             e.printStackTrace();
         }
-        bdb.openDataBase();
+        bdb.close();
+        bdb.openDatabase();
         return true;
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
-        return bdb.query("buildings", projection, selectionArgs[0], null, null, null, sortOrder);
+        String mySelection = null;
+        if (selectionArgs != null) {
+            mySelection = selectionArgs[0];
+        }
+        return bdb.query(BuildingDatabase.TABLE_NAME, projection, mySelection, null, null, null, sortOrder);
 
     }
 

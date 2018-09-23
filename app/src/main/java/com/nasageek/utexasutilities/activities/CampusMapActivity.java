@@ -10,6 +10,7 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Location;
@@ -64,7 +65,7 @@ import com.google.maps.android.MarkerManager;
 import com.nasageek.utexasutilities.AnalyticsHandler;
 import com.nasageek.utexasutilities.AsyncTask;
 import com.nasageek.utexasutilities.BuildConfig;
-import com.nasageek.utexasutilities.BuildingSaxHandler;
+import com.nasageek.utexasutilities.BuildingProvider;
 import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.ThemedArrayAdapter;
 import com.nasageek.utexasutilities.UTilitiesApplication;
@@ -76,9 +77,6 @@ import com.squareup.okhttp.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -87,6 +85,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -94,10 +93,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 public class CampusMapActivity extends BaseActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -122,7 +117,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     private String routeid = null;
     private int routeIndex;
     private static final String STATE_ROUTE_INDEX = "route_index";
-    private Deque<Placemark> buildingDataSet;
+    private Collection<Placemark> buildingDataSet;
 
     private SharedPreferences settings;
 
@@ -212,7 +207,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         polylineMap = new HashMap<>();
 
         setupActionBar();
-        buildingDataSet = parseBuildings();
+        buildingDataSet = getBuildingData();
         ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                 .getMapAsync(this);
     }
@@ -394,24 +389,23 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     }
 
     /**
-     * Parses building kml data into a Deque
+     * Get data about all buildings on campus
      *
-     * @return empty ArrayDeque if parse fails
+     * @return Collection of Placemarks
      */
-    private Deque<Placemark> parseBuildings() {
-        try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parser = factory.newSAXParser();
-            XMLReader xmlreader = parser.getXMLReader();
-            BuildingSaxHandler builSaxHandler = new BuildingSaxHandler();
-            xmlreader.setContentHandler(builSaxHandler);
-            InputSource is = new InputSource(assets.open("buildings.kml"));
-            xmlreader.parse(is);
-            return builSaxHandler.getParsedData();
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            e.printStackTrace();
+    private Collection<Placemark> getBuildingData() {
+        String[] projection = {"abbr", "name", "lng", "lat"};
+        Cursor cursor = getContentResolver().query(
+                BuildingProvider.CONTENT_URI, projection, null, null, null);
+        ArrayDeque<Placemark> buildings = new ArrayDeque<>(cursor.getCount());
+        while (cursor.moveToNext()) {
+            buildings.add(new Placemark(cursor.getString(cursor.getColumnIndex("abbr")),
+                                        cursor.getString(cursor.getColumnIndex("name")),
+                                        cursor.getDouble(cursor.getColumnIndex("lat")),
+                                        cursor.getDouble(cursor.getColumnIndex("lng"))));
         }
-        return new ArrayDeque<>();
+        cursor.close();
+        return buildings;
     }
 
     @Override
