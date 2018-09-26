@@ -2,63 +2,43 @@ package com.nasageek.utexasutilities;
 
 import android.content.Context;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-import com.nasageek.utexasutilities.activities.CampusMapActivity;
-import com.nasageek.utexasutilities.activities.UTilitiesActivity;
-import com.nasageek.utexasutilities.fragments.CourseScheduleFragment;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
  * Created by chris on 1/23/15.
  */
 public class AnalyticsHandler {
 
-    private static Tracker analyticsTracker;
+    private static FirebaseAnalytics analyticsTracker;
 
     private AnalyticsHandler() {
         // do nothing
     }
 
-    public static void initTrackerIfNeeded(Context con) {
+    public static void initTrackerIfNeeded(Context con, boolean enabled) {
         if (analyticsTracker == null) {
-            analyticsTracker = GoogleAnalytics.getInstance(con)
-                    .newTracker(R.xml.analytics_tracker_config);
+            analyticsTracker = FirebaseAnalytics.getInstance(con);
+            analyticsTracker.setAnalyticsCollectionEnabled(enabled);
         }
     }
 
     public static void trackLogoutEvent() {
-        analyticsTracker.send(new HitBuilders.EventBuilder()
-                .setCategory(UTilitiesActivity.class.getSimpleName())
-                .setAction("Logout")
-                .build());
+        analyticsTracker.logEvent("logout", null);
     }
 
     public static void trackCalendarExportEvent() {
-        analyticsTracker.send(new HitBuilders.EventBuilder()
-                .setCategory(CourseScheduleFragment.class.getSimpleName())
-                .setAction("Export Calendar")
-                .build());
+        analyticsTracker.logEvent("export_calendar", null);
     }
 
     public static void trackMapAllClassesEvent() {
-        analyticsTracker.send(new HitBuilders.EventBuilder()
-                .setCategory(CourseScheduleFragment.class.getSimpleName())
-                .setAction("Map All Classes")
-                .build());
+        analyticsTracker.logEvent("map_all_classes", null);
     }
 
     public static void trackGetDirectionsEvent() {
-        analyticsTracker.send(new HitBuilders.EventBuilder()
-                .setCategory(CampusMapActivity.class.getSimpleName())
-                .setAction("Get Directions")
-                .build());
+        analyticsTracker.logEvent("get_directions", null);
     }
 
     public static void trackBusRouteEvent() {
-        analyticsTracker.send(new HitBuilders.EventBuilder()
-                .setCategory(CampusMapActivity.class.getSimpleName())
-                .setAction("View Bus Route")
-                .build());
+        analyticsTracker.logEvent("view_bus_route", null);
     }
 }

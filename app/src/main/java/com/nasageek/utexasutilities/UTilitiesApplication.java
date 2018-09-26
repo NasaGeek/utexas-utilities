@@ -13,8 +13,6 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nasageek.utexasutilities.fragments.UTilitiesPreferenceFragment;
 import com.securepreferences.SecurePreferences;
 import com.squareup.leakcanary.LeakCanary;
@@ -102,9 +100,8 @@ public class UTilitiesApplication extends Application {
         client.setCookieHandler(cookieManager);
         CookieSyncManager.createInstance(this);
 
-        initGoogleAnalytics();
-        initFirebaseAnalytics();
-        AnalyticsHandler.initTrackerIfNeeded(this);
+        AnalyticsHandler.initTrackerIfNeeded(this,
+                sharedPreferences.getBoolean(getString(R.string.pref_analytics_key), false));
     }
 
     private void upgradePasswordEncryption() {
@@ -123,22 +120,6 @@ public class UTilitiesApplication extends Application {
                 lsp.clear();
             }
         }
-    }
-
-    public void initGoogleAnalytics() {
-        GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-        analytics.setDryRun(false);
-        analytics.setLocalDispatchPeriod(300);
-        analytics.enableAutoActivityReports(this);
-        // note the negation
-        analytics.setAppOptOut(
-                !sharedPreferences.getBoolean(getString(R.string.pref_analytics_key), false));
-    }
-
-    private void initFirebaseAnalytics() {
-        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        firebaseAnalytics.setAnalyticsCollectionEnabled(
-                sharedPreferences.getBoolean(getString(R.string.pref_analytics_key), false));
     }
 
     public AuthCookie getAuthCookie(String key) {

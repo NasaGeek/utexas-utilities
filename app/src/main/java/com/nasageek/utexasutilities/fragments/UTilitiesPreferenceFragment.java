@@ -12,7 +12,6 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nasageek.utexasutilities.PasswordEditTextPreferenceDialogFragmentCompat;
 import com.nasageek.utexasutilities.R;
@@ -102,7 +101,6 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
                 final CheckBoxPreference analytics =
                         (CheckBoxPreference) findPreference(getString(R.string.pref_analytics_key));
                 analytics.setOnPreferenceChangeListener((preference, newValue) -> {
-                    GoogleAnalytics.getInstance(getActivity()).setAppOptOut(!((Boolean) newValue));
                     firebaseAnalytics.setAnalyticsCollectionEnabled((Boolean) newValue);
                     return true;
                 });
