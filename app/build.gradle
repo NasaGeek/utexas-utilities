@@ -19,6 +19,7 @@ android {
         // The git sha of the current head and build time
         //buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
         buildConfigField "String", "BUILD_TIME", "\"${buildTime}\""
+        vectorDrawables.useSupportLibrary = true
     }
 
     compileOptions {
