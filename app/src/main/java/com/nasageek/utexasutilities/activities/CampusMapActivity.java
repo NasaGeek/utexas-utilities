@@ -70,8 +70,10 @@ import com.nasageek.utexasutilities.R;
 import com.nasageek.utexasutilities.ThemedArrayAdapter;
 import com.nasageek.utexasutilities.UTilitiesApplication;
 import com.nasageek.utexasutilities.model.Placemark;
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
@@ -133,6 +135,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
 
     private MarkerManager.Collection shownBuildings;
     private MarkerManager.Collection shownStops;
+    private static final String STOP_TIME_PLACEHOLDER = "Loading...";
     private Map<String, Polyline> polylineMap;
     private GoogleMap mMap;
 
@@ -655,19 +658,31 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
                 Double lat = Double.parseDouble(data[0].split(",")[0].trim());
                 Double lng = Double.parseDouble(data[0].split(",")[1].trim());
                 String title = data[1];
-                String description = data[2].trim();
+                int stopid = Integer.parseInt(data[2].trim());
 
-                shownStops.addMarker(new MarkerOptions()
+                Marker marker = shownStops.addMarker(new MarkerOptions()
                         .position(new LatLng(lat, lng))
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_bus))
                         .title(title)
-                        .snippet(description));
+                        .snippet(STOP_TIME_PLACEHOLDER));
+                marker.setTag(new BusStop(stopid));
             }
 
         } catch (IOException e) {
             e.printStackTrace();
             Log.d("DirectionMap",
                     "Exception loading some file related to the kml or the stops files.");
+        }
+    }
+
+    class BusStop {
+        public int stopid;
+        public String times = "";
+        public CheckStopTask fetchTimesTask;
+        public boolean refreshing = false;
+
+        public BusStop(int stopid) {
+            this.stopid = stopid;
         }
     }
 
@@ -836,7 +851,7 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
         public View getInfoContents(Marker marker) {
             String title = marker.getTitle();
             String snippet = marker.getSnippet();
-            if (infoTitle.getText().equals("") || !(infoTitle.getText() + "").contains(title)) {
+            if (!infoTitle.getText().equals(title)) {
                 // Span for bolding the title
                 SpannableString styledTitle = new SpannableString(title);
                 styledTitle.setSpan(new StyleSpan(Typeface.BOLD), 0, title.length(), 0);
@@ -854,88 +869,102 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
     class StopInfoWindowAdapter extends MyInfoWindowAdapter {
         @Override
         public View getInfoContents(Marker marker) {
-            if (marker.getSnippet().equals("Loading...")) {
-                // we've already shown the InfoWindow and set the snippet to "Loading..."
-                // this must just be a refresh of the InfoWindow
-                return infoLayout;
+            BusStop stopInfo = (BusStop) marker.getTag();
+            if (stopInfo.refreshing ||
+                    (stopInfo.fetchTimesTask != null &&
+                            stopInfo.fetchTimesTask.getStatus() == AsyncTask.Status.FINISHED &&
+                            !stopInfo.fetchTimesTask.failed)) {
+                View view = super.getInfoContents(marker);
+                infoSnippet.setText(stopInfo.times);
+                return view;
+            } else if (stopInfo.fetchTimesTask == null || stopInfo.fetchTimesTask.failed) {
+                int stopid = stopInfo.stopid;
+                stopInfo.fetchTimesTask = new CheckStopTask(infoSnippet);
+                stopInfo.fetchTimesTask.execute(stopid, marker);
             }
-            int stopid = Integer.parseInt(marker.getSnippet());
-            marker.setSnippet("Loading...");
-            View infoWindow = super.getInfoContents(marker);
-            new checkStopTask().execute(stopid, marker);
-            return infoWindow;
+            return super.getInfoContents(marker);
+        }
+    }
+
+    private class CheckStopTask extends AsyncTask<Object, Void, String> {
+        public static final String ERROR_NO_STOP_TIMES =
+                "There are no upcoming times\nfor this stop on capmetro.org";
+        public static final String ERROR_COULD_NOT_REACH_CAPMETRO =
+                "CapMetro.org could not be reached;\ntry checking your internet connection";
+        public static final String CAPMETRO_STOP_URL =
+                "http://www.capmetro.org/planner/s_nextbus2.asp?opt=2&route=%s&stopid=%d";
+
+        Marker stopMarker;
+        TextView snippet;
+        boolean failed = false;
+
+        public CheckStopTask(TextView snippet) {
+            this.snippet = snippet;
         }
 
-        private class checkStopTask extends AsyncTask<Object, Void, String> {
-            public static final String ERROR_NO_STOP_TIMES =
-                    "There are no upcoming times\nfor this stop on capmetro.org";
-            public static final String ERROR_COULD_NOT_REACH_CAPMETRO =
-                    "CapMetro.org could not be reached;\ntry checking your internet connection";
-            public static final String CAPMETRO_STOP_URL =
-                    "http://www.capmetro.org/planner/s_nextbus2.asp?opt=2&route=%s&stopid=%d";
+        @Override
+        protected String doInBackground(Object... params) {
+            int stopid = (Integer) params[0];
+            stopMarker = (Marker) params[1];
+            String times = "";
+            OkHttpClient httpclient = UTilitiesApplication.getInstance(CampusMapActivity.this)
+                    .getHttpClient();
+            JSONObject data;
+            String reqUrl = String.format(CAPMETRO_STOP_URL, routeid, stopid);
 
-            Marker stopMarker;
-
-            @Override
-            protected String doInBackground(Object... params) {
-                int stopid = (Integer) params[0];
-                stopMarker = (Marker) params[1];
-                String times = "";
-                OkHttpClient httpclient = UTilitiesApplication.getInstance(CampusMapActivity.this)
-                        .getHttpClient();
-                JSONObject data;
-                String reqUrl = String.format(CAPMETRO_STOP_URL, routeid, stopid);
-
-                try {
-                    Request get = new Request.Builder()
-                            .url(reqUrl)
-                            .build();
-                    Response response = httpclient.newCall(get).execute();
-                    if(!response.isSuccessful()) {
-                        throw new IOException("Bad response code " + response);
-                    }
-                    data = new JSONObject(response.body().string());
-                } catch (IOException | JSONException e) {
-                    times = ERROR_COULD_NOT_REACH_CAPMETRO;
-                    e.printStackTrace();
-                    return times;
+            try {
+                Request get = new Request.Builder()
+                        .url(reqUrl)
+                        .build();
+                Response response = httpclient.newCall(get).execute();
+                if (!response.isSuccessful()) {
+                    throw new IOException("Bad response code " + response);
                 }
-
-                try {
-                    if (!data.getString("status").equals("OK")) {
-                        times = ERROR_NO_STOP_TIMES;
-                        return times;
-                    } else {
-                        JSONArray buses = data.getJSONArray("list");
-                        if (buses.length() == 0) {
-                            times = ERROR_NO_STOP_TIMES;
-                            return times;
-                        }
-                        for (int i = 0; i < buses.length(); i++) {
-                            JSONObject bus = buses.getJSONObject(i);
-                            times += bus.getString("est") + "\n";
-                        }
-                        // trim off that trailing \n
-                        times = times.trim();
-
-                    }
-                } catch (JSONException je) {
-                    times = ERROR_COULD_NOT_REACH_CAPMETRO;
-                    return times;
-                }
-
-                return times;
+                data = new JSONObject(response.body().string());
+            } catch (IOException | JSONException e) {
+                failed = true;
+                e.printStackTrace();
+                return ERROR_COULD_NOT_REACH_CAPMETRO;
             }
 
-            @Override
-            protected void onPostExecute(String times) {
-                if ((infoSnippet.getText() + "").contains("Loading")) {
-                    // fix issue with InfoWindow "cycling" if the user taps
-                    // other markers while a marker's InfoWindow is loading data.
-                    if (stopMarker.isInfoWindowShown()) {
-                        infoSnippet.setText(times);
-                        stopMarker.showInfoWindow();
+            try {
+                if (!data.getString("status").equals("OK")) {
+                    failed = true;
+                    return ERROR_NO_STOP_TIMES;
+                } else {
+                    JSONArray buses = data.getJSONArray("list");
+                    if (buses.length() == 0) {
+                        failed = true;
+                        return ERROR_NO_STOP_TIMES;
                     }
+                    for (int i = 0; i < buses.length(); i++) {
+                        JSONObject bus = buses.getJSONObject(i);
+                        times += bus.getString("est") + "\n";
+                    }
+                    // trim off that trailing \n
+                    times = times.trim();
+
+                }
+            } catch (JSONException je) {
+                failed = true;
+                return ERROR_COULD_NOT_REACH_CAPMETRO;
+            }
+
+            return times;
+        }
+
+        @Override
+        protected void onPostExecute(String times) {
+            BusStop stopInfo = (BusStop) stopMarker.getTag();
+            stopInfo.times = times;
+            if (snippet.getText().equals(STOP_TIME_PLACEHOLDER)) {
+                // fix issue with InfoWindow "cycling" if the user taps
+                // other markers while a marker's InfoWindow is loading data.
+                if (stopMarker.isInfoWindowShown()) {
+                    snippet.setText(times);
+                    stopInfo.refreshing = true;
+                    stopMarker.showInfoWindow();
+                    stopInfo.refreshing = false;
                 }
             }
         }
