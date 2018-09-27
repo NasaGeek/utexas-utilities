@@ -73,7 +73,10 @@ public class UTilitiesApplication extends Application {
                 // Do nothing on failure.
             }
         }
-        LeakCanary.install(this);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            // Bug in P causes excessive leaks, just disable for now
+            LeakCanary.install(this);
+        }
         try {
             AesCbcWithIntegrity.SecretKeys myKey = AesCbcWithIntegrity.generateKeyFromPassword(
                     Utility.id(this), Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID).getBytes(), 10);
