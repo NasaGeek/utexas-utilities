@@ -744,7 +744,6 @@ public class CampusMapActivity extends BaseActivity implements OnMapReadyCallbac
      */
     private boolean checkReady() {
         if (mMap == null) {
-            Toast.makeText(this, "Map is not ready yet", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
