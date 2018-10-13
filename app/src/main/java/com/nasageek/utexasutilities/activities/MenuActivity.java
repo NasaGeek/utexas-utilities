@@ -87,6 +87,25 @@ public class MenuActivity extends BaseActivity implements ActionBar.OnNavigation
                         ""
                 }
             }),
+        J2Fast("27", "J2 FAST Line", new String[][] {
+            {
+                ""
+            }, {
+                "10:30am - 8pm"
+            }, {
+                "10:30am - 8pm"
+            }, {
+                "10:30am - 8pm"
+            }, {
+                "10:30am - 8pm"
+            }, {
+                "10:30am - 8pm"
+            }, {
+                "10:30am - 8pm"
+            }, {
+                ""
+            }
+        }),
         Kinsolving("03", "Kinsolving Dining Hall", new String[][] {
                 {
                         "11am - 2pm"
