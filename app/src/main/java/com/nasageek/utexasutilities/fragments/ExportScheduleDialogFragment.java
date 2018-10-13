@@ -19,8 +19,9 @@ public abstract class ExportScheduleDialogFragment extends AppCompatDialogFragme
     public void onResume() {
         super.onResume();
         // User must grant permission to launch the Dialog, but make sure they haven't
-        // tried anything sneaky like revoking permissions while the Dialog is still open
-        if (!permissionUtils.hasPermission(Manifest.permission.READ_CALENDAR)) {
+        // tried anything sneaky like revoking p while the Dialog is still open
+        if (!(permissionUtils.hasPermission(Manifest.permission.WRITE_CALENDAR)
+                && permissionUtils.hasPermission(Manifest.permission.READ_CALENDAR))) {
             ((ScheduleActivity) getActivity())
                     .showSnackbar("Calendar permission revoked, please grant it again");
             getDialog().dismiss();

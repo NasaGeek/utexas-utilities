@@ -53,6 +53,8 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
         AdapterView.OnItemClickListener, ActionMode.Callback {
 
     private static final int REQUEST_CALENDAR_PERMISSION = 1;
+    static final String[] CALENDAR_PERMISSIONS = {Manifest.permission.READ_CALENDAR,
+            Manifest.permission.WRITE_CALENDAR};
     private RuntimePermissionUtils runtimePermissions;
 
     private GridView scheduleGridView;
@@ -257,12 +259,12 @@ public class CourseScheduleFragment extends ScheduleFragment implements ActionMo
                 // check to see if we're done loading the schedules (the
                 // ScheduleClassAdapter is initialized in onPostExecute)
                 if (adapter != null) {
-                    if (runtimePermissions.hasPermission(Manifest.permission.READ_CALENDAR)) {
+                    if (runtimePermissions.hasPermission(Manifest.permission.WRITE_CALENDAR)
+                            && runtimePermissions.hasPermission(Manifest.permission.READ_CALENDAR)) {
                         DoubleDatePickerDialogFragment.newInstance(classList)
                                 .show(getActivity().getSupportFragmentManager(), "double_date_picker");
                     } else {
-                        requestPermissions(new String[]{Manifest.permission.READ_CALENDAR},
-                                REQUEST_CALENDAR_PERMISSION);
+                        requestPermissions(CALENDAR_PERMISSIONS, REQUEST_CALENDAR_PERMISSION);
                     }
                 }
                 break;
