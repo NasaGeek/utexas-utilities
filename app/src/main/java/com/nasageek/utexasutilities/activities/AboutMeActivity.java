@@ -2,6 +2,7 @@
 package com.nasageek.utexasutilities.activities;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.widget.TextView;
 
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.nasageek.utexasutilities.R;
 
 public class AboutMeActivity extends BaseActivity {
@@ -29,9 +31,7 @@ public class AboutMeActivity extends BaseActivity {
         underlinedLicenseLink.setSpan(new UnderlineSpan(), 0, underlinedLicenseLink.length(), 0);
         licenseView.setText(underlinedLicenseLink);
         licenseView.setOnClickListener(v -> {
-            FragmentManager fm = getSupportFragmentManager();
-            LibraryLicenseDialog libraryLicenseDlg = new LibraryLicenseDialog();
-            libraryLicenseDlg.show(fm, "fragment_license");
+            startActivity(new Intent(this, OssLicensesMenuActivity.class));
         });
         // do the same thing with the Privacy Policy link
         TextView policyView = (TextView) findViewById(R.id.privacy_policy_link);
@@ -65,19 +65,6 @@ public class AboutMeActivity extends BaseActivity {
                     .setMessage(getString(R.string.privacy_policy))
                     .setNeutralButton("Okay", null)
                     .setTitle("Privacy Policy")
-                    .create();
-        }
-    }
-
-    public static class LibraryLicenseDialog extends DialogFragment {
-
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return new AlertDialog.Builder(getActivity())
-                    .setTitle("Licenses and Legal Notices")
-                    .setMessage(getString(R.string.licenses))
-                    .setNeutralButton("Okay", null)
                     .create();
         }
     }

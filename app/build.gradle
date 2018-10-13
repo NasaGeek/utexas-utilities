@@ -1,5 +1,6 @@
 
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 apply plugin: 'io.fabric'
 
 // Some constant information you could use in builds, accessible via BuildConfig.<field-name>
@@ -98,6 +99,7 @@ dependencies {
         transitive = true
     }
     implementation 'com.google.firebase:firebase-core:16.0.4'
+    implementation 'com.google.android.gms:play-services-oss-licenses:16.0.1'
 }
 
 repositories {
