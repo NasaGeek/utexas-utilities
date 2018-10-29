@@ -246,3 +246,12 @@ Versioncode 47 - 2.0.2
 Fix Bandwidth login
 Update dining hours
 Other bug fixes
+
+Versioncode 48 - 2.1.0
+
+Updated campus buildings information and bus routes/stops
+    Wrote some scripts to scrape and format the information, hopefully easing this process in the future
+Fixed bus arrival time fetching
+    Also improved general behavior/state managment of fetching the times
+Replaced google analytics with firebase analytics
+Fixed permission issue with schedule export

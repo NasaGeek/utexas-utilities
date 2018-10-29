@@ -14,8 +14,8 @@ android {
         applicationId "com.nasageek.utexasutilities"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 47
-        versionName "2.0.2"
+        versionCode 48
+        versionName "2.1.0"
 
         // The git sha of the current head and build time
         //buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
