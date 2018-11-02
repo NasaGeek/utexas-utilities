@@ -17,6 +17,8 @@ public class NutritionInfoActivity extends BaseActivity {
         setupActionBar();
         actionBar.setTitle(title);
         final WebView wv = new WebView(this);
+        wv.getSettings().setLoadWithOverviewMode(true);
+        wv.getSettings().setUseWideViewPort(true);
         wv.getSettings().setJavaScriptEnabled(true);
         wv.getSettings().setBuiltInZoomControls(true);
         wv.setWebViewClient(new WebViewClient() {
