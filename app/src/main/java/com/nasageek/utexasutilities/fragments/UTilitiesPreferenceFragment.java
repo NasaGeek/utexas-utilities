@@ -92,6 +92,7 @@ public class UTilitiesPreferenceFragment extends PreferenceFragmentCompat {
                     }
                     // whenever they switch between temp and persistent, log them out
                     mApp.logoutAll();
+                    setupLoginFields();
                     firebaseAnalytics.setUserProperty("persistent_login", Boolean.toString(checked));
                     return true;
                 });
