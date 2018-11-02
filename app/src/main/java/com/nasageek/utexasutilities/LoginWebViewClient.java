@@ -65,5 +65,6 @@ public class LoginWebViewClient extends WebViewClient {
         }
         activity.startActivity(intent);
         CookieManager.getInstance().removeAllCookie();
+        activity.finish();
     }
 }

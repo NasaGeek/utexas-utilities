@@ -47,8 +47,7 @@
             android:label="About" />
         <activity
             android:name=".activities.LoginActivity"
-            android:label="Login"
-            android:noHistory="true" />
+            android:label="Login" />
         <activity
             android:name=".activities.PreferenceActivity"
             android:label="Preferences"
