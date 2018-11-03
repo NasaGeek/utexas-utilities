@@ -10,6 +10,7 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
@@ -95,9 +96,10 @@ public class UTilitiesActivity extends BaseActivity {
         setContentView(R.layout.main);
         enabledFeatureButtonListener = v -> {
             DashboardButtonData data = (DashboardButtonData) v.getTag();
+            Intent intent = null;
             // null cookie means the service doesn't need an EID
             if (data.authCookie == null) {
-                startActivity(data.intent);
+                intent = data.intent;
             } else {
                 if (settings.getBoolean(getString(R.string.pref_logintype_key), false)) {
                     // persistent login
@@ -105,7 +107,7 @@ public class UTilitiesActivity extends BaseActivity {
                             && isLoginRequired()) {
                         showLoginFirstToast();
                     } else {
-                        startActivity(data.intent);
+                        intent = data.intent;
                     }
                 } else {
                     // temp login
@@ -114,11 +116,16 @@ public class UTilitiesActivity extends BaseActivity {
                                 LoginActivity.class);
                         login.putExtra("activity", data.intent.getComponent()
                                 .getClassName());
-                        startActivity(login);
+                        intent = login;
                     } else {
-                        startActivity(data.intent);
+                        intent = data.intent;
                     }
                 }
+            }
+            if (intent != null) {
+                Bundle opts = ActivityOptionsCompat.makeScaleUpAnimation(v, 0, 0,
+                        v.getWidth(), v.getHeight()).toBundle();
+                startActivity(intent, opts);
             }
         };
         disabledFeatureButtonListener = v -> {
